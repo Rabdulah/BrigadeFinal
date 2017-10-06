@@ -2,7 +2,7 @@ Brigade
 =======
 
 
-![](https://github.com/UWOECE-SE-Classes/Brigade/blob/master/Brigade.jpg)
+<img src="https://github.com/UWOECE-SE-Classes/Brigade/blob/master/Brigade.jpg" width="400">
 
 
 “Self Start” for Marcotte Physiotherapy
