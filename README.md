@@ -14,7 +14,7 @@ Brigade
 
 #### <i class="icon-users"></i> Team
 
-| Name| Phone Number Email|
+| Name| Phone Number| Email|
 | :------- | :---- | :---: |
 |Ramzi Abdulahi	|647-280-8743	|rabdulah@uwo.ca|
 |Omar Chahbar	|226-973-3499	|ochahba@uwo.ca|
