@@ -1,5 +1,14 @@
-{{!-- The following component displays Ember's default welcome message. --}}
-{{welcome-page}}
-{{!-- Feel free to remove this! --}}
+<div class="ui borderless fixed menu">
+  <a class=" item">{{#link-to 'home'}}<img class="ui small image" src="assets/images/SelfStart_logo.png">{{/link-to}}</a>
+  <a class="ui right item ">{{#link-to 'patients'}}PATIENT PROFILE{{/link-to}}</a>
+  <a class="item">3</a>
+  <a class="item">4</a>
+  <a class="item">5</a>
+  <a class="item">6</a>
+</div>
 
 {{outlet}}
+
+<div id="footer">
+  <p> I am the footer, and you have scroll down to see me.</p>
+</div>
