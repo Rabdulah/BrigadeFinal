@@ -1,0 +1,499 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project version="4">
+  <component name="ChangeListManager">
+    <list default="true" id="a29d4d50-dbba-4e6e-8bdb-c4f9df3843ac" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/Brigade.iml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/inspectionProfiles/Project_Default.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/modules.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/vcs.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/.bin/mime" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/.bin/mime.cmd" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/.bin/semver" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/.bin/semver.cmd" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/accepts/HISTORY.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/accepts/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/accepts/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/accepts/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/accepts/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/array-flatten/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/array-flatten/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/array-flatten/array-flatten.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/array-flatten/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/CHANGELOG.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/apply.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/applyEach.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/applyEachSeries.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/asyncify.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/auto.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/autoInject.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/bower.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/cargo.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/compose.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/concat.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/concatSeries.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/constant.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/detect.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/detectLimit.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/detectSeries.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/dir.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/dist/async.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/dist/async.min.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/doDuring.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/doUntil.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/doWhilst.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/during.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/each.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/eachLimit.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/eachOf.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/eachOfLimit.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/eachOfSeries.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/eachSeries.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/ensureAsync.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/every.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/everyLimit.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/everySeries.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/filter.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/filterLimit.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/filterSeries.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/forever.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/DoublyLinkedList.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/applyEach.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/breakLoop.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/concat.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/consoleFunc.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/createTester.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/doLimit.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/doParallel.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/doParallelLimit.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/doSeries.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/eachOfLimit.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/filter.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/findGetResult.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/getIterator.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/initialParams.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/iterator.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/map.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/notId.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/once.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/onlyOnce.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/parallel.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/queue.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/reject.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/rest.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/setImmediate.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/internal/withoutIndex.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/log.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/map.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/mapLimit.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/mapSeries.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/mapValues.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/mapValuesLimit.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/mapValuesSeries.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/memoize.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/nextTick.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/parallel.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/parallelLimit.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/priorityQueue.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/queue.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/race.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/reduce.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/reduceRight.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/reflect.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/reflectAll.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/reject.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/rejectLimit.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/rejectSeries.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/retry.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/retryable.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/seq.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/series.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/setImmediate.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/some.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/someLimit.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/someSeries.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/sortBy.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/timeout.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/times.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/timesLimit.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/timesSeries.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/transform.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/unmemoize.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/until.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/waterfall.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/async/whilst.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/changelog.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/browser/bluebird.core.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/browser/bluebird.core.min.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/browser/bluebird.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/browser/bluebird.min.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/any.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/assert.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/async.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/bind.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/bluebird.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/call_get.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/cancel.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/catch_filter.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/context.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/debuggability.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/direct_resolve.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/each.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/errors.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/es5.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/filter.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/finally.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/generators.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/join.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/map.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/method.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/nodeback.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/nodeify.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/promise.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/promise_array.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/promisify.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/props.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/queue.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/race.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/reduce.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/schedule.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/settle.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/some.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/synchronous_inspection.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/thenables.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/timers.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/using.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/js/release/util.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bluebird/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/body-parser/HISTORY.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/body-parser/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/body-parser/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/body-parser/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/body-parser/lib/read.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/body-parser/lib/types/json.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/body-parser/lib/types/raw.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/body-parser/lib/types/text.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/body-parser/lib/types/urlencoded.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/body-parser/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/HISTORY.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/LICENSE.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/bower.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/browser_build/bson.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/browser_build/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/lib/bson/binary.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/lib/bson/bson.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/lib/bson/code.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/lib/bson/db_ref.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/lib/bson/decimal128.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/lib/bson/double.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/lib/bson/float_parser.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/lib/bson/int_32.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/lib/bson/long.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/lib/bson/map.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/lib/bson/max_key.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/lib/bson/min_key.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/lib/bson/objectid.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/lib/bson/parser/calculate_size.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/lib/bson/parser/deserializer.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/lib/bson/parser/serializer.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/lib/bson/regexp.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/lib/bson/symbol.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/lib/bson/timestamp.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bson/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/buffer-shims/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/buffer-shims/license.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/buffer-shims/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/buffer-shims/readme.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bytes/History.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bytes/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bytes/Readme.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bytes/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/bytes/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/content-disposition/HISTORY.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/content-disposition/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/content-disposition/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/content-disposition/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/content-disposition/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/content-type/HISTORY.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/content-type/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/content-type/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/content-type/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/content-type/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/cookie-signature/.npmignore" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/cookie-signature/History.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/cookie-signature/Readme.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/cookie-signature/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/cookie-signature/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/cookie/HISTORY.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/cookie/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/cookie/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/cookie/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/cookie/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/core-util-is/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/core-util-is/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/core-util-is/float.patch" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/core-util-is/lib/util.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/core-util-is/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/core-util-is/test.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/debug/.coveralls.yml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/debug/.eslintrc" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/debug/.npmignore" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/debug/.travis.yml" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/debug/CHANGELOG.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/debug/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/debug/Makefile" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/debug/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/debug/component.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/debug/karma.conf.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/debug/node.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/debug/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/debug/src/browser.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/debug/src/debug.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/debug/src/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/debug/src/inspector-log.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/debug/src/node.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/depd/History.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/depd/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/depd/Readme.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/depd/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/depd/lib/browser/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/depd/lib/compat/callsite-tostring.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/depd/lib/compat/event-listener-count.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/depd/lib/compat/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/depd/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/destroy/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/destroy/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/destroy/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/destroy/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/ee-first/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/ee-first/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/ee-first/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/ee-first/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/encodeurl/HISTORY.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/encodeurl/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/encodeurl/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/encodeurl/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/encodeurl/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/es6-promise/CHANGELOG.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/es6-promise/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/es6-promise/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/es6-promise/dist/es6-promise.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/es6-promise/dist/es6-promise.min.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/es6-promise/lib/es6-promise.umd.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/es6-promise/lib/es6-promise/-internal.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/es6-promise/lib/es6-promise/asap.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/es6-promise/lib/es6-promise/enumerator.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/es6-promise/lib/es6-promise/polyfill.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/es6-promise/lib/es6-promise/promise.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/es6-promise/lib/es6-promise/promise/all.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/es6-promise/lib/es6-promise/promise/race.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/es6-promise/lib/es6-promise/promise/reject.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/es6-promise/lib/es6-promise/promise/resolve.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/es6-promise/lib/es6-promise/then.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/es6-promise/lib/es6-promise/utils.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/es6-promise/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/escape-html/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/escape-html/Readme.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/escape-html/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/escape-html/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/etag/HISTORY.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/etag/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/etag/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/etag/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/etag/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/History.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/Readme.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/lib/application.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/lib/express.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/lib/middleware/init.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/lib/middleware/query.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/lib/request.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/lib/response.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/lib/router/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/lib/router/layer.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/lib/router/route.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/lib/utils.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/lib/view.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/node_modules/setprototypeof/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/node_modules/setprototypeof/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/node_modules/setprototypeof/index.d.ts" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/node_modules/setprototypeof/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/node_modules/setprototypeof/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/node_modules/statuses/HISTORY.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/node_modules/statuses/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/node_modules/statuses/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/node_modules/statuses/codes.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/node_modules/statuses/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/node_modules/statuses/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/express/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/finalhandler/HISTORY.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/finalhandler/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/finalhandler/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/finalhandler/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/finalhandler/node_modules/statuses/HISTORY.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/finalhandler/node_modules/statuses/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/finalhandler/node_modules/statuses/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/finalhandler/node_modules/statuses/codes.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/finalhandler/node_modules/statuses/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/finalhandler/node_modules/statuses/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/finalhandler/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/forwarded/HISTORY.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/forwarded/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/forwarded/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/forwarded/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/forwarded/package.json" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/fresh/HISTORY.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/fresh/LICENSE" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/fresh/README.md" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/fresh/index.js" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/SelfStartBackEnd/node_modules/fresh/package.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/SelfStartBackEnd/package.json" afterPath="$PROJECT_DIR$/SelfStartBackEnd/package.json" />
+    </list>
+    <ignored path="$PROJECT_DIR$/.tmp/" />
+    <ignored path="$PROJECT_DIR$/temp/" />
+    <ignored path="$PROJECT_DIR$/tmp/" />
+    <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
+    <option name="TRACKING_ENABLED" value="true" />
+    <option name="SHOW_DIALOG" value="false" />
+    <option name="HIGHLIGHT_CONFLICTS" value="true" />
+    <option name="HIGHLIGHT_NON_ACTIVE_CHANGELIST" value="false" />
+    <option name="LAST_RESOLUTION" value="IGNORE" />
+  </component>
+  <component name="Git.Settings">
+    <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$" />
+  </component>
+  <component name="JsBuildToolGruntFileManager" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsBuildToolPackageJson" detection-done="true" sorting="DEFINITION_ORDER" />
+  <component name="JsGulpfileManager">
+    <detection-done>true</detection-done>
+    <sorting>DEFINITION_ORDER</sorting>
+  </component>
+  <component name="NodeModulesDirectoryManager">
+    <handled-path value="$PROJECT_DIR$/SelfStartBackEnd/node_modules" />
+  </component>
+  <component name="ProjectFrameBounds" extendedState="6">
+    <option name="x" value="677" />
+    <option name="y" value="9" />
+    <option name="width" value="697" />
+    <option name="height" value="735" />
+  </component>
+  <component name="ProjectLevelVcsManager" settingsEditedManually="true" />
+  <component name="ProjectView">
+    <navigator currentView="ProjectPane" proportions="" version="1">
+      <flattenPackages />
+      <showMembers />
+      <showModules />
+      <showLibraryContents />
+      <hideEmptyPackages />
+      <abbreviatePackageNames />
+      <autoscrollToSource />
+      <autoscrollFromSource />
+      <sortByType />
+      <manualOrder />
+      <foldersAlwaysOnTop value="true" />
+    </navigator>
+    <panes>
+      <pane id="Scratches" />
+      <pane id="ProjectPane">
+        <subPane>
+          <expand>
+            <path>
+              <item name="Brigade" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Brigade" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="Brigade" type="b2602c69:ProjectViewProjectNode" />
+              <item name="Brigade" type="462c0819:PsiDirectoryNode" />
+              <item name="SelfStartBackEnd" type="462c0819:PsiDirectoryNode" />
+            </path>
+          </expand>
+          <select />
+        </subPane>
+      </pane>
+      <pane id="Scope" />
+    </panes>
+  </component>
+  <component name="PropertiesComponent">
+    <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$" />
+    <property name="nodejs_interpreter_path" value="C:/Program Files/nodejs/node" />
+  </component>
+  <component name="RunDashboard">
+    <option name="ruleStates">
+      <list>
+        <RuleState>
+          <option name="name" value="ConfigurationTypeDashboardGroupingRule" />
+        </RuleState>
+        <RuleState>
+          <option name="name" value="StatusDashboardGroupingRule" />
+        </RuleState>
+      </list>
+    </option>
+  </component>
+  <component name="RunManager" selected="Node.js.server.js">
+    <configuration name="server.js" type="NodeJSConfigurationType" factoryName="Node.js" temporary="true" path-to-node="project" path-to-js-file="server.js" working-dir="$PROJECT_DIR$/SelfStartBackEnd" />
+    <recent_temporary>
+      <list size="1">
+        <item index="0" class="java.lang.String" itemvalue="Node.js.server.js" />
+      </list>
+    </recent_temporary>
+  </component>
+  <component name="ShelveChangesManager" show_recycled="false">
+    <option name="remove_strategy" value="false" />
+  </component>
+  <component name="TaskManager">
+    <task active="true" id="Default" summary="Default task">
+      <changelist id="a29d4d50-dbba-4e6e-8bdb-c4f9df3843ac" name="Default" comment="" />
+      <created>1517327880724</created>
+      <option name="number" value="Default" />
+      <option name="presentableId" value="Default" />
+      <updated>1517327880724</updated>
+      <workItem from="1517327883804" duration="595000" />
+    </task>
+    <servers />
+  </component>
+  <component name="TimeTrackingManager">
+    <option name="totallyTimeSpent" value="595000" />
+  </component>
+  <component name="ToolWindowManager">
+    <frame x="-8" y="-8" width="1382" height="744" extended-state="6" />
+    <layout>
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.25372022" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
+      <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.34210527" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="true" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.32894737" sideWeight="0.5" order="-1" side_tool="false" content_ui="tabs" />
+      <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="-1" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
+      <window_info id="Hierarchy" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="2" side_tool="false" content_ui="combo" />
+      <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+      <window_info id="Inspection" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="5" side_tool="false" content_ui="tabs" />
+      <window_info id="Ant Build" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
+    </layout>
+  </component>
+  <component name="TypeScriptGeneratedFilesManager">
+    <option name="version" value="1" />
+  </component>
+  <component name="VcsContentAnnotationSettings">
+    <option name="myLimit" value="2678400000" />
+  </component>
+  <component name="XDebuggerManager">
+    <breakpoint-manager />
+    <watches-manager />
+  </component>
+</project>
