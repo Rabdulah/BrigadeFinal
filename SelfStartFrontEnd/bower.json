@@ -1,0 +1,18 @@
+{
+  "name": "self-start-front-end",
+  "description": "Small description for self-start-front-end goes here",
+  "main": "",
+  "authors": [
+    "Jeffrey(Seung Jun) Kim <you7046@gmail.com>"
+  ],
+  "license": "MIT",
+  "homepage": "https://github.com/UWO-ECE-Software-Engineering/Brigade",
+  "private": true,
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ]
+}
