@@ -1,0 +1,6 @@
+{
+  "name": "self-start-front-end",
+  "dependencies": {
+    "semantic-ui": "^2.2.13"
+  }
+}
