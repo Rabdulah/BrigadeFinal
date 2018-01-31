@@ -1,0 +1,53 @@
+#hero{
+  background-image:url(https://chrisaam.files.wordpress.com/2015/03/wallpaper-2846361.jpg);
+  background-size:cover;
+  position:relative;
+  height:100vh;
+}
+
+.header{
+  position:absolute;
+  top:50%;
+  text-align:center;
+  width:100%;
+  color:#fff;
+  font-size:36px;
+  -ms-transform: translate(0,-50%); /* IE 9 */
+  -webkit-transform: translate(0,-50%); /* Safari */
+  transform: translate(0,-50%);
+
+}
+
+#content{
+  padding:100px 50px;
+  text-align:center;
+  width:80%;
+  margin:0px auto;
+}
+
+#content h2{
+  margin:0px 0px 30px 0px;
+}
+
+#footer{
+  padding:30px 0px;
+  text-align:center;
+  background:#ddd;
+
+}
+
+
+body {
+  background-color: #F5F5F5;
+}
+
+h1 {
+  font-family: "Montserrat", sans-serif;
+}
+
+.ui.borderless.fixed.menu .ui.item{
+  font-size: 1.2em;
+  font-family: 'Open Sans', sans-serif;
+}
+
+
