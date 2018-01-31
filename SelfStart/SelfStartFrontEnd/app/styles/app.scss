@@ -1,3 +1,29 @@
+@import "settings";
+@import 'foundation-sites/foundation';
+@include foundation-everything;
+
+.no-js {
+  @include breakpoint(small only) {
+    .top-bar {
+      display: none;
+    }
+  }
+
+  @include breakpoint(medium) {
+    .title-bar {
+      display: none;
+    }
+  }
+}
+
+[data-sticky] {
+  width:100%;
+}
+
+.sticky-container {
+  z-index: 5;
+}
+
 #hero{
   background-image:url(https://chrisaam.files.wordpress.com/2015/03/wallpaper-2846361.jpg);
   background-size:cover;
@@ -50,7 +76,4 @@ h1 {
 .ui.borderless.fixed.menu .ui.item{
   font-size: 1.2em;
   font-family: 'Open Sans', sans-serif;
-  width: auto !important;
 }
-
-
