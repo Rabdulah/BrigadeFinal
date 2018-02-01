@@ -1,0 +1,60 @@
+{{#if isEditing}}
+
+  <div class="ui fluid raised very padded text container segment">
+
+    <h2 id="patient" class="ui fluid centered header">Add New Patient</h2>
+
+    <form class="ui form">
+      <div class="fields">
+        <div class="two wide field">
+          <i id="icon" class="black large user icon"></i>
+        </div>
+        <div class="seven wide field">
+          {{input type="text" value = givenName placeholder="First Name"}}
+        </div>
+        <div class="seven wide field">
+          {{input type="text" value = familyName placeholder="Last Name"}}
+        </div>
+      </div>
+
+
+      <div class="fields">
+        <div class="two wide field">
+          <i id="icon" class="black large mail icon"></i>
+        </div>
+        <div class="fourteen wide field">
+          {{input type="text" value = email placeholder="Email"}}
+        </div>
+      </div>
+
+      <div class="fields">
+        <div class="two wide field">
+          <i id="icon" class="black large home icon"></i>
+        </div>
+        <div class="eight wide field">
+          {{input type="text" value = streetName placeholder="Street Name"}}
+        </div>
+        <div class="three wide field">
+          {{input type="text" value = streetNumber placeholder="Street #"}}
+        </div>
+        <div class="three wide field">
+          {{input type="text" value = Appartment placeholder="Unit #"}}
+        </div>
+      </div>
+
+      <br><br>
+      <div class="ui centered grid">
+        <button class="ui fluid blue button" {{action "submit" name}}>Submit</button>
+        <button class="ui fluid button" {{action "cancel"}}>Cancel</button>
+      </div>
+    </form>
+
+  </div>
+{{else}}
+  <button class="ui button" {{action 'addPatient'}}>
+    Add Rehab plan
+  </button>
+
+
+
+{{/if}}
