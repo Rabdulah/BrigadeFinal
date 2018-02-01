@@ -1,0 +1,22 @@
+{{outlet}}
+<div id="content">
+  <br>
+  <h2> Blog Posts </h2>
+
+  <div class="ui grid">
+    {{#each model as |onePost|}}
+      <div class="eight wide column">
+        <li>{{onePost.title}} </li>
+      </div>
+      <div class="four wide column right aligned">
+        {{edit-post ID=onePost.id}}
+      </div>
+      <div class="four wide column left aligned">
+        {{delete-post ID=onePost.id}}
+      </div>
+    {{/each}}
+  </div>
+
+  {{add-new-post}}
+
+</div>
