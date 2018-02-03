@@ -1,1 +1,105 @@
-{{yield}}
+{{#if isEditing}}
+
+<div class="ui fluid raised very padded text container segment">
+
+  <form class="ui form">
+        
+        <div class="inline fields">
+            <label>Question Type:</label>
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input name="type" type="radio" {{action 'multipleChoice'}}>
+                    <label>Multiple Choice</label>
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input name="type" type="radio"  {{action 'shortAns'}}>
+                    <label>Short Answer</label>
+                </div>
+            </div>
+        </div>
+
+
+{{#if shortAns}}
+
+      <div class="fourteen wide field">
+        {{input type="text" placeholder = "Question"}}
+      </div>
+     {{input type="text" placeholder = "Help"}}
+{{/if}}
+
+{{#if multipleChoice}}
+
+      <div class="fourteen wide field">
+        {{input type="text" placeholder = "Option 1"}}
+
+        {{#if option2}}
+            {{input type="text" placeholder = "Option 2"}}
+        {{/if}}
+
+        {{#if option3}}
+            {{input type="text" placeholder = "Option 3"}}
+        {{/if}}
+
+        {{#if option4}}
+            {{input type="text" placeholder = "Option 4"}}
+        {{/if}}
+
+        {{#if option5}}
+            {{input type="text" placeholder = "Option 5"}}
+        {{/if}}
+
+        {{#if option6}}
+            {{input type="text" placeholder = "Option 6"}}
+        {{/if}}
+
+
+      </div>
+
+      <div class="fourteen wide field">
+
+        {{#if addable}}
+        <button class="ui blue button" {{action "addOption"}}>Add Option</button>
+        {{/if}}
+
+        {{#if removable}}
+        <button class="ui blue button" {{action "removeOption"}}>Remove Option</button>
+        {{/if}}
+      </div>  <br><br><br>
+    
+      <div class="fourteen wide field">
+        {{input type="text" placeholder = "Help"}}
+      </div>
+      
+
+{{/if}}
+
+  {{!--   <div class="fields">
+      <div class="two wide field">
+        <i id="icon" class="black large home icon"></i>
+      </div>
+      <div class="eight wide field">
+        {{input type="text" value = streetName placeholder="Street Name"}}
+      </div>
+      <div class="three wide field">
+        {{input type="text" value = streetNumber placeholder="Street #"}}
+      </div>
+      <div class="three wide field">
+        {{input type="text" value = Appartment placeholder="Unit #"}}
+      </div>
+    </div> --}}
+
+    <br><br>
+    <div class="ui centered grid">
+      <button class="ui fluid blue button" {{action "submit" name}}>Submit</button>
+      <button class="ui fluid button" {{action "cancel"}}>Cancel</button>
+    </div>
+  </form>
+
+  </div>
+{{else}}
+  <button class="ui button" {{action 'addQuestion'}}>
+    Add Question
+</button>
+{{/if}}
