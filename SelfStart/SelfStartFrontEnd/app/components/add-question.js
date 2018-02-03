@@ -88,19 +88,23 @@ export default Component.extend({
       submit: function () {
   
         let self = this;
-  
-        let patient = this.get('DS').createRecord('patient', {
-          familyName: self.get('familyName'),
-          givenName: self.get('givenName'),
-          email: self.get('email'),
+
+        let question = this.get('DS').createRecord('question', {
+          if(multipleChoice){
+            help: self.get('mchelp')
+            questionText: self.get('mcquestion')
+          },
+
+          if(shortAns){
+            help: self.get('sahelp')
+            questionText: self.get('saquestion')
+          },
+           
         });
   
-          patient.save().then(function() {
-            this.set('isEditing', false);
-        });
-        this.set('familyName', '');
-        this.set('givenName', '');
-        this.set('email', '');
+        // question.save().then(function() {
+        //   this.set('isEditing', false);
+        // });
       }
   },
 });
