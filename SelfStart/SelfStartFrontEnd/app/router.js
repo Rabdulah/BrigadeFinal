@@ -10,6 +10,7 @@ Router.map(function() {
   this.route('home', {path: '/'});
   this.route('patients');
   this.route('admin');
+  this.route('questions');
 });
 
 export default Router;

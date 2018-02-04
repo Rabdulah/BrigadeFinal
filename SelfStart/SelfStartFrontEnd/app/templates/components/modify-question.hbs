@@ -1,0 +1,33 @@
+<button class="ui mini circular icon green button" {{action 'openModal'}}
+        title="Edit"><i class="write icon"></i>
+</button>
+
+{{#ui-modal name= modalName class= modalName}}
+  <div class="ui icon header">
+    Edit Question "{{questionData.title}}"
+  </div>
+  <div class="content">
+    <div class="ui form">
+      <div class="field">
+        <label>Question </label>
+        {{input type="text" cols="50" rows="1" value=questionData.questionText}}
+      </div>
+
+      <div class="field">
+        <label>Help Description</label>
+        {{textarea cols="50" rows="1" value=questionData.helpDescription}}
+      </div>
+    </div>
+  </div>
+
+  <br>
+  <div class="actions">
+    <div class="ui black deny button">
+      Cancel
+    </div>
+    <div class="ui positive right labeled icon button">
+      Save
+      <i class="checkmark icon"></i>
+    </div>
+  </div>
+{{/ui-modal}}
