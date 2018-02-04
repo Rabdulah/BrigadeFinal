@@ -28,7 +28,7 @@ export default Component.extend({
       let self = this;
       //connect to rehabilitationplans
       let rehabplan = this.get('DS').createRecord('rehabilitationplan', {
-        name: self.get('Name'),
+        planName: self.get('Name'),
         physioID: self.get('authorName'),
         description: self.get('description'),
         goal: self.get('goal'),
@@ -36,10 +36,12 @@ export default Component.extend({
         // exercises: self.get('exercises'),
         // assessmentTests: self.get('assessmentTests'),
       });
-
+      //when save is successfull close form
       rehabplan.save().then(function() {
         this.set('isEditing', false);
       });
+      //CHANGE THIS WHEN ITS DONE
+      this.set('isEditing', false);
       this.set('Name', '');
       this.set('description', '');
       this.set('goal', '');

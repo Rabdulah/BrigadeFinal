@@ -1,8 +1,8 @@
 import DS from 'ember-data';
 
 export default DS.Model.extend({
-  // ID : DS.attr(),
-  name:DS.attr(),
+
+  planName:DS.attr(),
   description: DS.attr(),
   physioID: DS.attr(),
   goal : DS.attr(),

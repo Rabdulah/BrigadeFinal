@@ -5,34 +5,39 @@
   <br><br>
   <div class="ui search">
 
-      <input class="prompt" type="text" placeholder="Search Rehab plan">
+      <input class="prompt" type="text" placeholder="Search Rehabilitation plan">
       <i class="search icon"></i>
 
   </div>
 
   <br><br>
-  <table class="ui compact table">
+
+  <table class="ui single line table">
+
     <thead>
     <tr>
-      <th>Rehab plans</th>
+      <th>Name</th>
+      <th>Description</th>
       <th></th>
     </tr>
     </thead>
 
-    {{#ui-accordion }}
-      <tbody>
+    <tbody>
       {{#each model as |Rehabplan|}}
-        <div class="title">
-          <i class="dropdown large blue icon"></i>
-          {{Rehabplan.name}} {{Rehabplan.description}}
-        </div>
-        <div class="content">
-          {{Rehabplan.goal}}
-        </div>
-
+        <tr>
+          <td>{{Rehabplan.planName}}</td>
+          <td>{{Rehabplan.description}}</td>
+          <td>
+            <div class="four wide column right aligned">
+              {{edit-rehabplan ID=Rehabplan.id}}
+            </div>
+            <div class="four wide column left aligned">
+              {{delete-rehabplan ID=Rehabplan.id}}
+            </div>
+          </td>
+        </tr>
       {{/each}}
-      </tbody>
-    {{/ui-accordion}}
+    </tbody>
   </table>
 
 </div>

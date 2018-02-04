@@ -1,8 +1,13 @@
-{{#if isEditing}}
+<button class = "ui mini circular icon green button" {{action 'openModal'}} title="Edit">
+  <i class=" pencil icon"> </i>
+</button>
+
+
+{{#ui-modal name=modalName class=modalName}}
 
   <div class="ui fluid raised very padded text container segment">
 
-    <h2 id="rehabPlan" class="ui fluid centered header">Add New Rehab Plan</h2>
+    <h2 id="rehabPlan" class="ui fluid centered header">Edit Rehabilitation Plan  {{planName}}</h2>
 
     <form class="ui form">
       <div class="fields">
@@ -10,11 +15,11 @@
           <i id="icon" class="black large user icon"></i>
         </div>
         <div class="seven wide field">
-          {{input type="text" value = Name placeholder="Rehab plan name"}}
+          {{input type="text" value = planName placeholder="Rehab plan name"}}
         </div>
 
         <div class="seven wide field">
-          {{input type="text" value = authorName placeholder="Author Name"}}
+          {{input type="text" value = physioID placeholder="Author Name"}}
         </div>
       </div>
 
@@ -72,23 +77,20 @@
         </div>
       </div>
 
-
-
-      <br><br>
-      <div class="ui centered grid">
-        <button class="ui fluid blue button" {{action "submit" name}}>Submit</button>
-        <button class="ui fluid button" {{action "cancel"}}>Cancel</button>
+      <!--footer for save / cancel-->
+      <div class="actions">
+        <div class="ui black deny button">
+          Cancel
+        </div>
+        <div class="ui positive right labeled icon button">
+          Save
+          <i class="checkmark icon"></i>
+        </div>
       </div>
-    </form>
 
+    </form>
   </div>
 
-  <!--if not using form, show button-->
-{{else}}
-  <button class="ui button" {{action 'addRehabPlan'}}>
-    Add Rehab plan
-  </button>
 
 
-
-{{/if}}
+{{/ui-modal}}
