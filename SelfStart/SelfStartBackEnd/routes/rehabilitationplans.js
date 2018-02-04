@@ -25,28 +25,30 @@ router.route('/:rehabilitation_id')
                 response.send({error: error});
             }
             else {
-                response.json({rehabilitation: rehabilitations});
+                response.json({rehabilitationplan: rehabilitations});
             }
         });
     })
 
     .put( function (request, response) {
-        Rehabilitation.Model.findById(request.params.exer_id, function (error, rehabilitation) {
+        console.log("update on rehab plan");
+        Rehabilitation.Model.findById(request.params.rehabilitation_id, function (error, rehabilitation) {
             if (error) {
+                //send error message
                 response.send({error: error});
             }
             else {
 
                 // update each attribute
-                rehabilitation.planName = request.body.rehabilitation.planName;
-                rehabilitation.description = request.body.rehabilitation.description;
-                rehabilitation.physioID = request.body.rehabilitation.physioID;
-                rehabilitation.goal = request.body.rehabilitation.goal;
-                rehabilitation.date = request.body.rehabilitation.date;
-                rehabilitation.timeToComplete = request.body.rehabilitation.timeToComplete;
-                rehabilitation.plan = request.body.rehabilitation.plan;
-                rehabilitation.test = request.body.rehabilitation.test;
-                rehabilitation.exercise = request.body.rehabilitation.exercise;
+                rehabilitation.planName = request.body.rehabilitationplan.planName;
+                rehabilitation.description = request.body.rehabilitationplan.description;
+                rehabilitation.physioID = request.body.rehabilitationplan.physioID;
+                rehabilitation.goal = request.body.rehabilitationplan.goal;
+                rehabilitation.date = request.body.rehabilitationplan.date;
+                rehabilitation.timeToComplete = request.body.rehabilitationplan.timeToComplete;
+                rehabilitation.plan = request.body.rehabilitationplan.plan;
+                rehabilitation.test = request.body.rehabilitationplan.test;
+                rehabilitation.exercise = request.body.rehabilitationplan.exercise;
 
 
                 rehabilitation.save(function (error) {
@@ -54,7 +56,7 @@ router.route('/:rehabilitation_id')
                         response.send({error: error});
                     }
                     else {
-                        response.json({rehabilitation: rehabilitation});
+                        response.json({rehabilitationplan: rehabilitation});
                     }
                 });
             }
@@ -62,10 +64,11 @@ router.route('/:rehabilitation_id')
     })
 
     .delete( function (request, response) {
-        Rehabilitation.Model.findByIdAndRemove(request.params.exercise_id,
+        console.log("delete on rehab plan");
+        Rehabilitation.Model.findByIdAndRemove(request.params.rehabilitation_id,
             function (error, deleted) {
                 if (!error) {
-                    response.json({rehabilitation: deleted});
+                    response.json({rehabilitationplan: deleted});
                 }
             }
         );
