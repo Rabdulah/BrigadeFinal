@@ -1,18 +1,20 @@
+
+
 <div id="content">
   {{add-rehabplan}}
-
+  <br><br>
   <div class="ui search">
-    <div class="ui icon input">
-      <input class="prompt" type="text" placeholder="Search Rehab plan" >
+
+      <input class="prompt" type="text" placeholder="Search Rehab plan">
       <i class="search icon"></i>
-    </div>
+
   </div>
 
   <br><br>
   <table class="ui compact table">
     <thead>
     <tr>
-      <th>Patients</th>
+      <th>Rehab plans</th>
       <th></th>
     </tr>
     </thead>
@@ -22,10 +24,10 @@
       {{#each model as |Rehabplan|}}
         <div class="title">
           <i class="dropdown large blue icon"></i>
-          {{Rehabplan.givenName}} {{Rehabplan.familyName}}
+          {{Rehabplan.name}} {{Rehabplan.description}}
         </div>
         <div class="content">
-          {{Rehabplan.email}}
+          {{Rehabplan.goal}}
         </div>
 
       {{/each}}

@@ -1,6 +1,6 @@
 import { moduleForModel, test } from 'ember-qunit';
 
-moduleForModel('rehabplan', 'Unit | Model | rehabplan', {
+moduleForModel('exercise', 'Unit | Model | exercise', {
   // Specify the other units that are required for this test.
   needs: []
 });

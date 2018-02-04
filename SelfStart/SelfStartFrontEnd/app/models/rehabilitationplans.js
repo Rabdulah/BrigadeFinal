@@ -9,5 +9,4 @@ export default DS.Model.extend({
   timeFrameToComplete: DS.attr(),
   exercises : DS.hasMany('exercise', { async: true }),
   assessmentTests : DS.hasMany ('assesmentTest', { async: true })
-
 });

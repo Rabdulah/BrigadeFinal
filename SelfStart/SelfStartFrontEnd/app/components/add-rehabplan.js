@@ -7,7 +7,7 @@ export default Component.extend({
   isEditing: false,
 
   actions: {
-    addPatient (){
+    addRehabPlan (){
       this.set('isEditing', true);
     },
 
@@ -15,22 +15,38 @@ export default Component.extend({
       this.set('isEditing', false);
     },
 
+    decreaseTime: function () {
+
+    },
+
+    increaseTime: function () {
+
+    },
+
     submit: function () {
 
       let self = this;
-
-      let patient = this.get('DS').createRecord('patient', {
-        familyName: self.get('familyName'),
-        givenName: self.get('givenName'),
-        email: self.get('email'),
+      //connect to ro
+      let rehabplan = this.get('DS').createRecord('rehabilitationplans', {
+        name: self.get('Name'),
+        authorName: self.get('authorName'),
+        description: self.get('description'),
+        goal: self.get('goal'),
+        timeFrameToComplete: self.get('ttc'),
+        // exercises: self.get('exercises'),
+        // assessmentTests: self.get('assessmentTests'),
       });
 
-      patient.save().then(function() {
+      rehabplan.save().then(function() {
         this.set('isEditing', false);
       });
-      this.set('familyName', '');
-      this.set('givenName', '');
-      this.set('email', '');
+      this.set('Name', '');
+      this.set('description', '');
+      this.set('goal', '');
+      this.set('ttc', '');
+      this.set('exercises', '');
+      this.set('assessmentTests', '');
+      this.set('authorName', '');
     }
   },
 
