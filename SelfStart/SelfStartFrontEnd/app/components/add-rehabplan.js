@@ -26,13 +26,13 @@ export default Component.extend({
     submit: function () {
 
       let self = this;
-      //connect to ro
-      let rehabplan = this.get('DS').createRecord('rehabilitationplans', {
+      //connect to rehabilitationplans
+      let rehabplan = this.get('DS').createRecord('rehabilitationplan', {
         name: self.get('Name'),
-        authorName: self.get('authorName'),
+        physioID: self.get('authorName'),
         description: self.get('description'),
         goal: self.get('goal'),
-        timeFrameToComplete: self.get('ttc'),
+        timeToComplete: self.get('ttc'),
         // exercises: self.get('exercises'),
         // assessmentTests: self.get('assessmentTests'),
       });
