@@ -4,5 +4,6 @@ export default DS.Model.extend({
   ID: DS.attr(),
   questionText: DS.attr(),
   helpDescription: DS.attr(),
-  Order: DS.attr('number')
+  Order: DS.attr('number'),
+  type: DS.attr(),
 });
