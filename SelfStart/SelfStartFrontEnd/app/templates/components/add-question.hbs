@@ -83,7 +83,7 @@
 
     <br><br>
     <div class="ui centered grid">
-      <button class="ui fluid blue button" {{action "submit" name}}>Submit</button>
+      <button class="ui fluid blue button" {{action "submit"}}>Submit</button>
       <button class="ui fluid button" {{action "cancel"}}>Cancel</button>
     </div>
   </form>
@@ -91,7 +91,7 @@
   </div>
 
 {{else}}
-  <button class="ui button" {{action 'addQuestion'}}>
-    Add Question
-</button>
+    <button class="ui button" {{action 'addQuestion'}}>
+        Add Question
+    </button>
 {{/if}}

@@ -1,0 +1,16 @@
+<div id='content'>
+    <h2> Question List </h2>
+    <div class="ui grid">
+    {{#each model as |oneQuestion|}}
+        <div class="eight wide column">
+        <li>{{oneQuestion.questionText}} </li>
+        </div>
+        <div class="four wide column right aligned">
+        {{modify-question ID=oneQuestion.ID}}
+        </div>
+        {{!-- <div class="four wide column left aligned">
+        {{delete-question ID=oneQuestion.ID}}
+        </div> --}}
+    {{/each}}
+    </div>
+</div>

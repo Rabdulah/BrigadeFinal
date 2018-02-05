@@ -91,20 +91,21 @@ export default Component.extend({
 
         let question = this.get('DS').createRecord('question', {
           if(multipleChoice){
-            help: self.get('mchelp')
+            helpDescription: self.get('mchelp')
             questionText: self.get('mcquestion')
           },
 
           if(shortAns){
-            help: self.get('sahelp')
+            helpDescription: self.get('sahelp')
             questionText: self.get('saquestion')
           },
            
         });
   
-        // question.save().then(function() {
-        //   this.set('isEditing', false);
-        // });
+        question.save().then(function() {
+          this.set('isEditing', false);
+          return true;
+        });
       }
   },
 });
