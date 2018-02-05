@@ -9,7 +9,11 @@ const Router = EmberRouter.extend({
 Router.map(function() {
   this.route('home', {path: '/'});
   this.route('patients');
+<<<<<<< HEAD
   this.route('rehab-form');
+=======
+  this.route('rehabplans');
+>>>>>>> jk
 });
 
 export default Router;
