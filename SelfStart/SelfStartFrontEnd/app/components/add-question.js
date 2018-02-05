@@ -90,15 +90,15 @@ export default Component.extend({
         let self = this;
 
         let question = this.get('DS').createRecord('question', {
-          if(multipleChoice){
-            helpDescription: self.get('mchelp')
-            questionText: self.get('mcquestion')
-          },
+          // if(multipleChoice){
+          //   helpDescription: self.get('mchelp')
+          //   questionText: self.get('mcquestion')
+          // },
 
-          if(shortAns){
-            helpDescription: self.get('sahelp')
+         
+            helpDescription: self.get('sahelp'),
             questionText: self.get('saquestion')
-          },
+          
            
         });
   
