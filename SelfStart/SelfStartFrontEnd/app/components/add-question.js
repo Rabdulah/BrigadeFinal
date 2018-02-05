@@ -7,6 +7,7 @@ export default Component.extend({
     isEditing: false,
     shortAns: false,
     multipleChoice:false,
+    trueFalse:false,
     option2:false,
     option3:false,
     option4:false,
@@ -20,6 +21,7 @@ export default Component.extend({
       multipleChoice (){
         this.set('multipleChoice', true);
         this.set('shortAns', false);
+        this.set('trueFalse', false);
       },
 
       addOption(){
@@ -75,6 +77,13 @@ export default Component.extend({
       shortAns (){
         this.set('shortAns', true);
         this.set('multipleChoice', false);
+        this.set('trueFalse', false);
+      },
+
+      trueFalse (){
+        this.set('trueFalse', true);
+        this.set('shortAns', false);
+        this.set('multipleChoice', false);
       },
 
       addQuestion (){
@@ -106,6 +115,8 @@ export default Component.extend({
           this.set('isEditing', false);
           return true;
         });
+
+        this.set('isEditing', false);
       }
   },
 });
