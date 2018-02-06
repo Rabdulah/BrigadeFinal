@@ -1,0 +1,29 @@
+{{#if isEditing}}
+
+<div class="ui fluid raised very padded text container segment">
+    <form class="ui form">
+        <div class="sixteen wide field">
+            {{input type="text" value = fName placeholder = "Name of form"}}
+        </div>
+        <div class="sixteen wide field">
+            {{input type="text" value = fDescription placeholder = "Description of form"}}
+        </div>
+        {{!-- <div class="sixteen wide field">
+            {{input type="text" value = fAuthor placeholder = "Form author"}}
+        </div> --}}
+
+        <br><br>
+
+        <div class="ui centered grid">
+            <button class="ui fluid blue button" {{action "submit"}}>Submit</button>
+            <button class="ui fluid blue button" {{action "cancel"}}>Cancel</button>
+        </div>
+
+    </form>
+</div>
+
+{{else}}
+    <button class="ui button" {{action 'addForm'}}>
+        Add Form
+    </button>
+{{/if}}

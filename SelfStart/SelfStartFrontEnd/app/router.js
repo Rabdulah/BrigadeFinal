@@ -11,6 +11,7 @@ Router.map(function() {
   this.route('patients');
   this.route('admin');
   this.route('questions');
+  this.route('forms');
 });
 
 export default Router;

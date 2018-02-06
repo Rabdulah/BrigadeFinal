@@ -5,7 +5,7 @@ export default Component.extend({
     DS: Ember.inject.service('store'),
 
     modalName: Ember.computed(function(){
-    return 'Delete-question' + this.get('ID');
+    return 'Delete-form' + this.get('ID');
   }),
 
   actions: {
@@ -17,8 +17,8 @@ export default Component.extend({
           return true;
         },
         onApprove: () => {
-          this.get('DS').find('question', this.get('ID')).then((question) => {
-            question.destroyRecord().then(() => {
+          this.get('DS').find('form', this.get('ID')).then((form) => {
+            form.destroyRecord().then(() => {
               return true;
             });
           })
