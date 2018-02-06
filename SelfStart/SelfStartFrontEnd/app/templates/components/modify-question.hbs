@@ -1,13 +1,14 @@
-<button class="ui mini circular icon green button" {{action 'openModal'}}
+<button class="ui mini circular icon green button" {{action 'openModal'}} {{action 'isMultipleChoice' qtype = questionData.type}}
         title="Edit"><i class="write icon"></i>
 </button>
 
 {{#ui-modal name= modalName class= modalName}}
-  <div class="ui icon header">
-    Edit Question "{{questionData.title}}"
+ <div class="ui icon header">
+    Edit Question
   </div>
   <div class="content">
     <div class="ui form">
+ 
       <div class="field">
         <label>Question </label>
         {{input type="text" cols="50" rows="1" value=questionData.questionText}}
@@ -17,12 +18,55 @@
         <label>Help Description</label>
         {{textarea cols="50" rows="1" value=questionData.helpDescription}}
       </div>
+
+      {{#if multipleChoice}}
+        <div class="field">
+          <label>Option 1</label>
+          {{textarea cols="50" rows="1" value=questionData.helpDescription}}
+        </div>
+
+        {{#if opt2}}
+          <div class="field">
+            <label>Option 2</label>
+            {{textarea cols="50" rows="1" value=questionData.helpDescription}}
+          </div>
+        {{/if}}
+
+        {{#if opt3}}
+          <div class="field">
+            <label>Option 3</label>
+            {{textarea cols="50" rows="1" value=questionData.helpDescription}}
+          </div>
+        {{/if}}
+
+        {{#if opt4}}
+          <div class="field">
+            <label>Option 4</label>
+            {{textarea cols="50" rows="1" value=questionData.helpDescription}}
+          </div>
+        {{/if}}
+
+        {{#if opt5}}
+          <div class="field">
+            <label>Option 5</label>
+            {{textarea cols="50" rows="1" value=questionData.helpDescription}}
+          </div>
+        {{/if}}
+
+        {{#if opt6}}
+          <div class="field">
+            <label>Option 6</label>
+            {{textarea cols="50" rows="1" value=questionData.helpDescription}}
+          </div>
+        {{/if}}
+
+      {{/if}}
     </div>
   </div>
 
   <br>
   <div class="actions">
-    <div class="ui black deny button">
+    <div class="ui right floated red deny button">
       Cancel
     </div>
     <div class="ui positive right labeled icon button">
@@ -30,4 +74,5 @@
       <i class="checkmark icon"></i>
     </div>
   </div>
+  <br><br>
 {{/ui-modal}}

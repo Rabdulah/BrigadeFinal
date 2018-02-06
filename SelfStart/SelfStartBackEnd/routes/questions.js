@@ -6,7 +6,6 @@ router.route('/')
         .post(function (request, response) {
             var question = new Questions.Model(request.body.question);
             question.save(function (error) {
-                console.log(request.body.question);
                 if (error) response.send(error);
                 response.json({question: question});
             });
@@ -44,6 +43,7 @@ router.route('/:question_id')
                     question.order = request.body.question.order;
                     question.type = request.body.question.type;
                     question.form = request.body.question.form;
+                    question.optionNumber = request.body.question.optionNumber;
                     
                     question.save(function (error) {
                         if (error) {
