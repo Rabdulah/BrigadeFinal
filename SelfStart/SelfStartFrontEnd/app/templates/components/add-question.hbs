@@ -20,12 +20,25 @@
             </div>
             <div class="field">
                 <div class="ui radio checkbox">
+                    <input name="type" type="radio"  {{action 'rating'}}>
+                    <label>Rating</label>
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui radio checkbox">
                     <input name="type" type="radio" {{action 'trueFalse'}}>
                     <label>True/False</label>
                 </div>
             </div>
         </div>
 
+
+{{#if rating}}
+    {{input type="text" value = rquestion placeholder = "Question"}}
+    <br><br>
+    {{input type="text" value = rhelp placeholder = "Help"}}
+    <br><br>
+{{/if}}
 
 {{#if shortAns}}
     {{input type="text" value = saquestion placeholder = "Question"}}

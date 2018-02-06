@@ -7,6 +7,7 @@ export default Component.extend({
     isEditing: false,
     shortAns: false,
     multipleChoice:false,
+    rating: false,
     trueFalse:false,
     option2:false,
     option3:false,
@@ -23,6 +24,7 @@ export default Component.extend({
         this.set('multipleChoice', true);
         this.set('shortAns', false);
         this.set('trueFalse', false);
+        this.set('rating',false);
       },
 
       addOption(){
@@ -89,12 +91,21 @@ export default Component.extend({
         this.set('shortAns', true);
         this.set('multipleChoice', false);
         this.set('trueFalse', false);
+        this.set('rating',false);
       },
 
       trueFalse (){
         this.set('trueFalse', true);
         this.set('shortAns', false);
         this.set('multipleChoice', false);
+        this.set('rating',false);
+      },
+
+      rating (){
+        this.set('trueFalse', false);
+        this.set('shortAns', false);
+        this.set('multipleChoice', false);
+        this.set('rating',true);
       },
 
       addQuestion (){
@@ -130,6 +141,12 @@ export default Component.extend({
           help = self.get('tfhelp');
           question = self.get('tfquestion');
           qtype = "tf";
+        }
+
+        if(this.rating){
+          help = self.get('rhelp');
+          question = self.get('rquestion');
+          qtype = "Rating";
         }
 
         let newQuestion = this.get('DS').createRecord('question', {
