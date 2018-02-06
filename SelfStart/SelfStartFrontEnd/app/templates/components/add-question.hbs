@@ -18,24 +18,35 @@
                     <label>Short Answer</label>
                 </div>
             </div>
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input name="type" type="radio" {{action 'trueFalse'}}>
+                    <label>True/False</label>
+                </div>
+            </div>
         </div>
 
 
 {{#if shortAns}}
-
-      <div class="fourteen wide field">
-        {{input type="text" value = saquestion placeholder = "Question"}}
-      </div>
-     {{input type="text" value = sahelp placeholder = "Help"}}
+    {{input type="text" value = saquestion placeholder = "Question"}}
+    <br><br>
+    {{input type="text" value = sahelp placeholder = "Help"}}
+    <br><br>
 {{/if}}
+
+{{#if trueFalse}}  
+    {{input type="text" value = tfquestion placeholder = "Question"}}
+    <br><br>
+        {{input type="text" value = tfhelp placeholder = "Help"}}
+    <br><br>
+{{/if}}
+
 
 {{#if multipleChoice}}
 
     <div class="fourteen wide field">
         {{input type="text" value = mcquestion placeholder = "Question"}}
     </div> 
-
-    <<br> 
 
     <div class="fourteen wide field">
         {{input type="text" value = mcop1 placeholder = "Option 1"}}
