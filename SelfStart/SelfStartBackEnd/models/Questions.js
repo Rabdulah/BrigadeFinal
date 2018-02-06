@@ -4,9 +4,8 @@ var questionsSchema = mongoose.Schema({
     questionText: String,
     helpDescription: String,
     order: Number,
-    type: {
-            name: String
-          },
+    optionNumber: Number,
+    type: String,
     form: {type: mongoose.Schema.ObjectId, ref: 'Forms'},
 });
 
