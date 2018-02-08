@@ -3,7 +3,7 @@
     <div class="ui grid">
     {{#each model as |question|}}   
         <div class="four wide column">
-        <label>{{question.questionText}}</label>
+        <label>{{parse-question name=question}}</label>
         </div>
 
         <div class="four wide column">

@@ -24,11 +24,7 @@ export default Component.extend({
         this.set('multipleChoice', true);
         this.set('shortAns', false);
         this.set('trueFalse', false);
-<<<<<<< HEAD
         this.set('rating',false);
-=======
-        
->>>>>>> 308ee77224ca27d7de7b6ac4612cfdd0d2d6e9bc
       },
 
       addOption(){
