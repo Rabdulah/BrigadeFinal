@@ -5,5 +5,6 @@ export default DS.Model.extend({
   helpDescription: DS.attr(),
   Order: DS.attr('number'),
   type: DS.attr(),
-  optionNumber: DS.attr('number')
+  optionNumber: DS.attr('number'),
+  optionString: DS.attr()
 });

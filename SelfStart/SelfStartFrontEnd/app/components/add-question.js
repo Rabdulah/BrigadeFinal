@@ -118,7 +118,7 @@ export default Component.extend({
   
       submit: function () {
   
-        var question, help, qtype;
+        var question, help, qtype, optStr = '';
 
         let self = this;
 
@@ -133,8 +133,8 @@ export default Component.extend({
             qtype = "Multiple choice";
 
             for(var i = 1; i <= this.oNumber; i++){
-              question += "+++";
-              question += self.get('mcop' + i);
+              optStr += self.get('mcop' + i);
+              optStr += "+++";
             }
         }
         if(this.trueFalse){
@@ -154,7 +154,8 @@ export default Component.extend({
             helpDescription: help,
             questionText: question,
             type: qtype,
-            optionNumber: this.oNumber
+            optionNumber: this.oNumber,
+            optionString: optStr
         });
   
         newQuestion.save().then(function() {

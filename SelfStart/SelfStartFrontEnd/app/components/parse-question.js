@@ -9,7 +9,7 @@ export default Component.extend({
                this.set("string", breakdown[0]);
            }
      },
-
+    
     multiplechoice: false,
     string: "",
 });

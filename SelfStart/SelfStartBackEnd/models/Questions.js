@@ -5,6 +5,7 @@ var questionsSchema = mongoose.Schema({
     helpDescription: String,
     order: Number,
     optionNumber: Number,
+    optionString: String,
     type: String,
     form: {type: mongoose.Schema.ObjectId, ref: 'Forms'},
 });
