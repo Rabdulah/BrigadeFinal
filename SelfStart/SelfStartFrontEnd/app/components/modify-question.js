@@ -96,7 +96,14 @@ export default Component.extend({
           return true;
         },
         onApprove: () => {
-          this.get('DS').findRecord('question', this.get('ID')).then((rec) => {
+            if(this.get('questionData.type') == "Multiple choice"){
+              this.set('questionText', this.get('questionString'));
+              for(var i =0; i < this.get('questionData.optionNumber'); i++){
+                this.set('questionText', this.get('questionText') + '+++');
+                this.set('questionText', this.get('questionText') + this.get('opt' + (i+1) + 'String'));
+              }
+            }
+            this.get('DS').findRecord('question', this.get('ID')).then((rec) => {
             rec.set('questionText', this.get('questionText')),
             rec.set('helpDescription', this.get('helpDescription')),
             rec.save().then(()=>{
