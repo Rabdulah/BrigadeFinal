@@ -1,11 +1,10 @@
-<button class="ui mini circular icon green button" {{action 'openModal'}} {{action 'isMultipleChoice' qtype = questionData.type}}
-        title="Edit"><i class="write icon"></i>
+<button class="ui mini circular labeled icon green button" {{action 'openModal'}} {{action 'isMultipleChoice'}}
+        title="Edit"><i class="edit icon"></i>
+        Edit
 </button>
 
+
 {{#ui-modal name= modalName class= modalName}}
- <div class="ui icon header">
-    Edit Question
-  </div>
   <div class="content">
     <div class="ui form">
  
