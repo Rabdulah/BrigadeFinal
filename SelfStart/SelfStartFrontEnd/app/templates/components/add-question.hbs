@@ -1,0 +1,121 @@
+{{#if isEditing}}
+
+<div class="ui fluid raised very padded text container segment">
+
+  <form class="ui form">
+        <div class="inline fields">
+            <label>Question Type:</label>
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input name="type" type="radio" {{action 'multipleChoice'}}>
+                    
+                    <label>Multiple Choice</label>
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input name="type" type="radio"  {{action 'shortAns'}}>
+                    <label>Short Answer</label>
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input name="type" type="radio"  {{action 'rating'}}>
+                    <label>Rating</label>
+                </div>
+            </div>
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input name="type" type="radio" {{action 'trueFalse'}}>
+                    <label>True/False</label>
+                </div>
+            </div>
+        </div>
+
+
+{{#if rating}}
+    {{input type="text" value = rquestion placeholder = "Question"}}
+    <br><br>
+    {{input type="text" value = rhelp placeholder = "Help"}}
+    <br><br>
+{{/if}}
+
+{{#if shortAns}}
+    {{input type="text" value = saquestion placeholder = "Question"}}
+    <br><br>
+    {{input type="text" value = sahelp placeholder = "Help"}}
+    <br><br>
+{{/if}}
+
+{{#if trueFalse}}  
+    {{input type="text" value = tfquestion placeholder = "Question"}}
+    <br><br>
+        {{input type="text" value = tfhelp placeholder = "Help"}}
+    <br><br>
+{{/if}}
+
+
+{{#if multipleChoice}}
+
+    <div class="fourteen wide field">
+        {{input type="text" value = mcquestion placeholder = "Question"}}
+    </div> 
+
+    <div class="fourteen wide field">
+        {{input type="text" value = mcop1 placeholder = "Option 1"}}
+
+        {{#if option2}}
+            {{input type="text" value = mcop2 placeholder = "Option 2"}}
+        {{/if}}
+
+        {{#if option3}}
+            {{input type="text" value = mcop3 placeholder = "Option 3"}}
+        {{/if}}
+
+        {{#if option4}}
+            {{input type="text" value = mcop4 placeholder = "Option 4"}}
+        {{/if}}
+
+        {{#if option5}}
+            {{input type="text" value = mcop5 placeholder = "Option 5"}}
+        {{/if}}
+
+        {{#if option6}}
+            {{input type="text" value = mcop6 placeholder = "Option 6"}}
+        {{/if}}
+
+
+    </div>
+
+    <div class="fourteen wide field">
+
+        {{#if addable}}
+        <button class="ui blue button" {{action "addOption"}}>Add Option</button>
+        {{/if}}
+
+        {{#if removable}}
+        <button class="ui blue button" {{action "removeOption"}}>Remove Option</button>
+        {{/if}}
+    </div>  <br><br><br>
+    
+    <div class="fourteen wide field">
+        {{input type="text" value = mchelp placeholder = "Help"}}
+    </div>
+{{/if}}
+
+
+
+    <br><br>
+    <div class="ui centered grid">
+      <button class="ui fluid positive button" {{action "submit"}}>Submit</button>
+      <button class="ui fluid negative button" {{action "cancel"}}>Cancel</button>
+    </div>
+  </form>
+
+  </div>
+
+{{else}}
+    <button class="ui button" {{action 'addQuestion'}}>
+        Add Question
+    </button>
+{{/if}}
