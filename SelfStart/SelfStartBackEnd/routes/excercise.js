@@ -17,20 +17,20 @@ router.route('/')
         });
     });
     
-router.route('/:excercise_id')
+router.route('/:exercise_id')
     .get( function (request, response) {
-        Exercise.Model.findById(request.params.excercise_id, function (error, exer) {
+        Exercise.Model.findById(request.params.exercise_id, function (error, exercise) {
             if (error) {
                 response.send({error: error});
             }
             else {
-                response.json({exer: exer});
+                response.json({exercise: exercise});
             }
         });
     })
     /// post vs put?
     .put( function (request, response) {
-        Exercise.Model.findById(request.params.city_id, function (error, exer) {
+        Exercise.Model.findById(request.params.city_id, function (error, exercise) {
             if (error) {
                 response.send({error: error});
             }

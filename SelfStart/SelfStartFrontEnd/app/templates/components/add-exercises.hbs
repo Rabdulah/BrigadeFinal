@@ -1,6 +1,10 @@
-<div id="content">
-  <h3>Create an Exercise</h3>  
+{{#if isEditing}}
+
+<div class="ui fluid raised very padded text container segment">
+   <h2 id="rehabPlan" class="ui fluid centered header">Add New Exercise</h2>
+
     <form class="ui form">
+        
         <div class="field">
             <label>Exercise Name</label>
             {{input type ="text" value=Name placeholder="Exercise Name"}}
@@ -48,25 +52,6 @@
             <div class="ui left icon action input">
                 <i class="hourglass half icon"></i>
                 {{input type ="text" value=Frequency placeholder="Frequency"}}
-
-                {{!-- <div class="ui floating dropdown labeled search icon button" {{action "toggle"}}>
-                    <i class="world icon"></i>
-                    <span class="text">Select Language</span>
-                    <div class="menu">
-                        <div class="item">Arabic</div>
-                        <div class="item">Chinese</div>
-                        <div class="item">Danish</div>
-                    </div>
-                </div> --}}
-
-                <div class="ui dropdown right labeled icon button" {{action "toggle"}}>
-                    <span class = "text">Frequency</span>
-                    <i class="angle down icon"></i>
-                    <div class="menu">
-                        <div class="item">per Week</div>
-                        <div class="item">per Day</div>   
-                    </div> 
-                </div>
             </div>
         </div>
 
@@ -75,15 +60,6 @@
             <div class="ui left icon action input">
                 <i class="calendar icon"></i>
                 {{input type ="text" value=Duration placeholder="Duration"}}
-                <div class="ui dropdown right labeled icon button" {{action "toggle"}}>
-                    <span class = "text">Duration</span>
-                    <i class="angle down icon"></i>
-                    <div class="menu">
-                        <div class="item">Week</div>
-                        <div class="item">Month</div> 
-                        <div class="item">Year</div>  
-                    </div> 
-                </div>
             </div>
         </div>
 
@@ -103,4 +79,11 @@
         <button class="ui button" type="submit" {{action "submit"}}>Submit</button>
     </form>
 </div>
+
+{{else}}
+  <button class="ui button" {{action 'addExercise'}}>
+    Add Exercise
+  </button>
+
+{{/if}}
 {{yield}}

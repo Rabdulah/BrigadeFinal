@@ -5,13 +5,19 @@ import $ from 'jquery';
 export default Component.extend({
     DS: inject('store'),
 
+    isEditing: false,
+
     actions: {
-        toggle: function(){
-            $('.ui.dropdown').dropdown({
-                // transition: 'horizontal flip',
-                on: 'hover'
-            });
-        },
+        // toggle: function(){
+        //     $('.ui.dropdown').dropdown({
+        //         // transition: 'horizontal flip',
+        //         on: 'hover'
+        //     });
+        // },
+
+        addExercise (){
+            this.set('isEditing', true);
+          },
 
         submit: function() {
             let exercise = this.get('DS').createRecord('exercise', {
@@ -28,18 +34,20 @@ export default Component.extend({
                 //rehabilitationPlan:this.get('rehabPlan'),
             });
 
-            exercise.save().then(function(){});
-                // this.set('Name', "");
-                // this.set('Description', "");
-                // this.set('Objective', "");
-                // this.set('AuthName', "");
-                // this.set('ActionStep', "");
-                // this.set('Location', "");
-                // this.set('Frequency', "");
-                // this.set('Duration', "");
-                // this.set('MMURL', "");
-                // this.set('TargetDate', "");
-            //});
+            exercise.save().then(function(){
+                this.set('Name', "");
+                this.set('Description', "");
+                this.set('Objective', "");
+                this.set('AuthName', "");
+                this.set('ActionStep', "");
+                this.set('Location', "");
+                this.set('Frequency', "");
+                this.set('Duration', "");
+                this.set('MMURL', "");
+                this.set('TargetDate', "");
+            });
+            
+            this.set('isEditing', false);
         }   
     }
 });

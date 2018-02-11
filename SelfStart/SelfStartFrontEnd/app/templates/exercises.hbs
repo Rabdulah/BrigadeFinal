@@ -6,28 +6,29 @@
   
     <thead>
     <tr>
-      <th>Name</th>
+      <th>Exercise Name</th>
       <th>Description</th>
       <th></th>
     </tr>
     </thead>
 
-    {{!-- <tbody>
-      {{#each model as |Rehabplan|}}
+    <tbody>
+      {{#each model as |Exercise|}}
         <tr>
-          <td>{{Rehabplan.planName}}</td>
-          <td>{{Rehabplan.description}}</td>
+          <td>{{Exercise.name}}</td>
+          <td>{{Exercise.description}}</td>
           <td>
             <div class="four wide column right aligned">
-              {{edit-rehabplan ID=Rehabplan.id}}
+              {{edit-rehabplan ID=Exercise.id}}
             </div>
             <div class="four wide column left aligned">
-              {{delete-rehabplan ID=Rehabplan.id}}
+              {{delete-exercises ID=Exercise.id}} 
             </div>
           </td>
         </tr>
       {{/each}}
-    </tbody> --}}
+    </tbody>
+
   </table>
 
 </div>
