@@ -4,16 +4,16 @@ var Exercise = require('../models/Exercise');
 
 router.route('/')
     .post( function (request, response) {
-        var exer = new Exercise.Model(request.body.exer);
-        exer.save(function (error) {
+        var exercise = new Exercise.Model(request.body.exercise);
+        exercise.save(function (error) {
             if (error) response.send(error);
-            response.json({exer: exer});
+            response.json({exercise: exercise});
         });
     })
     .get( function (request, response) {
         Exercise.Model.find(function (error, Exercise) {
             if (error) response.send(error);
-            response.json({exer: Exercise});
+            response.json({exercise: Exercise});
         });
     });
     
@@ -37,25 +37,25 @@ router.route('/:excercise_id')
             else {
 
                 // update each attribute
-                exer.name = request.body.exer.name;
-                exer.description = request.body.exer.description;
-                exer.objectives = request.body.exer.objectives;
-                exer.actionSteps = request.body.exer.actionSteps;
-                exer.authorName = request.body.exer.authorName;
-                exer.location = request.body.exer.location;
-                exer.frequency = request.body.exer.frequency;
-                exer.duration = request.body.exer.duration;
-                exer.multimediaURL = request.body.exer.multimediaURL;
-                exer.targetDate = request.body.exer.targetDate;
-                exer.rehabilitationPlan = request.body.exer.rehabilitationPlan;
+                exercise.name = request.body.exercise.name;
+                exercise.description = request.body.exercise.description;
+                exercise.objectives = request.body.exercise.objectives;
+                exercise.actionSteps = request.body.exercise.actionSteps;
+                exercise.authorName = request.body.exercise.authorName;
+                exercise.location = request.body.exercise.location;
+                exercise.frequency = request.body.exercise.frequency;
+                exercise.duration = request.body.exercise.duration;
+                exercise.multimediaURL = request.body.exercise.multimediaURL;
+                exercise.targetDate = request.body.exercise.targetDate;
+                exercise.rehabilitationPlan = request.body.exercise.rehabilitationPlan;
 
 
-                exer.save(function (error) {
+                exercise.save(function (error) {
                     if (error) {
                         response.send({error: error});
                     }
                     else {
-                        response.json({exer: exer});
+                        response.json({exercise: exercise});
                     }
                 });
             }
@@ -65,7 +65,7 @@ router.route('/:excercise_id')
         Exercise.Model.findByIdAndRemove(request.params.exercise_id,
             function (error, deleted) {
                 if (!error) {
-                    response.json({exer: deleted});
+                    response.json({exercise: deleted});
                 }
             }
         );
