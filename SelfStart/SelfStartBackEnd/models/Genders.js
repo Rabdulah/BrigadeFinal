@@ -1,8 +1,7 @@
 var mongoose = require('mongoose');
 
 var gendersSchema = mongoose.Schema({
-    name: String,
-    patient: [{type: mongoose.Schema.ObjectId, ref: "PatientProfiles"}]
+    name: String
 });
 var GendersSchema = mongoose.model('gender', gendersSchema);
 exports.Model = GendersSchema;
