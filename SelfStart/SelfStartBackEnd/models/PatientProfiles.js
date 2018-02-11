@@ -17,23 +17,22 @@ var patientProfilesSchema = mongoose.Schema(
         apartment: Number,
         streetNumber: Number,
         streetName: String,
-        postalCode: String,
-        account: {
-                    userAccountName: String,
-                    encryptedPassword: String,
-                    salt: String
-                },
-        payments: [{
-                    dayTimestamp: Date,
-                    amount: Number,
-                    note: String
-                }],
-        appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],
-        askAPhysio: [{type: mongoose.Schema.ObjectId, ref: 'AskAPhysio'}],
-
-        plan: [{type: mongoose.Schema.ObjectId, ref: 'Treatments'}]
+        postalCode: String
+        // account: {
+        //             userAccountName: String,
+        //             encryptedPassword: String,
+        //             salt: String
+        //         },
+        // payments: [{
+        //             dayTimestamp: Date,
+        //             amount: Number,
+        //             note: String
+        //         }],
+        // appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],
+        // askAPhysio: [{type: mongoose.Schema.ObjectId, ref: 'AskAPhysio'}],
+        // plan: [{type: mongoose.Schema.ObjectId, ref: 'Treatments'}]
     }
 );
 
-var PatientProfiles = mongoose.model('patientProfile', patientProfilesSchema);
+var PatientProfiles = mongoose.model('patient', patientProfilesSchema);
 exports.Model = PatientProfiles;

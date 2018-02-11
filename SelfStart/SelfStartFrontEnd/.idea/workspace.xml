@@ -1,7 +1,80 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="ChangeListManager">
-    <list default="true" id="950f39f4-f257-4f54-8320-975f77445f79" name="Default" comment="" />
+    <list default="true" id="950f39f4-f257-4f54-8320-975f77445f79" name="Default" comment="">
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/diamond-ring.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/gender.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/genders.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/home/Header.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/home/cd-background-1.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/home/cd-background-11.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/home/cd-background-11.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/home/cd-background-2.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/home/cd-background-3.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/home/cd-background-4.jpg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/marcotte-self-start-bodysmartFINAL.png" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/css/form-style.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/css/home-style.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/css/nav-style.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/css/reset.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/css/table-style.css" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/badge-13.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/bookmark-2.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/calendar-60.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/cd-icon-arrow.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/cd-icon-budget.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/cd-icon-check.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/cd-icon-close.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/cd-icon-company.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/cd-icon-email.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/cd-icon-message.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/cd-icon-radio.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/cd-icon-user.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/cd-required.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/compass-05.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/flag-points-32.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/home-52.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/ic_location_on_48px.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/ic_location_searching_48px.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/multiple-11.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/phone-2.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/form/world.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/home/cd-icon-menu.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/home/cd-top-arrow.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/nav/cd-category-icons.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/nav/cd-icon-close.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/nav/home-52.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/nav/ic_home_48px.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/nav/preferences.svg" />
+      <change type="NEW" beforePath="" afterPath="$PROJECT_DIR$/public/assets/images/nav/single-01.svg" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/assets/images/Brigade.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/assets/images/SelfStart+logo.png" afterPath="" />
+      <change type="DELETED" beforePath="$PROJECT_DIR$/public/assets/images/SelfStart_logo.png" afterPath="" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/components/add-country.js" afterPath="$PROJECT_DIR$/app/components/add-country.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/components/add-patient.js" afterPath="$PROJECT_DIR$/app/components/add-patient.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/components/nav-bar.js" afterPath="$PROJECT_DIR$/app/components/nav-bar.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/index.html" afterPath="$PROJECT_DIR$/app/index.html" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/models/city.js" afterPath="$PROJECT_DIR$/app/models/city.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/models/country.js" afterPath="$PROJECT_DIR$/app/models/country.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/models/gender.js" afterPath="$PROJECT_DIR$/app/models/gender.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/models/marital-status.js" afterPath="$PROJECT_DIR$/app/models/marital-status.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/models/patient.js" afterPath="$PROJECT_DIR$/app/models/patient.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/models/province.js" afterPath="$PROJECT_DIR$/app/models/province.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/router.js" afterPath="$PROJECT_DIR$/app/router.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/styles/app.css" afterPath="$PROJECT_DIR$/app/styles/app.css" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/application.hbs" afterPath="$PROJECT_DIR$/app/templates/application.hbs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/components/add-country.hbs" afterPath="$PROJECT_DIR$/app/templates/components/add-country.hbs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/components/add-patient.hbs" afterPath="$PROJECT_DIR$/app/templates/components/add-patient.hbs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/components/nav-bar.hbs" afterPath="$PROJECT_DIR$/app/templates/components/nav-bar.hbs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/home.hbs" afterPath="$PROJECT_DIR$/app/templates/home.hbs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/app/templates/patients.hbs" afterPath="$PROJECT_DIR$/app/templates/patients.hbs" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/bower.json" afterPath="$PROJECT_DIR$/bower.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/config/environment.js" afterPath="$PROJECT_DIR$/config/environment.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/ember-cli-build.js" afterPath="$PROJECT_DIR$/ember-cli-build.js" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package-lock.json" afterPath="$PROJECT_DIR$/package-lock.json" />
+      <change type="MODIFICATION" beforePath="$PROJECT_DIR$/package.json" afterPath="$PROJECT_DIR$/package.json" />
+    </list>
     <ignored path="$PROJECT_DIR$/.tmp/" />
     <ignored path="$PROJECT_DIR$/temp/" />
     <ignored path="$PROJECT_DIR$/tmp/" />
@@ -14,28 +87,61 @@
   </component>
   <component name="FileEditorManager">
     <leaf SIDE_TABS_SIZE_LIMIT_KEY="300">
-      <file leaf-file-name="app.css" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/styles/app.css">
+      <file leaf-file-name="add-status.hbs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/templates/components/add-status.hbs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="485">
-              <caret line="144" column="89" lean-forward="false" selection-start-line="144" selection-start-column="89" selection-end-line="144" selection-end-column="89" />
+            <state relative-caret-position="54">
+              <caret line="2" column="40" lean-forward="false" selection-start-line="2" selection-start-column="34" selection-end-line="2" selection-end-column="40" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="add-patient.hbs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/templates/components/add-patient.hbs">
+      <file leaf-file-name="marital-status.hbs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/templates/marital-status.hbs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="1084">
-              <caret line="33" column="23" lean-forward="false" selection-start-line="33" selection-start-column="23" selection-end-line="33" selection-end-column="23" />
+            <state relative-caret-position="162">
+              <caret line="64" column="5" lean-forward="true" selection-start-line="64" selection-start-column="5" selection-end-line="66" selection-end-column="18" />
+              <folding>
+                <element signature="n#style#0;n#li#0;n#ul#0;n#div#0;n#section#0;n#section#0;n#!!top" expanded="true" />
+                <element signature="n#style#0;n#p#0;n#li#1;n#ul#0;n#div#0;n#section#0;n#section#0;n#!!top" expanded="true" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="country.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/models/country.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="135">
+              <caret line="5" column="48" lean-forward="false" selection-start-line="5" selection-start-column="48" selection-end-line="5" selection-end-column="48" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="patients.js" pinned="false" current-in-tab="true">
-        <entry file="file://$USER_HOME$/Desktop/SelfStartFrontEnd/app/routes/patients.js">
+      <file leaf-file-name="country.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/routes/country.js">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="81">
+              <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="5" selection-end-column="3" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="country.hbs" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/app/templates/country.hbs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="270">
+              <caret line="64" column="18" lean-forward="false" selection-start-line="64" selection-start-column="18" selection-end-line="64" selection-end-column="18" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="marital-status.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/models/marital-status.js">
           <provider selected="true" editor-type-id="text-editor">
             <state relative-caret-position="0">
               <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -44,21 +150,26 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="patient.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/models/patient.js">
+      <file leaf-file-name="delete-status.hbs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/templates/components/delete-status.hbs">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-7">
-              <caret line="0" column="28" lean-forward="false" selection-start-line="0" selection-start-column="28" selection-end-line="0" selection-end-column="28" />
-              <folding />
+            <state relative-caret-position="0">
+              <caret line="0" column="10" lean-forward="true" selection-start-line="0" selection-start-column="10" selection-end-line="0" selection-end-column="10" />
+              <folding>
+                <element signature="e#3#27#0#HTML" expanded="true" />
+                <element signature="e#339#356#0#HTML" expanded="true" />
+                <element signature="e#379#481#0#HTML" expanded="true" />
+                <element signature="e#517#620#0#HTML" expanded="true" />
+              </folding>
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="add-patient.js" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/components/add-patient.js">
+      <file leaf-file-name="delete-status.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/components/delete-status.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="220">
-              <caret line="25" column="9" lean-forward="false" selection-start-line="25" selection-start-column="9" selection-end-line="25" selection-end-column="9" />
+            <state relative-caret-position="378">
+              <caret line="27" column="15" lean-forward="false" selection-start-line="27" selection-start-column="15" selection-end-line="27" selection-end-column="15" />
               <folding>
                 <element signature="e#0#41#0" expanded="true" />
               </folding>
@@ -66,11 +177,21 @@
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="patients.hbs" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/app/templates/patients.hbs">
+      <file leaf-file-name="add-patient.js" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/components/add-patient.js">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="432">
-              <caret line="20" column="25" lean-forward="true" selection-start-line="20" selection-start-column="25" selection-end-line="20" selection-end-column="25" />
+            <state relative-caret-position="270">
+              <caret line="43" column="0" lean-forward="true" selection-start-line="43" selection-start-column="0" selection-end-line="43" selection-end-column="0" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="add-patient.hbs" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/app/templates/components/add-patient.hbs">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="377">
+              <caret line="40" column="25" lean-forward="false" selection-start-line="40" selection-start-column="25" selection-end-line="40" selection-end-column="25" />
               <folding />
             </state>
           </provider>
@@ -78,18 +199,46 @@
       </file>
     </leaf>
   </component>
+  <component name="FileTemplateManagerImpl">
+    <option name="RECENT_TEMPLATES">
+      <list>
+        <option value="JavaScript File" />
+        <option value="CSS File" />
+      </list>
+    </option>
+  </component>
   <component name="FindInProjectRecents">
     <findStrings>
-      <find>\</find>
-      <find>item</find>
-      <find>mobile</find>
-      <find>seg</find>
-      <find>app</find>
-      <find>container</find>
-      <find>h2</find>
+      <find>cd-logo</find>
       <find>header</find>
+      <find>h1</find>
+      <find>height</find>
+      <find>close</find>
+      <find>categ</find>
+      <find>position</find>
+      <find>cd-sec</find>
+      <find>a {</find>
+      <find>backgroun</find>
+      <find>width</find>
+      <find>90</find>
+      <find>demo</find>
+      <find>nav</find>
+      <find>image</find>
+      <find>dis</find>
+      <find>ope</find>
+      <find>cd-name</find>
+      <find>budge</find>
+      <find>selec</find>
+      <find>cd-sele</find>
+      <find>option</find>
       <find>icon</find>
-      <find>stackab</find>
+      <find>css</find>
+      <find>text</find>
+      <find>count</find>
+      <find>gender</find>
+      <find>status</find>
+      <find>country</find>
+      <find>stat</find>
     </findStrings>
   </component>
   <component name="Git.Settings">
@@ -98,32 +247,57 @@
   <component name="IdeDocumentHistory">
     <option name="CHANGED_PATHS">
       <list>
-        <option value="$PROJECT_DIR$/package.json" />
-        <option value="$PROJECT_DIR$/bower.json" />
-        <option value="$PROJECT_DIR$/.ember-cli" />
-        <option value="$PROJECT_DIR$/app/serializers/patient.js" />
-        <option value="$PROJECT_DIR$/app/router.js" />
-        <option value="$PROJECT_DIR$/app/templates/home.hbs" />
-        <option value="$PROJECT_DIR$/app/templates/components/manage-patient-profile.hbs" />
-        <option value="$PROJECT_DIR$/app/routes/patient.js" />
-        <option value="$PROJECT_DIR$/app/adapters/application.js" />
-        <option value="$PROJECT_DIR$/app/controllers/application.js" />
-        <option value="$PROJECT_DIR$/app/components/add-country.js" />
-        <option value="$PROJECT_DIR$/app/templates/application.hbs" />
-        <option value="$PROJECT_DIR$/app/routes/patients.js" />
-        <option value="$PROJECT_DIR$/app/templates/components/app-patient.hbs" />
-        <option value="$PROJECT_DIR$/app/styles/patients.css" />
-        <option value="$PROJECT_DIR$/app/models/patient.js" />
-        <option value="$PROJECT_DIR$/app/templates/components/add-country.hbs" />
-        <option value="$PROJECT_DIR$/app/index.html" />
-        <option value="$USER_HOME$/Desktop/nav-menu-bar.js" />
+        <option value="$PROJECT_DIR$/app/routes/country.js" />
+        <option value="$USER_HOME$/AppData/Local/Temp/Temp2_contact-form.zip/contact-form/js/main.js" />
+        <option value="$PROJECT_DIR$/bower_components/semantic-ui/dist/semantic.js" />
         <option value="$PROJECT_DIR$/app/components/nav-bar.js" />
-        <option value="$USER_HOME$/Desktop/nav-menu-bar.hbs" />
-        <option value="$PROJECT_DIR$/app/templates/components/nav-bar.hbs" />
+        <option value="$PROJECT_DIR$/app/components/add-country.js" />
+        <option value="$PROJECT_DIR$/app/components/delete-country.js" />
+        <option value="$PROJECT_DIR$/app/templates/components/delete-country.hbs" />
+        <option value="$PROJECT_DIR$/app/templates/components/add-country.hbs" />
+        <option value="$PROJECT_DIR$/app/templates/components/loading-page.hbs" />
+        <option value="$PROJECT_DIR$/app/components/loading-page.js" />
+        <option value="$PROJECT_DIR$/app/components/welcome-page.js" />
+        <option value="$PROJECT_DIR$/app/components/back-to-top.js" />
+        <option value="$PROJECT_DIR$/app/index.html" />
+        <option value="$PROJECT_DIR$/ember-cli-build.js" />
+        <option value="$PROJECT_DIR$/public/assets/css/reset.css" />
+        <option value="$PROJECT_DIR$/public/assets/css/table-style.css" />
+        <option value="$PROJECT_DIR$/app/templates/home.hbs" />
+        <option value="$PROJECT_DIR$/public/assets/css/scroll-style.css" />
+        <option value="$PROJECT_DIR$/app/components/admin-nav.js" />
+        <option value="$PROJECT_DIR$/app/templates/components/back-to-top.hbs" />
         <option value="$PROJECT_DIR$/app/styles/app.css" />
+        <option value="$PROJECT_DIR$/public/assets/css/home-style.css" />
+        <option value="$PROJECT_DIR$/app/templates/components/welcome-page.hbs" />
+        <option value="$PROJECT_DIR$/app/templates/components/nav-bar.hbs" />
+        <option value="$PROJECT_DIR$/app/models/patient.js" />
+        <option value="$USER_HOME$/AppData/Local/Temp/style.css" />
+        <option value="$USER_HOME$/AppData/Local/Temp/index.html" />
+        <option value="$PROJECT_DIR$/package.json" />
+        <option value="$PROJECT_DIR$/app/templates/application.hbs" />
+        <option value="$PROJECT_DIR$/app/templates/components/admin-nav.hbs" />
+        <option value="$PROJECT_DIR$/app/templates/components/manage-selections.hbs" />
+        <option value="$PROJECT_DIR$/app/routes/gender.js" />
+        <option value="$PROJECT_DIR$/app/routes/city.js" />
+        <option value="$PROJECT_DIR$/app/routes/marital-status.js" />
+        <option value="$PROJECT_DIR$/app/components/add-gender.js" />
+        <option value="$PROJECT_DIR$/app/templates/components/add-gender.hbs" />
+        <option value="$PROJECT_DIR$/app/templates/components/delete-gender.hbs" />
+        <option value="$PROJECT_DIR$/app/components/delete-gender.js" />
+        <option value="$PROJECT_DIR$/public/assets/css/nav-style.css" />
+        <option value="$PROJECT_DIR$/app/templates/province.hbs" />
+        <option value="$PROJECT_DIR$/public/assets/css/form-style.css" />
         <option value="$PROJECT_DIR$/app/components/add-patient.js" />
-        <option value="$PROJECT_DIR$/app/templates/patients.hbs" />
         <option value="$PROJECT_DIR$/app/templates/components/add-patient.hbs" />
+        <option value="$PROJECT_DIR$/app/templates/components/delete-status.hbs" />
+        <option value="$PROJECT_DIR$/app/templates/components/add-status.hbs" />
+        <option value="$PROJECT_DIR$/app/templates/gender.hbs" />
+        <option value="$PROJECT_DIR$/app/templates/manage-selections.hbs" />
+        <option value="$PROJECT_DIR$/app/components/add-status.js" />
+        <option value="$PROJECT_DIR$/app/templates/marital-status.hbs" />
+        <option value="$PROJECT_DIR$/app/components/delete-status.js" />
+        <option value="$PROJECT_DIR$/app/templates/country.hbs" />
       </list>
     </option>
   </component>
@@ -139,9 +313,9 @@
     <handled-path value="$PROJECT_DIR$/node_modules" />
   </component>
   <component name="ProjectFrameBounds" extendedState="7">
-    <option name="x" value="-8" />
-    <option name="width" value="2435" />
-    <option name="height" value="1820" />
+    <option name="x" value="-1" />
+    <option name="width" value="1814" />
+    <option name="height" value="1047" />
   </component>
   <component name="ProjectView">
     <navigator currentView="ProjectPane" proportions="" version="1">
@@ -158,8 +332,6 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
-      <pane id="Scratches" />
-      <pane id="Scope" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -176,13 +348,13 @@
               <item name="SelfStartFrontEnd" type="b2602c69:ProjectViewProjectNode" />
               <item name="SelfStartFrontEnd" type="462c0819:PsiDirectoryNode" />
               <item name="app" type="462c0819:PsiDirectoryNode" />
-              <item name="components" type="462c0819:PsiDirectoryNode" />
+              <item name="adapters" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="SelfStartFrontEnd" type="b2602c69:ProjectViewProjectNode" />
               <item name="SelfStartFrontEnd" type="462c0819:PsiDirectoryNode" />
               <item name="app" type="462c0819:PsiDirectoryNode" />
-              <item name="controllers" type="462c0819:PsiDirectoryNode" />
+              <item name="components" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="SelfStartFrontEnd" type="b2602c69:ProjectViewProjectNode" />
@@ -195,6 +367,12 @@
               <item name="SelfStartFrontEnd" type="462c0819:PsiDirectoryNode" />
               <item name="app" type="462c0819:PsiDirectoryNode" />
               <item name="routes" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SelfStartFrontEnd" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SelfStartFrontEnd" type="462c0819:PsiDirectoryNode" />
+              <item name="app" type="462c0819:PsiDirectoryNode" />
+              <item name="serializers" type="462c0819:PsiDirectoryNode" />
             </path>
             <path>
               <item name="SelfStartFrontEnd" type="b2602c69:ProjectViewProjectNode" />
@@ -231,12 +409,29 @@
               <item name="SelfStartFrontEnd" type="462c0819:PsiDirectoryNode" />
               <item name="public" type="462c0819:PsiDirectoryNode" />
               <item name="assets" type="462c0819:PsiDirectoryNode" />
+              <item name="css" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SelfStartFrontEnd" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SelfStartFrontEnd" type="462c0819:PsiDirectoryNode" />
+              <item name="public" type="462c0819:PsiDirectoryNode" />
+              <item name="assets" type="462c0819:PsiDirectoryNode" />
               <item name="images" type="462c0819:PsiDirectoryNode" />
+            </path>
+            <path>
+              <item name="SelfStartFrontEnd" type="b2602c69:ProjectViewProjectNode" />
+              <item name="SelfStartFrontEnd" type="462c0819:PsiDirectoryNode" />
+              <item name="public" type="462c0819:PsiDirectoryNode" />
+              <item name="assets" type="462c0819:PsiDirectoryNode" />
+              <item name="images" type="462c0819:PsiDirectoryNode" />
+              <item name="form" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
+      <pane id="Scratches" />
+      <pane id="Scope" />
     </panes>
   </component>
   <component name="PropertiesComponent">
@@ -244,10 +439,19 @@
     <property name="nodejs_interpreter_path" value="C:/Program Files/nodejs/node" />
     <property name="HbShouldOpenHtmlAsHb" value="" />
     <property name="settings.editor.selected.configurable" value="editor.preferences.fonts.default" />
+    <property name="run.code.analysis.last.selected.profile" value="pProject Default" />
+    <property name="list.type.of.created.stylesheet" value="CSS" />
   </component>
   <component name="RecentsManager">
+    <key name="CopyFile.RECENT_KEYS">
+      <recent name="D:\Development\Brigade\SelfStart\SelfStartFrontEnd\public\assets\images" />
+    </key>
     <key name="MoveFile.RECENT_KEYS">
-      <recent name="D:\Development\Brigade\SelfStart\SelfStartFrontEnd" />
+      <recent name="D:\Development\Brigade\SelfStart\SelfStartFrontEnd\public\assets\images\nav" />
+      <recent name="D:\Development\Brigade\SelfStart\SelfStartFrontEnd\public\assets\images\form" />
+      <recent name="D:\Development\Brigade\SelfStart\SelfStartFrontEnd\public\assets\images\home" />
+      <recent name="D:\Development\Brigade\SelfStart\SelfStartFrontEnd\public\assets\images" />
+      <recent name="D:\Development\Brigade\SelfStart\SelfStartFrontEnd\public\assets\css" />
     </key>
   </component>
   <component name="RunDashboard">
@@ -274,27 +478,29 @@
       <updated>1517333417541</updated>
       <workItem from="1517333425628" duration="2348000" />
       <workItem from="1517364615214" duration="50458000" />
+      <workItem from="1517521177131" duration="20256000" />
+      <workItem from="1517766912344" duration="174609000" />
     </task>
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="52806000" />
+    <option name="totallyTimeSpent" value="247671000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-16" y="-16" width="3232" height="1732" extended-state="7" />
+    <frame x="-8" y="-8" width="1936" height="1056" extended-state="7" />
     <editor active="true" />
     <layout>
-      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.066079296" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.1670179" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Event Log" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="7" side_tool="true" content_ui="tabs" />
-      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
+      <window_info id="Find" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32936078" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
       <window_info id="Version Control" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="9" side_tool="false" content_ui="tabs" />
       <window_info id="npm" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="true" content_ui="tabs" />
+      <window_info id="Run" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="2" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
-      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.20967741" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
-      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
+      <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.33152762" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Favorites" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
+      <window_info id="Debug" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="Cvs" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
       <window_info id="Message" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
       <window_info id="Commander" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.4" sideWeight="0.5" order="0" side_tool="false" content_ui="tabs" />
@@ -310,165 +516,64 @@
     <option name="myLimit" value="2678400000" />
   </component>
   <component name="XDebuggerManager">
-    <breakpoint-manager />
+    <breakpoint-manager>
+      <option name="time" value="1" />
+    </breakpoint-manager>
     <watches-manager />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/app/templates/home.hbs">
+    <entry file="file://$PROJECT_DIR$/public/assets/css/scroll-style.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="210">
-          <caret line="10" column="6" lean-forward="false" selection-start-line="10" selection-start-column="6" selection-end-line="10" selection-end-column="6" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/application.hbs">
+    <entry file="file://$PROJECT_DIR$/app/components/admin-nav.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="273">
-          <caret line="13" column="17" lean-forward="true" selection-start-line="13" selection-start-column="17" selection-end-line="13" selection-end-column="17" />
+        <state relative-caret-position="81">
+          <caret line="4" column="13" lean-forward="true" selection-start-line="4" selection-start-column="1" selection-end-line="4" selection-end-column="13" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/styles/app.css">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="504">
-          <caret line="24" column="18" lean-forward="false" selection-start-line="24" selection-start-column="18" selection-end-line="24" selection-end-column="18" />
+        <state relative-caret-position="81">
+          <caret line="3" column="17" lean-forward="false" selection-start-line="3" selection-start-column="12" selection-end-line="3" selection-end-column="17" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/Desktop/SelfStartFrontEnd/package.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="560">
-          <caret line="14" column="4" lean-forward="false" selection-start-line="14" selection-start-column="4" selection-end-line="14" selection-end-column="59" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/package.json">
+    <entry file="file://$PROJECT_DIR$/app/templates/components/back-to-top.hbs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="14" column="59" lean-forward="false" selection-start-line="14" selection-start-column="59" selection-end-line="14" selection-end-column="59" />
-          <folding>
-            <marker date="1517364737418" expanded="true" signature="0:1380" ph="{&quot;name&quot;: &quot;self-start-front-end&quot;...}" />
-            <marker date="1517364737418" expanded="true" signature="451:1322" ph="{&quot;broccoli-asset-rev&quot;: &quot;^2.4.5&quot;...}" />
-            <marker date="1517364737418" expanded="true" signature="1337:1378" ph="{&quot;node&quot;: &quot;^4.5 || 6.* || &gt;= 7.*&quot;...}" />
-          </folding>
+          <caret line="0" column="9" lean-forward="false" selection-start-line="0" selection-start-column="9" selection-end-line="0" selection-end-column="9" />
+          <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/Desktop/SelfStartFrontEnd/bower.json">
+    <entry file="file://$PROJECT_DIR$/public/assets/css/home-style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="302">
+          <caret line="130" column="37" lean-forward="false" selection-start-line="130" selection-start-column="37" selection-end-line="130" selection-end-column="37" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/components/nav-bar.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="5" selection-end-column="1" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Desktop/SelfStartFrontEnd/app/templates/home.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="680">
-          <caret line="17" column="6" lean-forward="true" selection-start-line="7" selection-start-column="0" selection-end-line="17" selection-end-column="6" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Desktop/SelfStartFrontEnd/.ember-cli">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="280">
-          <caret line="7" column="27" lean-forward="true" selection-start-line="7" selection-start-column="27" selection-end-line="8" selection-end-column="26" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/.ember-cli">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="400">
-          <caret line="10" column="0" lean-forward="true" selection-start-line="10" selection-start-column="0" selection-end-line="10" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Desktop/SelfStartFrontEnd/app/router.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="9" column="34" lean-forward="true" selection-start-line="9" selection-start-column="2" selection-end-line="9" selection-end-column="34" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Desktop/SelfStartFrontEnd/app/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="320">
-          <caret line="8" column="4" lean-forward="true" selection-start-line="8" selection-start-column="4" selection-end-line="8" selection-end-column="52" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/router.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="360">
-          <caret line="9" column="34" lean-forward="false" selection-start-line="9" selection-start-column="34" selection-end-line="9" selection-end-column="34" />
-          <folding>
-            <element signature="e#0#48#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Desktop/SelfStartFrontEnd/app/templates/application.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="20" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="1" selection-end-column="0" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Desktop/SelfStartFrontEnd/app/styles/app.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="340">
-          <caret line="83" column="18" lean-forward="false" selection-start-line="83" selection-start-column="4" selection-end-line="83" selection-end-column="18" />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/assets/images/Brigade.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/public/assets/images/SelfStart_logo.png">
-      <provider selected="true" editor-type-id="images">
-        <state />
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/bower.json">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="5" column="1" lean-forward="false" selection-start-line="5" selection-start-column="1" selection-end-line="5" selection-end-column="1" />
+          <caret line="0" column="7" lean-forward="false" selection-start-line="0" selection-start-column="7" selection-end-line="0" selection-end-column="7" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/components/edit-patient.hbs">
+    <entry file="file://$PROJECT_DIR$/app/templates/components/nav-bar.hbs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-1655">
-          <caret line="49" column="4" lean-forward="true" selection-start-line="49" selection-start-column="4" selection-end-line="49" selection-end-column="4" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/components/manage-patient-profile.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="441">
-          <caret line="45" column="32" lean-forward="false" selection-start-line="45" selection-start-column="32" selection-end-line="45" selection-end-column="32" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/routes/patient.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="63">
-          <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/adapters/application.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="5" column="0" lean-forward="true" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
+        <state relative-caret-position="216">
+          <caret line="8" column="36" lean-forward="false" selection-start-line="8" selection-start-column="36" selection-end-line="8" selection-end-column="36" />
           <folding />
         </state>
       </provider>
@@ -481,7 +586,15 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/patient.hbs">
+    <entry file="file://$USER_HOME$/AppData/Local/Temp/style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="637">
+          <caret line="300" column="0" lean-forward="true" selection-start-line="269" selection-start-column="0" selection-end-line="300" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/adapters/application.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -489,15 +602,242 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/serializers/patient.js">
+    <entry file="file://$PROJECT_DIR$/app/routes/patients.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="84">
-          <caret line="4" column="0" lean-forward="false" selection-start-line="4" selection-start-column="0" selection-end-line="7" selection-end-column="3" />
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/routes/home.js">
+    <entry file="file://$USER_HOME$/AppData/Local/Temp/index.html">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="421">
+          <caret line="51" column="29" lean-forward="true" selection-start-line="51" selection-start-column="29" selection-end-line="51" selection-end-column="29" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/package-lock.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="-9">
+          <caret line="1574" column="16" lean-forward="false" selection-start-line="1574" selection-start-column="16" selection-end-line="1574" selection-end-column="16" />
+          <folding>
+            <marker date="1518332795357" expanded="true" signature="0:384424" ph="{&quot;name&quot;: &quot;self-start-front-end&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="120:384422" ph="{...}" />
+            <marker date="1518332795357" expanded="true" signature="363211:363956" ph="{&quot;version&quot;: &quot;1.2.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="363412:363567" ph="{&quot;debug&quot;: &quot;2.6.9&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="363591:363950" ph="{...}" />
+            <marker date="1518332795357" expanded="true" signature="363614:363942" ph="{&quot;version&quot;: &quot;0.2.7&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="363835:363932" ph="{&quot;ensure-posix-path&quot;: &quot;1.0.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="363979:364174" ph="{&quot;version&quot;: &quot;1.0.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="364194:364383" ph="{&quot;version&quot;: &quot;1.0.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="364404:364595" ph="{&quot;version&quot;: &quot;1.0.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="364610:364789" ph="{&quot;version&quot;: &quot;0.1.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="364809:365057" ph="{&quot;version&quot;: &quot;0.3.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="365012:365051" ph="{&quot;prelude-ls&quot;: &quot;1.1.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="365074:365351" ph="{&quot;version&quot;: &quot;1.6.15&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="365273:365345" ph="{&quot;media-typer&quot;: &quot;0.3.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="365371:365560" ph="{&quot;version&quot;: &quot;0.0.6&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="365578:365825" ph="{&quot;version&quot;: &quot;1.0.5&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="365844:366804" ph="{&quot;version&quot;: &quot;3.3.9&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="366107:366177" ph="{&quot;commander&quot;: &quot;2.13.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="366201:366798" ph="{...}" />
+            <marker date="1518332795357" expanded="true" signature="366224:366495" ph="{&quot;version&quot;: &quot;2.13.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="366519:366790" ph="{&quot;version&quot;: &quot;0.6.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="366820:367001" ph="{&quot;version&quot;: &quot;1.0.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="367021:367210" ph="{&quot;version&quot;: &quot;1.8.3&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="367237:367534" ph="{&quot;version&quot;: &quot;3.3.4&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="367454:367528" ph="{&quot;sprintf-js&quot;: &quot;1.1.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="367555:368352" ph="{&quot;version&quot;: &quot;1.0.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="367760:367892" ph="{&quot;arr-union&quot;: &quot;3.1.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="367916:368346" ph="{...}" />
+            <marker date="1518332795357" expanded="true" signature="367939:368338" ph="{&quot;version&quot;: &quot;0.4.3&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="368160:368328" ph="{&quot;extend-shallow&quot;: &quot;2.0.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="368375:368639" ph="{&quot;version&quot;: &quot;1.0.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="368584:368633" ph="{&quot;crypto-random-string&quot;: &quot;1.0.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="368661:368854" ph="{&quot;version&quot;: &quot;0.1.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="368870:369051" ph="{&quot;version&quot;: &quot;1.0.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="369072:370581" ph="{&quot;version&quot;: &quot;1.0.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="369277:369344" ph="{&quot;has-value&quot;: &quot;0.3.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="369368:370575" ph="{...}" />
+            <marker date="1518332795357" expanded="true" signature="369391:370107" ph="{&quot;version&quot;: &quot;0.3.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="369612:369726" ph="{&quot;get-value&quot;: &quot;2.0.6&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="369754:370097" ph="{...}" />
+            <marker date="1518332795357" expanded="true" signature="369780:370085" ph="{&quot;version&quot;: &quot;2.1.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="370019:370071" ph="{&quot;isarray&quot;: &quot;1.0.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="370131:370340" ph="{&quot;version&quot;: &quot;0.1.4&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="370362:370567" ph="{&quot;version&quot;: &quot;3.0.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="370600:370846" ph="{&quot;version&quot;: &quot;2.1.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="370801:370840" ph="{&quot;os-homedir&quot;: &quot;1.0.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="370860:371037" ph="{&quot;version&quot;: &quot;0.1.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="371050:374080" ph="{&quot;version&quot;: &quot;2.0.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="371239:371343" ph="{&quot;define-property&quot;: &quot;0.2.5&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="371367:374074" ph="{...}" />
+            <marker date="1518332795357" expanded="true" signature="371396:371689" ph="{&quot;version&quot;: &quot;0.2.5&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="371629:371679" ph="{&quot;is-descriptor&quot;: &quot;0.1.6&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="371725:372396" ph="{&quot;version&quot;: &quot;0.1.6&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="371972:372016" ph="{&quot;kind-of&quot;: &quot;3.2.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="372044:372386" ph="{...}" />
+            <marker date="1518332795357" expanded="true" signature="372069:372374" ph="{&quot;version&quot;: &quot;3.2.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="372306:372360" ph="{&quot;is-buffer&quot;: &quot;1.1.6&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="372428:373091" ph="{&quot;version&quot;: &quot;0.1.4&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="372667:372711" ph="{&quot;kind-of&quot;: &quot;3.2.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="372739:373081" ph="{...}" />
+            <marker date="1518332795357" expanded="true" signature="372764:373069" ph="{&quot;version&quot;: &quot;3.2.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="373001:373055" ph="{&quot;is-buffer&quot;: &quot;1.1.6&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="373118:373553" ph="{&quot;version&quot;: &quot;0.1.6&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="373409:373543" ph="{&quot;is-accessor-descriptor&quot;: &quot;0.1.6&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="373575:373780" ph="{&quot;version&quot;: &quot;3.0.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="373801:374066" ph="{&quot;version&quot;: &quot;5.1.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="374099:374286" ph="{&quot;version&quot;: &quot;1.1.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="374305:374612" ph="{&quot;version&quot;: &quot;1.0.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="374506:374606" ph="{&quot;os-homedir&quot;: &quot;1.0.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="374630:374868" ph="{&quot;version&quot;: &quot;1.0.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="374829:374862" ph="{&quot;meow&quot;: &quot;3.7.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="374891:375086" ph="{&quot;version&quot;: &quot;1.0.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="375110:375307" ph="{&quot;version&quot;: &quot;1.0.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="375328:375519" ph="{&quot;version&quot;: &quot;1.0.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="375533:375772" ph="{&quot;version&quot;: &quot;3.2.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="375810:376138" ph="{&quot;version&quot;: &quot;3.0.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="376049:376132" ph="{&quot;spdx-correct&quot;: &quot;1.0.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="376173:376449" ph="{&quot;version&quot;: &quot;3.0.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="376406:376443" ph="{&quot;builtins&quot;: &quot;1.0.3&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="376463:376640" ph="{&quot;version&quot;: &quot;1.1.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="376659:377013" ph="{&quot;version&quot;: &quot;0.3.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="376922:377007" ph="{&quot;ensure-posix-path&quot;: &quot;1.0.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="377029:377269" ph="{&quot;version&quot;: &quot;1.0.7&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="377224:377263" ph="{&quot;makeerror&quot;: &quot;1.0.11&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="377284:377465" ph="{&quot;version&quot;: &quot;0.10.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="377491:377796" ph="{&quot;version&quot;: &quot;0.7.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="377706:377790" ph="{&quot;http-parser-js&quot;: &quot;0.4.9&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="377826:378097" ph="{&quot;version&quot;: &quot;0.1.3&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="378112:378407" ph="{&quot;version&quot;: &quot;1.3.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="378367:378401" ph="{&quot;isexe&quot;: &quot;2.0.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="378427:379513" ph="{&quot;version&quot;: &quot;1.1.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="378692:378733" ph="{&quot;string-width&quot;: &quot;1.0.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="378757:379507" ph="{...}" />
+            <marker date="1518332795357" expanded="true" signature="378794:379103" ph="{&quot;version&quot;: &quot;1.0.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="379043:379093" ph="{&quot;number-is-nan&quot;: &quot;1.0.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="379129:379499" ph="{&quot;version&quot;: &quot;1.0.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="379356:379489" ph="{&quot;code-point-at&quot;: &quot;1.1.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="379534:379725" ph="{&quot;version&quot;: &quot;0.1.4&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="379743:379928" ph="{&quot;version&quot;: &quot;0.0.3&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="379948:380261" ph="{&quot;version&quot;: &quot;2.3.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="380213:380255" ph="{&quot;object-assign&quot;: &quot;4.1.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="380277:380458" ph="{&quot;version&quot;: &quot;1.0.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="380473:380707" ph="{&quot;version&quot;: &quot;0.2.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="380666:380701" ph="{&quot;mkdirp&quot;: &quot;0.5.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="380734:381124" ph="{&quot;version&quot;: &quot;2.3.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="381013:381118" ph="{&quot;graceful-fs&quot;: &quot;4.1.11&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="381136:381392" ph="{&quot;version&quot;: &quot;1.1.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="381323:381386" ph="{&quot;options&quot;: &quot;0.0.6&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="381407:381586" ph="{&quot;version&quot;: &quot;1.0.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="381607:381798" ph="{&quot;version&quot;: &quot;3.0.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="381814:381997" ph="{&quot;version&quot;: &quot;0.1.27&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="382025:382230" ph="{&quot;version&quot;: &quot;1.5.3&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="382245:382424" ph="{&quot;version&quot;: &quot;4.0.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="382438:382615" ph="{&quot;version&quot;: &quot;3.2.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="382632:382815" ph="{&quot;version&quot;: &quot;2.1.2&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="382828:383564" ph="{&quot;version&quot;: &quot;0.0.22&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="383019:383090" ph="{&quot;fs-extra&quot;: &quot;0.30.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="383114:383558" ph="{...}" />
+            <marker date="1518332795357" expanded="true" signature="383136:383550" ph="{&quot;version&quot;: &quot;0.30.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="383357:383540" ph="{&quot;graceful-fs&quot;: &quot;4.1.11&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="383579:384224" ph="{&quot;version&quot;: &quot;3.27.0&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="383774:383956" ph="{&quot;camelcase&quot;: &quot;1.2.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="383980:384218" ph="{...}" />
+            <marker date="1518332795357" expanded="true" signature="384003:384210" ph="{&quot;version&quot;: &quot;1.2.1&quot;...}" />
+            <marker date="1518332795357" expanded="true" signature="384239:384418" ph="{&quot;version&quot;: &quot;0.1.2&quot;...}" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/bower.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/package.json">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="206">
+          <caret line="33" column="12" lean-forward="false" selection-start-line="33" selection-start-column="12" selection-end-line="33" selection-end-column="12" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/components/welcome-page.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="351">
+          <caret line="18" column="0" lean-forward="true" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+          <folding>
+            <element signature="n#style#0;n#section#0;n#div#0;n#main#0;n#!!top" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/components/manage-selections.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/components/admin-nav.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="216">
+          <caret line="8" column="84" lean-forward="true" selection-start-line="8" selection-start-column="26" selection-end-line="8" selection-end-column="84" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/routes/city.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="81">
+          <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="3" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/components/add-country.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="188">
+          <caret line="22" column="0" lean-forward="false" selection-start-line="22" selection-start-column="0" selection-end-line="26" selection-end-column="8" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/components/add-country.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="80">
+          <caret line="18" column="0" lean-forward="true" selection-start-line="18" selection-start-column="0" selection-end-line="18" selection-end-column="0" />
+          <folding>
+            <element signature="e#0#41#0" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/city.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/application.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="4" column="14" lean-forward="false" selection-start-line="4" selection-start-column="14" selection-end-line="4" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/patients.hbs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -513,7 +853,23 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/models/city.js">
+    <entry file="file://$PROJECT_DIR$/app/templates/components/delete-country.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="351">
+          <caret line="13" column="14" lean-forward="false" selection-start-line="13" selection-start-column="14" selection-end-line="13" selection-end-column="14" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/public/assets/css/nav-style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="761">
+          <caret line="216" column="55" lean-forward="false" selection-start-line="216" selection-start-column="55" selection-end-line="216" selection-end-column="55" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/province.hbs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -521,7 +877,7 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/models/user-account.js">
+    <entry file="file://$PROJECT_DIR$/public/assets/images/form/multiple-11.svg">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
@@ -529,190 +885,188 @@
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/models/country.js">
+    <entry file="file://$PROJECT_DIR$/public/assets/css/form-style.css">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="437">
+          <caret line="421" column="50" lean-forward="false" selection-start-line="421" selection-start-column="50" selection-end-line="421" selection-end-column="50" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/routes/gender.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="81">
+          <caret line="3" column="0" lean-forward="true" selection-start-line="3" selection-start-column="0" selection-end-line="5" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/components/delete-gender.hbs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="18" selection-end-column="13" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://E:/frontend/templates/cities.hbs">
+    <entry file="file://$PROJECT_DIR$/app/components/add-gender.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="231">
-          <caret line="11" column="36" lean-forward="true" selection-start-line="11" selection-start-column="36" selection-end-line="11" selection-end-column="36" />
+        <state relative-caret-position="270">
+          <caret line="12" column="24" lean-forward="true" selection-start-line="12" selection-start-column="24" selection-end-line="12" selection-end-column="24" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/controllers/application.js">
+    <entry file="file://$PROJECT_DIR$/app/templates/components/add-gender.hbs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="14" selection-end-column="3" />
+        <state relative-caret-position="107">
+          <caret line="10" column="23" lean-forward="true" selection-start-line="10" selection-start-column="23" selection-end-line="10" selection-end-column="23" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/application.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="105">
-          <caret line="5" column="0" lean-forward="true" selection-start-line="5" selection-start-column="0" selection-end-line="5" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/components/add-country.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="273">
-          <caret line="28" column="33" lean-forward="false" selection-start-line="28" selection-start-column="33" selection-end-line="28" selection-end-column="33" />
-          <folding>
-            <element signature="e#0#41#0" expanded="false" />
-          </folding>
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/models/province.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/models/marital-status.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="147">
-          <caret line="7" column="0" lean-forward="false" selection-start-line="7" selection-start-column="0" selection-end-line="7" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/components/app-patient.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="84">
-          <caret line="4" column="0" lean-forward="true" selection-start-line="4" selection-start-column="0" selection-end-line="4" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/styles/patients.css">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="3" selection-end-column="1" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/index.html">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="189">
-          <caret line="9" column="0" lean-forward="false" selection-start-line="9" selection-start-column="0" selection-end-line="9" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/components/nav-bar.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="9" column="4" lean-forward="true" selection-start-line="9" selection-start-column="4" selection-end-line="9" selection-end-column="4" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/components/add-country.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="0">
-          <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="4" selection-end-line="6" selection-end-column="10" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Desktop/nav-menu-bar.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="336">
-          <caret line="28" column="0" lean-forward="false" selection-start-line="28" selection-start-column="0" selection-end-line="28" selection-end-column="0" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$USER_HOME$/Desktop/nav-menu-bar.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="294">
-          <caret line="14" column="3" lean-forward="false" selection-start-line="14" selection-start-column="3" selection-end-line="14" selection-end-column="3" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/home.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="168">
-          <caret line="8" column="7" lean-forward="false" selection-start-line="8" selection-start-column="7" selection-end-line="8" selection-end-column="7" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/routes/patients.js">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="84">
-          <caret line="4" column="41" lean-forward="true" selection-start-line="4" selection-start-column="41" selection-end-line="4" selection-end-column="41" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/components/nav-bar.hbs">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="231">
-          <caret line="20" column="8" lean-forward="true" selection-start-line="20" selection-start-column="8" selection-end-line="20" selection-end-column="8" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
-    <entry file="file://$PROJECT_DIR$/app/styles/app.css">
+    <entry file="file://$PROJECT_DIR$/app/templates/manage-selections.hbs">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="485">
-          <caret line="144" column="89" lean-forward="false" selection-start-line="144" selection-start-column="89" selection-end-line="144" selection-end-column="89" />
+          <caret line="59" column="18" lean-forward="false" selection-start-line="59" selection-start-column="18" selection-end-line="59" selection-end-column="18" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/templates/patients.hbs">
+    <entry file="file://$PROJECT_DIR$/app/templates/gender.hbs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="432">
-          <caret line="20" column="25" lean-forward="true" selection-start-line="20" selection-start-column="25" selection-end-line="20" selection-end-column="25" />
+        <state relative-caret-position="296">
+          <caret line="65" column="18" lean-forward="false" selection-start-line="65" selection-start-column="18" selection-end-line="65" selection-end-column="18" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/app/components/add-patient.js">
+    <entry file="file://$PROJECT_DIR$/app/components/add-status.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="220">
-          <caret line="25" column="9" lean-forward="false" selection-start-line="25" selection-start-column="9" selection-end-line="25" selection-end-column="9" />
-          <folding>
-            <element signature="e#0#41#0" expanded="true" />
-          </folding>
+        <state relative-caret-position="513">
+          <caret line="21" column="60" lean-forward="false" selection-start-line="21" selection-start-column="60" selection-end-line="21" selection-end-column="60" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/components/add-status.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="54">
+          <caret line="2" column="40" lean-forward="false" selection-start-line="2" selection-start-column="34" selection-end-line="2" selection-end-column="40" />
+          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/models/patient.js">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-7">
-          <caret line="0" column="28" lean-forward="false" selection-start-line="0" selection-start-column="28" selection-end-line="0" selection-end-column="28" />
+        <state relative-caret-position="270">
+          <caret line="10" column="11" lean-forward="false" selection-start-line="10" selection-start-column="2" selection-end-line="10" selection-end-column="11" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/app/templates/components/add-patient.hbs">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="1084">
-          <caret line="33" column="23" lean-forward="false" selection-start-line="33" selection-start-column="23" selection-end-line="33" selection-end-column="23" />
+        <state relative-caret-position="377">
+          <caret line="40" column="25" lean-forward="false" selection-start-line="40" selection-start-column="25" selection-end-line="40" selection-end-column="25" />
           <folding />
         </state>
       </provider>
     </entry>
-    <entry file="file://$USER_HOME$/Desktop/SelfStartFrontEnd/app/routes/patients.js">
+    <entry file="file://$PROJECT_DIR$/app/templates/components/delete-status.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="0">
+          <caret line="0" column="10" lean-forward="true" selection-start-line="0" selection-start-column="10" selection-end-line="0" selection-end-column="10" />
+          <folding>
+            <element signature="e#3#27#0#HTML" expanded="true" />
+            <element signature="e#339#356#0#HTML" expanded="true" />
+            <element signature="e#379#481#0#HTML" expanded="true" />
+            <element signature="e#517#620#0#HTML" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/components/delete-gender.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="459">
+          <caret line="23" column="21" lean-forward="false" selection-start-line="23" selection-start-column="21" selection-end-line="23" selection-end-column="21" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/routes/marital-status.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="108">
+          <caret line="4" column="44" lean-forward="false" selection-start-line="4" selection-start-column="44" selection-end-line="4" selection-end-column="44" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/components/add-patient.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="43" column="0" lean-forward="true" selection-start-line="43" selection-start-column="0" selection-end-line="43" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/models/marital-status.js">
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/components/delete-country.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="9" column="26" lean-forward="false" selection-start-line="9" selection-start-column="19" selection-end-line="9" selection-end-column="26" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/components/delete-status.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="378">
+          <caret line="27" column="15" lean-forward="false" selection-start-line="27" selection-start-column="15" selection-end-line="27" selection-end-column="15" />
+          <folding>
+            <element signature="e#0#41#0" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/marital-status.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="162">
+          <caret line="64" column="5" lean-forward="true" selection-start-line="64" selection-start-column="5" selection-end-line="66" selection-end-column="18" />
+          <folding>
+            <element signature="n#style#0;n#li#0;n#ul#0;n#div#0;n#section#0;n#section#0;n#!!top" expanded="true" />
+            <element signature="n#style#0;n#p#0;n#li#1;n#ul#0;n#div#0;n#section#0;n#section#0;n#!!top" expanded="true" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/models/country.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="135">
+          <caret line="5" column="48" lean-forward="false" selection-start-line="5" selection-start-column="48" selection-end-line="5" selection-end-column="48" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/routes/country.js">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="81">
+          <caret line="3" column="0" lean-forward="false" selection-start-line="3" selection-start-column="0" selection-end-line="5" selection-end-column="3" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/app/templates/country.hbs">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="270">
+          <caret line="64" column="18" lean-forward="false" selection-start-line="64" selection-start-column="18" selection-end-line="64" selection-end-column="18" />
           <folding />
         </state>
       </provider>

@@ -7,7 +7,7 @@ var questionsSchema = mongoose.Schema({
     type: {
             name: String
           },
-    form: {type: mongoose.Schema.ObjectId, ref: 'Forms'},
+    form: {type: mongoose.Schema.ObjectId, ref: 'Forms'}
 });
 
 var Questions = mongoose.model('question', questionsSchema);
