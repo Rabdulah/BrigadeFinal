@@ -1,6 +1,5 @@
 import Component from '@ember/component';
 import { inject } from '@ember/service';
-import $ from 'jquery';
 
 export default Component.extend({
     DS: inject('store'),
@@ -8,13 +7,6 @@ export default Component.extend({
     isEditing: false,
 
     actions: {
-        // toggle: function(){
-        //     $('.ui.dropdown').dropdown({
-        //         // transition: 'horizontal flip',
-        //         on: 'hover'
-        //     });
-        // },
-
         addExercise (){
             this.set('isEditing', true);
           },
