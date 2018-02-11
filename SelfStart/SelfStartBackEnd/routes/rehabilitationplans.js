@@ -4,6 +4,7 @@ var Rehabilitation = require('../models/RehabilitationPlans');
 
 router.route('/')
     .post( function (request, response) {
+
         var rehabilitation = new Rehabilitation.Model(request.body.rehabilitationplan);
         rehabilitation.save(function (error) {
             if (error) response.send(error);

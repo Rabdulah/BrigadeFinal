@@ -39,23 +39,19 @@
       </div>
       <!--Time to complete-->
       <div class="fields">
+        <!--icon-->
         <div class="two wide field">
           <i id="icon" class="black large wait icon"></i>
         </div>
-
         <div class="four wide field">
           <button class="ui button" {{action "decreaseTime"}}> <i class="black  minus icon"></i></button>
         </div>
-
         <div class="five wide field">
           {{input type="text" value = ttc placeholder="Time"}}
         </div>
-
         <div class="four wide field">
           <button class="ui  button"{{action "increaseTime"}}><i class="black  plus icon"></i></button>
         </div>
-
-
       </div>
 
       <!--Exercise-->
@@ -75,6 +71,13 @@
           <i id="icon" class="black large comment icon"></i>
         </div>
         <div class="fourteen wide field">
+          <div class="ui search">
+            <div class="ui icon input">
+              <input class="prompt" type="text" placeholder="Search Assessment test">
+              <i class="search icon"></i>
+            </div>
+            <div class="results"></div>
+          </div>
           {{input type="text" value = assessmentTests placeholder="Assessmenttests"}}
         </div>
       </div>
