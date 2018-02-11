@@ -10,6 +10,7 @@ Router.map(function() {
   this.route('home', {path: '/'});
   this.route('patients');
 <<<<<<< HEAD
+<<<<<<< HEAD
   this.route('country');
   this.route('province');
   this.route('manage-selections');
@@ -19,6 +20,8 @@ Router.map(function() {
 =======
   this.route('admin');
 >>>>>>> 37c94cd557b77f422290d0b7444ba4cb8f48a89e
+=======
+>>>>>>> parent of 842ba67... Patient Profile Deliverables
 });
 
 export default Router;

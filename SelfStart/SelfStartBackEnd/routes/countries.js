@@ -5,7 +5,6 @@ var Countries = require('../models/Countries');
 router.route('/')
     .post( function (request, response) {
         var country = new Countries.Model(request.body.country);
-
         country.save(function (error) {
             if (error) response.send(error);
             response.json({country: country});
@@ -39,6 +38,7 @@ router.route('/:country_id')
                 // update each attribute
                 country.name = request.body.country.name;
                 country.provinces = request.body.country.provinces;
+                country.patient = request.body.country.patient;
                       
                 country.save(function (error) {
                     if (error) {

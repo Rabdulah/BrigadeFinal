@@ -4,14 +4,14 @@ import $ from 'jquery';
 export default Component.extend({
   tagName:'',
 
-  didRender() {
+  init() {
     this._super(...arguments);
+    $('.ui.sidebar').sidebar('attach events', '#mobile_item');
+  },
 
-    $(document).ready(function ($) {
-      //open-close submenu on mobile
-      $('.cd-main-nav').on('click', function (event) {
-        if ($(event.target).is('.cd-main-nav')) $(this).children('ul').toggleClass('is-visible');
-      });
-    });
+  actions: {
+    toggle: function () {
+      $('.ui.sidebar').sidebar( 'toggle');
+    }
   }
 });
