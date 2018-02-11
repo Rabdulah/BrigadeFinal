@@ -38,17 +38,24 @@
         </div>
       </div>
       <!--Time to complete-->
-      <div class="inline fields">
+      <div class="fields">
         <div class="two wide field">
           <i id="icon" class="black large wait icon"></i>
         </div>
-        <div class=" required five wide field">
-          <div class="ui action input">
-            <button class="ui button" {{action "decreaseTime"}}> <i class="black  minus icon"></i></button>
-            {{input type="text" value = ttc placeholder="Time"}}
-            <button class="ui button"{{action "increaseTime"}}><i class="black  plus icon"></i></button>
-          </div>
+
+        <div class="four wide field">
+          <button class="ui button" {{action "decreaseTime"}}> <i class="black  minus icon"></i></button>
         </div>
+
+        <div class="five wide field">
+          {{input type="text" value = ttc placeholder="Time"}}
+        </div>
+
+        <div class="four wide field">
+          <button class="ui  button"{{action "increaseTime"}}><i class="black  plus icon"></i></button>
+        </div>
+
+
       </div>
 
       <!--Exercise-->

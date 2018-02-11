@@ -13,6 +13,12 @@ Router.map(function() {
   this.route('rehab-form');
 =======
   this.route('rehabplans');
+<<<<<<< HEAD
+>>>>>>> jk
+=======
+  this.route('admin');
+  this.route('questions');
+  this.route('forms');
 >>>>>>> jk
 });
 
