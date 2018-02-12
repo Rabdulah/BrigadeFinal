@@ -25,7 +25,7 @@
 {{#ui-accordion }}
   {{#each model.form as |form|}}
     <div class="ui grid">
-      <div class="six wide column">
+      <div class="twelve wide column">
         <div class="title">
           <i class="dropdown blue icon"></i>
           {{form.name}}
@@ -33,7 +33,7 @@
         {{show-form-questions questions=form.questions}}
       </div>
       <div class="six wide column right aligned">
-          {{manage-form ID=form.id questions=form.questions}}
+          {{manage-form ID=form.id questions=form.questions fName=form.name}}
         </div>
       <div class="two wide column right aligned">
         {{edit-form ID=form.id}}
