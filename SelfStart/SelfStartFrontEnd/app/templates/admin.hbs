@@ -1,5 +1,15 @@
-<br><br><br><br><br><br><br>
-<div class=ui container>
-<button>Add Question</button>
-<button>Manage Forms</button>
-</div>
+<div id="content">
+  {{add-question}}
+  
+
+  <br><br>
+
+  {{#ui-accordion}}
+    <tbody>
+        <a class="ui primary basic button">{{#link-to 'questions'}}Modify Question{{/link-to}}</a>
+        <br><br>
+        <a class = "ui primary basic button">{{#link-to 'forms'}}Manage Form{{/link-to}}</a>
+    </tbody>
+  {{/ui-accordion}}
+
+</div>  
