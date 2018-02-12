@@ -6,5 +6,6 @@ export default DS.Model.extend({
   Order: DS.attr('number'),
   type: DS.attr(),
   optionNumber: DS.attr('number'),
-  optionString: DS.attr()
+  optionString: DS.attr(),
+  form: DS.belongsTo('form')
 });
