@@ -4,7 +4,6 @@ var Rehabilitation = require('../models/RehabilitationPlans');
 
 router.route('/')
     .post( function (request, response) {
-
         var rehabilitation = new Rehabilitation.Model(request.body.rehabilitationplan);
         rehabilitation.save(function (error) {
             if (error) response.send(error);
@@ -18,6 +17,7 @@ router.route('/')
             response.json({rehabilitationplan: rehabilitations});
         });
     });
+
 
 router.route('/:rehabilitation_id')
     .get( function (request, response) {
@@ -39,8 +39,8 @@ router.route('/:rehabilitation_id')
                 response.send({error: error});
             }
             else {
-
                 // update each attribute
+
                 rehabilitation.planName = request.body.rehabilitationplan.planName;
                 rehabilitation.description = request.body.rehabilitationplan.description;
                 rehabilitation.physioID = request.body.rehabilitationplan.physioID;
@@ -50,6 +50,7 @@ router.route('/:rehabilitation_id')
                 rehabilitation.plan = request.body.rehabilitationplan.plan;
                 rehabilitation.test = request.body.rehabilitationplan.test;
                 rehabilitation.exercise = request.body.rehabilitationplan.exercise;
+
 
 
                 rehabilitation.save(function (error) {
@@ -63,7 +64,6 @@ router.route('/:rehabilitation_id')
             }
         });
     })
-
     .delete( function (request, response) {
         console.log("delete on rehab plan");
         Rehabilitation.Model.findByIdAndRemove(request.params.rehabilitation_id,

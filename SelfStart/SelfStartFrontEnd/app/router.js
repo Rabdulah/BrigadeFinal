@@ -13,6 +13,13 @@ Router.map(function() {
   this.route('admin');
   this.route('questions');
   this.route('forms');
+  this.route('country');
+  this.route('province');
+  this.route('manage-selections');
+  this.route('gender');
+  this.route('city');
+  this.route('marital-status');
+
 });
 
 export default Router;

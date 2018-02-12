@@ -2,7 +2,8 @@
 
 // BASE SETUP
 // =============================================================================
-//test
+// test
+
 // call the packages we need
 var mongoose = require('mongoose');
 var express = require('express'); // call express
@@ -16,7 +17,6 @@ app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
 
 // configure the server for developer pursposes (remove when published)
 app.use(function (request, response, next) {
-
     response.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200');
     response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     response.header('Access-Control-Allow-Methods', 'POST, PATCH, GET, PUT, DELETE, OPTIONS');
@@ -39,6 +39,8 @@ var questions = require('./routes/questions');
 var administrators = require('./routes/administrators');
 var physiotherapests = require('./routes/physiotherapests');
 var treatments = require('./routes/treatments');
+var genders = require('./routes/genders');
+var maritalStatuses = require('./routes/maritalStatuses');
 
 
 // REGISTER OUR ROUTES -------------------------------
@@ -57,6 +59,9 @@ app.use('/countries', countries);
 app.use('/administrators', administrators);
 app.use('/treatments', treatments);
 app.use('/physiotherapests', physiotherapests);
+app.use('/genders', genders);
+app.use('/maritalStatuses', maritalStatuses);
+
 
 //connect to mongoDB
 mongoose.connect('mongodb://localhost/selfStart', { useMongoClient: true });
