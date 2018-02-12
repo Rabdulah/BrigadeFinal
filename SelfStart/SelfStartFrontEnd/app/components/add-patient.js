@@ -7,7 +7,6 @@ import $ from 'jquery';
 
 export default Component.extend({
   DS: inject('store'),
-  routing: inject('-routing'),
 
 
   tagName: '',
@@ -52,17 +51,8 @@ export default Component.extend({
 
   actions: {
 
-    addPatient(){
-      this.set('isEditing', true);
-    },
-
     assignDate (date){
       this.set('selectedDate', date);
-    },
-
-
-    cancel() {
-      return true;
     },
 
     save: function () {
@@ -89,8 +79,8 @@ export default Component.extend({
         postalCode: self.get('postalCode'),
 
       });
-      patient.save().then(() =>{
-        this.get('routing').transitionTo('patients');
+      patient.save().then(function() {
+        return true;
       });
 
       this.set('familyName', '');
