@@ -1,5 +1,5 @@
 import Component from '@ember/component';
-import { computed } from '@ember/object';
+// import { computed } from '@ember/object';
 import { inject } from '@ember/service';
 // import Ember from 'ember';
 
@@ -29,7 +29,7 @@ export default Component.extend({
         addObjective(){
             let newObj = this.get('Objective');
             this.get('obj').pushObject(newObj);
-            this.set('ActionSteps', "");
+            this.set('Objective', "");
         },
 
         cancel() {  
@@ -46,7 +46,7 @@ export default Component.extend({
                 description:this.get('Description'),
                 objectives:this.get('obj'),
                 authorName:this.get('AuthName'),
-                actionSteps:this.get('ActionSteps'),
+                actionSteps:this.get('actionStep'),
                 location:this.get('Location'),
                 frequency:this.get('Frequency'),
                 duration:this.get('Duration'),
@@ -67,7 +67,8 @@ export default Component.extend({
                 this.set('MMURL', "");
                 this.set('TargetDate', "");
             });
-            
+            this.set("actionStep", []);
+            this.set("obj", []);
             this.set('isEditing', false);
         }   
     }

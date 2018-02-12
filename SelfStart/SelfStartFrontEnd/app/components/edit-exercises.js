@@ -5,12 +5,14 @@ export default Component.extend({
     DS: Ember.inject.service('store'),
 
     exerciseData: null,
-    
+
+    // obj: [],
+
     Description: Ember.computed.oneWay('exerciseData.description'),
     Name: Ember.computed.oneWay('exerciseData.name'),
     AuthName: Ember.computed.oneWay('exerciseData.authorName'),
-    Objective: Ember.computed.oneWay('exerciseData.objective'),
-    ActionSteps: Ember.computed.oneWay('exerciseData.actionName'),
+    obj: Ember.computed.oneWay('exerciseData.objectives'),
+    actionStep: Ember.computed.oneWay('exerciseData.actionSteps'),
     Location: Ember.computed.oneWay('exerciseData.location'),
     Frequency: Ember.computed.oneWay('exerciseData.frequency'),
     Duration: Ember.computed.oneWay('exerciseData.duration'),
@@ -24,7 +26,7 @@ export default Component.extend({
     actions: {
       openModal: function () {
         this.set('exerciseData', this.get('DS').peekRecord('exercise', this.get('ID')))
-  
+
         Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
           closable: false,
           transition: 'horizontal flip',
@@ -39,7 +41,7 @@ export default Component.extend({
               rec.set('description', this.get('Description'));
               rec.set('authorName', this.get('AuthName'));
               rec.set('objective', this.get('Objective'));
-              rec.set('actionSteps', this.get('ActionSteps'));
+              rec.set('actionStep', this.get('ActionSteps'));
               rec.set('location', this.get('Location'));
               rec.set('frequency', this.get('Frequency'));
               rec.set('duration', this.get('Duration'));
