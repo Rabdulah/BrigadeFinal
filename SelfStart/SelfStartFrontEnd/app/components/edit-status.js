@@ -14,7 +14,6 @@ export default Component.extend({
   }),
 
 
-
   actions: {
     openModal: function () {
       this.set('statusData', this.get('DS').peekRecord('maritalStatus', this.get('ID')));
