@@ -519,41 +519,26 @@ define('self-start-front-end/components/add-rehabplan', ['exports'], function (e
   exports.default = Ember.Component.extend({
     DS: Ember.inject.service('store'),
 
-    isEditing: false,
-
     actions: {
-      addRehabPlan: function addRehabPlan() {
-        this.set('isEditing', true);
+
+      decreaseTime: function decreaseTime() {
+        if (!this.get('ttc') == "") {
+          var time = parseInt(this.get('ttc'));
+          console.log(time);
+          if (!time < 1) this.set('ttc', time - 1);
+        }
       },
 
-
-      cancel: function cancel() {
-        this.set('isEditing', false);
+      increaseTime: function increaseTime() {
+        if (!this.get('ttc') == "") {
+          var time = parseInt(this.get('ttc'));
+          this.set('ttc', time + 1);
+        }
       },
 
-      decreaseTime: function decreaseTime() {},
+      openModal: function openModal() {
+        var _this = this;
 
-      increaseTime: function increaseTime() {},
-
-      submit: function submit() {
-
-        var self = this;
-        //connect to rehabilitationplans
-        var rehabplan = this.get('DS').createRecord('rehabilitationplan', {
-          planName: self.get('Name'),
-          physioID: self.get('authorName'),
-          description: self.get('description'),
-          goal: self.get('goal'),
-          timeToComplete: self.get('ttc')
-          // exercises: self.get('exercises'),
-          // assessmentTests: self.get('assessmentTests'),
-        });
-        //when save is successfull close form
-        rehabplan.save().then(function () {
-          this.set('isEditing', false);
-        });
-        //CHANGE THIS WHEN ITS DONE
-        this.set('isEditing', false);
         this.set('Name', '');
         this.set('description', '');
         this.set('goal', '');
@@ -561,9 +546,33 @@ define('self-start-front-end/components/add-rehabplan', ['exports'], function (e
         this.set('exercises', '');
         this.set('assessmentTests', '');
         this.set('authorName', '');
+        Ember.$('.ui.addRehab.modal').modal({
+          closable: false,
+          detachable: false,
+
+          onDeny: function onDeny() {
+            return true;
+          },
+
+          onApprove: function onApprove() {
+
+            var rehabplan = _this.get('DS').createRecord('rehabilitationplan', {
+              planName: _this.get('Name'),
+              physioID: _this.get('authorName'),
+              description: _this.get('description'),
+              goal: _this.get('goal'),
+              timeToComplete: _this.get('ttc')
+              // exercises: self.get('exercises'),
+              // assessmentTests: self.get('assessmentTests'),
+            });
+
+            rehabplan.save().then(function () {
+              return true;
+            });
+          }
+        }).modal('show');
       }
     }
-
   });
 });
 define('self-start-front-end/components/add-status', ['exports'], function (exports) {
@@ -2615,7 +2624,7 @@ define("self-start-front-end/templates/components/add-rehabplan", ["exports"], f
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "WNnxwZmD", "block": "{\"symbols\":[],\"statements\":[[4,\"if\",[[20,[\"isEditing\"]]],null,{\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui fluid raised very padded text container segment\"],[7],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"id\",\"rehabPlan\"],[9,\"class\",\"ui fluid centered header\"],[7],[0,\"Add New Rehab Plan\"],[8],[0,\"\\n\\n    \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"fields\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"two wide field\"],[7],[0,\"\\n          \"],[6,\"i\"],[9,\"id\",\"icon\"],[9,\"class\",\"black large user icon\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"seven wide field\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Name\"]],\"Rehab plan name\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"seven wide field\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"authorName\"]],\"Author Name\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[2,\"Description\"],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"fields\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"two wide field\"],[7],[0,\"\\n          \"],[6,\"i\"],[9,\"id\",\"icon\"],[9,\"class\",\"black large comment icon\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"fourteen wide field\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"description\"]],\"Description\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[2,\"goal\"],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"fields\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"two wide field\"],[7],[0,\"\\n          \"],[6,\"i\"],[9,\"id\",\"icon\"],[9,\"class\",\"black large trophy icon\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"fourteen wide field\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"goal\"]],\"Goal\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[2,\"Time to complete\"],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"fields\"],[7],[0,\"\\n        \"],[2,\"icon\"],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"two wide field\"],[7],[0,\"\\n          \"],[6,\"i\"],[9,\"id\",\"icon\"],[9,\"class\",\"black large wait icon\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"four wide field\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"decreaseTime\"]],[7],[0,\" \"],[6,\"i\"],[9,\"class\",\"black  minus icon\"],[7],[8],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"five wide field\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"ttc\"]],\"Time\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"four wide field\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui  button\"],[3,\"action\",[[19,0,[]],\"increaseTime\"]],[7],[6,\"i\"],[9,\"class\",\"black  plus icon\"],[7],[8],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[2,\"Exercise\"],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"fields\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"two wide field\"],[7],[0,\"\\n          \"],[6,\"i\"],[9,\"id\",\"icon\"],[9,\"class\",\"black large comment icon\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"fourteen wide field\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"exercises\"]],\"Exercise\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[2,\"assessment Test\"],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"fields\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"two wide field\"],[7],[0,\"\\n          \"],[6,\"i\"],[9,\"id\",\"icon\"],[9,\"class\",\"black large comment icon\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"fourteen wide field\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui search\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui icon input\"],[7],[0,\"\\n              \"],[6,\"input\"],[9,\"class\",\"prompt\"],[9,\"type\",\"text\"],[9,\"placeholder\",\"Search Assessment test\"],[7],[8],[0,\"\\n              \"],[6,\"i\"],[9,\"class\",\"search icon\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"results\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"assessmentTests\"]],\"Assessmenttests\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui fluid blue button\"],[3,\"action\",[[19,0,[]],\"submit\",[20,[\"name\"]]]],[7],[0,\"Submit\"],[8],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui fluid button\"],[3,\"action\",[[19,0,[]],\"cancel\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\\n  \"],[2,\"if not using form, show button\"],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[6,\"button\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"addRehabPlan\"]],[7],[0,\"\\n    Add Rehab plan\\n  \"],[8],[0,\"\\n\\n\\n\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/add-rehabplan.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "BvbNkNbY", "block": "{\"symbols\":[],\"statements\":[[6,\"button\"],[9,\"class\",\"blue ui button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  Add Rehab plan\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"addRehab\",\"addRehab\"]],{\"statements\":[[0,\"  \"],[6,\"h2\"],[9,\"id\",\"rehabPlan\"],[9,\"class\",\"ui fluid centered header\"],[9,\"style\",\"padding: 5%\"],[7],[0,\"Add New Rehab Plan\"],[8],[0,\"\\n\\n  \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"fields\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"two wide field\"],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"id\",\"icon\"],[9,\"class\",\"black large user icon\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"seven wide field\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Name\"]],\"Rehab plan name\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"seven wide field\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"authorName\"]],\"Author Name\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[2,\"Description\"],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"fields\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"two wide field\"],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"id\",\"icon\"],[9,\"class\",\"black large comment icon\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"fourteen wide field\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"description\"]],\"Description\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[2,\"goal\"],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"fields\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"two wide field\"],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"id\",\"icon\"],[9,\"class\",\"black large trophy icon\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"fourteen wide field\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"goal\"]],\"Goal\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[2,\"Time to complete\"],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"fields\"],[7],[0,\"\\n      \"],[2,\"icon\"],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"two wide field\"],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"id\",\"icon\"],[9,\"class\",\"black large wait icon\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"three wide field\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"decreaseTime\"]],[7],[0,\" \"],[6,\"i\"],[9,\"class\",\"black  minus icon\"],[7],[8],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"five wide field\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui right labeled input\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"ttc\"]],\"Time\"]]],false],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui basic label\"],[7],[0,\"Days\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"two wide field\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui  button\"],[3,\"action\",[[19,0,[]],\"increaseTime\"]],[7],[6,\"i\"],[9,\"class\",\"black  plus icon\"],[7],[8],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[2,\"Exercise\"],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"fields\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"two wide field\"],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"id\",\"icon\"],[9,\"class\",\"black large comment icon\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"fourteen wide field\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"exercises\"]],\"Exercise\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n    \"],[2,\"assessment Test\"],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"fields\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"two wide field\"],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"id\",\"icon\"],[9,\"class\",\"black large comment icon\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"fourteen wide field\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui search\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui icon input\"],[7],[0,\"\\n            \"],[6,\"input\"],[9,\"class\",\"prompt\"],[9,\"type\",\"text\"],[9,\"placeholder\",\"Search Assessment test\"],[7],[8],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"search icon\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"results\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"assessmentTests\"]],\"Assessmenttests\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui black deny button\"],[7],[0,\"\\n        Cancel\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui positive right labeled icon button\"],[7],[0,\"\\n        Save\\n        \"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/add-rehabplan.hbs" } });
 });
 define("self-start-front-end/templates/components/add-status", ["exports"], function (exports) {
   "use strict";
@@ -2975,7 +2984,7 @@ define("self-start-front-end/templates/rehabplans", ["exports"], function (expor
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "R0VnTMCd", "block": "{\"symbols\":[\"Rehabplan\"],\"statements\":[[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"div\"],[9,\"id\",\"content\"],[7],[0,\"\\n  \"],[1,[18,\"add-rehabplan\"],false],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui search\"],[7],[0,\"\\n\\n      \"],[6,\"input\"],[9,\"class\",\"prompt\"],[9,\"type\",\"text\"],[9,\"placeholder\",\"Search Rehabilitation plan\"],[7],[8],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"search icon\"],[7],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"table\"],[9,\"class\",\"ui single line table\"],[7],[0,\"\\n\\n    \"],[6,\"thead\"],[7],[0,\"\\n    \"],[6,\"tr\"],[7],[0,\"\\n      \"],[6,\"th\"],[7],[0,\"Name\"],[8],[0,\"\\n      \"],[6,\"th\"],[7],[0,\"Description\"],[8],[0,\"\\n      \"],[6,\"th\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"        \"],[6,\"tr\"],[7],[0,\"\\n          \"],[6,\"td\"],[7],[1,[19,1,[\"planName\"]],false],[8],[0,\"\\n          \"],[6,\"td\"],[7],[1,[19,1,[\"description\"]],false],[8],[0,\"\\n          \"],[6,\"td\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column right aligned\"],[7],[0,\"\\n              \"],[1,[25,\"edit-rehabplan\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column left aligned\"],[7],[0,\"\\n              \"],[1,[25,\"delete-rehabplan\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/rehabplans.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "u2dgbz8E", "block": "{\"symbols\":[\"Rehabplan\"],\"statements\":[[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"div\"],[9,\"id\",\"content\"],[7],[0,\"\\n\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui search\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui icon input\"],[7],[0,\"\\n      \"],[6,\"input\"],[9,\"class\",\"prompt\"],[9,\"type\",\"text\"],[9,\"placeholder\",\"Search rehabplans\"],[7],[8],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"search icon\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"style\",\"float: right\"],[7],[0,\"\\n    \"],[1,[18,\"add-rehabplan\"],false],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"table\"],[9,\"class\",\"ui single line table\"],[7],[0,\"\\n\\n    \"],[6,\"thead\"],[7],[0,\"\\n    \"],[6,\"tr\"],[7],[0,\"\\n      \"],[6,\"th\"],[7],[0,\"Name\"],[8],[0,\"\\n      \"],[6,\"th\"],[7],[0,\"Description\"],[8],[0,\"\\n      \"],[6,\"th\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"        \"],[6,\"tr\"],[7],[0,\"\\n          \"],[6,\"td\"],[7],[1,[19,1,[\"planName\"]],false],[8],[0,\"\\n          \"],[6,\"td\"],[7],[1,[19,1,[\"description\"]],false],[8],[0,\"\\n          \"],[6,\"td\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column right aligned\"],[7],[0,\"\\n              \"],[1,[25,\"edit-rehabplan\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column left aligned\"],[7],[0,\"\\n              \"],[1,[25,\"delete-rehabplan\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/rehabplans.hbs" } });
 });
 define("self-start-front-end/transitions", ["exports"], function (exports) {
   "use strict";

@@ -52,7 +52,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/add-rehabplan.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'components/add-rehabplan.js should pass ESLint\n\n');
+    assert.ok(false, 'components/add-rehabplan.js should pass ESLint\n\n3:7 - \'Ember\' is not defined. (no-undef)\n11:9 - Unexpected console statement. (no-console)\n34:7 - \'Ember\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/add-status.js', function (assert) {

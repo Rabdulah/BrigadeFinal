@@ -1,104 +1,104 @@
-{{#if isEditing}}
+<button class="blue ui button" {{action 'openModal'}}>
+  Add Rehab plan
+</button>
 
-  <div class="ui fluid raised very padded text container segment">
+{{#ui-modal name="addRehab" class="addRehab"}}
+  <h2 id="rehabPlan" class="ui fluid centered header" style="padding: 5%">Add New Rehab Plan</h2>
 
-    <h2 id="rehabPlan" class="ui fluid centered header">Add New Rehab Plan</h2>
-
-    <form class="ui form">
-      <div class="fields">
-        <div class="two wide field">
-          <i id="icon" class="black large user icon"></i>
-        </div>
-        <div class="seven wide field">
-          {{input type="text" value = Name placeholder="Rehab plan name"}}
-        </div>
-
-        <div class="seven wide field">
-          {{input type="text" value = authorName placeholder="Author Name"}}
-        </div>
+  <form class="ui form">
+    <div class="fields">
+      <div class="two wide field">
+        <i id="icon" class="black large user icon"></i>
+      </div>
+      <div class="seven wide field">
+        {{input type="text" value = Name placeholder="Rehab plan name"}}
       </div>
 
-      <!--Description-->
-      <div class="fields">
-        <div class="two wide field">
-          <i id="icon" class="black large comment icon"></i>
-        </div>
-        <div class="fourteen wide field">
-          {{input type="text" value = description placeholder="Description"}}
-        </div>
+      <div class="seven wide field">
+        {{input type="text" value = authorName placeholder="Author Name"}}
       </div>
+    </div>
 
-      <!--goal-->
-      <div class="fields">
-        <div class="two wide field">
-          <i id="icon" class="black large trophy icon"></i>
-        </div>
-        <div class="fourteen wide field">
-          {{input type="text" value = goal placeholder="Goal"}}
-        </div>
+    <!--Description-->
+    <div class="fields">
+      <div class="two wide field">
+        <i id="icon" class="black large comment icon"></i>
       </div>
-      <!--Time to complete-->
-      <div class="fields">
-        <!--icon-->
-        <div class="two wide field">
-          <i id="icon" class="black large wait icon"></i>
-        </div>
-        <div class="four wide field">
-          <button class="ui button" {{action "decreaseTime"}}> <i class="black  minus icon"></i></button>
-        </div>
-        <div class="five wide field">
+      <div class="fourteen wide field">
+        {{input type="text" value = description placeholder="Description"}}
+      </div>
+    </div>
+
+    <!--goal-->
+    <div class="fields">
+      <div class="two wide field">
+        <i id="icon" class="black large trophy icon"></i>
+      </div>
+      <div class="fourteen wide field">
+        {{input type="text" value = goal placeholder="Goal"}}
+      </div>
+    </div>
+    <!--Time to complete-->
+    <div class="fields">
+      <!--icon-->
+      <div class="two wide field">
+        <i id="icon" class="black large wait icon"></i>
+      </div>
+      <div class="three wide field">
+        <button class="ui button" {{action "decreaseTime"}}> <i class="black  minus icon"></i></button>
+      </div>
+      <div class="five wide field">
+        <div class="ui right labeled input">
           {{input type="text" value = ttc placeholder="Time"}}
-        </div>
-        <div class="four wide field">
-          <button class="ui  button"{{action "increaseTime"}}><i class="black  plus icon"></i></button>
+          <div class="ui basic label">Days</div>
         </div>
       </div>
-
-      <!--Exercise-->
-      <div class="fields">
-        <div class="two wide field">
-          <i id="icon" class="black large comment icon"></i>
-        </div>
-        <div class="fourteen wide field">
-          {{input type="text" value = exercises placeholder="Exercise"}}
-        </div>
+      <div class="two wide field">
+        <button class="ui  button"{{action "increaseTime"}}><i class="black  plus icon"></i></button>
       </div>
+    </div>
+
+    <!--Exercise-->
+    <div class="fields">
+      <div class="two wide field">
+        <i id="icon" class="black large comment icon"></i>
+      </div>
+      <div class="fourteen wide field">
+        {{input type="text" value = exercises placeholder="Exercise"}}
+      </div>
+    </div>
 
 
-      <!--assessment Test-->
-      <div class="fields">
-        <div class="two wide field">
-          <i id="icon" class="black large comment icon"></i>
-        </div>
-        <div class="fourteen wide field">
-          <div class="ui search">
-            <div class="ui icon input">
-              <input class="prompt" type="text" placeholder="Search Assessment test">
-              <i class="search icon"></i>
-            </div>
-            <div class="results"></div>
+    <!--assessment Test-->
+    <div class="fields">
+      <div class="two wide field">
+        <i id="icon" class="black large comment icon"></i>
+      </div>
+      <div class="fourteen wide field">
+        <div class="ui search">
+          <div class="ui icon input">
+            <input class="prompt" type="text" placeholder="Search Assessment test">
+            <i class="search icon"></i>
           </div>
-          {{input type="text" value = assessmentTests placeholder="Assessmenttests"}}
+          <div class="results"></div>
         </div>
+        {{input type="text" value = assessmentTests placeholder="Assessmenttests"}}
       </div>
+    </div>
 
 
 
-      <br><br>
-      <div class="ui centered grid">
-        <button class="ui fluid blue button" {{action "submit" name}}>Submit</button>
-        <button class="ui fluid button" {{action "cancel"}}>Cancel</button>
+    <br><br>
+    <div class="actions">
+      <div class="ui black deny button">
+        Cancel
       </div>
-    </form>
-
-  </div>
-
-  <!--if not using form, show button-->
-{{else}}
-  <button class="ui button" {{action 'addRehabPlan'}}>
-    Add Rehab plan
-  </button>
+      <div class="ui positive right labeled icon button">
+        Save
+        <i class="checkmark icon"></i>
+      </div>
+    </div>
+  </form>
 
 
-
-{{/if}}
+{{/ui-modal}}
