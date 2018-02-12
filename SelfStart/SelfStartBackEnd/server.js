@@ -24,6 +24,7 @@ app.use(function (request, response, next) {
 });
 
 //IMPORT OUR ROUTES ---------------------------------
+var images = require('./routes/images'); 
 var patients = require('./routes/patients'); 
 var cities = require('./routes/cities'); 
 var assessments = require('./routes/assessments');
@@ -44,6 +45,7 @@ var maritalStatuses = require('./routes/maritalStatuses');
 
 
 // REGISTER OUR ROUTES -------------------------------
+app.use('/images', images);
 app.use('/patients', patients);
 app.use('/cities', cities);
 app.use('/assessments', assessments);
@@ -51,7 +53,7 @@ app.use('/forms', forms);
 app.use('/questions', questions);
 app.use('/appointments', appointments);
 app.use('/askAPhysio', askAPhysio);
-app.use('/excercise', excercise);
+app.use('/exercises', excercise);
 app.use('/provinces', provinces);
 app.use('/recommendation', recommendation);
 app.use('/rehabilitationplans', rehabilitationplans);
