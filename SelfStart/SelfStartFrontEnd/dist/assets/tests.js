@@ -175,6 +175,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'models/exercise.js should pass ESLint\n\n');
   });
 
+  QUnit.test('models/exerciseorder.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'models/exerciseorder.js should pass ESLint\n\n');
+  });
+
   QUnit.test('models/form.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'models/form.js should pass ESLint\n\n');
@@ -1370,6 +1375,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/models/exercise-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/models/exerciseorder-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/models/exerciseorder-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/models/form-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/models/form-test.js should pass ESLint\n\n');
@@ -1573,6 +1583,20 @@ define('self-start-front-end/tests/unit/models/exercise-test', ['ember-qunit'], 
   'use strict';
 
   (0, _emberQunit.moduleForModel)('exercise', 'Unit | Model | exercise', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var model = this.subject();
+    // let store = this.store();
+    assert.ok(!!model);
+  });
+});
+define('self-start-front-end/tests/unit/models/exerciseorder-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForModel)('exerciseorder', 'Unit | Model | exerciseorder', {
     // Specify the other units that are required for this test.
     needs: []
   });

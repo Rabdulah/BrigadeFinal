@@ -2212,10 +2212,21 @@ define('self-start-front-end/models/exercise', ['exports', 'ember-data'], functi
         duration: _emberData.default.attr(),
         multimediaURL: _emberData.default.attr(),
         targetDate: _emberData.default.attr(),
-        image: _emberData.default.hasMany('image', { async: true })
-        // rehabilitationPlan:DS.belongsTo('rehabilitationplan',{ async: true })
-
+        image: _emberData.default.hasMany('image', { async: true }),
+        exerciseorder: _emberData.default.hasMany('exerciseorder')
     });
+});
+define('self-start-front-end/models/exerciseorder', ['exports', 'ember-data'], function (exports, _emberData) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _emberData.default.Model.extend({
+    exercise: _emberData.default.belongsTo('exercise'),
+    rehabilitation: _emberData.default.belongsTo('assesmentTest'),
+    order: _emberData.default.attr()
+  });
 });
 define('self-start-front-end/models/form', ['exports', 'ember-data'], function (exports, _emberData) {
     'use strict';
@@ -2336,7 +2347,7 @@ define('self-start-front-end/models/rehabilitationplan', ['exports', 'ember-data
     physioID: _emberData.default.attr(),
     goal: _emberData.default.attr(),
     timeToComplete: _emberData.default.attr(),
-    exercises: _emberData.default.hasMany('exercise', { async: true }),
+    exerciseorder: _emberData.default.hasMany('exerciseorder'),
     assessmentTests: _emberData.default.hasMany('assesmentTest', { async: true })
   });
 });

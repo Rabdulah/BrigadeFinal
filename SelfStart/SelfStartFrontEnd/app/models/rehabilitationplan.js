@@ -7,6 +7,6 @@ export default DS.Model.extend({
   physioID: DS.attr(),
   goal : DS.attr(),
   timeToComplete: DS.attr(),
-  exercises : DS.hasMany('exercise', { async: true }),
+  exerciseorder:DS.hasMany('exerciseorder'),
   assessmentTests : DS.hasMany ('assesmentTest', { async: true })
 });
