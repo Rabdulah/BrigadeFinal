@@ -1,3 +1,34 @@
+.round-button {
+  box-sizing: border-box;
+  display:block;
+  width:60px;
+  height:60px;
+  padding-top: 20px;
+  padding-left: 4px;
+  line-height: 20px;
+  border-radius: 50%;
+  text-align:center;
+  text-decoration:none;
+  background-color: dodgerblue;
+  color:white;
+
+  font-size:20px;
+  font-weight:bold;
+  transition: all 0.3s ease;
+}
+.round-button:hover {
+  background-color: #0d71bb;
+  color:white;
+}
+
+#add{
+  position: fixed;
+  bottom: 50px;
+  right: 50px;
+}
+
+
+
 #return-to-top {
   position: fixed;
   bottom: 20px;
