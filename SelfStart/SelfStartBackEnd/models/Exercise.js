@@ -3,7 +3,7 @@ var mongoose = require('mongoose');
 var exercisesSchema = mongoose.Schema({
     name: String,
     description: String,
-    objectives: String,
+    objectives: [String],
     authorName: String,
     actionSteps: String,
     location: String,

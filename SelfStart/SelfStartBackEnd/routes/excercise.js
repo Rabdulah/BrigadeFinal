@@ -47,8 +47,8 @@ router.route('/:exercise_id')
                 exercise.duration = request.body.exercise.duration;
                 exercise.multimediaURL = request.body.exercise.multimediaURL;
                 exercise.targetDate = request.body.exercise.targetDate;
+                exercise.image = request.body.exercise.image;
                 exercise.rehabilitationPlan = request.body.exercise.rehabilitationPlan;
-
 
                 exercise.save(function (error) {
                     if (error) {

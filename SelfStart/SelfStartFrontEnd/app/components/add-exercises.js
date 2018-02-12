@@ -1,12 +1,37 @@
 import Component from '@ember/component';
+import { computed } from '@ember/object';
 import { inject } from '@ember/service';
+// import Ember from 'ember';
 
 export default Component.extend({
     DS: inject('store'),
 
+    // didRender() {
+
+    //     this._super(...arguments);
+    //     let newObj = this.get('Objective');
+    //     this.get('obj').push(newObj);
+    // },
+
     isEditing: false,
-    
+
+    obj: ["sakdsdjk","adasda"],
+
+    objModel: computed (function() {
+        return this.get('obj');
+    }),
+
     actions: {
+        addObjective(){
+            let newObj = this.get('Objective');
+            console.log(this.get("obj"));
+            // this.obj.push(this.newObj);
+            this.get('obj').push(newObj);
+            for(var i = 0; i<3; i++){
+                console.log(this.obj[i]);
+            }
+        },
+
         cancel() {
             this.set('isEditing', false);
         },
@@ -19,7 +44,7 @@ export default Component.extend({
             let exercise = this.get('DS').createRecord('exercise', {
                 name:this.get('Name'),
                 description:this.get('Description'),
-                objectives:this.get('Objective'),
+                objectives:this.get('obj'),
                 authorName:this.get('AuthName'),
                 actionSteps:this.get('ActionSteps'),
                 location:this.get('Location'),

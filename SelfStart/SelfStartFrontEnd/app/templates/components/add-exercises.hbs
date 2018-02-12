@@ -26,14 +26,18 @@
 
             <div class="ui action input">
                 {{input type ="text" value=Objective placeholder="Objective"}}
-                <button class="ui white right labeled icon button">
+                <button class="ui white right labeled icon button" {{action "addObjective"}}>
                     Add Objective
                     <i class="add icon"></i>
                 </button>
             </div>
 
             <div class="ui inverted segment">
-                <div class="ui inverted form"></div>
+                <ul>
+                    {{#each obj as |o|}}
+                        <li>{{o}}</li>
+                    {{/each}}
+                </ul>
             </div>
         </div>
 
@@ -76,10 +80,16 @@
             {{input type ="text" value=MMURL placeholder="Multi Media URL"}}
         </div>
 
+        <div class = "field">
+            {{simple-example}}
+            <br><br>
+        </div>
+
         <div class = "inline">
             <button class="ui button" type="submit" {{action "submit"}}>Submit</button>
             <button class="ui button" type="submit" {{action "cancel"}}>Cancel</button>
         </div>
+
     </form>
 </div>
 
