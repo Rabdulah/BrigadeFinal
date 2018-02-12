@@ -76,7 +76,10 @@
             {{input type ="text" value=MMURL placeholder="Multi Media URL"}}
         </div>
 
-        <button class="ui button" type="submit" {{action "submit"}}>Submit</button>
+        <div class = "inline">
+            <button class="ui button" type="submit" {{action "submit"}}>Submit</button>
+            <button class="ui button" type="submit" {{action "cancel"}}>Cancel</button>
+        </div>
     </form>
 </div>
 
@@ -84,6 +87,4 @@
   <button class="ui button" {{action 'addExercise'}}>
     Add Exercise
   </button>
-
 {{/if}}
-{{yield}}

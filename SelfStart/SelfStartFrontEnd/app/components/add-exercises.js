@@ -5,8 +5,12 @@ export default Component.extend({
     DS: inject('store'),
 
     isEditing: false,
-
+    
     actions: {
+        cancel() {
+            this.set('isEditing', false);
+        },
+
         addExercise (){
             this.set('isEditing', true);
           },

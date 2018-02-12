@@ -3,31 +3,29 @@
 </button>
 
 {{#ui-modal name=modalName class=modalName}}
-  
-<div class="ui fluid raised very padded text container segment">
-   <h2 id="rehabPlan" class="ui fluid centered header">Add New Exercise</h2>
+   <div class="ui fluid raised very padded text container segment">
+
+    <h2 id="rehabPlan" class="ui fluid centered header">Edit Exercise {{Name}}</h2>
 
     <form class="ui form">
-        
         <div class="field">
             <label>Exercise Name</label>
-            {{input type ="text" value=Name placeholder="Exercise Name"}}
+            {{input type="text" value=Name placeholder="Exercise Name"}}
         </div>
         
+        <!--Description-->
         <div class="field">
             <label>Description</label>
-            {{textarea value=Description cols="80" rows="6" placeholder="Description"}}
+            {{textarea type="text" value=Description placeholder="Description"}}
         </div>
 
         <div class="field">
             <label>Author Name</label>
-            {{input type ="text" value=AuthName placeholder="Author Name"}}
+            {{textarea type="text" value=AuthName placeholder="Author Name"}}
         </div>
 
-        <div class="field">
-
-            <label>Objectives</label>
-
+      <div class="field">
+        <label>Objectives</label>
             <div class="ui action input">
                 {{input type ="text" value=Objective placeholder="Objective"}}
                 <button class="ui white right labeled icon button">
@@ -35,13 +33,12 @@
                     <i class="add icon"></i>
                 </button>
             </div>
-
             <div class="ui inverted segment">
                 <div class="ui inverted form"></div>
             </div>
-        </div>
+    </div>
 
-        <div class="field">
+    <div class="field">
             <label>Action Steps</label>
             {{input type ="text" value=ActionSteps placeholder="Action Steps"}} 
         </div>
@@ -79,21 +76,15 @@
             <label>Multimedia URL</label>
             {{input type ="text" value=MMURL placeholder="Multi Media URL"}}
         </div>
+
+
+    <!--footer for save / cancel-->
+    <div class="actions">
+        <div class="ui positive button">Save</div>
+        <div class="ui black deny button">Cancel</div>
+    </div>
+
     </form>
-
-      <!--footer for save / cancel-->
-      <div class="actions">
-        <div class="ui black deny button">
-          Cancel
-        </div>
-        <div class="ui positive right labeled icon button">
-          Save
-          <i class="checkmark icon"></i>
-        </div>
-      </div>
-
-</div>
-
+  </div>
 
 {{/ui-modal}}
-{{yield}}
