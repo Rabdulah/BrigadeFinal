@@ -69,6 +69,59 @@ define('self-start-front-end/components/add-country', ['exports'], function (exp
 
   });
 });
+define('self-start-front-end/components/add-exercises', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Component.extend({
+        DS: Ember.inject.service('store'),
+
+        isEditing: false,
+
+        actions: {
+            cancel: function cancel() {
+                this.set('isEditing', false);
+            },
+            addExercise: function addExercise() {
+                this.set('isEditing', true);
+            },
+
+
+            submit: function submit() {
+                var exercise = this.get('DS').createRecord('exercise', {
+                    name: this.get('Name'),
+                    description: this.get('Description'),
+                    objectives: this.get('Objective'),
+                    authorName: this.get('AuthName'),
+                    actionSteps: this.get('ActionSteps'),
+                    location: this.get('Location'),
+                    frequency: this.get('Frequency'),
+                    duration: this.get('Duration'),
+                    multimediaURL: this.get('MMURL'),
+                    targetDate: this.get('TargetDate')
+                    //rehabilitationPlan:this.get('rehabPlan'),
+                });
+
+                exercise.save().then(function () {
+                    this.set('Name', "");
+                    this.set('Description', "");
+                    this.set('Objective', "");
+                    this.set('AuthName', "");
+                    this.set('ActionStep', "");
+                    this.set('Location', "");
+                    this.set('Frequency', "");
+                    this.set('Duration', "");
+                    this.set('MMURL', "");
+                    this.set('TargetDate', "");
+                });
+
+                this.set('isEditing', false);
+            }
+        }
+    });
+});
 define('self-start-front-end/components/add-form-question', ['exports'], function (exports) {
     'use strict';
 
@@ -668,6 +721,44 @@ define('self-start-front-end/components/delete-country', ['exports'], function (
     }
   });
 });
+define('self-start-front-end/components/delete-exercises', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+
+    modalName: Ember.computed(function () {
+      return 'delete-exercises' + this.get('ID');
+    }),
+
+    actions: {
+      openModal: function openModal() {
+        var _this = this;
+
+        // console.log(this.get('modalName'));
+        Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+          closable: false,
+          detachable: false,
+          onDeny: function onDeny() {
+            return true;
+          },
+
+          onApprove: function onApprove() {
+            _this.get('DS').find('exercise', _this.get('ID')).then(function (exercise) {
+              exercise.destroyRecord().then(function () {
+                return true;
+              });
+            });
+          }
+        }).modal('show');
+      }
+    }
+
+  });
+});
 define('self-start-front-end/components/delete-form', ['exports'], function (exports) {
   'use strict';
 
@@ -841,6 +932,70 @@ define('self-start-front-end/components/delete-status', ['exports'], function (e
               maritalStatus.set('name', '');
               maritalStatus.save().then(function () {
                 maritalStatus.destroyRecord();
+              });
+            });
+          }
+        }).modal('show');
+      }
+    }
+  });
+});
+define('self-start-front-end/components/edit-exercises', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+
+    exerciseData: null,
+
+    Description: Ember.computed.oneWay('exerciseData.description'),
+    Name: Ember.computed.oneWay('exerciseData.name'),
+    AuthName: Ember.computed.oneWay('exerciseData.authorName'),
+    Objective: Ember.computed.oneWay('exerciseData.objective'),
+    ActionSteps: Ember.computed.oneWay('exerciseData.actionName'),
+    Location: Ember.computed.oneWay('exerciseData.location'),
+    Frequency: Ember.computed.oneWay('exerciseData.frequency'),
+    Duration: Ember.computed.oneWay('exerciseData.duration'),
+    TargetedDate: Ember.computed.oneWay('exerciseData.targetDate'),
+    MMURL: Ember.computed.oneWay('exerciseData.multimediaURL'),
+
+    modalName: Ember.computed(function () {
+      return 'editExercise' + this.get('ID');
+    }),
+
+    actions: {
+      openModal: function openModal() {
+        var _this = this;
+
+        this.set('exerciseData', this.get('DS').peekRecord('exercise', this.get('ID')));
+
+        Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+          closable: false,
+          transition: 'horizontal flip',
+          detachable: false,
+          onDeny: function onDeny() {
+            return true;
+          },
+
+          onApprove: function onApprove() {
+            _this.get('DS').findRecord('exercise', _this.get('ID')).then(function (rec) {
+              rec.set('name', _this.get('Name'));
+              rec.set('description', _this.get('Description'));
+              rec.set('authorName', _this.get('AuthName'));
+              rec.set('objective', _this.get('Objective'));
+              rec.set('actionSteps', _this.get('ActionSteps'));
+              rec.set('location', _this.get('Location'));
+              rec.set('frequency', _this.get('Frequency'));
+              rec.set('duration', _this.get('Duration'));
+              rec.set('targetDate', _this.get('TargetDate'));
+              rec.set('MMURL', _this.get('MMURL'));
+              // rec.set('exercises', this.get('exercises'));
+              // rec.set('assessmentTests', this.get('assessmentTests'));
+              rec.save().then(function () {
+                return true;
               });
             });
           }
@@ -1126,6 +1281,30 @@ define('self-start-front-end/components/radio-button', ['exports', 'ember-radio-
     }
   });
 });
+define('self-start-front-end/components/simple-example', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+    ImageIsAdding: false,
+
+    model: Ember.computed(function () {
+      return this.get('DS').findAll('image');
+    }),
+
+    actions: {
+      deleteImage: function deleteImage(file) {
+        file.destroyRecord();
+      },
+      addNewImage: function addNewImage() {
+        this.set('ImageIsAdding', true);
+      }
+    }
+  });
+});
 define('self-start-front-end/components/stylish-button', ['exports', 'ember-stylish-buttons/components/stylish-button', 'self-start-front-end/config/environment'], function (exports, _stylishButton, _environment) {
   'use strict';
 
@@ -1332,6 +1511,126 @@ define('self-start-front-end/components/ui-sticky', ['exports', 'semantic-ui-emb
     enumerable: true,
     get: function () {
       return _uiSticky.default;
+    }
+  });
+});
+define("self-start-front-end/components/upload-file", ["exports", "self-start-front-end/utils/file-object"], function (exports, _fileObject) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+    model: null,
+    flag: null,
+    accept: 'audio/*,video/*,image/*',
+    multiple: true,
+    queue: [],
+    savingInProgress: false,
+
+    labelArray: ['height: 6.25em', 'line-height: 5.25em', 'text-align: center'],
+
+    inputStyle: Ember.computed(function () {
+      var style_array = ['opacity: 0', 'width:100% !important', 'overflow:hidden', 'position:relative', 'left:-100%', 'display:block'];
+      return Ember.String.htmlSafe(style_array.join(';'));
+    }),
+
+    labelStyle: Ember.computed('labelArray', function () {
+      return Ember.String.htmlSafe(this.get('labelArray').join(';'));
+    }),
+
+    dragLeave: function dragLeave(event) {
+      event.preventDefault();
+      this.set('labelArray', ['height: 6.25em', 'line-height: 5.25em', 'text-align: center']);
+      return this.set('dragClass', 'deactivated');
+    },
+
+    dragOver: function dragOver() {
+      this.set('labelArray', ['height: 6.25em', 'line-height: 5.25em', 'text-align: center', 'background: green']);
+    },
+
+    drop: function drop() {
+      this.set('labelArray', ['height: 6.25em', 'line-height: 5.25em', 'text-align: center']);
+    },
+
+    actions: {
+      selectFile: function selectFile(data) {
+        if (!Ember.isEmpty(data.target.files)) {
+          for (var i = data.target.files.length - 1; i >= 0; i--) {
+            var file = _fileObject.default.create({
+              fileToUpload: data.target.files[i],
+              maximumFileSize: this.get('maximumFileSize')
+            });
+            this.get('queue').pushObject(file);
+          }
+        }
+      },
+
+      deleteFile: function deleteFile(file) {
+        this.get('queue').removeObject(file);
+        if (Ember.isEmpty(this.get('queue'))) {
+          this.set('flag', false);
+        }
+      },
+
+      deleteAllFiles: function deleteAllFiles() {
+        this.get('queue').clear();
+        this.set('flag', false);
+      },
+
+      saveFile: function saveFile(file) {
+        var _this = this;
+
+        console.log(this.get('queue'));
+        var newFile = this.get('DS').createRecord(this.get('model'), {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          rawSize: file.rawSize,
+          imageData: file.base64Image
+        });
+        newFile.save().then(function () {
+          _this.get('queue').removeObject(file);
+
+          if (Ember.isEmpty(_this.get('queue'))) {
+            _this.set('flag', false);
+          }
+        });
+      },
+
+      saveAllFiles: function saveAllFiles() {
+        var _this2 = this;
+
+        this.set('savingInProgress', true);
+        var counter = 0;
+        this.get('queue').forEach(function (file) {
+          if (file.isDisplayableImage) {
+            var newFile = _this2.get('DS').createRecord(_this2.get('model'), {
+              name: file.name,
+              size: file.size,
+              type: file.type,
+              rawSize: file.rawSize,
+              imageData: file.base64Image
+            });
+            newFile.save().then(function () {
+              counter++;
+              if (_this2.get('queue').length == counter) {
+                _this2.get('queue').clear();
+                _this2.set('flag', false);
+                _this2.set('savingInProgress', false);
+              }
+            });
+          } else {
+            counter++;
+          }
+        });
+      },
+
+      done: function done() {
+        this.get('queue').clear();
+        this.set('flag', false);
+      }
     }
   });
 });
@@ -1888,12 +2187,26 @@ define('self-start-front-end/models/country', ['exports', 'ember-data'], functio
   });
 });
 define('self-start-front-end/models/exercise', ['exports', 'ember-data'], function (exports, _emberData) {
-  'use strict';
+    'use strict';
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = _emberData.default.Model.extend({});
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = _emberData.default.Model.extend({
+        name: _emberData.default.attr(),
+        description: _emberData.default.attr(),
+        objectives: _emberData.default.attr(),
+        authorName: _emberData.default.attr(),
+        actionSteps: _emberData.default.attr(),
+        location: _emberData.default.attr(),
+        frequency: _emberData.default.attr(),
+        duration: _emberData.default.attr(),
+        multimediaURL: _emberData.default.attr(),
+        targetDate: _emberData.default.attr(),
+        image: _emberData.default.hasMany('image', { async: true })
+        // rehabilitationPlan:DS.belongsTo('rehabilitationplan',{ async: true })
+
+    });
 });
 define('self-start-front-end/models/form', ['exports', 'ember-data'], function (exports, _emberData) {
     'use strict';
@@ -1917,6 +2230,20 @@ define('self-start-front-end/models/gender', ['exports', 'ember-data'], function
   exports.default = _emberData.default.Model.extend({
     // gender
     name: _emberData.default.attr()
+  });
+});
+define('self-start-front-end/models/image', ['exports', 'ember-data'], function (exports, _emberData) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _emberData.default.Model.extend({
+    name: _emberData.default.attr(),
+    type: _emberData.default.attr(),
+    size: _emberData.default.attr(),
+    rawSize: _emberData.default.attr('number'),
+    imageData: _emberData.default.attr()
   });
 });
 define('self-start-front-end/models/marital-status', ['exports', 'ember-data'], function (exports, _emberData) {
@@ -2028,6 +2355,7 @@ define('self-start-front-end/router', ['exports', 'self-start-front-end/config/e
   Router.map(function () {
     this.route('home', { path: '/' });
     this.route('patients');
+    this.route('exercises');
     this.route('rehabplans');
     this.route('admin');
     this.route('questions');
@@ -2069,6 +2397,18 @@ define('self-start-front-end/routes/country', ['exports'], function (exports) {
       return this.store.findAll('country');
     }
   });
+});
+define('self-start-front-end/routes/exercises', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Route.extend({
+        model: function model() {
+            return this.store.findAll('exercise');
+        }
+    });
 });
 define('self-start-front-end/routes/forms', ['exports'], function (exports) {
     'use strict';
@@ -2203,7 +2543,7 @@ define("self-start-front-end/templates/application", ["exports"], function (expo
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "zCUF1jJy", "block": "{\"symbols\":[],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/reset.css\"]]],[7],[8],[0,\" \"],[2,\" CSS reset \"],[0,\"\\n\\n\"],[4,\"nav-bar\",null,null,{\"statements\":[[0,\"\\n    \"],[1,[18,\"outlet\"],false],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/application.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "A9yBcx0R", "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/reset.css\"]]],[7],[8],[0,\" \"],[2,\" CSS reset \"],[0,\"\\n\\n\"],[4,\"nav-bar\",null,null,{\"statements\":[[0,\"    \"],[1,[18,\"outlet\"],false],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/application.hbs" } });
 });
 define("self-start-front-end/templates/city", ["exports"], function (exports) {
   "use strict";
@@ -2220,6 +2560,14 @@ define("self-start-front-end/templates/components/add-country", ["exports"], fun
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "AM68n2zH", "block": "{\"symbols\":[],\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"cd-button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n    \"],[6,\"input\"],[9,\"type\",\"submit\"],[9,\"value\",\"Add Country\"],[7],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"newCountry\",\"small newCountry\"]],{\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"\\n    Adding new country\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Country Name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"cols\",\"rows\",\"value\",\"placeholder\"],[\"text\",\"50\",\"1\",[20,[\"name\"]],\"add country\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0; \"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui positive right\"],[9,\"style\",\"padding:1em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Save\"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui deny\"],[9,\"style\",\"padding:1em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"Cancel\"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\\n\\n\\n\"]],\"parameters\":[]},null],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/add-country.hbs" } });
+});
+define("self-start-front-end/templates/components/add-exercises", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "ANKZSzZw", "block": "{\"symbols\":[],\"statements\":[[4,\"if\",[[20,[\"isEditing\"]]],null,{\"statements\":[[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui fluid raised very padded text container segment\"],[7],[0,\"\\n   \"],[6,\"h2\"],[9,\"id\",\"exercise\"],[9,\"class\",\"ui fluid centered header\"],[7],[0,\"Add New Exercise\"],[8],[0,\"\\n\\n    \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n        \\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Exercise Name\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Name\"]],\"Exercise Name\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n        \\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Description\"],[8],[0,\"\\n            \"],[1,[25,\"textarea\",null,[[\"value\",\"cols\",\"rows\",\"placeholder\"],[[20,[\"Description\"]],\"80\",\"6\",\"Description\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Author Name\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"AuthName\"]],\"Author Name\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\\n            \"],[6,\"label\"],[7],[0,\"Objectives\"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui action input\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Objective\"]],\"Objective\"]]],false],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui white right labeled icon button\"],[7],[0,\"\\n                    Add Objective\\n                    \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui inverted segment\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"ui inverted form\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Action Steps\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"ActionSteps\"]],\"Action Steps\"]]],false],[0,\" \\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Location\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Location\"]],\"Location\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Frequency\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui left icon action input\"],[7],[0,\"\\n                \"],[6,\"i\"],[9,\"class\",\"hourglass half icon\"],[7],[8],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Frequency\"]],\"Frequency\"]]],false],[0,\"\\n            \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Duration\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui left icon action input\"],[7],[0,\"\\n                \"],[6,\"i\"],[9,\"class\",\"calendar icon\"],[7],[8],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Duration\"]],\"Duration\"]]],false],[0,\"\\n            \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Target Date\"],[8],[0,\"\\n             \"],[6,\"div\"],[9,\"class\",\"ui left icon action input\"],[7],[0,\"\\n                \"],[6,\"i\"],[9,\"class\",\"add to calendar icon\"],[7],[8],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"TargetDate\"]],\"Target Date\"]]],false],[0,\"\\n            \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Multimedia URL\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"MMURL\"]],\"Multi Media URL\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"inline\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui button\"],[9,\"type\",\"submit\"],[3,\"action\",[[19,0,[]],\"submit\"]],[7],[0,\"Submit\"],[8],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui button\"],[9,\"type\",\"submit\"],[3,\"action\",[[19,0,[]],\"cancel\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n        \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[6,\"button\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"addExercise\"]],[7],[0,\"\\n    Add Exercise\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/add-exercises.hbs" } });
 });
 define("self-start-front-end/templates/components/add-form-question", ["exports"], function (exports) {
   "use strict";
@@ -2301,6 +2649,14 @@ define("self-start-front-end/templates/components/delete-country", ["exports"], 
   });
   exports.default = Ember.HTMLBars.template({ "id": "WVF2jG+c", "block": "{\"symbols\":[],\"statements\":[[6,\"p\"],[9,\"style\",\"cursor: pointer;\"],[9,\"title\",\"Delete\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[6,\"i\"],[9,\"class\",\"red remove icon\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Please Confirm ...\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you need to delete this element?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"float:left; width: 50%; cursor: pointer; background: #fc7169; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/delete-country.hbs" } });
 });
+define("self-start-front-end/templates/components/delete-exercises", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "3BQRD3b5", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"button\"],[9,\"class\",\"ui mini circular icon red button\"],[9,\"title\",\"Delete\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"i\"],[9,\"class\",\" remove icon\"],[7],[0,\" \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    \"],[6,\"i\"],[9,\"class\",\" warning sign icon\"],[7],[8],[0,\"\\n    Please Confirm\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you want to delete this exercise?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui red cancel inverted button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"remove icon\"],[7],[8],[0,\"\\n      No\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui green ok inverted button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[0,\"\\n      Yes\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[11,1]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/delete-exercises.hbs" } });
+});
 define("self-start-front-end/templates/components/delete-form", ["exports"], function (exports) {
   "use strict";
 
@@ -2341,6 +2697,14 @@ define("self-start-front-end/templates/components/delete-status", ["exports"], f
   });
   exports.default = Ember.HTMLBars.template({ "id": "jCwNEmuY", "block": "{\"symbols\":[],\"statements\":[[6,\"p\"],[9,\"style\",\"cursor: pointer;\"],[9,\"title\",\"Delete\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[6,\"i\"],[9,\"class\",\"red remove icon\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Please Confirm ...\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you need to delete this element?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"float:left; width: 50%; cursor: pointer; background: #fc7169; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/delete-status.hbs" } });
 });
+define("self-start-front-end/templates/components/edit-exercises", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "t31avMuH", "block": "{\"symbols\":[],\"statements\":[[6,\"button\"],[9,\"class\",\"ui mini circular icon green button\"],[9,\"title\",\"Edit\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"i\"],[9,\"class\",\" pencil icon\"],[7],[0,\" \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"   \"],[6,\"div\"],[9,\"class\",\"ui fluid raised very padded text container segment\"],[7],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"id\",\"rehabPlan\"],[9,\"class\",\"ui fluid centered header\"],[7],[0,\"Edit Exercise \"],[1,[18,\"Name\"],false],[8],[0,\"\\n\\n    \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Exercise Name\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Name\"]],\"Exercise Name\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n        \\n        \"],[2,\"Description\"],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Description\"],[8],[0,\"\\n            \"],[1,[25,\"textarea\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Description\"]],\"Description\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Author Name\"],[8],[0,\"\\n            \"],[1,[25,\"textarea\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"AuthName\"]],\"Author Name\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Objectives\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui action input\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Objective\"]],\"Objective\"]]],false],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui white right labeled icon button\"],[7],[0,\"\\n                    Add Objective\\n                    \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui inverted segment\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"ui inverted form\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Action Steps\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"ActionSteps\"]],\"Action Steps\"]]],false],[0,\" \\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Location\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Location\"]],\"Location\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Frequency\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui left icon action input\"],[7],[0,\"\\n                \"],[6,\"i\"],[9,\"class\",\"hourglass half icon\"],[7],[8],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Frequency\"]],\"Frequency\"]]],false],[0,\"\\n            \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Duration\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui left icon action input\"],[7],[0,\"\\n                \"],[6,\"i\"],[9,\"class\",\"calendar icon\"],[7],[8],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Duration\"]],\"Duration\"]]],false],[0,\"\\n            \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Target Date\"],[8],[0,\"\\n             \"],[6,\"div\"],[9,\"class\",\"ui left icon action input\"],[7],[0,\"\\n                \"],[6,\"i\"],[9,\"class\",\"add to calendar icon\"],[7],[8],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"TargetDate\"]],\"Target Date\"]]],false],[0,\"\\n            \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Multimedia URL\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"MMURL\"]],\"Multi Media URL\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n\\n    \"],[2,\"footer for save / cancel\"],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui positive button\"],[7],[0,\"Save\"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui black deny button\"],[7],[0,\"Cancel\"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/edit-exercises.hbs" } });
+});
 define("self-start-front-end/templates/components/edit-rehabplan", ["exports"], function (exports) {
   "use strict";
 
@@ -2380,6 +2744,14 @@ define("self-start-front-end/templates/components/parse-question", ["exports"], 
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "Ws/Z1fuT", "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\\n   \\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/parse-question.hbs" } });
+});
+define("self-start-front-end/templates/components/simple-example", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "Iev+6fac", "block": "{\"symbols\":[\"image\"],\"statements\":[[4,\"if\",[[20,[\"ImageIsAdding\"]]],null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[1,[25,\"upload-file\",null,[[\"model\",\"maximumFileSize\",\"multiple\",\"flag\"],[\"image\",6,true,[20,[\"ImageIsAdding\"]]]]],false],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[9,\"class\",\"ui items\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui small image\"],[7],[0,\"\\n          \"],[6,\"img\"],[10,\"src\",[26,[[19,1,[\"imageData\"]]]]],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[1,[19,1,[\"name\"]],false],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"meta\"],[7],[0,\"\\n            \"],[6,\"span\"],[7],[0,\"Size: \"],[1,[19,1,[\"size\"]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n            \"],[6,\"span\"],[7],[0,\"Type: \"],[1,[19,1,[\"type\"]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"extra\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui icon red basic button\"],[3,\"action\",[[19,0,[]],\"deleteImage\",[19,1,[]]]],[7],[0,\"\\n              \"],[6,\"i\"],[9,\"class\",\"remove icon\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[3,\"action\",[[19,0,[]],\"addNewImage\"]],[7],[0,\"\\n    Add New Image\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]}],[0,\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/simple-example.hbs" } });
 });
 define("self-start-front-end/templates/components/ui-accordion", ["exports"], function (exports) {
   "use strict";
@@ -2501,6 +2873,14 @@ define("self-start-front-end/templates/components/ui-sticky", ["exports"], funct
   });
   exports.default = Ember.HTMLBars.template({ "id": "juXmKGHP", "block": "{\"symbols\":[\"&default\"],\"statements\":[[11,1,[[25,\"action\",[[19,0,[]],\"execute\"],null]]]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/ui-sticky.hbs" } });
 });
+define("self-start-front-end/templates/components/upload-file", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "hHim44W9", "block": "{\"symbols\":[\"file\"],\"statements\":[[4,\"each\",[[20,[\"queue\"]]],null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui divided demo items\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"image\"],[7],[0,\"\\n\"],[4,\"if\",[[19,1,[\"isUploading\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui active inverted dimmer\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui loader\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"          \"],[6,\"img\"],[10,\"src\",[26,[[19,1,[\"base64Image\"]]]]],[7],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[1,[19,1,[\"name\"]],false],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"meta\"],[7],[0,\"\\n          \"],[6,\"span\"],[7],[0,\"Size: \"],[1,[19,1,[\"size\"]],false],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n\"],[4,\"if\",[[19,1,[\"isDisplayableImage\"]]],null,{\"statements\":[[0,\"            \"],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"            \"],[6,\"p\"],[7],[0,\"Unsupported image\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"extra\"],[7],[0,\"\\n\"],[4,\"if\",[[19,1,[\"isDisplayableImage\"]]],null,{\"statements\":[[0,\"            \"],[6,\"button\"],[9,\"class\",\"ui icon green basic button\"],[3,\"action\",[[19,0,[]],\"saveFile\",[19,1,[]]]],[7],[0,\"\\n              \"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"          \"],[6,\"button\"],[9,\"class\",\"ui icon red basic button\"],[3,\"action\",[[19,0,[]],\"deleteFile\",[19,1,[]]]],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"remove icon\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[1]},{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui fluid labeled input\"],[7],[0,\"\\n    \"],[6,\"label\"],[9,\"class\",\"ui fluid huge label\"],[10,\"style\",[18,\"labelStyle\"],null],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"big cloud upload icon\"],[7],[8],[0,\"\\n      Click or Drop files into this area to upload files\\n    \"],[8],[0,\"\\n    \"],[6,\"input\"],[9,\"type\",\"file\"],[9,\"value\",\"target.value\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectFile\"],null],null],[10,\"style\",[18,\"inputStyle\"],null],[10,\"accept\",[26,[[18,\"accept\"]]]],[10,\"multiple\",[18,\"multiple\"],null],[7],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"button\"],[9,\"class\",\"ui black button\"],[3,\"action\",[[19,0,[]],\"done\",[20,[\"file\"]]]],[7],[0,\"\\n    Cancel\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"queue\"]]],null,{\"statements\":[[4,\"if\",[[20,[\"savingInProgress\"]]],null,{\"statements\":[[0,\"    \"],[6,\"button\"],[9,\"class\",\"ui labeled green icon loading button\"],[7],[0,\"Loading\"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"    \"],[6,\"button\"],[9,\"class\",\"ui labeled green icon button\"],[3,\"action\",[[19,0,[]],\"saveAllFiles\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[0,\"\\n      Save All\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"  \"],[6,\"button\"],[9,\"class\",\"ui labeled red icon button\"],[3,\"action\",[[19,0,[]],\"deleteAllFiles\"]],[7],[0,\"\\n    \"],[6,\"i\"],[9,\"class\",\"remove icon\"],[7],[8],[0,\"\\n    Remove All\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/upload-file.hbs" } });
+});
 define("self-start-front-end/templates/components/welcome-page", ["exports"], function (exports) {
   "use strict";
 
@@ -2516,6 +2896,14 @@ define("self-start-front-end/templates/country", ["exports"], function (exports)
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "0MP3xNFp", "block": "{\"symbols\":[\"country\"],\"statements\":[[6,\"link\"],[9,\"href\",\"http://fonts.googleapis.com/css?family=Ubuntu:400,700\"],[9,\"rel\",\"stylesheet\"],[9,\"type\",\"text/css\"],[7],[8],[0,\"\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/table-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui centered cards\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:12%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Countries\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n\\n\"],[4,\"link-to\",[\"country\"],null,{\"statements\":[[0,\"        Add Country\\n\"]],\"parameters\":[]},null],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:12%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Provinces\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n      Add Province\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:12%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Cities\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n      Add City\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:12%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Genders\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n\\n\"],[4,\"link-to\",[\"gender\"],null,{\"statements\":[[0,\"        Add Gender\\n\"]],\"parameters\":[]},null],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:12%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Marital Statuses\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n\"],[4,\"link-to\",[\"marital-status\"],null,{\"statements\":[[0,\"        Add Marital Status\\n\"]],\"parameters\":[]},null],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"section\"],[9,\"id\",\"cd-section\"],[7],[0,\"\\n  \"],[6,\"section\"],[9,\"id\",\"cd-table\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cd-table-container\"],[7],[0,\"\\n          \"],[6,\"ul\"],[7],[0,\"\\n            \"],[6,\"li\"],[9,\"style\",\"  text-align: center; font-size: 1.2rem; text-transform: uppercase;\\n                          font-weight: bold; color: white; background-color: #f58b4c;\"],[7],[0,\"Countries\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"\\n              \"],[6,\"li\"],[7],[1,[19,1,[\"name\"]],false],[0,\"\\n                \"],[6,\"p\"],[9,\"style\",\"float: right;\"],[7],[1,[25,\"delete-country\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[8],[0,\"\\n              \"],[8],[0,\"\\n\\n\"]],\"parameters\":[1]},null],[0,\"          \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\" \"],[2,\" cd-table \"],[0,\"\\n\"],[1,[18,\"add-country\"],false],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/country.hbs" } });
+});
+define("self-start-front-end/templates/exercises", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "ugIUoUSl", "block": "{\"symbols\":[\"Exercise\"],\"statements\":[[6,\"div\"],[9,\"id\",\"content\"],[7],[0,\"\\n    \"],[1,[18,\"add-exercises\"],false],[0,\"    \\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"table\"],[9,\"class\",\"ui single line table\"],[7],[0,\"\\n  \\n  \\n    \"],[6,\"thead\"],[7],[0,\"\\n    \"],[6,\"tr\"],[7],[0,\"\\n      \"],[6,\"th\"],[7],[0,\"Exercise Name\"],[8],[0,\"\\n      \"],[6,\"th\"],[7],[0,\"Description\"],[8],[0,\"\\n      \"],[6,\"th\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"        \"],[6,\"tr\"],[7],[0,\"\\n          \"],[6,\"td\"],[7],[1,[19,1,[\"name\"]],false],[8],[0,\"\\n          \"],[6,\"td\"],[7],[1,[19,1,[\"description\"]],false],[8],[0,\"\\n          \"],[6,\"td\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column right aligned\"],[7],[0,\"\\n              \"],[1,[25,\"edit-exercises\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column left aligned\"],[7],[0,\"\\n              \"],[1,[25,\"delete-exercises\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[0,\" \\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/exercises.hbs" } });
 });
 define("self-start-front-end/templates/forms", ["exports"], function (exports) {
   "use strict";
@@ -2605,6 +2993,106 @@ define("self-start-front-end/transitions", ["exports"], function (exports) {
     //     this.reverse('toRight')
     //   );
   };
+});
+define('self-start-front-end/utils/file-object', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Object.extend({
+    // Name is used for the upload property
+    name: '',
+
+    // {Property} Human readable size of the selected file
+    size: "0 KB",
+
+    // {Property} Raw file size of the selected file
+    rawSize: 0,
+
+    // {Property} Indicates if this file is an image we can display
+    isDisplayableImage: false,
+
+    // {Property} String representation of the file
+    base64Image: '',
+
+    // {Property} Will be an HTML5 File
+    fileToUpload: null,
+
+    // {Property} The acceptable file size in MB
+    maximumFileSize: 0,
+
+    // {Property} If a file is currently being uploaded
+    isUploading: false,
+
+    // {Property} If the file was uploaded successfully
+    isUploaded: false,
+
+    humanReadableFileSize: function humanReadableFileSize(size) {
+      var label = "";
+      if (size == 0) {
+        label = "0 KB";
+      } else if (size && !isNaN(size)) {
+        var fileSizeInBytes = size;
+        var i = -1;
+        do {
+          fileSizeInBytes = fileSizeInBytes / 1024;
+          i++;
+        } while (fileSizeInBytes > 1024);
+
+        var byteUnits = [' KB', ' MB', ' GB', ' TB', ' PB', ' EB', ' ZB', ' YB'];
+        label += Math.max(fileSizeInBytes, 0.1).toFixed(1) + byteUnits[i];
+      }
+      return label;
+    },
+
+    readFile: function readFile() {
+      var self = this;
+      this.set('isUploading', true);
+      this.set('isUploaded', false);
+      var fileToUpload = this.get('fileToUpload');
+      var isImage = fileToUpload.type.indexOf('image') === 0;
+
+      this.set('name', fileToUpload.name);
+      this.set('type', fileToUpload.type);
+      this.set('rawSize', fileToUpload.size);
+      this.set('size', self.humanReadableFileSize(fileToUpload.size));
+
+      // Create a reader and read the file.
+      var reader = new FileReader();
+      reader.onprogress = function () {
+        self.set('isUploading', true);
+        self.set('isUploaded', false);
+      };
+      reader.onloadend = function (event) {
+        self.set('base64Image', event.target.result);
+        self.set('isUploading', false);
+        self.set('isUploaded', true);
+      };
+      this.set('isDisplayableImage', false);
+      self.set('isUploading', false);
+      self.set('isUploaded', true);
+      if (isImage) {
+        // Don't read anything bigger than 5 MB
+        var maxSize = self.get('maximumFileSize') * 1024 * 1024;
+        if (fileToUpload.size <= maxSize) {
+          this.set('isDisplayableImage', true);
+          // Read in the image file from the file explorer.
+          reader.readAsDataURL(fileToUpload);
+        } else {
+          // Read in the error image file.
+          self.set('base64Image', '/assets/images/square-image.png');
+        }
+      } else {
+        // not an image
+        self.set('base64Image', '/assets/images/square-image.png');
+      }
+    },
+    init: function init() {
+      this._super.apply(this, arguments);
+      this.readFile();
+    }
+  });
 });
 define('self-start-front-end/utils/get-promise-content', ['exports', 'ember-promise-tools/utils/get-promise-content'], function (exports, _getPromiseContent) {
   'use strict';
@@ -2875,6 +3363,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+68c65159"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+aa2f57e5"});
 }
 //# sourceMappingURL=self-start-front-end.map
