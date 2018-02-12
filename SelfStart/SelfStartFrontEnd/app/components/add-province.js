@@ -1,6 +1,5 @@
 import Component from '@ember/component';
 import { inject } from '@ember/service';
-import { computed } from '@ember/object';
 import $ from 'jquery';
 
 export default Component.extend({
@@ -42,15 +41,13 @@ export default Component.extend({
             name: self.get('name'),
             country: self.get('DS').peekRecord('country', self.get('countryId')),
             city: []
-          }).save().then(function () {
-            return true;
           });
 
-          // newProvince.save().then(() => {
-          //   return true;
-          // });
+          newProvince.save().then(() => {
+            return true;
+          });
         }
-      }).modal('show')
+      }).modal('show');
     },
   }
 });

@@ -32,7 +32,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/add-province.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/add-province.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n41:15 - \'newProvince\' is assigned a value but never used. (no-unused-vars)');
+    assert.ok(true, 'components/add-province.js should pass ESLint\n\n');
   });
 
   QUnit.test('components/add-status.js', function (assert) {

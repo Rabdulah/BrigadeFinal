@@ -259,13 +259,11 @@ define('self-start-front-end/components/add-province', ['exports'], function (ex
               name: self.get('name'),
               country: self.get('DS').peekRecord('country', self.get('countryId')),
               city: []
-            }).save().then(function () {
-              return true;
             });
 
-            // newProvince.save().then(() => {
-            //   return true;
-            // });
+            newProvince.save().then(function () {
+              return true;
+            });
           }
         }).modal('show');
       }
@@ -2430,6 +2428,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+e9ebf089"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+4afe42f7"});
 }
 //# sourceMappingURL=self-start-front-end.map
