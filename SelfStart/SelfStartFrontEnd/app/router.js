@@ -15,6 +15,8 @@ Router.map(function() {
   this.route('gender');
   this.route('city');
   this.route('marital-status');
+  this.route('update-patient', { path: 'patient/:patient_id'});
+  this.route('new-patient');
 });
 
 export default Router;

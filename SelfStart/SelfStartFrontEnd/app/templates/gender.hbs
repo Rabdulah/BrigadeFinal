@@ -27,7 +27,9 @@
     </div>
     <div class="ui bottom attached button">
       <i class="add icon"></i>
-      Add Province
+      {{#link-to 'province'}}
+        Add Province
+      {{/link-to}}
     </div>
   </div>
 
@@ -81,6 +83,7 @@
           <li>
             {{gender.name}}
             <p style="float: right;">{{delete-gender ID=gender.id}}</p>
+            <p style="float: right; padding-right: 2%;">{{edit-gender ID=gender.id}}</p>
           </li>
 
         {{/each}}

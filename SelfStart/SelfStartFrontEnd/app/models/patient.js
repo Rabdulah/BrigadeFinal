@@ -12,7 +12,7 @@ export default DS.Model.extend({
   country:DS.attr(),
   provinces: DS.attr(),
   cities: DS.attr(),
-  dateOfBirth: DS.attr(),
+  dateOfBirth: DS.attr('Date'),
   healthCardNumber: DS.attr(),
   occupation: DS.attr(),
   maritalStatus:  DS.attr(),
