@@ -15,20 +15,24 @@ export default Component.extend({
 
     isEditing: false,
 
-    obj: ["sldfskdf"],
+    obj: [],
 
-    objModel: computed (function() {
-        return this.get('obj');
-    }),
+    actionStep: [],
 
     actions: {
-        addObjective(){
-            let newObj = this.get('Objective');
-            console.log(this.get("obj"));
-            this.get('obj').pushObject(newObj);
+        addActionStep(){
+            let newActStep = this.get('ActionSteps');
+            this.get('actionStep').pushObject(newActStep);
+            this.set('ActionSteps', "");
         },
 
-        cancel() {
+        addObjective(){
+            let newObj = this.get('Objective');
+            this.get('obj').pushObject(newObj);
+            this.set('ActionSteps', "");
+        },
+
+        cancel() {  
             this.set('isEditing', false);
         },
 

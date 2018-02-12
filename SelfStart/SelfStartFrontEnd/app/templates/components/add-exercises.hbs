@@ -33,7 +33,8 @@
             </div>
 
             <div class="ui inverted segment">
-                <ul>
+                <label>Current Objectives</label>
+                <ul align = "left">
                     {{#each obj as |o|}}
                         <li>{{o}}</li>
                     {{/each}}
@@ -43,7 +44,22 @@
 
         <div class="field">
             <label>Action Steps</label>
-            {{input type ="text" value=ActionSteps placeholder="Action Steps"}} 
+            <div class = "ui action input">
+                {{input type ="text" value=ActionSteps placeholder="Action Steps"}} 
+                <button class="ui white right labeled icon button" {{action "addActionStep"}}>
+                    Add Action Step
+                    <i class="add icon"></i>
+                </button>
+            </div>
+
+            <div class="ui inverted segment">
+                <label>Current Action Steps</label>
+                <ol align = "left">
+                    {{#each actionStep as |aS|}}
+                        <li>{{aS}}</li>
+                    {{/each}}
+                </ol>
+            </div>
         </div>
 
         <div class="field">
