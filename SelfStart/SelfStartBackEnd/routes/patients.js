@@ -11,6 +11,7 @@ router.route('/')
         });
     })
     .get( function (request, response) {
+        console.log("http://localhost:8082/patients used");
         Patients.Model.find(function (error, patients) {
             if (error) response.send(error);
             response.json({patient: patients});
