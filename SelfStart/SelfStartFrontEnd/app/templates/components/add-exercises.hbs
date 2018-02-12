@@ -1,0 +1,90 @@
+{{#if isEditing}}
+
+<div class="ui fluid raised very padded text container segment">
+   <h2 id="exercise" class="ui fluid centered header">Add New Exercise</h2>
+
+    <form class="ui form">
+        
+        <div class="field">
+            <label>Exercise Name</label>
+            {{input type ="text" value=Name placeholder="Exercise Name"}}
+        </div>
+        
+        <div class="field">
+            <label>Description</label>
+            {{textarea value=Description cols="80" rows="6" placeholder="Description"}}
+        </div>
+
+        <div class="field">
+            <label>Author Name</label>
+            {{input type ="text" value=AuthName placeholder="Author Name"}}
+        </div>
+
+        <div class="field">
+
+            <label>Objectives</label>
+
+            <div class="ui action input">
+                {{input type ="text" value=Objective placeholder="Objective"}}
+                <button class="ui white right labeled icon button">
+                    Add Objective
+                    <i class="add icon"></i>
+                </button>
+            </div>
+
+            <div class="ui inverted segment">
+                <div class="ui inverted form"></div>
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Action Steps</label>
+            {{input type ="text" value=ActionSteps placeholder="Action Steps"}} 
+        </div>
+
+        <div class="field">
+            <label>Location</label>
+            {{input type ="text" value=Location placeholder="Location"}}
+        </div>
+
+        <div class="field">
+            <label>Frequency</label>
+            <div class="ui left icon action input">
+                <i class="hourglass half icon"></i>
+                {{input type ="text" value=Frequency placeholder="Frequency"}}
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Duration</label>
+            <div class="ui left icon action input">
+                <i class="calendar icon"></i>
+                {{input type ="text" value=Duration placeholder="Duration"}}
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Target Date</label>
+             <div class="ui left icon action input">
+                <i class="add to calendar icon"></i>
+                {{input type ="text" value=TargetDate placeholder="Target Date"}}
+            </div>
+        </div>
+
+        <div class="field">
+            <label>Multimedia URL</label>
+            {{input type ="text" value=MMURL placeholder="Multi Media URL"}}
+        </div>
+
+        <div class = "inline">
+            <button class="ui button" type="submit" {{action "submit"}}>Submit</button>
+            <button class="ui button" type="submit" {{action "cancel"}}>Cancel</button>
+        </div>
+    </form>
+</div>
+
+{{else}}
+  <button class="ui button" {{action 'addExercise'}}>
+    Add Exercise
+  </button>
+{{/if}}
