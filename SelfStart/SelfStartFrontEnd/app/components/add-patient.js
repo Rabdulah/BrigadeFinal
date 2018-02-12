@@ -1,13 +1,11 @@
 import Component from '@ember/component';
 import { inject } from '@ember/service';
-
 import { computed } from '@ember/object';
 import $ from 'jquery';
 
-
 export default Component.extend({
   DS: inject('store'),
-
+  routing: inject('-routing'),
 
   tagName: '',
 
@@ -51,12 +49,20 @@ export default Component.extend({
 
   actions: {
 
+    addPatient(){
+      this.set('isEditing', true);
+    },
+
     assignDate (date){
       this.set('selectedDate', date);
     },
 
-    save: function () {
 
+    cancel() {
+      return true;
+    },
+
+    save: function () {
 
       let self = this;
 
@@ -79,8 +85,8 @@ export default Component.extend({
         postalCode: self.get('postalCode'),
 
       });
-      patient.save().then(function() {
-        return true;
+      patient.save().then(() =>{
+        this.get('routing').transitionTo('patients');
       });
 
       this.set('familyName', '');
@@ -104,4 +110,5 @@ export default Component.extend({
   },
 
 });
+
 
