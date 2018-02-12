@@ -23,7 +23,7 @@ app.use(function (request, response, next) {
 });
 
 //IMPORT OUR ROUTES ---------------------------------
-var images = require('./routes/images'); 
+var photos = require('./routes/images'); 
 var patients = require('./routes/patients'); 
 var cities = require('./routes/cities'); 
 var assessments = require('./routes/assessments');
@@ -42,7 +42,7 @@ var treatments = require('./routes/treatments');
 
 
 // REGISTER OUR ROUTES -------------------------------
-app.use('/images', images);
+app.use('/images', photos);
 app.use('/patients', patients);
 app.use('/cities', cities);
 app.use('/assessments', assessments);
