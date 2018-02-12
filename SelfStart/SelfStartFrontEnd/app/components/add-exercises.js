@@ -15,7 +15,7 @@ export default Component.extend({
 
     isEditing: false,
 
-    obj: ["sakdsdjk","adasda"],
+    obj: ["sldfskdf"],
 
     objModel: computed (function() {
         return this.get('obj');
@@ -25,11 +25,7 @@ export default Component.extend({
         addObjective(){
             let newObj = this.get('Objective');
             console.log(this.get("obj"));
-            // this.obj.push(this.newObj);
-            this.get('obj').push(newObj);
-            for(var i = 0; i<3; i++){
-                console.log(this.obj[i]);
-            }
+            this.get('obj').pushObject(newObj);
         },
 
         cancel() {
