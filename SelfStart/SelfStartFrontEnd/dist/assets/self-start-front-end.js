@@ -2875,6 +2875,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+f0518444"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+68c65159"});
 }
 //# sourceMappingURL=self-start-front-end.map
