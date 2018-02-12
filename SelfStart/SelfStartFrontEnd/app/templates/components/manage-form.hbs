@@ -1,29 +1,28 @@
-<button class="ui mini circular labeled icon green button"  {{action 'openModal'}}
-        title="Manage"><i class="edit icon"></i>
-        Manage
-</button>
-
-{{#ui-modal name= modalName class= modalName}}
+{{#if edit}}
+        <div class="ui fluid raised very padded text container segment">
         <div id='content'>
-        <h2> Question List </h2>
-        <div class="ui grid">
-        {{#each model as |question|}}   
-                <div class="four wide column">
-                <label>{{question.questionText}}</label>
+                <h2> Question List </h2>
+                <div class="ui grid">
+                {{#each questionsModel as |question|}}   
+                        <div class="four wide column">
+                        <label>{{question.questionText}}</label>
+                        </div>
+
+                        <div class="four wide column">
+                        <button {{action "addQuestion" question}}> Add </button>
+                        </div>
+                {{/each}}
                 </div>
 
-                <div class="four wide column">
-                <label>{{question.type}}</label>
-                </div>
+                <br><br>
 
-                {{!-- <div class="four wide column right aligned">
-                {{modify-question ID=question.id}}
+                <div class="ui centered grid">
+                <button class="ui fluid positive button" {{action "done"}}>Done</button>
                 </div>
-                
-                <div class="four wide column left aligned">
-                {{delete-question ID=question.id}}
-                </div> --}}
-        {{/each}}
         </div>
         </div>
-{{/ui-modal}}
+{{else}}
+    <button class="ui button" {{action 'manageForm'}}>
+        Manage Form
+    </button>
+{{/if}}

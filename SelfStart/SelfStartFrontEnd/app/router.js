@@ -12,6 +12,7 @@ Router.map(function() {
   this.route('admin');
   this.route('questions');
   this.route('forms');
+
 });
 
 export default Router;

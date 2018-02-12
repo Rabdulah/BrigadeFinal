@@ -24,8 +24,6 @@ export default Component.extend({
   modalName: Ember.computed(function() {
     return 'questionData' + this.get('ID');
   }),
-
-
   actions: {
 
     isMultipleChoice: function() {
