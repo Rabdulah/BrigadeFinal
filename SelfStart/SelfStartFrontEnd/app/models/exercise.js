@@ -13,5 +13,4 @@ export default DS.Model.extend({
     targetDate:DS.attr(),
     image:DS.hasMany('image', {async: true})
     // rehabilitationPlan:DS.belongsTo('rehabilitationplan',{ async: true })
-
 });

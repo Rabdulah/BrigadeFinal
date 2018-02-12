@@ -38,6 +38,7 @@ router.route('/:country_id')
                 // update each attribute
                 country.name = request.body.country.name;
                 country.provinces = request.body.country.provinces;
+                country.patient = request.body.country.patient;
                       
                 country.save(function (error) {
                     if (error) {

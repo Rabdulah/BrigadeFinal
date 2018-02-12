@@ -3,4 +3,5 @@ import DS from 'ember-data';
 export default DS.Model.extend({
   // gender
   name: DS.attr(),
+  patient: DS.hasMany('patient', { async: true }) // 1 to many
 });

@@ -1,20 +1,38 @@
+<div class="ui grid">
+  <div class="computer only row">
+    <div class="column">
+      <div class="ui borderless fixed menu">
+        <a class="main item">{{#link-to 'home'}}<img class="ui small image" src="assets/images/SelfStart_logo.png">{{/link-to}}</a>
+        <a class="ui right item ">{{#link-to 'patients'}}PATIENT PROFILE{{/link-to}}</a>
+        <a class="item">3</a>
+        <a class="item">4</a>
+        <a class="item">5</a>
+        <a class="item">6</a>
+      </div>
+    </div>
+  </div>
 
-<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/home-style.css"> <!-- Resource style -->
+  <div class="tablet mobile only row">
+    <div class="column">
+      <div class="ui borderless stackable fixed menu">
+        <a id="mobile_item" class="item" {{action 'toggle'}}><i class="large bars icon"></i></a>
+      </div>
+    </div>
+  </div>
 
+</div>
 
-<header class="cd-header">
-  <div id="cd-logo"><a>{{#link-to 'home'}}Home{{/link-to}}</a></div>
+<div class="ui  pushable">
+  <div class="ui borderless sidebar vertical menu">
+    <a class="main item">{{#link-to 'home'}}<img class="ui small image" src="assets/images/SelfStart_logo.png">{{/link-to}}</a>
+    <a class="ui right item ">{{#link-to 'patients'}}PATIENT PROFILE{{/link-to}}</a>
+    <a class="item">3</a>
+    <a class="item">4</a>
+    <a class="item">5</a>
+    <a class="item">6</a>
+  </div>
+</div>
 
-  <nav class="cd-main-nav">
-    <ul>
-      <!-- inser more links here -->
-      <li><a href="#0">About</a></li>
-      <li><a href="#0">How it Works</a></li>
-      <li><a href="#0">Services</a></li>
-      <li><a href="#0">Assessment</a></li>
-      <li><a href="#0">Blog</a></li>
-      <a href="#0" >Contact</a>
-    </ul>
-  </nav> <!-- cd-main-nav -->
-</header>
-{{yield}}
+  <div class="pusher">
+      {{yield}}
+  </div>

@@ -2,7 +2,6 @@
 
 // BASE SETUP
 // =============================================================================
-// test
 
 // call the packages we need
 var mongoose = require('mongoose');
@@ -40,8 +39,6 @@ var questions = require('./routes/questions');
 var administrators = require('./routes/administrators');
 var physiotherapests = require('./routes/physiotherapests');
 var treatments = require('./routes/treatments');
-var genders = require('./routes/genders');
-var maritalStatuses = require('./routes/maritalStatuses');
 
 
 // REGISTER OUR ROUTES -------------------------------
@@ -61,9 +58,6 @@ app.use('/countries', countries);
 app.use('/administrators', administrators);
 app.use('/treatments', treatments);
 app.use('/physiotherapests', physiotherapests);
-app.use('/genders', genders);
-app.use('/maritalStatuses', maritalStatuses);
-
 
 //connect to mongoDB
 mongoose.connect('mongodb://localhost/selfStart', { useMongoClient: true });

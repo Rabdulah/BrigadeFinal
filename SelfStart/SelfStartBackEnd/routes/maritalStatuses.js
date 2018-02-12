@@ -4,12 +4,9 @@ var MaritalStatuses = require('../models/MaritalStatuses');
 
 router.route('/')
     .post( function (request, response) {
-
-        var status = new MaritalStatuses.Model(request.body.maritalStatus);
-
+        var status = new MaritalStatuses.Model(request.body.status);
         status.save(function (error) {
             if (error) response.send(error);
-            console.log(request.body.maritalStatus.name);
             response.json({maritalStatus: status});
         });
     })
@@ -20,11 +17,9 @@ router.route('/')
         });
     });
 
-
-router.route('/:maritalStatus_id')
+router.route('/:status_id')
     .get( function (request, response) {
-        MaritalStatuses.Model.findById(request.params.maritalStatus_id, function (error, status) {
-
+        MaritalStatuses.Model.findById(request.params.status_id, function (error, status) {
             if (error) {
                 response.send({error: error});
             }
@@ -34,34 +29,31 @@ router.route('/:maritalStatus_id')
         });
     })
     .put( function (request, response) {
-
-        MaritalStatuses.Model.findById(request.params.maritalStatus_id, function (error, maritalStatus) {
-
+        MaritalStatuses.Model.findById(request.params.status_id, function (error, status) {
             if (error) {
                 response.send({error: error});
             }
             else {
 
                 // update each attribute
+                status.name = request.body.status.name;
+                status.patients = request.body.status.patients;
+    
 
-                maritalStatus.name = request.body.maritalStatus.name;
 
-
-                maritalStatus.save(function (error) {
+                status.save(function (error) {
                     if (error) {
                         response.send({error: error});
                     }
                     else {
-
-                        response.json({maritalStatus: maritalStatus});
+                        response.json({maritalStatus: status});
                     }
                 });
             }
         });
     })
     .delete( function (request, response) {
-
-        MaritalStatuses.Model.findByIdAndRemove(request.params.maritalStatus_id,
+        MaritalStatuses.Model.findByIdAndRemove(request.params.status_id,
             function (error, deleted) {
                 if (!error) {
                     response.json({maritalStatus: deleted});

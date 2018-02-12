@@ -1,164 +1,57 @@
-<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/form-style.css"> <!-- Resource style -->
+{{#if isEditing}}
 
+<div class="ui fluid raised very padded text container segment">
 
-<form class="cd-form floating-labels" {{action "save" on="submit"}}>
-  <br><br>
-  <fieldset>
-    <legend>Personal Info</legend>
+  <h2 id="patient" class="ui fluid centered header">Add New Patient</h2>
 
-    <div class="icon">
-      <label class="cd-label">First Name</label>
-      {{input class="user" type="text" value = givenName required = true}}
-    </div>
-    <div class="icon">
-      <label class="cd-label">Last Name</label>
-      {{input class="user" type="text" value = familyName required = true}}
-    </div>
-    <div class="icon">
-      <label class="cd-label">Date of Birth</label>
-      <input class="date" type="date" value={{selectedDate}}  onchange={{action 'assignDate' value="target.value"}} required>
-    </div>
-
-    <div >
-      <h4>Gender</h4>
-      <p class="cd-select icon">
-        <select class="people" onchange={{action (mut gender) value="target.value"}}>
-          {{#each genderModel as |oneGender|}}
-            <option value={{oneGender.name}} selected={{eq gender.name oneGender.name}}>
-              {{oneGender.name}}
-            </option>
-          {{/each}}
-        </select>
-      </p>
-    </div>
-
-    <div >
-      <h4>Marital Status</h4>
-      <p class="cd-select icon">
-        <select class="people" onchange={{action (mut maritalStatus) value="target.value"}}>
-          {{#each maritalStatusModel as |oneStatus|}}
-            <option value={{oneStatus.name}} selected={{eq maritalStatus.name oneStatus.name}}>
-              {{oneStatus.name}}
-            </option>
-          {{/each}}
-        </select>
-      </p>
-    </div>
-
-    <div class="icon">
-      <label class="cd-label">Occupation</label>
-      {{input class="company" type="text" value = occupation required = true}}
-    </div>
-    <div class="icon">
-      <label class="cd-label">Health Card Number</label>
-      {{input class="card" type="text" value = healthCardNumber required = true}}
-    </div>
-  </fieldset>
-
-
-  <fieldset>
-    <legend>Address</legend>
-
-    <div class="icon">
-      <label class="cd-label">Number</label>
-      {{input class="home" type="text" value = streetNumber required = true}}
-    </div>
-    <div class="icon">
-      <label class="cd-label">Street Name</label>
-      {{input class="home" type="text" value = streetName required = true}}
-    </div>
-    <div class="icon">
-      <label class="cd-label" for="cd-name">Unit</label>
-      {{input class="bookmark" type="text" value = apartment}}
-    </div>
-
-    <div class="icon">
-      <label class="cd-label" for="cd-name">Postal/ZIP Code</label>
-      {{input class="flag" type="text" value = postalCode required = true}}
+  <form class="ui form">
+    <div class="fields">
+      <div class="two wide field">
+        <i id="icon" class="black large user icon"></i>
+      </div>
+      <div class="seven wide field">
+        {{input type="text" value = givenName placeholder="First Name"}}
+      </div>
+      <div class="seven wide field">
+        {{input type="text" value = familyName placeholder="Last Name"}}
+      </div>
     </div>
 
 
-    <div >
-      <h4>Country</h4>
-      <p class="cd-select icon">
-        <select class="world" onchange={{action (mut country) value="target.value"}}>
-          {{#each conutryModel as |oneCountry|}}
-            <option value={{oneCountry.name}} selected={{eq country.name oneCountry.name}}>
-              {{oneCountry.name}}
-            </option>
-          {{/each}}
-        </select>
-      </p>
+    <div class="fields">
+      <div class="two wide field">
+        <i id="icon" class="black large mail icon"></i>
+      </div>
+      <div class="fourteen wide field">
+        {{input type="text" value = email placeholder="Email"}}
+      </div>
     </div>
 
-  </fieldset>
-
-
-  <fieldset>
-    <legend>Contact Info</legend>
-
-    <div class="icon">
-      <label class="cd-label" for="cd-name">Phone Number</label>
-      {{input class="phone" type="text" value = phoneNumber required = true}}
+    <div class="fields">
+      <div class="two wide field">
+        <i id="icon" class="black large home icon"></i>
+      </div>
+      <div class="eight wide field">
+        {{input type="text" value = streetName placeholder="Street Name"}}
+      </div>
+      <div class="three wide field">
+        {{input type="text" value = streetNumber placeholder="Street #"}}
+      </div>
+      <div class="three wide field">
+        {{input type="text" value = Appartment placeholder="Unit #"}}
+      </div>
     </div>
 
-    <div class="icon">
-      <label class="cd-label" for="cd-email">Email</label>
-      {{input class="email" type="email" value = email required = true}}
+    <br><br>
+    <div class="ui centered grid">
+      <button class="ui fluid blue button" {{action "submit" name}}>Submit</button>
+      <button class="ui fluid button" {{action "cancel"}}>Cancel</button>
     </div>
-  </fieldset>
+  </form>
 
-
-
-
-  <fieldset>
-
-
-    <!--<div>-->
-      <!--<h4>Project type</h4>-->
-
-      <!--<ul class="cd-form-list">-->
-        <!--<li>-->
-          <!--<input type="radio" name="radio-button" id="cd-radio-1" checked>-->
-          <!--<label for="cd-radio-1">Choice 1</label>-->
-        <!--</li>-->
-
-        <!--<li>-->
-          <!--<input type="radio" name="radio-button" id="cd-radio-2">-->
-          <!--<label for="cd-radio-2">Choice 2</label>-->
-        <!--</li>-->
-
-        <!--<li>-->
-          <!--<input type="radio" name="radio-button" id="cd-radio-3">-->
-          <!--<label for="cd-radio-3">Choice 3</label>-->
-        <!--</li>-->
-      <!--</ul>-->
-    <!--</div>-->
-
-    <!--<div>-->
-      <!--<h4>Features</h4>-->
-
-      <!--<ul class="cd-form-list">-->
-        <!--<li>-->
-          <!--<input type="checkbox" id="cd-checkbox-1">-->
-          <!--<label for="cd-checkbox-1">Option 1</label>-->
-        <!--</li>-->
-
-        <!--<li>-->
-          <!--<input type="checkbox" id="cd-checkbox-2">-->
-          <!--<label for="cd-checkbox-2">Option 2</label>-->
-        <!--</li>-->
-
-        <!--<li>-->
-          <!--<input type="checkbox" id="cd-checkbox-3">-->
-          <!--<label for="cd-checkbox-3">Option 3</label>-->
-        <!--</li>-->
-      <!--</ul>-->
-    <!--</div>-->
-
-    <div>
-      <input type="submit" value="Submit">
-    </div>
-  </fieldset>
-</form>
-
+  </div>
+{{else}}
+  <button class="ui button" {{action 'addPatient'}}>
+    Add Patient
+  </button>
+{{/if}}

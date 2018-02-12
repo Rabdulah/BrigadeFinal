@@ -7,30 +7,34 @@ export default Component.extend({
 
   actions: {
 
-    openModal: function ()  {
-      this.set('name', null);
 
-      $('.ui.small.newCountry.modal').modal({
+
+    openModal: function () {
+      this.set('name', null);
+      this.set('provinces', []);
+      // this.set('patient', null);
+
+
+      $('.ui.newCountry.modal').modal({
         closable: false,
         detachable: false,
 
-        onDeny:  () => {
+        onDeny: () => {
           return true;
         },
 
         onApprove: () => {
-          let newCountry = this.get('DS').createRecord('country', {
+          var newCountry = this.get('DS').createRecord('country', {
             name: this.get('name'),
+            provinces: this.get('provinces'),
+            // patient: this.get('patient'),
           });
           newCountry.save().then(()=> {
             return true;
           });
         }
-
-      }).modal('show')
+      })
+        .modal('show');
     },
   }
-
 });
-
-

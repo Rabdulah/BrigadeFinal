@@ -3,14 +3,15 @@ import $ from 'jquery';
 
 export default Component.extend({
   tagName:'',
-  didRender() {
-    this._super(...arguments);
 
-    $(document).ready(function ($) {
-      //open-close submenu on mobile
-      $('.cd-main-nav').on('click', function (event) {
-        if ($(event.target).is('.cd-main-nav')) $(this).children('ul').toggleClass('is-visible');
-      });
-    });
+  init() {
+    this._super(...arguments);
+    $('.ui.sidebar').sidebar('attach events', '#mobile_item');
+  },
+
+  actions: {
+    toggle: function () {
+      $('.ui.sidebar').sidebar( 'toggle');
+    }
   }
 });
