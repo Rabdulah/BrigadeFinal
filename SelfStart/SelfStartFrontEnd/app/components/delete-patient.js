@@ -7,7 +7,7 @@ export default Component.extend({
   DS: inject('store'),
 
   modalName: computed(function () {
-    return 'Delete-maritalStatus' + this.get('ID');
+    return 'Delete-patient' + this.get('ID');
   }),
 
   actions: {
@@ -22,11 +22,10 @@ export default Component.extend({
         },
         onApprove: () => {
 
-          this.get('DS').find('maritalStatus', this.get('ID')).then((maritalStatus) => {
-
-            maritalStatus.set('name', '');
-            maritalStatus.save().then(function () {
-              maritalStatus.destroyRecord();
+          this.get('DS').find('patient', this.get('ID')).then((patient) => {
+            patient.set('name', '');
+            patient.save().then(function () {
+              patient.destroyRecord();
             });
           });
 
@@ -36,5 +35,4 @@ export default Component.extend({
     },
   }
 });
-
 

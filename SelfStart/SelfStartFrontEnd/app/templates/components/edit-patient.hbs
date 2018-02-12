@@ -1,4 +1,4 @@
-<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/form-style.css"> <!-- Resource style -->
+<link integrity="" rel="stylesheet" href="{{rootURL}}../assets/css/form-style.css"> <!-- Resource style -->
 
 <form class="cd-form floating-labels" {{action "save" on="submit"}}>
   <br><br>
@@ -7,15 +7,15 @@
 
     <div class="icon">
       <label class="cd-label">First Name</label>
-      {{input class="user" type="text" value = givenName required = true}}
+      {{input class="user" type="text" value = pateintsData.givenName required = true}}
     </div>
     <div class="icon">
       <label class="cd-label">Last Name</label>
-      {{input class="user" type="text" value = familyName required = true}}
+      {{input class="user" type="text" value = pateintsData.familyName required = true}}
     </div>
     <div class="icon">
       <label class="cd-label">Date of Birth</label>
-      <input class="date" type="date" value={{selectedDate}}  onchange={{action 'assignDate' value="target.value"}} required>
+      <input class="date" type="date" value= {{selectedDate}}  onchange={{action 'assignDate' value="target.value"}} required>
     </div>
 
     <div >
@@ -23,7 +23,7 @@
       <p class="cd-select icon">
         <select class="people" onchange={{action (mut gender) value="target.value"}}>
           {{#each genderModel as |oneGender|}}
-            <option value={{oneGender.name}} selected={{eq gender.name oneGender.name}}>
+            <option value={{oneGender.name}} selected={{eq pateintsData.gender oneGender.name}}>
               {{oneGender.name}}
             </option>
           {{/each}}
@@ -36,7 +36,7 @@
       <p class="cd-select icon">
         <select class="people" onchange={{action (mut maritalStatus) value="target.value"}}>
           {{#each maritalStatusModel as |oneStatus|}}
-            <option value={{oneStatus.name}} selected={{eq maritalStatus.name oneStatus.name}}>
+            <option value={{oneStatus.name}} selected={{eq pateintsData.maritalStatus oneStatus.name}}>
               {{oneStatus.name}}
             </option>
           {{/each}}
@@ -46,11 +46,11 @@
 
     <div class="icon">
       <label class="cd-label">Occupation</label>
-      {{input class="company" type="text" value = occupation required = true}}
+      {{input class="company" type="text" value = pateintsData.occupation required = true}}
     </div>
     <div class="icon">
       <label class="cd-label">Health Card Number</label>
-      {{input class="card" type="text" value = healthCardNumber required = true}}
+      {{input class="card" type="text" value = pateintsData.healthCardNumber required = true}}
     </div>
   </fieldset>
 
@@ -60,20 +60,20 @@
 
     <div class="icon">
       <label class="cd-label">Number</label>
-      {{input class="home" type="text" value = streetNumber required = true}}
+      {{input class="home" type="text" value = pateintsData.streetNumber required = true}}
     </div>
     <div class="icon">
       <label class="cd-label">Street Name</label>
-      {{input class="home" type="text" value = streetName required = true}}
+      {{input class="home" type="text" value = pateintsData.streetName required = true}}
     </div>
     <div class="icon">
       <label class="cd-label" for="cd-name">Unit</label>
-      {{input class="bookmark" type="text" value = apartment}}
+      {{input class="bookmark" type="text" value = pateintsData.apartment}}
     </div>
 
     <div class="icon">
       <label class="cd-label" for="cd-name">Postal/ZIP Code</label>
-      {{input class="flag" type="text" value = postalCode required = true}}
+      {{input class="flag" type="text" value = pateintsData.postalCode required = true}}
     </div>
 
 
@@ -82,7 +82,7 @@
       <p class="cd-select icon">
         <select class="world" onchange={{action (mut country) value="target.value"}}>
           {{#each conutryModel as |oneCountry|}}
-            <option value={{oneCountry.name}} selected={{eq country.name oneCountry.name}}>
+            <option value={{oneCountry.name}} selected={{eq pateintsData.country oneCountry.name}}>
               {{oneCountry.name}}
             </option>
           {{/each}}
@@ -98,12 +98,12 @@
 
     <div class="icon">
       <label class="cd-label" for="cd-name">Phone Number</label>
-      {{input class="phone" type="text" value = phoneNumber required = true}}
+      {{input class="phone" type="text" value = pateintsData.phoneNumber required = true}}
     </div>
 
     <div class="icon">
       <label class="cd-label" for="cd-email">Email</label>
-      {{input class="email" type="email" value = email required = true}}
+      {{input class="email" type="email" value = pateintsData.email required = true}}
     </div>
   </fieldset>
 
@@ -122,4 +122,3 @@
 
   </fieldset>
 </form>
-

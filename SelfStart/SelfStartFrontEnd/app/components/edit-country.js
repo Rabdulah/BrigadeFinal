@@ -6,35 +6,39 @@ import $ from 'jquery';
 export default Component.extend({
   DS: inject('store'),
 
+  countryData: null,
+  name: computed.oneWay('countryData.name'),
+
   modalName: computed(function () {
-    return 'Delete-maritalStatus' + this.get('ID');
+    return 'editCountry' + this.get('ID');
   }),
+
+
 
   actions: {
     openModal: function () {
+      this.set('countryData', this.get('DS').peekRecord('country', this.get('ID')));
+
+
       $('.ui.' + this.get('modalName') + '.modal').modal({
         closable: false,
+        transition: 'horizontal flip',
         detachable: false,
-        transition: 'fly down',
 
         onDeny: () => {
           return true;
         },
+
         onApprove: () => {
-
-          this.get('DS').find('maritalStatus', this.get('ID')).then((maritalStatus) => {
-
-            maritalStatus.set('name', '');
-            maritalStatus.save().then(function () {
-              maritalStatus.destroyRecord();
+          this.get('DS').findRecord('country', this.get('ID')).then((rec) =>{
+            rec.set('name', this.get('name') );
+            rec.save().then(()=>{
+              return true;
             });
           });
-
         }
       })
         .modal('show');
-    },
-  }
+    }
+  },
 });
-
-

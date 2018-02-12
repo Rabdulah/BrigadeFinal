@@ -7,7 +7,7 @@ export default Component.extend({
   DS: inject('store'),
 
   modalName: computed(function () {
-    return 'Delete-maritalStatus' + this.get('ID');
+    return 'Delete-Province' + this.get('ID');
   }),
 
   actions: {
@@ -22,11 +22,9 @@ export default Component.extend({
         },
         onApprove: () => {
 
-          this.get('DS').find('maritalStatus', this.get('ID')).then((maritalStatus) => {
-
-            maritalStatus.set('name', '');
-            maritalStatus.save().then(function () {
-              maritalStatus.destroyRecord();
+          this.get('DS').find('province', this.get('ID')).then((province) => {
+            province.save().then(function () {
+              province.destroyRecord();
             });
           });
 
