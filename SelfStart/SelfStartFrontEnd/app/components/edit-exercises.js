@@ -24,6 +24,53 @@ export default Component.extend({
     }),
   
     actions: {
+      openModalDelete: function () {
+        this.set('exerciseData', this.get('DS').peekRecord('exercise', this.get('ID')))
+
+        Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+          closable: false,
+          transition: 'horizontal flip',
+          detachable: false,
+          onDeny: () => {
+            return true;
+            },
+           
+          onApprove: () => {
+            this.get('DS').findRecord('exercise' , this.get('ID')).then((rec)=>{
+              rec.set('name', this.get('Name'));
+              rec.set('description', this.get('Description'));
+              rec.set('authorName', this.get('AuthName'));
+              rec.set('objective', this.get('Objective'));
+              rec.set('actionStep', this.get('ActionSteps'));
+              rec.set('location', this.get('Location'));
+              rec.set('frequency', this.get('Frequency'));
+              rec.set('duration', this.get('Duration'));
+              rec.set('targetDate', this.get('TargetDate'));
+              rec.set('MMURL', this.get('MMURL'));
+              // rec.set('exercises', this.get('exercises'));
+              // rec.set('assessmentTests', this.get('assessmentTests'));
+              rec.save().then(()=>{
+                return true;
+              });
+            });
+          }
+        })
+          .modal('show');
+      },
+
+
+      addObjective: function(){
+        let newObj = this.get('Objective');
+        this.get('obj').pushObject(newObj);
+        this.set('Objective', "");
+      },
+
+      addActionStep(){
+        let newActStep = this.get('ActionSteps');
+        this.get('actionStep').pushObject(newActStep);
+        this.set('ActionSteps', "");
+      },
+
       openModal: function () {
         this.set('exerciseData', this.get('DS').peekRecord('exercise', this.get('ID')))
 

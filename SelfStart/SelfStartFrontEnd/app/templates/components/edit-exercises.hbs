@@ -41,7 +41,13 @@
                 </div>
                 <ul align = "left" value={{obj}}>
                     {{#each obj as |o|}}
-                        <li>{{o}}</li>
+                        <li>
+                            <p>
+                                {{o}}
+                                <i style=" cursor: pointer;" title="Edit" {{action 'edit' }} class="gray write icon" ></i>
+                                <i style=" cursor: pointer;" title="Delete" {{action 'openModelDelete' }} class="red remove icon" ></i>
+                            </p>    
+                        </li>
                     {{/each}}
                 </ul>
             </div>
@@ -63,7 +69,13 @@
                 </div>
                 <ol align = "left" value={{actionStep}}>
                     {{#each actionStep as |aS|}}
-                        <li>{{aS}}</li>
+                        <li > 
+                            <p>
+                                {{aS}}
+                                <i style=" cursor: pointer;" title="Edit" {{action 'edit' }} class="gray write icon" ></i>
+                                <i style=" cursor: pointer;" title="Delete" {{action 'delete' }} class="red remove icon" ></i>
+                            </p>
+                        </li>
                     {{/each}}
                 </ol>
             </div>
