@@ -13,5 +13,5 @@ var assessmentTestSchema = mongoose.Schema({
     recommendation: [{type: mongoose.Schema.ObjectId, ref: 'Recommendations'}]
 
 });
-var AssessmentTestSchema = mongoose.model('assessmentTest', assessmentTestSchema);
+var AssessmentTestSchema = mongoose.model('assesmentTest', assessmentTestSchema);
 exports.Model = AssessmentTestSchema;

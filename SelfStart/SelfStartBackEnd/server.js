@@ -44,7 +44,7 @@ var treatments = require('./routes/treatments');
 // REGISTER OUR ROUTES -------------------------------
 app.use('/patients', patients);
 app.use('/cities', cities);
-app.use('/assessments', assessments);
+app.use('/assesmentTests', assessments);
 app.use('/forms', forms);
 app.use('/questions', questions);
 app.use('/appointments', appointments);

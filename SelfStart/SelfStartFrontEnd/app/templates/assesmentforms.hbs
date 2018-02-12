@@ -1,0 +1,20 @@
+<div id='content'>
+    <h2> Assessment Test </h2>
+    <div class="ui grid">
+    {{#each model as |assesment-test|}}   
+        <div class="eight wide column">
+        <label>{{assesment-test.name}}</label>
+        </div>
+        <div class="four wide column right aligned">
+        {{manage-assesment-test ID=assesment-test.id}}
+        </div>
+        <div class="four wide column left aligned">
+        {{delete-assesment-test ID=assesment-test.id}}
+        </div>
+    {{/each}}
+    </div>
+</div>
+
+{{add-form-assessmenttests}}
+
+<br><br><br>

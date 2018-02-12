@@ -19,13 +19,13 @@ export default Component.extend({
   
             let self = this;
     console.log(this.get('DS'));
-            let form = this.get('DS').createRecord('form', {
-                name: self.get('fName'),
-                description: self.get('fDescription'),
+            let assesmentTest = this.get('DS').createRecord('assesmentTest', {
+                name: self.get('name'),
+                description: self.get('description'),
                 // author: self.get('fAuthor')
             });
       
-            form.save().then(function() {
+            assesmentTest.save().then(function() {
               this.set('isEditing', false);
               return true;
             });
