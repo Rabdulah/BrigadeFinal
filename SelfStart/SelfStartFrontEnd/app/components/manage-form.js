@@ -25,21 +25,16 @@ questionsModel: Ember.computed(function(){
 actions: {
 
   addQuestion(question){
-    var q = [this.get('DS').findRecord('question', question.get('id'))];
-
-    console.log(question.get('id'));
-    this.get('DS').findRecord('form', this.get('ID')).then((rec) => {
-      rec.set('questions', q),
-      rec.
+    let form = this.get('DS').peekRecord('form',this.get('ID'));
+    this.get('DS').findRecord('question', question.get('id')).then((rec) => {
+      rec.set('form', form)
       rec.save().then(()=>{
         return true;
       });
     });
+
+    console.log(form);
   },
-
-
-
-
   manageForm() {
     this.set('edit',true);
   },
@@ -55,14 +50,10 @@ actions: {
         return true;
       },
       onApprove: () => {
-        this.get('DS').find('form', this.get('ID')).then((form) => {
-          form.destroyRecord().then(() => {
-            return true;
-          });
-        })
+        return true;
       }
     })
-      .modal('show');
+    .modal('show');
   },
 }
 });

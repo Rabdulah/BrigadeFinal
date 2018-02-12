@@ -1,28 +1,28 @@
-{{#if edit}}
-        <div class="ui fluid raised very padded text container segment">
-        <div id='content'>
-                <h2> Question List </h2>
-                <div class="ui grid">
+<button class="ui button" {{action 'openModal'}}>
+Manage Form
+</button>
+
+{{#ui-modal name= modalName class= modalName}}
+        <div class='content'>
+          <div class='ui form'>
+           <h2> Question List </h2>
+           <div class="ui grid">
                 {{#each questionsModel as |question|}}   
                         <div class="four wide column">
-                        <label>{{question.questionText}}</label>
+                         <label>{{question.questionText}}</label>
                         </div>
 
                         <div class="four wide column">
-                        <button {{action "addQuestion" question}}> Add </button>
+                         <button {{action "addQuestion" question}}> Add </button>
                         </div>
                 {{/each}}
-                </div>
-
-                <br><br>
-
-                <div class="ui centered grid">
-                <button class="ui fluid positive button" {{action "done"}}>Done</button>
-                </div>
+           </div>
+           <br><br>
+         </div>
         </div>
+        <div class="actions">
+         <div class="ui positive right labeled icon button">
+         Done
+         </div>
         </div>
-{{else}}
-    <button class="ui button" {{action 'manageForm'}}>
-        Manage Form
-    </button>
-{{/if}}
+{{/ui-modal}}
