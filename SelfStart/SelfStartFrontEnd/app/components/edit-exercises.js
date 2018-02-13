@@ -24,7 +24,7 @@ export default Component.extend({
     }),
   
     actions: {
-      openModalDelete: function () {
+      openModal: function () {
         this.set('exerciseData', this.get('DS').peekRecord('exercise', this.get('ID')))
 
         Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
