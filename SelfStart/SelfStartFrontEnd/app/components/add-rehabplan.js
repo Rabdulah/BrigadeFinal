@@ -1,8 +1,14 @@
 import Component from '@ember/component';
+import { computed } from '@ember/object';
 import { inject } from '@ember/service';
 
 export default Component.extend({
   DS: inject('store'),
+  routing: inject('-routing'),
+
+  exerciseModel: computed(function(){
+    return this.get('DS').findAll('exercise');
+  }),
 
   isEditing: false,
 
@@ -23,7 +29,7 @@ export default Component.extend({
 
     },
 
-    submit: function () {
+    save: function () {
 
       let self = this;
       //connect to rehabilitationplans
@@ -32,20 +38,20 @@ export default Component.extend({
         physioID: self.get('authorName'),
         description: self.get('description'),
         goal: self.get('goal'),
-        timeToComplete: self.get('ttc'),
-        // exercises: self.get('exercises'),
+        timeToComplete: self.get('timeToComplete'),
+        //exercises: self.get('exercises'),
         // assessmentTests: self.get('assessmentTests'),
       });
       //when save is successfull close form
       rehabplan.save().then(function() {
-        this.set('isEditing', false);
+        self.get('routing').transitionTo('rehabplans');
       });
       //CHANGE THIS WHEN ITS DONE
       this.set('isEditing', false);
       this.set('Name', '');
       this.set('description', '');
       this.set('goal', '');
-      this.set('ttc', '');
+      this.set('timeToComplete', '');
       this.set('exercises', '');
       this.set('assessmentTests', '');
       this.set('authorName', '');

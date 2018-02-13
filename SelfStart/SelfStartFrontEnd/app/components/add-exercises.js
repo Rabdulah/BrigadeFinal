@@ -81,18 +81,19 @@ export default Component.extend({
       });
 
       exercise.save().then(() =>{
-        this.set('Name', "");
-        this.set('Description', "");
-        this.set('Objective', "");
-        this.set('AuthName', "");
-        this.set('ActionStep', "");
-        this.set('Location', "");
-        this.set('Frequency', "");
-        this.set('Duration', "");
-        this.set('MMURL', "");
-        this.set('TargetDate', "");
+
         this.get('routing').transitionTo('exercise');
       });
+      this.set('Name', "");
+      this.set('Description', "");
+      this.set('Objective', "");
+      this.set('AuthName', "");
+      this.set('ActionStep', "");
+      this.set('Location', "");
+      this.set('Frequency', "");
+      this.set('Duration', "");
+      this.set('MMURL', "");
+      this.set('TargetDate', "");
       this.set("actionStep", []);
       this.set("obj", []);
       this.set('isEditing', false);

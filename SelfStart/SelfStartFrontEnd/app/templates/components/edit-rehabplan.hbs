@@ -45,21 +45,16 @@
         <div class="two wide field">
           <i id="icon" class="black large wait icon"></i>
         </div>
-        <div class="four wide field">
-          <button class="ui button" {{action "decreaseTime"}}> <i class="black  minus icon"></i></button>
+        <div class="fourteen wide field">
+          {{input type="text" value = timeToComplete placeholder="Time"}}
         </div>
-        <div class="five wide field">
-          {{input type="text" value = ttc placeholder="Time"}}
-        </div>
-        <div class="four wide field">
-          <button class="ui  button"{{action "increaseTime"}}><i class="black  plus icon"></i></button>
-        </div>
+
       </div>
 
       <!--Exercise-->
       <div class="fields">
         <div class="two wide field">
-          <i id="icon" class="black large comment icon"></i>
+          <i id="icon" class="black large world icon"></i>
         </div>
         <div class="fourteen wide field">
           {{input type="text" value = exercises placeholder="Exercise"}}
@@ -68,15 +63,15 @@
 
 
       <!--assessment Test-->
-      <div class="fields">
-        <div class="two wide field">
-          <i id="icon" class="black large comment icon"></i>
-        </div>
-        <div class="fourteen wide field">
-          {{input type="text" value = assessmentTests placeholder="Assessmenttests"}}
-        </div>
-      </div>
-      <br>
+      <!--<div class="fields">-->
+        <!--<div class="two wide field">-->
+          <!--<i id="icon" class="black large comment icon"></i>-->
+        <!--</div>-->
+        <!--<div class="fourteen wide field">-->
+          {{!--{{input type="text" value = assessmentTests placeholder="Assessmenttests"}}--}}
+        <!--</div>-->
+      <!--</div>-->
+      <!--<br>-->
       <!--footer for save / cancel-->
       <div class="actions">
         <div class="ui black deny button">

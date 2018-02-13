@@ -15,9 +15,7 @@
     </div>
     <div class="icon">
       <label class="cd-label" for="cd-textarea">Description</label>
-      <textarea class="message" name="cd-textarea"  required value={{description}}>
-
-      </textarea>
+      {{textarea class="message" name="cd-textarea"  value= description required=true}}
     </div>
 
     <div class="icon">
@@ -28,13 +26,23 @@
 
     <div class="icon">
       <label class="cd-label" for="cd-name">Time</label>
-      {{input class="video" type="text" value = ttc required = true}}
+      {{input class="video" type="text" value = timeToComplete required = true}}
     </div>
 
-    <div class="icon">
-      <label class="cd-label" for="cd-name">Exercise</label>
-      {{input class="bookmark" type="text" value = exercise required = true}}
+
+    <div >
+      <h4>Exercises</h4>
+      <p class="cd-select icon">
+        <select class="people" onchange={{action (mut exercise) value="target.value"}}>
+          {{#each exerciseModel as |oneExercise|}}
+            <option value={{oneExercise.name}} selected={{eq exercise.name oneExercise.name}}>
+              {{oneExercise.name}}
+            </option>
+          {{/each}}
+        </select>
+      </p>
     </div>
+
 
     <div>
       <div class="cd-button">
