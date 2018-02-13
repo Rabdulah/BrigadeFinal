@@ -1,45 +1,45 @@
 <button class="ui mini circular labeled icon green button" {{action 'openModal'}}title="Edit">
-    <i class="edit icon"></i>
+  <i class="edit icon"></i>
   Edit
 </button>
 
 {{#ui-modal name=modalName class=modalName}}
 
-    <h2 id="rehabPlan" class="ui fluid centered header">Edit Rehabilitation Plan  {{planName}}</h2>
+  <h2 id="rehabPlan" class="ui fluid centered header">Edit Rehabilitation Plan  {{planName}}</h2>
 
-    <form class="ui form" style="padding: 5%">
-      <div class="fields">
-        <div class="two wide field">
-          <i id="icon" class="black large user icon"></i>
-        </div>
-        <div class="seven wide field">
-          {{input type="text" value = planName placeholder="Rehab plan name"}}
-        </div>
-
-        <div class="seven wide field">
-          {{input type="text" value = physioID placeholder="Author Name"}}
-        </div>
+  <form class="ui form" style="padding: 5%">
+    <div class="fields">
+      <div class="two wide field">
+        <i id="icon" class="black large user icon"></i>
+      </div>
+      <div class="seven wide field">
+        {{input type="text" value = planName placeholder="Rehab plan name"}}
       </div>
 
-      <!--Description-->
-      <div class="fields">
-        <div class="two wide field">
-          <i id="icon" class="black large comment icon"></i>
-        </div>
-        <div class="fourteen wide field">
-          {{input type="text" value = description placeholder="Description"}}
-        </div>
+      <div class="seven wide field">
+        {{input type="text" value = physioID placeholder="Author Name"}}
       </div>
+    </div>
 
-      <!--goal-->
-      <div class="fields">
-        <div class="two wide field">
-          <i id="icon" class="black large trophy icon"></i>
-        </div>
-        <div class="fourteen wide field">
-          {{input type="text" value = goal placeholder="Goal"}}
-        </div>
+    <!--Description-->
+    <div class="fields">
+      <div class="two wide field">
+        <i id="icon" class="black large comment icon"></i>
       </div>
+      <div class="fourteen wide field">
+        {{input type="text" value = description placeholder="Description"}}
+      </div>
+    </div>
+
+    <!--goal-->
+    <div class="fields">
+      <div class="two wide field">
+        <i id="icon" class="black large trophy icon"></i>
+      </div>
+      <div class="fourteen wide field">
+        {{input type="text" value = goal placeholder="Goal"}}
+      </div>
+<<<<<<< HEAD
       <div class="fields">
         <!--icon-->
         <div class="two wide field">
@@ -49,8 +49,21 @@
           {{input type="text" value = timeToComplete placeholder="Time"}}
         </div>
 
+=======
+    </div>
+    <div class="fields">
+      <!--icon-->
+      <div class="two wide field">
+        <i id="icon" class="black large wait icon"></i>
+>>>>>>> refs/remotes/origin/prototype1
+      </div>
+      <div class="fourteen wide field">
+        {{input type="text" value = timeToComplete placeholder="Time"}}
       </div>
 
+    </div>
+
+<<<<<<< HEAD
       <!--Exercise-->
       <div class="fields">
         <div class="two wide field">
@@ -59,9 +72,20 @@
         <div class="fourteen wide field">
           {{input type="text" value = exercises placeholder="Exercise"}}
         </div>
+=======
+    <!--Exercise-->
+    <div class="fields">
+      <div class="two wide field">
+        <i id="icon" class="black large world icon"></i>
       </div>
+      <div class="fourteen wide field">
+        {{input type="text" value = exercises placeholder="Exercise"}}
+>>>>>>> refs/remotes/origin/prototype1
+      </div>
+    </div>
 
 
+<<<<<<< HEAD
       <!--assessment Test-->
       <!--<div class="fields">-->
         <!--<div class="two wide field">-->
@@ -81,9 +105,30 @@
           Save
           <i class="checkmark icon"></i>
         </div>
+=======
+    <!--assessment Test-->
+    <!--<div class="fields">-->
+    <!--<div class="two wide field">-->
+    <!--<i id="icon" class="black large comment icon"></i>-->
+    <!--</div>-->
+    <!--<div class="fourteen wide field">-->
+    {{!--{{input type="text" value = assessmentTests placeholder="Assessmenttests"}}--}}
+    <!--</div>-->
+    <!--</div>-->
+    <!--<br>-->
+    <!--footer for save / cancel-->
+    <div class="actions">
+      <div class="ui black deny button">
+        Cancel
       </div>
+      <div class="ui positive right labeled icon button">
+        Save
+        <i class="checkmark icon"></i>
+>>>>>>> refs/remotes/origin/prototype1
+      </div>
+    </div>
 
-    </form>
+  </form>
 
 
 

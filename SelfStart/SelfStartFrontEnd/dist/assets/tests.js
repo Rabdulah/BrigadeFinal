@@ -32,7 +32,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/add-form.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'components/add-form.js should pass ESLint\n\n');
+    assert.ok(false, 'components/add-form.js should pass ESLint\n\n21:13 - Unexpected console statement. (no-console)\n30:13 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/add-gender.js', function (assert) {
@@ -120,6 +120,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(false, 'components/edit-exercises.js should pass ESLint\n\n74:5 - Duplicate key \'openModal\'. (no-dupe-keys)');
   });
 
+  QUnit.test('components/edit-form.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/edit-form.js should pass ESLint\n\n4:9 - \'Ember\' is not defined. (no-undef)\n6:12 - \'Ember\' is not defined. (no-undef)\n7:19 - \'Ember\' is not defined. (no-undef)\n9:16 - \'Ember\' is not defined. (no-undef)\n17:9 - \'Ember\' is not defined. (no-undef)');
+  });
+
   QUnit.test('components/edit-gender.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/edit-gender.js should pass ESLint\n\n');
@@ -142,7 +147,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/manage-form.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'components/manage-form.js should pass ESLint\n\n');
+    assert.ok(false, 'components/manage-form.js should pass ESLint\n\n7:9 - \'a\' is assigned a value but never used. (no-unused-vars)\n36:5 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/modify-question.js', function (assert) {
@@ -160,6 +165,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'components/parse-question.js should pass ESLint\n\n');
   });
 
+  QUnit.test('components/show-form-questions.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/show-form-questions.js should pass ESLint\n\n2:8 - \'Ember\' is defined but never used. (no-unused-vars)');
+  });
+
   QUnit.test('components/simple-example.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/simple-example.js should pass ESLint\n\n');
@@ -173,6 +183,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('components/welcome-page.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/welcome-page.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('controllers/questions.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'controllers/questions.js should pass ESLint\n\n');
   });
 
   QUnit.test('controllers/rehabplans.js', function (assert) {
