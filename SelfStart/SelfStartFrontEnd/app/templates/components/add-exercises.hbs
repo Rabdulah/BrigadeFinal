@@ -36,7 +36,14 @@
                 <label>Current Objectives</label>
                 <ul align = "left">
                     {{#each obj as |o|}}
-                        <li>{{o}}</li>
+                        <li>
+                            <p>
+                                {{o}}
+                                <br>
+                                <i style=" cursor: pointer;" title="Edit" {{action 'edit' }} class="gray write icon" ></i>
+                                <i style=" cursor: pointer;" title="Delete" {{action "openModal" }} class="red remove icon" ></i>
+                            </p> 
+                        </li>
                     {{/each}}
                 </ul>
             </div>
@@ -56,7 +63,13 @@
                 <label>Current Action Steps</label>
                 <ol align = "left">
                     {{#each actionStep as |aS|}}
-                        <li>{{aS}}</li>
+                        <li>
+                            <p>
+                                {{aS}}
+                                <i style=" cursor: pointer;" title="Edit" {{action 'edit' }} class="gray write icon" ></i>
+                                <i style=" cursor: pointer;" title="Delete" {{action "openModal"}} class="red remove icon" ></i>
+                            </p>
+                        </li> 
                     {{/each}}
                 </ol>
             </div>
@@ -69,26 +82,20 @@
 
         <div class="field">
             <label>Frequency</label>
-            <div class="ui left icon action input">
-                <i class="hourglass half icon"></i>
-                {{input type ="text" value=Frequency placeholder="Frequency"}}
-            </div>
+            {{!-- <i class="hourglass half icon"></i> --}}
+            {{input type ="text" value=Frequency placeholder="Frequency"}}
         </div>
 
         <div class="field">
             <label>Duration</label>
-            <div class="ui left icon action input">
-                <i class="calendar icon"></i>
-                {{input type ="text" value=Duration placeholder="Duration"}}
-            </div>
+            {{!-- <i class="calendar icon"></i> --}}
+            {{input type ="text" value=Duration placeholder="Duration"}}
         </div>
 
         <div class="field">
             <label>Target Date</label>
-             <div class="ui left icon action input">
-                <i class="add to calendar icon"></i>
-                {{input type ="text" value=TargetDate placeholder="Target Date"}}
-            </div>
+             {{!-- <i class="add to calendar icon"></i> --}}
+            {{input type ="text" value=TargetDate placeholder="Target Date"}}
         </div>
 
         <div class="field">
@@ -108,6 +115,27 @@
 
     </form>
 </div>
+
+{{#ui-modal name=modalName class=modalName}}
+  <div class="ui icon header">
+    <i class=" warning sign icon"></i>
+    Please Confirm
+  </div>
+  <div class="content">
+    <p>Are you sure you want to delete this comment?</p>
+  </div>
+  <br>
+  <div class="actions">
+    <div class="ui red cancel inverted button">
+      <i class = "remove icon"></i>
+      No
+    </div>
+    <div class="ui green ok inverted button">
+      <i class="checkmark icon"></i>
+      Yes
+    </div>
+  </div>
+{{/ui-modal}}
 
 {{else}}
   <button class="ui button" {{action 'addExercise'}}>

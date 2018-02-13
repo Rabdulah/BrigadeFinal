@@ -1,7 +1,7 @@
 import Component from '@ember/component';
 // import { computed } from '@ember/object';
 import { inject } from '@ember/service';
-// import Ember from 'ember';
+import Ember from 'ember';
 
 export default Component.extend({
     DS: inject('store'),
@@ -19,7 +19,31 @@ export default Component.extend({
 
     actionStep: [],
 
+    modalName : Ember.computed(function() {
+        return 'delete-exercises' + this.get('ID');
+    }),
+
     actions: {
+        openModal: function(){
+            console.log("adsdasdkjasdjakjsdkajsdkajd");
+            // Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+            Ember.$('.ui').modal({
+            closable: false,
+            detachable: false,
+            onDeny: () => {
+              return true;
+            },
+    
+            onApprove: () => {
+            //   this.get('DS').find('exercise' , this.get('ID')).then((exercise)=>{
+            //       exercise.destroyRecord().then(() =>{
+            //       return true;
+            //   });
+            //   })
+              return true;
+            }
+          }).modal('show');
+        },
         addActionStep(){
             let newActStep = this.get('ActionSteps');
             this.get('actionStep').pushObject(newActStep);
@@ -70,6 +94,8 @@ export default Component.extend({
             this.set("actionStep", []);
             this.set("obj", []);
             this.set('isEditing', false);
-        }   
+        },
+        
+        
     }
 });
