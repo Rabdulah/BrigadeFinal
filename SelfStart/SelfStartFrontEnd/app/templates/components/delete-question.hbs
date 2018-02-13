@@ -3,25 +3,18 @@
   Delete
 </button>
 
-{{#ui-modal name= modalName class= modalName }}
+{{#ui-modal name= modalName class=modalName }}
   <div class="ui icon header">
-    <i class="warning sign icon"></i>
-    Delete question?
-    <br><br><br>
+    Please Confirm ...
   </div>
-
-  <br><br><br><br><br>
-
-  <div class="actions">
-    <div class="ui right floated red cancel inverted button">
-      <i class="remove icon"></i>
-      No
-    </div>
-    <div class="ui green ok inverted button">
-      <i class="checkmark icon"></i>
-      Yes
-    </div>
+  <div class="content">
+    <p>Are you sure you need to delete this element?</p>
   </div>
-  
-  <br><br>
+  <br>
+
+  <div class="actions" style="padding:0">
+    <div class="ok " style="float:left; width: 50%; cursor: pointer; background: #fc7169; color:white; text-align: center;">Yes</div>
+    <div class="cancel " style="float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">No</div>
+
+  </div>
 {{/ui-modal}}

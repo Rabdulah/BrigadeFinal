@@ -10,9 +10,13 @@ Router.map(function() {
   this.route('home', {path: '/'});
   this.route('patients');
   this.route('rehabplans');
+
   this.route('admin');
+
   this.route('questions');
+
   this.route('forms');
+
   this.route('country');
   this.route('province');
   this.route('manage-selections');
@@ -20,6 +24,9 @@ Router.map(function() {
   this.route('city');
   this.route('marital-status');
 
+  this.route('update-patient',  { path: 'patient/:patient_id'});
+  this.route('new-patient');
+  this.route('new-rehabplans');
 });
 
 export default Router;

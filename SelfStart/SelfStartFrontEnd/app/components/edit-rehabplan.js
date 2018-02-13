@@ -1,17 +1,20 @@
 import Component from '@ember/component';
+import { inject } from '@ember/service';
+import { computed } from '@ember/object';
+import $ from 'jquery';
 
 export default Component.extend({
-  DS: Ember.inject.service('store'),
+  DS: inject('store'),
   rehabilitationplansData: null,
-  description: Ember.computed.oneWay('rehabilitationplansData.description'),
-  physioID: Ember.computed.oneWay('rehabilitationplansData.physioID'),
-  goal: Ember.computed.oneWay('rehabilitationplansData.goal'),
-  timeToComplete: Ember.computed.oneWay('rehabilitationplansData.timeToComplete'),
-  planName: Ember.computed.oneWay('rehabilitationplansData.planName'),
-  exercises: Ember.computed.oneWay('rehabilitationplansData.exercises'),
-  assessmentTests: Ember.computed.oneWay('rehabilitationplansData.assessmentTests'),
+  description: computed.oneWay('rehabilitationplansData.description'),
+  physioID: computed.oneWay('rehabilitationplansData.physioID'),
+  goal: computed.oneWay('rehabilitationplansData.goal'),
+  timeToComplete: computed.oneWay('rehabilitationplansData.timeToComplete'),
+  planName: computed.oneWay('rehabilitationplansData.planName'),
+  exercises: computed.oneWay('rehabilitationplansData.exercises'),
+  assessmentTests: computed.oneWay('rehabilitationplansData.assessmentTests'),
 
-  modalName: Ember.computed(function () {
+  modalName: computed(function () {
     return 'editRehabilitationplan' + this.get('ID');
   }),
 
@@ -19,7 +22,7 @@ export default Component.extend({
     openModal: function () {
       this.set('rehabilitationplansData', this.get('DS').peekRecord('rehabilitationplan', this.get('ID')))
 
-      Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+      $('.ui.' + this.get('modalName') + '.modal').modal({
         closable: false,
         transition: 'horizontal flip',
         detachable: false,

@@ -26,7 +26,9 @@
     </div>
     <div class="ui bottom attached button">
       <i class="add icon"></i>
-      Add Province
+      {{#link-to 'province'}}
+        Add Province
+      {{/link-to}}
     </div>
   </div>
 
@@ -72,19 +74,20 @@
 <section id="cd-section">
   <section id="cd-table">
     <div class="cd-table-container">
-          <ul>
-            <li style="  text-align: center; font-size: 1.2rem; text-transform: uppercase;
+      <ul>
+        <li style="  text-align: center; font-size: 1.2rem; text-transform: uppercase;
                           font-weight: bold; color: white; background-color: #f58b4c;">Countries</li>
-            {{#each model as |country|}}
+        {{#each model as |country|}}
 
-              <li>{{country.name}}
-                <p style="float: right;">{{delete-country ID=country.id}}</p>
-              </li>
+          <li>{{country.name}}
+            <p style="float: right;">{{delete-country ID=country.id}}</p>
+            <p style="float: right; padding-right: 2%;">{{edit-country ID=country.id}}</p>
+          </li>
 
-            {{/each}}
-          </ul>
+        {{/each}}
+      </ul>
     </div>
 
   </section> <!-- cd-table -->
-{{add-country}}
+  {{add-country}}
 </section>

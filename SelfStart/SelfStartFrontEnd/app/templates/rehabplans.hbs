@@ -1,47 +1,77 @@
-<br>
-<br>
-<br>
-<br>
-<br>
-<br>
-<div id="content">
-  {{add-rehabplan}}
-  <br><br>
-  <div class="ui search">
+<link href='http://fonts.googleapis.com/css?family=Ubuntu:400,700' rel='stylesheet' type='text/css'>
 
-      <input class="prompt" type="text" placeholder="Search Rehabilitation plan">
-      <i class="search icon"></i>
+<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/table-style.css"> <!-- Resource style -->
+
+<br><br><br><br><br>
+
+<div id="content">
+  <div class="ui search" style="margin-left: 70%">
+    <br><br>
+    <input class="prompt" type="text" placeholder="Search Rehabilitation plan">
+    <i class="search icon"></i>
 
   </div>
 
-  <br><br>
 
-  <table class="ui single line table">
+  <section id="cd-section">
+    <section id="cd-table">
+      <div class="cd-table-container">
+        <ul>
+          <li style="text-align: center; font-size: 1.2rem; text-transform: uppercase;
+                          font-weight: bold; color: white; background-color: #f58b4c;">Rehabilitation Plan</li>
 
-    <thead>
-    <tr>
-      <th>Name</th>
-      <th>Description</th>
-      <th></th>
-    </tr>
-    </thead>
+          {{#each model as |Rehabplan|}}
 
-    <tbody>
-      {{#each model as |Rehabplan|}}
-        <tr>
-          <td>{{Rehabplan.planName}}</td>
-          <td>{{Rehabplan.description}}</td>
-          <td>
-            <div class="four wide column right aligned">
-              {{edit-rehabplan ID=Rehabplan.id}}
-            </div>
-            <div class="four wide column left aligned">
-              {{delete-rehabplan ID=Rehabplan.id}}
-            </div>
-          </td>
-        </tr>
-      {{/each}}
-    </tbody>
-  </table>
+            <li>
+              {{Rehabplan.planName}}
+              <p style="float: right;  padding-top: .5%;">{{delete-rehabplan ID=Rehabplan.id}}</p>
+              <p style="float: right; padding-right: 2%;  padding-top: .5%;">{{edit-rehabplan ID=Rehabplan.id}}</p>
+              <p style="float: right; padding-right: 30%; ">{{Rehabplan.description}}</p>
+            </li>
 
+          {{/each}}
+        </ul>
+      </div>
+
+    </section> <!-- cd-table -->
+  </section>
+
+{{!--
+
+  <!--<table class="ui single line table">-->
+
+    <!--<thead>-->
+    <!--<tr>-->
+      <!--<th>Name</th>-->
+      <!--<th>Description</th>-->
+      <!--<th></th>-->
+    <!--</tr>-->
+    <!--</thead>-->
+
+    <!--<tbody>-->
+      <!--{{#each model as |Rehabplan|}}-->
+        <!--<tr>-->
+          <!--<td>{{Rehabplan.planName}}</td>-->
+          <!--<td>{{Rehabplan.description}}</td>-->
+          <!--<td>-->
+            <!--<div class="four wide column right aligned">-->
+              <!--{{edit-rehabplan ID=Rehabplan.id}}-->
+            <!--</div>-->
+            <!--<div class="four wide column left aligned">-->
+              <!--{{delete-rehabplan ID=Rehabplan.id}}-->
+            <!--</div>-->
+          <!--</td>-->
+        <!--</tr>-->
+      <!--{{/each}}-->
+    <!--</tbody>-->
+  <!--</table>-->
+--}}
+</div>
+
+<div id="add" class="container">
+  {{#link-to 'new-rehabplans'}}
+    <a id="add" class="round-button">
+      <i class="plus icon"></i>
+    </a>
+  {{/link-to}}
 </div>
