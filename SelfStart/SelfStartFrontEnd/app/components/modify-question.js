@@ -26,8 +26,6 @@ export default Component.extend({
   modalName: computed(function() {
     return 'questionData' + this.get('ID');
   }),
-
-
   actions: {
 
     isMultipleChoice: function() {

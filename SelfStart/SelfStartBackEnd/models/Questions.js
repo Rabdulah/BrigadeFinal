@@ -3,7 +3,6 @@ var mongoose = require('mongoose');
 var questionsSchema = mongoose.Schema({
     questionText: String,
     helpDescription: String,
-    order: Number,
     optionNumber: Number,
     optionString: String,
     type: String,
