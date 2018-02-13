@@ -2,11 +2,6 @@ import Component from '@ember/component';
 import Ember from "ember";
 
 export default Component.extend({
-  init: function() {
-    this._super();
-    let a = this.get('DS').find('form', this.get('ID'));
-    //console.log(a.get('name'));
- },
 
   DS: Ember.inject.service('store'),
 
@@ -15,7 +10,6 @@ export default Component.extend({
   return 'Manage-form' + this.get('ID');
 }),
 
-//x: a,
 edit: false,
 
 questionsModel: Ember.computed(function(){
@@ -24,16 +18,20 @@ questionsModel: Ember.computed(function(){
 
 actions: {
 
-  addQuestion(question){
-    let form = this.get('DS').peekRecord('form',this.get('ID'));
-    this.get('DS').findRecord('question', question.get('id')).then((rec) => {
-      rec.set('form', form)
-      rec.save().then(()=>{
-        return true;
-      });
+  addQuestion(thisQuestion){
+    let thisForm = this.get('DS').findRecord('form',this.get('ID'));
+    console.log(thisForm);
+    let qorder = this.get('DS').createRecord('question-order', {
+      form: thisForm,
+      question: thisQuestion,
+      order: 1,
     });
 
-    console.log(form);
+    console.log(qorder.form);
+  
+    qorder.save().then(function() {
+      return true;
+    });
   },
   manageForm() {
     this.set('edit',true);

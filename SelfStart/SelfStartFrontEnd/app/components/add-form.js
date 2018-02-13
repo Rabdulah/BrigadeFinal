@@ -22,11 +22,6 @@ export default Component.extend({
             let form = this.get('DS').createRecord('form', {
                 name: self.get('fName'),
                 description: self.get('fDescription'),
-                // questions:,
-                //   this.get('DS').createRecord('question', {
-                //     questionText: 'John Doe',
-                //     helpDescription: '12/25/1999'
-                //   })]
             });
 
 

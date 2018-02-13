@@ -4,5 +4,5 @@ export default DS.Model.extend({
     name: DS.attr(),
     description: DS.attr(),
     author: DS.attr(),
-    questions: DS.hasMany('question')
+    questionOrder: DS.hasMany('question-order')
 });

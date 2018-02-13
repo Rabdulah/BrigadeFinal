@@ -6,7 +6,7 @@ var questionsSchema = mongoose.Schema({
     optionNumber: Number,
     optionString: String,
     type: String,
-    form: {type: mongoose.Schema.ObjectId, ref: 'Forms'},
+    questionOrder: [{type: mongoose.Schema.ObjectId, ref: 'QuestionOrder'}],
 });
 
 var Questions = mongoose.model('question', questionsSchema);

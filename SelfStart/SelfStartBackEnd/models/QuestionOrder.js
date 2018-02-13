@@ -6,5 +6,5 @@ var questionOrderSchema = mongoose.Schema({
     order: Number
 });
 
-var QuestionOrderSchema = mongoose.model('province', questionOrderSchema);
+var QuestionOrderSchema = mongoose.model('questionOrder', questionOrderSchema);
 exports.Model = QuestionOrderSchema;

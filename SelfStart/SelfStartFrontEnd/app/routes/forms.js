@@ -6,6 +6,7 @@ export default Route.extend({
         return RSVP.hash({
             form: this.store.findAll('form'),
             question: this.store.findAll('question'),
+            questionOrder: this.store.findAll('question-order'),
           });
       },
     afterModel() {

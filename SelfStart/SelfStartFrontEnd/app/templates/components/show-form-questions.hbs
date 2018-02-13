@@ -1,15 +1,10 @@
 <div class="ui segment">
   <h3>Questions: </h3>
-  {{#each questions as |oneQuestion|}}
+  {{#each questionOrder as |oneQuestion|}}
     <div class="ui grid">
       <div class="fourteen wide column">
-        <li>  {{oneQuestion.helpDescription}}</li>
+        <li>  {{oneQuestion.question.questionText}}</li>
       </div>
-      {{!-- <div class="two wide column right aligned">
-        <button class="ui mini circular icon basic red button" {{action 'deleteComment' oneComment.id}}
-                title="Delete"><i class="remove icon"></i>
-        </button>
-      </div> --}}
     </div>
   {{/each}}
 </div>
