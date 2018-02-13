@@ -1,10 +1,11 @@
 {{#if ImageIsAdding}}
   <div class="ui container">
-    {{upload-file
+    {{upload-file 
       model = 'image'
       maximumFileSize = 6
       multiple=true
       flag = ImageIsAdding
+      newExerID = exerID
     }}
   </div>
 {{else}}

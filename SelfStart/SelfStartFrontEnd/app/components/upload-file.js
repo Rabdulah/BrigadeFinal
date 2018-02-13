@@ -110,7 +110,7 @@ export default Component.extend({
     }
     ,
 
-    saveAllFiles: function () {
+    saveAllFiles: function (newExerID) {
       this.set('savingInProgress', true);
       let counter = 0;
       this.get('queue').forEach(file => {
@@ -120,7 +120,8 @@ export default Component.extend({
             size: file.size,
             type: file.type,
             rawSize: file.rawSize,
-            imageData: file.base64Image
+            imageData: file.base64Image,
+            exercise: newExerID
           });
           newFile.save().then(() => {
             counter++;

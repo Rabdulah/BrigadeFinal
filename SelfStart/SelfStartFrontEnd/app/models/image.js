@@ -6,4 +6,5 @@ export default DS.Model.extend({
   size: DS.attr(),
   rawSize: DS.attr('number'),
   imageData: DS.attr(),
+  exercise: DS.belongsTo('exercise',{ async: true })
 });

@@ -8,7 +8,11 @@ export default Component.extend({
 
     isEditing: false,
 
+    id: null,
+
     obj: [],
+
+    tempExercise: null,
 
     actionStep: [],
 
@@ -28,10 +32,18 @@ export default Component.extend({
 
         cancel() {  
             this.set('isEditing', false);
+            // this.get('DS').find('exercise' , this.tempExercise.get("ID")).then((exercise)=>{
+            //     exercise.destroyRecord().then(() =>{
+            //     return true;
+            // });
+            // this.tempExercise.destroyRecord();
+            // this.get('DS').destroyRecord('exercise', this.tempExercise.get('id'));
         },
 
         addExercise (){
             this.set('isEditing', true);
+            this.tempExercise = this.get('DS').createRecord('exercise');
+            this.id = this.tempExercise;
           },
 
         submit: function() {
