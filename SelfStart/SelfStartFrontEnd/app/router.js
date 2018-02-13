@@ -27,6 +27,8 @@ Router.map(function() {
   this.route('update-patient',  { path: 'patient/:patient_id'});
   this.route('new-patient');
   this.route('new-rehabplans');
+  this.route('exercise');
+  this.route('new-exercise');
 });
 
 export default Router;

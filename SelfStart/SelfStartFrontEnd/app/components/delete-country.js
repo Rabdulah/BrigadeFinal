@@ -15,6 +15,7 @@ export default Component.extend({
       $('.ui.' + this.get('modalName') + '.modal').modal({
         closable: false,
         detachable: false,
+        transition: 'fly down',
         onDeny: () => {
           return true;
         },

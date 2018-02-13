@@ -2,10 +2,10 @@ import Component from '@ember/component';
 import Ember from "ember";
 
 export default Component.extend({
-    DS: Ember.inject.service('store'),
+  DS: Ember.inject.service('store'),
 
-    modalName: Ember.computed(function(){
-    return 'Delete-form' + this.get('ID');
+  modalName: Ember.computed(function(){
+    return 'Delete-exercise' + this.get('ID');
   }),
 
   actions: {
@@ -18,8 +18,8 @@ export default Component.extend({
           return true;
         },
         onApprove: () => {
-          this.get('DS').find('form', this.get('ID')).then((form) => {
-            form.destroyRecord().then(() => {
+          this.get('DS').find('exercise', this.get('ID')).then((exercise) => {
+            exercise.destroyRecord().then(() => {
               return true;
             });
           })
