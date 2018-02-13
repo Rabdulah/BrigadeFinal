@@ -1,1 +1,33 @@
-{{yield}}
+<button class="ui mini circular labeled icon green button" {{action 'openModal'}}
+        title="Edit"><i class="edit icon"></i>
+        Edit
+</button>
+
+{{#ui-modal name= modalName class= modalName}}
+  <div class="content">
+    <div class="ui form">
+
+        <div class="field">
+         <label>Form Name</label>
+         {{input type="text" cols="50" rows="1" value=fName}}
+        </div>
+
+      <div class="field">
+        <label>Form Description</label>
+        {{textarea cols="50" rows="1" value=fDescription}}
+      </div>      
+    </div>
+  </div>
+
+  <br>
+  <div class="actions">
+    <div class="ui right floated red deny button">
+      Cancel
+    </div>
+    <div class="ui positive right labeled icon button">
+      Save
+      <i class="checkmark icon"></i>
+    </div>
+  </div>
+  <br><br>
+{{/ui-modal}}

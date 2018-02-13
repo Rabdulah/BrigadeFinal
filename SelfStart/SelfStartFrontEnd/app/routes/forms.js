@@ -9,6 +9,6 @@ export default Route.extend({
           });
       },
     afterModel() {
-        this.store.findAll('question');
+        this.store.findAll('question')
     }
 });

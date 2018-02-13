@@ -16,25 +16,24 @@ export default Component.extend({
         },
 
         submit: function () {
-  
-            let self = this;
-    
-            let form = this.get('DS').createRecord('form', {
-                name: self.get('fName'),
-                description: self.get('fDescription'),
-                // questions:,
-                //   this.get('DS').createRecord('question', {
-                //     questionText: 'John Doe',
-                //     helpDescription: '12/25/1999'
-                //   })]
-            });
+            // var tName, tDescription = "";
 
+            console.log(this.get('fName'));
 
-      
-            form.save().then(function() {
-              this.set('isEditing', false);
-              return true;
+            // let tName = this.get('fName');
+            // let tDescription = this.get('fDescription');
+
+            let newForm = this.get('DS').createRecord('form', {
+                name: this.get('fName'),
+                description: this.get('fDescription')
             });
+            console.log(this.get('fDescription'));
+
+            newForm.save().then(function() {
+               return true;
+            });
+            this.set('isEditing', false);
+            window.location.reload();
           }
     }
 });
