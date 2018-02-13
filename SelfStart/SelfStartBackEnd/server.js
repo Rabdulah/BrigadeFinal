@@ -43,6 +43,7 @@ var physiotherapests = require('./routes/physiotherapests');
 var treatments = require('./routes/treatments');
 var genders = require('./routes/genders');
 var maritalStatuses = require('./routes/maritalStatuses');
+var exerciseslist = require('./routes/exercisesList');
 
 
 // REGISTER OUR ROUTES -------------------------------
@@ -64,6 +65,7 @@ app.use('/treatments', treatments);
 app.use('/physiotherapests', physiotherapests);
 app.use('/genders', genders);
 app.use('/maritalStatuses', maritalStatuses);
+app.use('/exerciseslist', exerciseslist);
 
 
 //connect to mongoDB
