@@ -18,8 +18,8 @@ questionsModel: Ember.computed(function(){
 
 actions: {
 
-  addQuestion(thisQuestion){
-    let thisForm = this.get('DS').findRecord('form',this.get('ID'));
+  addQuestion(thisQuestion, thisForm){
+   // let thisForm = this.get('DS').findRecord('form',this.get('ID'));
     console.log(thisForm);
     let qorder = this.get('DS').createRecord('question-order', {
       form: thisForm,
