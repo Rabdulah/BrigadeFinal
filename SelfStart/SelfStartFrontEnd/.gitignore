@@ -13,10 +13,14 @@
 /connect.lock
 /coverage/*
 /libpeerconnection.log
-/.idea
 npm-debug.log*
 yarn-error.log
 testem.log
+lcov.dat
+sauce-example.log
+.env
+
+/.idea/workspace.xml
 
 # ember-try
 .node_modules.ember-try/
