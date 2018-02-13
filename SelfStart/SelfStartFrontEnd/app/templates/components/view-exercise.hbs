@@ -1,0 +1,24 @@
+<div class="ui bottom attached button">
+  <i class="add icon"></i>
+  Add Exercise
+</div>
+
+{{#ui-modal name="viewExercise" class="viewExercise"}}
+
+  {{#each exercises as |exercise|}}
+      <li>{{exercise.name}}</li>
+  {{/each}}
+
+  <form class="ui form">
+  <br><br>
+    <div class="actions">
+      <div class="ui black deny button">
+        Cancel
+      </div>
+      <div class="ui positive right labeled icon button">
+        Save
+        <i class="checkmark icon"></i>
+      </div>
+    </div>
+  </form>
+{{/ui-modal}}

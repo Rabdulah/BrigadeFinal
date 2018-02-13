@@ -52,7 +52,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/add-rehabplan.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/add-rehabplan.js should pass ESLint\n\n3:7 - \'Ember\' is not defined. (no-undef)\n11:9 - Unexpected console statement. (no-console)\n34:7 - \'Ember\' is not defined. (no-undef)');
+    assert.ok(false, 'components/add-rehabplan.js should pass ESLint\n\n3:7 - \'Ember\' is not defined. (no-undef)\n33:7 - \'Ember\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/add-status.js', function (assert) {
@@ -112,7 +112,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/edit-rehabplan.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/edit-rehabplan.js should pass ESLint\n\n4:7 - \'Ember\' is not defined. (no-undef)\n6:16 - \'Ember\' is not defined. (no-undef)\n7:13 - \'Ember\' is not defined. (no-undef)\n8:9 - \'Ember\' is not defined. (no-undef)\n9:19 - \'Ember\' is not defined. (no-undef)\n10:13 - \'Ember\' is not defined. (no-undef)\n11:14 - \'Ember\' is not defined. (no-undef)\n12:20 - \'Ember\' is not defined. (no-undef)\n14:14 - \'Ember\' is not defined. (no-undef)\n22:7 - \'Ember\' is not defined. (no-undef)');
+    assert.ok(false, 'components/edit-rehabplan.js should pass ESLint\n\n4:7 - \'Ember\' is not defined. (no-undef)\n6:16 - \'Ember\' is not defined. (no-undef)\n7:13 - \'Ember\' is not defined. (no-undef)\n8:9 - \'Ember\' is not defined. (no-undef)\n9:8 - \'Ember\' is not defined. (no-undef)\n10:13 - \'Ember\' is not defined. (no-undef)\n11:14 - \'Ember\' is not defined. (no-undef)\n12:20 - \'Ember\' is not defined. (no-undef)\n14:14 - \'Ember\' is not defined. (no-undef)\n40:7 - \'Ember\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/manage-form.js', function (assert) {
@@ -143,6 +143,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('components/upload-file.js', function (assert) {
     assert.expect(1);
     assert.ok(false, 'components/upload-file.js should pass ESLint\n\n94:7 - Unexpected console statement. (no-console)');
+  });
+
+  QUnit.test('components/view-exercise.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/view-exercise.js should pass ESLint\n\n4:7 - \'Ember\' is not defined. (no-undef)\n8:5 - \'Ember\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/welcome-page.js', function (assert) {
@@ -1140,6 +1145,35 @@ define('self-start-front-end/tests/integration/components/upload-file-test', ['e
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/view-exercise-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('view-exercise', 'Integration | Component | view exercise', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "UL2YOI1s",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"view-exercise\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "kX65C177",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"view-exercise\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/welcome-page-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -1328,6 +1362,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('integration/components/upload-file-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/upload-file-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/view-exercise-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/view-exercise-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/welcome-page-test.js', function (assert) {

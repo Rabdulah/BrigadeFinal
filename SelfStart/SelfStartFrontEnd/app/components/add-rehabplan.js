@@ -8,7 +8,6 @@ export default Component.extend({
     decreaseTime: function () {
       if (!this.get('ttc') == ""){
         var time = parseInt(this.get('ttc'));
-        console.log(time);
         if (!time < 1)
           this.set('ttc', time-1);
       }

@@ -41,18 +41,24 @@
           {{input type="text" value = goal placeholder="Goal"}}
         </div>
       </div>
+
+
+
       <div class="fields">
         <!--icon-->
         <div class="two wide field">
           <i id="icon" class="black large wait icon"></i>
         </div>
-        <div class="four wide field">
+        <div class="three wide field">
           <button class="ui button" {{action "decreaseTime"}}> <i class="black  minus icon"></i></button>
         </div>
         <div class="five wide field">
-          {{input type="text" value = ttc placeholder="Time"}}
+          <div class="ui right labeled input">
+            {{input type="text" value = ttc placeholder="Time"}}
+            <div class="ui basic label">Days</div>
+          </div>
         </div>
-        <div class="four wide field">
+        <div class="two wide field">
           <button class="ui  button"{{action "increaseTime"}}><i class="black  plus icon"></i></button>
         </div>
       </div>
