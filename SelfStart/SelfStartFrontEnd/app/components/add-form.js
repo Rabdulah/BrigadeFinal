@@ -16,6 +16,7 @@ export default Component.extend({
         },
 
         submit: function () {
+<<<<<<< HEAD
   
             let self = this;
     
@@ -23,13 +24,26 @@ export default Component.extend({
                 name: self.get('fName'),
                 description: self.get('fDescription'),
             });
+=======
+            // var tName, tDescription = "";
+>>>>>>> e8af7e564f979277f2fad5e74b00f3433f234573
 
+            console.log(this.get('fName'));
 
-      
-            form.save().then(function() {
-              this.set('isEditing', false);
-              return true;
+            // let tName = this.get('fName');
+            // let tDescription = this.get('fDescription');
+
+            let newForm = this.get('DS').createRecord('form', {
+                name: this.get('fName'),
+                description: this.get('fDescription')
             });
+            console.log(this.get('fDescription'));
+
+            newForm.save().then(function() {
+               return true;
+            });
+            this.set('isEditing', false);
+            window.location.reload();
           }
     }
 });
