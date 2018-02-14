@@ -1,9 +1,9 @@
 <div class="ui segment">
   <h3>Questions: </h3>
-  {{#each questionOrder as |oneQuestion|}}
+  {{#each questions as |oneQuestion|}}
     <div class="ui grid">
       <div class="fourteen wide column">
-        <li>  {{oneQuestion.question.questionText}}</li>
+        <li>  {{oneQuestion.questionText}}</li>
       </div>
     </div>
   {{/each}}

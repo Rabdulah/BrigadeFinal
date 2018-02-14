@@ -43,7 +43,7 @@ router.route('/:question_id')
                     question.type = request.body.question.type;
                     question.optionNumber = request.body.question.optionNumber;
                     question.optionString = request.body.question.optionString;
-                    question.questionOrder = request.body.question.questionOrder;
+                    question.forms = request.body.question.forms;
                     
                     question.save(function (error) {
                         if (error) {

@@ -4,7 +4,7 @@ var formsSchema = mongoose.Schema({
     name: String,
     description: String,
     author: {type: mongoose.Schema.ObjectId, ref: 'Administrators'},
-    questionOrder: [{type: mongoose.Schema.ObjectId, ref: 'QuestionOrder'}],
+    questions: [{type: mongoose.Schema.ObjectId, ref: 'Questions'}],
     assessmentTest: [{type: mongoose.Schema.ObjectId, ref: 'AssessmentTests'}]
 });
 
