@@ -5,7 +5,7 @@
       <div class="fourteen wide column">
         <li>  {{oneQuestion.questionText}}</li>
       <div class="two wide column right aligned">
-        <button {{action 'remove'}}>Remove</button>
+        <button {{action 'removeQuestion' oneQuestion thisForm oneQuestion.id thisForm.id}}>Remove</button>
       </div>
       </div>
     </div>
