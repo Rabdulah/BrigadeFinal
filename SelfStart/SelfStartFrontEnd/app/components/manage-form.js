@@ -18,9 +18,19 @@ questionsModel: Ember.computed(function(){
 
 actions: {
 
-  addQuestion(thisQuestion, thisForm){
+  addQuestion(thisQuestion, thisForm, qid){
     thisForm.get('questions').pushObject(thisQuestion);
     thisQuestion.get('forms').pushObject(thisForm);
+
+    this.get('DS').findRecord('form', this.get('ID')).then((rec) => {
+      rec.save().then(()=>{
+      });
+    });
+
+    this.get('DS').findRecord('question', this.get('qid')).then((rec) => {
+      rec.save().then(()=>{
+      });
+    });
   },
   manageForm() {
     this.set('edit',true);

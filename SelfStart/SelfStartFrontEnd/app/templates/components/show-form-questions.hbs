@@ -4,6 +4,9 @@
     <div class="ui grid">
       <div class="fourteen wide column">
         <li>  {{oneQuestion.questionText}}</li>
+      <div class="two wide column right aligned">
+        <button {{action 'remove'}}>Remove</button>
+      </div>
       </div>
     </div>
   {{/each}}
