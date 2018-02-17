@@ -2693,6 +2693,14 @@ define('self-start-front-end/models/exercise', ['exports', 'ember-data'], functi
     // rehabilitationPlan:DS.belongsTo('rehabilitationplan',{ async: true })
   });
 });
+define('self-start-front-end/models/exerciselist', ['exports', 'ember-data'], function (exports, _emberData) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _emberData.default.Model.extend({});
+});
 define('self-start-front-end/models/form', ['exports', 'ember-data'], function (exports, _emberData) {
     'use strict';
 
@@ -3976,6 +3984,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+c9f37f8a"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+fd05b5fb"});
 }
 //# sourceMappingURL=self-start-front-end.map
