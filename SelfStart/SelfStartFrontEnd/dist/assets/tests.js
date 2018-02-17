@@ -15,6 +15,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'app.js should pass ESLint\n\n');
   });
 
+  QUnit.test('breakpoints.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'breakpoints.js should pass ESLint\n\n');
+  });
+
   QUnit.test('components/add-country.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/add-country.js should pass ESLint\n\n');
@@ -165,6 +170,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'components/parse-question.js should pass ESLint\n\n');
   });
 
+  QUnit.test('components/rehabplan-actions-table.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/rehabplan-actions-table.js should pass ESLint\n\n');
+  });
+
   QUnit.test('components/show-form-questions.js', function (assert) {
     assert.expect(1);
     assert.ok(false, 'components/show-form-questions.js should pass ESLint\n\n2:8 - \'Ember\' is defined but never used. (no-unused-vars)');
@@ -193,6 +203,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('controllers/rehabplans.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'controllers/rehabplans.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('initializers/responsive.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'initializers/responsive.js should pass ESLint\n\n');
   });
 
   QUnit.test('models/assesment-test.js', function (assert) {
@@ -426,6 +441,65 @@ define('self-start-front-end/tests/helpers/resolver', ['exports', 'self-start-fr
   };
 
   exports.default = resolver;
+});
+define('self-start-front-end/tests/helpers/responsive', ['exports', 'ember-responsive/media'], function (exports, _media) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.setBreakpointForIntegrationTest = setBreakpointForIntegrationTest;
+  var getOwner = Ember.getOwner;
+  var classify = Ember.String.classify;
+
+
+  _media.default.reopen({
+    // Change this if you want a different default breakpoint in tests.
+    _defaultBreakpoint: 'desktop',
+
+    _breakpointArr: Ember.computed('breakpoints', function () {
+      return Object.keys(this.get('breakpoints')) || Ember.A([]);
+    }),
+
+    _forceSetBreakpoint: function _forceSetBreakpoint(breakpoint) {
+      var found = false;
+
+      var props = {};
+      this.get('_breakpointArr').forEach(function (bp) {
+        var val = bp === breakpoint;
+        if (val) {
+          found = true;
+        }
+
+        props['is' + classify(bp)] = val;
+      });
+
+      if (found) {
+        this.setProperties(props);
+      } else {
+        throw new Error('You tried to set the breakpoint to ' + breakpoint + ', which is not in your app/breakpoint.js file.');
+      }
+    },
+    match: function match() {},
+    init: function init() {
+      this._super.apply(this, arguments);
+
+      this._forceSetBreakpoint(this.get('_defaultBreakpoint'));
+    }
+  });
+
+  exports.default = Ember.Test.registerAsyncHelper('setBreakpoint', function (app, breakpoint) {
+    // this should use getOwner once that's supported
+    var mediaService = app.__deprecatedInstance__.lookup('service:media');
+    mediaService._forceSetBreakpoint(breakpoint);
+  });
+  function setBreakpointForIntegrationTest(container, breakpoint) {
+    var mediaService = getOwner(container).lookup('service:media');
+    mediaService._forceSetBreakpoint(breakpoint);
+    container.set('media', mediaService);
+
+    return mediaService;
+  }
 });
 define('self-start-front-end/tests/helpers/start-app', ['exports', 'self-start-front-end/app', 'self-start-front-end/config/environment'], function (exports, _app, _environment) {
   'use strict';
@@ -1287,6 +1361,35 @@ define('self-start-front-end/tests/integration/components/parse-question-test', 
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/rehabplan-actions-table-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('rehabplan-actions-table', 'Integration | Component | rehabplan actions table', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "4+9fnmJS",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"rehabplan-actions-table\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "nlfh5Gbc",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"rehabplan-actions-table\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/simple-example-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -1374,7 +1477,7 @@ define('self-start-front-end/tests/integration/components/welcome-page-test', ['
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
-define('self-start-front-end/tests/test-helper', ['self-start-front-end/tests/helpers/resolver', 'ember-qunit', 'ember-cli-qunit'], function (_resolver, _emberQunit, _emberCliQunit) {
+define('self-start-front-end/tests/test-helper', ['self-start-front-end/tests/helpers/resolver', 'ember-qunit', 'ember-cli-qunit', 'self-start-front-end/tests/helpers/responsive'], function (_resolver, _emberQunit, _emberCliQunit) {
   'use strict';
 
   (0, _emberQunit.setResolver)(_resolver.default);
@@ -1398,6 +1501,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('helpers/resolver.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'helpers/resolver.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('helpers/responsive.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'helpers/responsive.js should pass ESLint\n\n');
   });
 
   QUnit.test('helpers/start-app.js', function (assert) {
@@ -1548,6 +1656,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('integration/components/parse-question-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/parse-question-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/rehabplan-actions-table-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/rehabplan-actions-table-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/simple-example-test.js', function (assert) {
