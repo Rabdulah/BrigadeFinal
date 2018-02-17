@@ -24,8 +24,10 @@
 
             <li>
               {{Rehabplan.planName}}
-              <p style="float: right;  padding-top: .5%;">{{delete-rehabplan ID=Rehabplan.id}}</p>
-              <p style="float: right; padding-right: 2%;  padding-top: .5%;">{{edit-rehabplan ID=Rehabplan.id}}</p>
+              <p style="float: right;">{{delete-rehabplan ID=Rehabplan.id}}</p>
+              <p style="float: right; padding-right: 2%; cursor: pointer;" title="Edit">
+                {{#link-to 'edit-rehablinker' Rehabplan.id}}<i class="grey write icon"></i>{{/link-to}}
+              </p>
               <p style="float: right; padding-right: 30%; ">{{Rehabplan.description}}</p>
             </li>
 

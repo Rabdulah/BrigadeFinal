@@ -1,94 +1,65 @@
-<button class="ui mini circular labeled icon green button" {{action 'openModal'}}title="Edit">
-  <i class="edit icon"></i>
-  Edit
-</button>
 
-{{#ui-modal name=modalName class=modalName}}
+<link integrity="" rel="stylesheet" href="{{rootURL}}../assets/css/form-style.css">
+<form class="cd-form floating-labels">
 
-  <h2 id="rehabPlan" class="ui fluid centered header">Edit Rehabilitation Plan  {{planName}}</h2>
+  <br><br>
+  <fieldset>
+    <legend>Rehabilitation Plan Info</legend>
 
-  <form class="ui form" style="padding: 5%">
-    <div class="fields">
-      <div class="two wide field">
-        <i id="icon" class="black large user icon"></i>
+
+      <div class="icon">
+        <label class="cd-label">Rehabilitation plan name</label>
+        {{input class="star" type="text" value = rehabilitationplansData.planName placeholder="Rehab plan name"required = true}}
       </div>
-      <div class="seven wide field">
-        {{input type="text" value = planName placeholder="Rehab plan name"}}
-      </div>
-
-      <div class="seven wide field">
-        {{input type="text" value = physioID placeholder="Author Name"}}
-      </div>
+    <div class="icon">
+      <label class="cd-label">Author Name</label>
+      {{input  class="user" type="text" value = rehabilitationplansData.physioID placeholder="Author Name" required = true}}
     </div>
+
 
     <!--Description-->
-    <div class="fields">
-      <div class="two wide field">
-        <i id="icon" class="black large comment icon"></i>
-      </div>
-      <div class="fourteen wide field">
-        {{input type="text" value = description placeholder="Description"}}
-      </div>
+
+    <div class="icon">
+      <label class="cd-label" for="cd-textarea">Description</label>
+      {{textarea class="message" name="cd-textarea" value = rehabilitationplansData.description placeholder="Description" required=true}}
     </div>
+
+
 
     <!--goal-->
-    <div class="fields">
-      <div class="two wide field">
-        <i id="icon" class="black large trophy icon"></i>
-      </div>
-      <div class="fourteen wide field">
-        {{input type="text" value = goal placeholder="Goal"}}
-      </div>
-    </div>
-    <div class="fields">
-      <!--icon-->
-      <div class="two wide field">
-        <i id="icon" class="black large wait icon"></i>
-      </div>
-      <div class="fourteen wide field">
-        {{input type="text" value = timeToComplete placeholder="Time"}}
-      </div>
-
+    <div class="icon">
+      <label class="cd-label">Goal</label>
+      {{input  class="award" type="text" value = rehabilitationplansData.goal placeholder="Goal" required = true}}
     </div>
 
-
-    <!--Exercise-->
-    <div class="fields">
-      <div class="two wide field">
-        <i id="icon" class="black large world icon"></i>
-      </div>
-      <div class="fourteen wide field">
-        {{input type="text" value = exercises placeholder="Exercise"}}
-
-      </div>
+    <div class="icon">
+      <label class="cd-label" for="cd-name">Time</label>
+      {{input class="video" type="text" value = rehabilitationplansData.timeToComplete placeholder="Time" required = true}}
     </div>
 
 
 
-    <!--assessment Test-->
-    <!--<div class="fields">-->
-    <!--<div class="two wide field">-->
-    <!--<i id="icon" class="black large comment icon"></i>-->
-    <!--</div>-->
-    <!--<div class="fourteen wide field">-->
-    {{!--{{input type="text" value = assessmentTests placeholder="Assessmenttests"}}--}}
-    <!--</div>-->
-    <!--</div>-->
-    <!--<br>-->
-    <!--footer for save / cancel-->
-    <div class="actions">
-      <div class="ui black deny button">
-        Cancel
-      </div>
-      <div class="ui positive right labeled icon button">
-        Save
-        <i class="checkmark icon"></i>
-      </div>
+
+
+    <div class="two wide field">
+      <i id="icon" class="black large world icon"></i>
+    </div>
+    <div class="fourteen wide field">
+      {{input type="text" value = rehabilitationplansData.exercises placeholder="Exercise"}}
     </div>
 
-  </form>
 
 
+    {{#link-to 'rehabplans'}}
+    <div class="ui black deny button">
+      Cancel
+    </div>
+    {{/link-to}}
 
+    <div class="ui positive right labeled icon button" {{action "save"}}>
+      Save
+      <i class="checkmark icon"></i>
+    </div>
 
-{{/ui-modal}}
+  </fieldset>
+</form>

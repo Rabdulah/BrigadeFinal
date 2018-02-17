@@ -29,6 +29,7 @@ Router.map(function() {
   this.route('new-rehabplans');
   this.route('exercise');
   this.route('new-exercise');
+  this.route('edit-rehablinker',  { path: 'rehabilitationplan/:rehabilitationplan_id'});
 });
 
 export default Router;

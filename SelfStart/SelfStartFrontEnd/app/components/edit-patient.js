@@ -4,11 +4,10 @@ import { computed } from '@ember/object';
 import $ from 'jquery';
 
 export default Component.extend({
+
   DS: inject('store'),
   routing: inject('-routing'),
   pateintsData: null,
-
-
   tagName: '',
 
 
@@ -16,10 +15,6 @@ export default Component.extend({
 
   didRender() {
     this._super(...arguments);
-    // let date = this.get('DOB');
-    // this.set('selectedDate', date.toISOString().substring(0, 10));
-
-
     $(document).ready(function ($) {
       if ($('.floating-labels').length > 0) floatLabels();
 

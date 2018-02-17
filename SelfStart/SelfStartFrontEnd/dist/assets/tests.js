@@ -142,7 +142,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/edit-rehabplan.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'components/edit-rehabplan.js should pass ESLint\n\n');
+    assert.ok(false, 'components/edit-rehabplan.js should pass ESLint\n\n4:8 - \'$\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/edit-status.js', function (assert) {
@@ -298,6 +298,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('routes/country.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'routes/country.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('routes/edit-rehablinker.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/edit-rehablinker.js should pass ESLint\n\n');
   });
 
   QUnit.test('routes/exercise.js', function (assert) {
@@ -1778,6 +1783,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/routes/country-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/routes/edit-rehablinker-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/edit-rehablinker-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/routes/exercise-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/routes/exercise-test.js should pass ESLint\n\n');
@@ -2112,6 +2122,19 @@ define('self-start-front-end/tests/unit/routes/country-test', ['ember-qunit'], f
   'use strict';
 
   (0, _emberQunit.moduleFor)('route:country', 'Unit | Route | country', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
+define('self-start-front-end/tests/unit/routes/edit-rehablinker-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:edit-rehablinker', 'Unit | Route | edit rehablinker', {
     // Specify the other units that are required for this test.
     // needs: ['controller:foo']
   });

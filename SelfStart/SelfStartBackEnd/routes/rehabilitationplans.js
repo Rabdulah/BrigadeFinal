@@ -21,7 +21,8 @@ router.route('/')
 
 router.route('/:rehabilitation_id')
     .get( function (request, response) {
-        Rehabilitation.Model.findById(request.params.rehabilitations_id, function (error, rehabilitations) {
+        console.log("http://localhost:8082/rehabplans/id GET used")
+        Rehabilitation.Model.findById(request.params.rehabilitation_id, function (error, rehabilitations) {
             if (error) {
                 response.send({error: error});
             }
