@@ -16,7 +16,6 @@ export default Component.extend({
         },
 
         submit: function () {
-<<<<<<< HEAD
   
             let self = this;
     
@@ -24,9 +23,6 @@ export default Component.extend({
                 name: self.get('fName'),
                 description: self.get('fDescription'),
             });
-=======
-            // var tName, tDescription = "";
->>>>>>> e8af7e564f979277f2fad5e74b00f3433f234573
 
             console.log(this.get('fName'));
 
