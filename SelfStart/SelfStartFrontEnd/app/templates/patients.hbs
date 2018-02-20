@@ -1,29 +1,43 @@
-<div id="content">
-  {{add-patient}}
+<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/table-style.css"> <!-- Resource style -->
 
-  <br><br>
-  <table class="ui compact table">
-    <thead>
-    <tr>
-      <th>Patients</th>
-      <th></th>
-    </tr>
-    </thead>
 
-  {{#ui-accordion }}
-    <tbody>
-    {{#each model as |patient|}}
-      <div class="title">
-        <i class="dropdown large blue icon"></i>
-        {{patient.givenName}} {{patient.familyName}}
-      </div>
-      <div class="content">
-        {{patient.email}}
-      </div>
+<br><br><br><br>
 
-    {{/each}}
-    </tbody>
-  {{/ui-accordion}}
-  </table>
+<section id="cd-section">
 
+  <section id="cd-table">
+    <div class="cd-table-container">
+      <ul>
+        <li style="  text-align: center; font-size: 1.2rem; text-transform: uppercase;
+                          font-weight: bold; color: white; background-color: #f58b4c;">Patients</li>
+        {{#each model as |patient|}}
+
+          <li>{{patient.givenName}} {{patient.familyName}}
+            <p style="float: right;">{{delete-patient ID=patient.id}}</p>
+
+
+            <p style="float: right; padding-right: 2%; cursor: pointer;" title="Edit">
+              {{#link-to 'update-patient' patient.id}}
+                <i class="grey write icon"></i>
+              {{/link-to}}
+            </p>
+
+          </li>
+
+        {{/each}}
+      </ul>
+    </div>
+
+
+  </section> <!-- cd-table -->
+
+</section>
+
+
+<div id="add" class="container">
+  {{#link-to 'new-patient'}}
+    <a id="add" class="round-button">
+      <i class="plus icon"></i>
+    </a>
+  {{/link-to}}
 </div>

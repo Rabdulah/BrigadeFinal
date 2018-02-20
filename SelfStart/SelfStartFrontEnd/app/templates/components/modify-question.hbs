@@ -1,23 +1,27 @@
-
 <button class="ui mini circular labeled icon green button" {{action 'openModal'}} {{action 'isMultipleChoice'}}
         title="Edit"><i class="edit icon"></i>
         Edit
 </button>
 
-{{#ui-modal name= modalName class= modalName}}
+
+{{#ui-modal name= modalName class=modalName }}
+
+  <div class="header">
+    Edit Question: "{{questionText}}"
+  </div>
   <div class="content">
     <div class="ui form">
 
       {{#if multipleChoice}}
 
         <div class="field">
-         <label>Question</label>
-         {{input type="text" cols="50" rows="1" valueBinding=questionText}}
+          <label>Question</label>
+          {{input type="text" cols="50" rows="1" valueBinding=questionText}}
         </div>
 
         <div class="field">
-         <label>Help Description</label>
-         {{textarea cols="50" rows="1" valueBinding=questionData.helpDescription}}
+          <label>Help Description</label>
+          {{textarea cols="50" rows="1" valueBinding=questionData.helpDescription}}
         </div>
 
         <div class="field">
@@ -62,30 +66,26 @@
 
       {{else}}
         <div class="field">
-        <label>Question </label>
-        {{input type="text" cols="50" rows="1" value=questionData.questionText}}
-      </div>
+          <label>Question </label>
+          {{input type="text" cols="50" rows="1" value=questionData.questionText}}
+        </div>
 
-      <div class="field">
-        <label>Help Description</label>
-        {{textarea cols="50" rows="1" value=questionData.helpDescription}}
-      </div>
+        <div class="field">
+          <label>Help Description</label>
+          {{textarea cols="50" rows="1" value=questionData.helpDescription}}
+        </div>
 
       {{/if}}
 
 
     </div>
   </div>
-
   <br>
-  <div class="actions">
-    <div class="ui right floated red deny button">
-      Cancel
-    </div>
-    <div class="ui positive right labeled icon button">
-      Save
-      <i class="checkmark icon"></i>
-    </div>
+
+  <div class="actions" style="padding:0; ">
+    <div class="ui positive right" style="padding:.2em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Save<i class="checkmark icon"></i></div>
+    <div class="ui deny" style="padding:.2em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">Cancel</div>
   </div>
+
   <br><br>
 {{/ui-modal}}

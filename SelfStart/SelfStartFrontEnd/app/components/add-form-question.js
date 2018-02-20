@@ -11,20 +11,20 @@ export default Component.extend({
         addFQ (){
             this.set('isEditing', true);
         },
-      
+
         cancel: function () {
             this.set('isEditing', false);
         },
 
         submit: function () {
-  
-            let self = this;
-    
+
+            // let self = this;
+
             let form = this.get('DS').createRecord('form', {
                // question: self.get.objectAt('newQuestion'),
                // )
             });
-      
+
             form.save().then(function() {
               this.set('isEditing', false);
               return true;

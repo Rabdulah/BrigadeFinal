@@ -1,17 +1,21 @@
 import Component from '@ember/component';
+import { inject } from '@ember/service';
+import { computed } from '@ember/object';
+import $ from 'jquery';
 
 export default Component.extend({
 
-  DS: Ember.inject.service('store'),
-  modalName : Ember.computed(function() {
+  DS: inject('store'),
+  modalName : computed(function() {
     return 'Delete-rehabplan' + this.get('ID');
   }),
 
   actions: {
     openModal: function () {
-      Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+      $('.ui.' + this.get('modalName') + '.modal').modal({
         closable: false,
         detachable: false,
+        transition: 'fly down',
         onDeny: () => {
           return true;
         },

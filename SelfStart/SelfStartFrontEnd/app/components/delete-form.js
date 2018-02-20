@@ -13,6 +13,7 @@ export default Component.extend({
       Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
         closeable: false,
         detachable: false,
+        transition: 'fly down',
         onDeny: () => {
           return true;
         },

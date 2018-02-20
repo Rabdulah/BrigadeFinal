@@ -1,0 +1,37 @@
+<link href='http://fonts.googleapis.com/css?family=Ubuntu:400,700' rel='stylesheet' type='text/css'>
+
+<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/table-style.css"> <!-- Resource style -->
+
+
+<br><br><br><br><br>
+<section id="cd-section">
+  <section id="cd-table">
+    <div class="cd-table-container">
+      <ul>
+        <li style="text-align: center; font-size: 1.2rem; text-transform: uppercase;
+                          font-weight: bold; color: white; background-color: #f58b4c;">Exercises</li>
+
+        {{#each model as |Exercise|}}
+
+          <li>
+            {{Exercise.name}}
+            <p style="float: right;  padding-top: .5%;">{{delete-exercises ID=Exercise.id}}</p>
+            <p style="float: right; padding-right: 2%;  padding-top: .5%;">{{edit-exercises ID=Exercise.id}}</p>
+            <p style="float: right; padding-right: 30%; ">{{Exercise.description}}</p>
+          </li>
+
+        {{/each}}
+      </ul>
+    </div>
+
+  </section> <!-- cd-table -->
+</section>
+
+
+<div id="add" class="container">
+  {{#link-to 'new-exercise'}}
+    <a id="add" class="round-button">
+      <i class="plus icon"></i>
+    </a>
+  {{/link-to}}
+</div>

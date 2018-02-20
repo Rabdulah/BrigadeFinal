@@ -8,7 +8,7 @@
             <div class="field">
                 <div class="ui radio checkbox">
                     <input name="type" type="radio" {{action 'multipleChoice'}}>
-                    
+
                     <label>Multiple Choice</label>
                 </div>
             </div>
@@ -47,7 +47,7 @@
     <br><br>
 {{/if}}
 
-{{#if trueFalse}}  
+{{#if trueFalse}}
     {{input type="text" value = tfquestion placeholder = "Question"}}
     <br><br>
         {{input type="text" value = tfhelp placeholder = "Help"}}
@@ -59,7 +59,7 @@
 
     <div class="fourteen wide field">
         {{input type="text" value = mcquestion placeholder = "Question"}}
-    </div> 
+    </div>
 
     <div class="fourteen wide field">
         {{input type="text" value = mcop1 placeholder = "Option 1"}}
@@ -97,7 +97,7 @@
         <button class="ui blue button" {{action "removeOption"}}>Remove Option</button>
         {{/if}}
     </div>  <br><br><br>
-    
+
     <div class="fourteen wide field">
         {{input type="text" value = mchelp placeholder = "Help"}}
     </div>
@@ -115,7 +115,9 @@
   </div>
 
 {{else}}
+<div class = "ui centered grid">
     <button class="ui button" {{action 'addQuestion'}}>
         Add Question
     </button>
+    </div>
 {{/if}}

@@ -1,20 +1,30 @@
-<div id='content'>
-    <h2> Forms </h2>
-    <div class="ui grid">
-    {{#each model as |form|}}   
-        <div class="eight wide column">
-        <label>{{form.name}}</label>
-        </div>
-        <div class="four wide column right aligned">
-        {{manage-form ID=form.id}}
-        </div>
-        <div class="four wide column left aligned">
-        {{delete-form ID=form.id}}
-        </div>
-    {{/each}}
-    </div>
-</div>
+<br>
+<h2> Forms </h2>
 
+{{#ui-accordion }}
+  {{#each model.form as |form|}}
+    <div class="ui grid">
+      <div class="twelve wide column">
+        <div class="title">
+         <i class="ui dropdown blue icon"></i>
+          {{form.name}}
+        </div>
+        {{show-form-questions questions=form.questions thisForm = form}}
+      </div>
+      <div class="six wide column right aligned">
+          {{manage-form ID=form.id questions=form.questions  form=form fName=form.name}}
+        </div>
+      <div class="two wide column right aligned">
+        {{edit-form ID=form.id}}
+      </div>
+      <div class="two wide column left aligned">
+        {{delete-form ID=form.id}}
+      </div>
+    </div>
+  {{/each}}
+{{/ui-accordion}}
+
+<br><br>
 {{add-form}}
 
 <br><br><br>

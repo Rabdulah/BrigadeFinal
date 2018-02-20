@@ -2,7 +2,8 @@
 
 // BASE SETUP
 // =============================================================================
-//test
+// test
+
 // call the packages we need
 var mongoose = require('mongoose');
 var express = require('express'); // call express
@@ -16,7 +17,6 @@ app.use(bodyParser.urlencoded({limit: '10mb', extended: true}));
 
 // configure the server for developer pursposes (remove when published)
 app.use(function (request, response, next) {
-
     response.setHeader('Access-Control-Allow-Origin', 'http://localhost:4200');
     response.header("Access-Control-Allow-Headers", "Origin, X-Requested-With, Content-Type, Accept");
     response.header('Access-Control-Allow-Methods', 'POST, PATCH, GET, PUT, DELETE, OPTIONS');
@@ -24,6 +24,8 @@ app.use(function (request, response, next) {
 });
 
 //IMPORT OUR ROUTES ---------------------------------
+var photos = require('./routes/images');
+
 var patients = require('./routes/patients'); 
 var cities = require('./routes/cities'); 
 var assessments = require('./routes/assessments');
@@ -39,9 +41,13 @@ var questions = require('./routes/questions');
 var administrators = require('./routes/administrators');
 var physiotherapests = require('./routes/physiotherapests');
 var treatments = require('./routes/treatments');
+var genders = require('./routes/genders');
+var maritalStatuses = require('./routes/maritalStatuses');
+var questionOrder = require('./routes/questionOrders');
 
 
 // REGISTER OUR ROUTES -------------------------------
+app.use('/images', photos);
 app.use('/patients', patients);
 app.use('/cities', cities);
 app.use('/assessments', assessments);
@@ -49,7 +55,7 @@ app.use('/forms', forms);
 app.use('/questions', questions);
 app.use('/appointments', appointments);
 app.use('/askAPhysio', askAPhysio);
-app.use('/excercise', excercise);
+app.use('/exercises', excercise);
 app.use('/provinces', provinces);
 app.use('/recommendation', recommendation);
 app.use('/rehabilitationplans', rehabilitationplans);
@@ -57,6 +63,10 @@ app.use('/countries', countries);
 app.use('/administrators', administrators);
 app.use('/treatments', treatments);
 app.use('/physiotherapests', physiotherapests);
+app.use('/genders', genders);
+app.use('/maritalStatuses', maritalStatuses);
+
+app.use('/questionOrders', questionOrder);
 
 //connect to mongoDB
 mongoose.connect('mongodb://localhost/selfStart', { useMongoClient: true });

@@ -22,13 +22,24 @@ export default Component.extend({
             let form = this.get('DS').createRecord('form', {
                 name: self.get('fName'),
                 description: self.get('fDescription'),
-                // author: self.get('fAuthor')
             });
-      
-            form.save().then(function() {
-              this.set('isEditing', false);
-              return true;
+
+            console.log(this.get('fName'));
+
+            // let tName = this.get('fName');
+            // let tDescription = this.get('fDescription');
+
+            let newForm = this.get('DS').createRecord('form', {
+                name: this.get('fName'),
+                description: this.get('fDescription')
             });
+            console.log(this.get('fDescription'));
+
+            newForm.save().then(function() {
+               return true;
+            });
+            this.set('isEditing', false);
+            window.location.reload();
           }
     }
 });

@@ -1,95 +1,93 @@
-<button class = "ui mini circular icon green button" {{action 'openModal'}} title="Edit">
-  <i class=" pencil icon"> </i>
+<button class="ui mini circular labeled icon green button" {{action 'openModal'}}title="Edit">
+  <i class="edit icon"></i>
+  Edit
 </button>
-
 
 {{#ui-modal name=modalName class=modalName}}
 
-  <div class="ui fluid raised very padded text container segment">
+  <h2 id="rehabPlan" class="ui fluid centered header">Edit Rehabilitation Plan  {{planName}}</h2>
 
-    <h2 id="rehabPlan" class="ui fluid centered header">Edit Rehabilitation Plan  {{planName}}</h2>
-
-    <form class="ui form">
-      <div class="fields">
-        <div class="two wide field">
-          <i id="icon" class="black large user icon"></i>
-        </div>
-        <div class="seven wide field">
-          {{input type="text" value = planName placeholder="Rehab plan name"}}
-        </div>
-
-        <div class="seven wide field">
-          {{input type="text" value = physioID placeholder="Author Name"}}
-        </div>
+  <form class="ui form" style="padding: 5%">
+    <div class="fields">
+      <div class="two wide field">
+        <i id="icon" class="black large user icon"></i>
+      </div>
+      <div class="seven wide field">
+        {{input type="text" value = planName placeholder="Rehab plan name"}}
       </div>
 
-      <!--Description-->
-      <div class="fields">
-        <div class="two wide field">
-          <i id="icon" class="black large comment icon"></i>
-        </div>
-        <div class="fourteen wide field">
-          {{input type="text" value = description placeholder="Description"}}
-        </div>
+      <div class="seven wide field">
+        {{input type="text" value = physioID placeholder="Author Name"}}
+      </div>
+    </div>
+
+    <!--Description-->
+    <div class="fields">
+      <div class="two wide field">
+        <i id="icon" class="black large comment icon"></i>
+      </div>
+      <div class="fourteen wide field">
+        {{input type="text" value = description placeholder="Description"}}
+      </div>
+    </div>
+
+    <!--goal-->
+    <div class="fields">
+      <div class="two wide field">
+        <i id="icon" class="black large trophy icon"></i>
+      </div>
+      <div class="fourteen wide field">
+        {{input type="text" value = goal placeholder="Goal"}}
+      </div>
+    </div>
+    <div class="fields">
+      <!--icon-->
+      <div class="two wide field">
+        <i id="icon" class="black large wait icon"></i>
+      </div>
+      <div class="fourteen wide field">
+        {{input type="text" value = timeToComplete placeholder="Time"}}
       </div>
 
-      <!--goal-->
-      <div class="fields">
-        <div class="two wide field">
-          <i id="icon" class="black large trophy icon"></i>
-        </div>
-        <div class="fourteen wide field">
-          {{input type="text" value = goal placeholder="Goal"}}
-        </div>
-      </div>
-      <!--Time to complete-->
-      <div class="inline fields">
-        <div class="two wide field">
-          <i id="icon" class="black large wait icon"></i>
-        </div>
-        <div class=" required five wide field">
-          <div class="ui action input">
-            <button class="ui button" {{action "decreaseTime"}}> <i class="black  minus icon"></i></button>
-            {{input type="text" value = ttc placeholder="Time"}}
-            <button class="ui button"{{action "increaseTime"}}><i class="black  plus icon"></i></button>
-          </div>
-        </div>
-      </div>
-
-      <!--Exercise-->
-      <div class="fields">
-        <div class="two wide field">
-          <i id="icon" class="black large comment icon"></i>
-        </div>
-        <div class="fourteen wide field">
-          {{input type="text" value = exercises placeholder="Exercise"}}
-        </div>
-      </div>
+    </div>
 
 
-      <!--assessment Test-->
-      <div class="fields">
-        <div class="two wide field">
-          <i id="icon" class="black large comment icon"></i>
-        </div>
-        <div class="fourteen wide field">
-          {{input type="text" value = assessmentTests placeholder="Assessmenttests"}}
-        </div>
+    <!--Exercise-->
+    <div class="fields">
+      <div class="two wide field">
+        <i id="icon" class="black large world icon"></i>
       </div>
+      <div class="fourteen wide field">
+        {{input type="text" value = exercises placeholder="Exercise"}}
 
-      <!--footer for save / cancel-->
-      <div class="actions">
-        <div class="ui black deny button">
-          Cancel
-        </div>
-        <div class="ui positive right labeled icon button">
-          Save
-          <i class="checkmark icon"></i>
-        </div>
       </div>
+    </div>
 
-    </form>
-  </div>
+
+
+    <!--assessment Test-->
+    <!--<div class="fields">-->
+    <!--<div class="two wide field">-->
+    <!--<i id="icon" class="black large comment icon"></i>-->
+    <!--</div>-->
+    <!--<div class="fourteen wide field">-->
+    {{!--{{input type="text" value = assessmentTests placeholder="Assessmenttests"}}--}}
+    <!--</div>-->
+    <!--</div>-->
+    <!--<br>-->
+    <!--footer for save / cancel-->
+    <div class="actions">
+      <div class="ui black deny button">
+        Cancel
+      </div>
+      <div class="ui positive right labeled icon button">
+        Save
+        <i class="checkmark icon"></i>
+      </div>
+    </div>
+
+  </form>
+
 
 
 
