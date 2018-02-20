@@ -3,6 +3,16 @@ import { computed } from '@ember/object';
 import { inject } from '@ember/service';
 
 export default Component.extend({
+
+  exerciseContainer : [],
+
+  init: function() {
+    this._super();
+    // const rehabplantemp = this.get('DS').createRecord('rehabilitationplan');
+    // rehabplantemp.save();
+    // console.log(rehabplantemp);
+  },
+
   DS: inject('store'),
   routing: inject('-routing'),
 
@@ -39,9 +49,10 @@ export default Component.extend({
         description: self.get('description'),
         goal: self.get('goal'),
         timeToComplete: self.get('timeToComplete'),
-        //exercises: self.get('exercises'),
+        exercises: self.get('exercises'),
         // assessmentTests: self.get('assessmentTests'),
       });
+
       //when save is successfull close form
       rehabplan.save().then(function() {
         self.get('routing').transitionTo('rehabplans');

@@ -30,17 +30,27 @@
     </div>
 
 
-    <div >
-      <h4>Exercises</h4>
-      <p class="cd-select icon">
-        <select class="people" onchange={{action (mut exercise) value="target.value"}}>
-          {{#each exerciseModel as |oneExercise|}}
-            <option value={{oneExercise.name}} selected={{eq exercise.name oneExercise.name}}>
-              {{oneExercise.name}}
-            </option>
+    <div class="icon">
+
+      <label class="cd-label">Exercises</label>
+      {{get-exercises}}
+
+
+      <div class="ui inverted segment">
+        <label>Current Exercises</label>
+        <ul align = "left">
+          {{#each obj as |o|}}
+            <li>
+              <p>
+                {{o}}
+                <br>
+                <i style=" cursor: pointer;" title="Edit" {{action 'edit' }} class="gray write icon" ></i>
+                <i style=" cursor: pointer;" title="Delete" {{action "openModal" }} class="red remove icon" ></i>
+              </p>
+            </li>
           {{/each}}
-        </select>
-      </p>
+        </ul>
+      </div>
     </div>
 
 

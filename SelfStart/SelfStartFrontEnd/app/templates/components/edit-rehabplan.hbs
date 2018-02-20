@@ -41,19 +41,34 @@
 
 
 
-    <div class="two wide field">
-      <i id="icon" class="black large world icon"></i>
-    </div>
-    <div class="fourteen wide field">
-      {{input type="text" value = rehabilitationplansData.exercises placeholder="Exercise"}}
+    <div class="icon">
+
+      <label class="cd-label">Exercises</label>
+      {{get-exercises ID =rehabilitationplansData.id exercises=rehabilitationplansData.exercises formName = rehabilitationplansData.planName }}
+      <br>
+      <div class="ui inverted segment">
+        <label>Current Exercises</label>
+        {{rehab-exercise exercises=rehabilitationplansData.exercises}}
+
+        <ul align = "left">
+          {{#each obj as |o|}}
+            <li>
+              <p>
+                {{o}}
+                <br>
+                <i style=" cursor: pointer;" title="Edit" {{action 'edit' }} class="gray write icon" ></i>
+                <i style=" cursor: pointer;" title="Delete" {{action "openModal" }} class="red remove icon" ></i>
+              </p>
+            </li>
+          {{/each}}
+        </ul>
+      </div>
     </div>
 
 
 
     {{#link-to 'rehabplans'}}
-    <div class="ui black deny button">
-      Cancel
-    </div>
+      <div class="ui black deny button">Cancel</div>
     {{/link-to}}
 
     <div class="ui positive right labeled icon button" {{action "save"}}>

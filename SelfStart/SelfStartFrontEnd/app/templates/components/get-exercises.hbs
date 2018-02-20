@@ -1,0 +1,46 @@
+
+<button class="ui mini circular labeled icon green button" {{action 'openModal'}}>
+  <i class="edit icon"></i>
+  Add Exercise
+</button>
+
+{{#ui-modal name=modalName  class=modalName}}
+
+  <div class="ui search">
+    <div class="ui icon input">
+      <input class="prompt" type="text" placeholder="Search Exercise">
+      <i class="search icon"></i>
+    </div>
+  </div>
+
+  <div class="ui items">
+  {{#each exerciseModel as |oneExercise|}}
+    <div class = "item">
+      <div class="ui small image">
+        <!--<img src="/images/wireframe/image.png">-->
+      </div>
+    </div>
+    <div class="middle aligned content">
+      <div class="header">
+        {{oneExercise.name}}
+      </div>
+      <div class="description">
+        <p>{{oneExercise.description}}</p>
+      </div>
+      <div class="extra">
+        <div class="ui right floated button" {{action "addExercise" oneExercise}}>
+          Add
+        </div>
+      </div>
+    </div>
+  {{/each}}
+
+    <div class="actions">
+      <div class="ui positive right labeled icon button">
+        Done
+      </div>
+    </div>
+
+  </div>
+
+{{/ui-modal}}
