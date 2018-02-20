@@ -335,6 +335,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'routes/patients.js should pass ESLint\n\n');
   });
 
+  QUnit.test('routes/physiotherapists.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/physiotherapists.js should pass ESLint\n\n');
+  });
+
   QUnit.test('routes/province.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'routes/province.js should pass ESLint\n\n');
@@ -1754,6 +1759,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/routes/patients-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/routes/physiotherapists-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/physiotherapists-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/routes/province-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/routes/province-test.js should pass ESLint\n\n');
@@ -2182,6 +2192,19 @@ define('self-start-front-end/tests/unit/routes/patients-test', ['ember-qunit'], 
   'use strict';
 
   (0, _emberQunit.moduleFor)('route:patients', 'Unit | Route | patients', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
+define('self-start-front-end/tests/unit/routes/physiotherapists-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:physiotherapists', 'Unit | Route | physiotherapists', {
     // Specify the other units that are required for this test.
     // needs: ['controller:foo']
   });

@@ -29,6 +29,7 @@ Router.map(function() {
   this.route('new-rehabplans');
   this.route('exercise');
   this.route('new-exercise');
+  this.route('physiotherapists');
 });
 
 export default Router;
