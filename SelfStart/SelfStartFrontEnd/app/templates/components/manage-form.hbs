@@ -1,21 +1,36 @@
 
 <button class="ui button" {{action 'openModal'}}>
+<<<<<<< HEAD
 Manage Form
 </button>
 
 {{#ui-modal name= modalName class= modalName}}
 
+=======
+Manage Form Questions
+</button>
+
+{{#ui-modal name= modalName class= modalName}}
+>>>>>>> feature5
         <div class='content'>
           <div class='ui form'>
            <h2> {{fName}} </h2>
            <div class="ui grid">
+<<<<<<< HEAD
                 {{#each questionsModel as |question|}}
+=======
+                {{#each questionsModel as |question|}}   
+>>>>>>> feature5
                         <div class="four wide column">
                          <label>{{question.questionText}}</label>
                         </div>
 
                         <div class="four wide column">
+<<<<<<< HEAD
                          <button {{action "addQuestion" question}}> Add </button>
+=======
+                         <button {{action "addQuestion" question form question.id}}> Add </button>
+>>>>>>> feature5
                         </div>
                 {{/each}}
            </div>

@@ -40,11 +40,10 @@ router.route('/:question_id')
                     // update each attribute
                     question.questionText = request.body.question.questionText;
                     question.helpDescription = request.body.question.helpDescription;
-                    question.order = request.body.question.order;
                     question.type = request.body.question.type;
-                    question.form = request.body.question.form;
                     question.optionNumber = request.body.question.optionNumber;
                     question.optionString = request.body.question.optionString;
+                    question.forms = request.body.question.forms;
                     
                     question.save(function (error) {
                         if (error) {

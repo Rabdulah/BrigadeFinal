@@ -16,7 +16,13 @@ export default Component.extend({
         },
 
         submit: function () {
-            // var tName, tDescription = "";
+  
+            let self = this;
+    
+            let form = this.get('DS').createRecord('form', {
+                name: self.get('fName'),
+                description: self.get('fDescription'),
+            });
 
             console.log(this.get('fName'));
 

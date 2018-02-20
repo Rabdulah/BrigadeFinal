@@ -28,7 +28,7 @@ export default Component.extend({
                     rec.set('description', this.get('fDescription')),
                     rec.save().then(()=>{
                         return true;
-                    });
+            });
           })
         }
       })
