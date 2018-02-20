@@ -11,6 +11,7 @@ export default Component.extend({
   multiple: false,
   queue: [],
   savingInProgress: false,
+  newExerID: null,
 
   labelArray: [
     'height: 6.25em',
@@ -99,7 +100,8 @@ export default Component.extend({
         size: file.size,
         type: file.type,
         rawSize: file.rawSize,
-        imageData: file.base64Image
+        imageData: file.base64Image,
+        exercise: this.newExerID
       });
       newFile.save().then(() => {
         this.get('queue').removeObject(file);

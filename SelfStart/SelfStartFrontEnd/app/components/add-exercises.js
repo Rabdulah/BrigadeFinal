@@ -12,7 +12,7 @@ export default Component.extend({
 
     obj: [],
 
-    tempExercise: null,
+    // exerciseData: null,
 
     actionStep: [],
 
@@ -42,11 +42,47 @@ export default Component.extend({
 
         addExercise (){
             this.set('isEditing', true);
-            this.tempExercise = this.get('DS').createRecord('exercise');
-            this.id = this.tempExercise;
+            // this.exerciseData = this.get('DS').createRecord('exercise', {
+            //     name:this.get('Name'),
+            //     description:this.get('Description'),
+            //     objectives:this.get('obj'),
+            //     authorName:this.get('AuthName'),
+            //     actionSteps:this.get('actionStep'),
+            //     location:this.get('Location'),
+            //     frequency:this.get('Frequency'),
+            //     duration:this.get('Duration'),
+            //     multimediaURL:this.get('MMURL'),
+            //     targetDate:this.get('TargetDate')
+            // });
+
+            // this.exerciseData.save().then(function(){
+                // id = tempExer._internalModel.id;
+            // });
+            // console.log(this.tempExercise._internalModel);
+            // console.log(this.id);
+            // console.log(this.id);
+            // this.tempExercise.save();
           },
 
         submit: function() {
+            // this.get('DS').findRecord('exercise', this.exerciseData).then((rec)=>{
+            //     rec.set('name', this.get('Name'));
+            //     rec.set('description', this.get('Description'));
+            //     rec.set('authorName', this.get('AuthName'));
+            //     rec.set('objective', this.get('Objective'));
+            //     rec.set('actionStep', this.get('ActionSteps'));
+            //     rec.set('location', this.get('Location'));
+            //     rec.set('frequency', this.get('Frequency'));
+            //     rec.set('duration', this.get('Duration'));
+            //     rec.set('targetDate', this.get('TargetDate'));
+            //     rec.set('MMURL', this.get('MMURL'));
+            //     // rec.set('exercises', this.get('exercises'));
+            //     // rec.set('assessmentTests', this.get('assessmentTests'));
+            //     rec.save().then(()=>{
+            //       return true;
+            //     });
+            // });
+
             let exercise = this.get('DS').createRecord('exercise', {
                 name:this.get('Name'),
                 description:this.get('Description'),
@@ -61,8 +97,7 @@ export default Component.extend({
                 //rehabilitationPlan:this.get('rehabPlan'),
             });
 
-            exercise.save().then(function(){
-            });
+            exercise.save().then(function(){});
             this.set('Name', "");
             this.set('Description', "");
             this.set('Objective', "");
