@@ -38,6 +38,7 @@ var questions = require('./routes/questions');
 var administrators = require('./routes/administrators');
 var physiotherapests = require('./routes/physiotherapests');
 var treatments = require('./routes/treatments');
+var questionOrder = require('./routes/questionOrders');
 
 
 // REGISTER OUR ROUTES -------------------------------
@@ -56,6 +57,7 @@ app.use('/countries', countries);
 app.use('/administrators', administrators);
 app.use('/treatments', treatments);
 app.use('/physiotherapests', physiotherapests);
+app.use('/questionOrders', questionOrder);
 
 //connect to mongoDB
 mongoose.connect('mongodb://localhost/selfStart', { useMongoClient: true });
