@@ -13,6 +13,7 @@ export default Component.extend({
     accept: 'audio/*,video/*,image/*',
     multiple: true,
     queue: [],
+    modelQueue: [],
     savingInProgress: false,
     isEditing: false,
     id: null,
@@ -78,7 +79,19 @@ export default Component.extend({
                     fileToUpload: data.target.files[i],
                     maximumFileSize: 6
                     });
-                this.get('queue').pushObject(file);
+
+                    console.log(file);
+
+                    var newFile = this.get('DS').createRecord(this.get('model'), {
+                        name: this.ImageName,
+                        size: file.size,
+                        type: file.type,
+                        rawSize: file.rawSize,
+                        imageData: file.base64Image
+                    });
+                    newFile.save();
+                    this.get('queue').pushObject(file);
+                    // this.get('modelQueue').pushObject(newFile);
               }
             }
         },
@@ -160,6 +173,34 @@ export default Component.extend({
             //     });
             // });
 
+            // let saveImage = [];
+            // this.get('queue').forEach(file => {
+            //     // if (file.isDisplayableImage) {
+            //       var newFile = this.get('DS').createRecord(this.get('model'), {
+            //         name: file.name,
+            //         size: file.size,
+            //         type: file.type,
+            //         rawSize: file.rawSize,
+            //         imageData: file.base64Image,
+            //         exercise: null
+            //       });
+            //       console.log(newFile);
+            //       newFile.save();//.then(() => {
+            //         // // counter++;
+            //         // if (this.get('queue').length == counter) {
+            //         //   this.get('queue').clear();
+            //         //   this.set('flag', false);
+            //         //   this.set('savingInProgress', false);
+            //         // }
+            //     //   });
+            //       saveImage.pushObject(newFile);
+            //     // } else{
+            //     //   counter++;
+            //     // }
+            //   });
+
+            // console.log("This is save image");
+            // console.log(saveImage);
             let exercise = this.get('DS').createRecord('exercise', {
                 name:this.get('Name'),
                 description:this.get('Description'),
@@ -171,13 +212,28 @@ export default Component.extend({
                 duration:this.get('Duration'),
                 multimediaURL:this.get('MMURL'),
                 targetDate:this.get('TargetDate'),
-                image: this.get('queue')
-                //rehabilitationPlan:this.get('rehabPlan'),
+                images: []
             });
 
-            exercise.save().then(function(){
+            exercise.save().then((exer)=>{
+                var saveImage = [];
+                console.log(exer.id);
+                this.get('queue').forEach(file => {
+                      var newFile = this.get('DS').createRecord(this.get('model'), {
+                        name: file.name,
+                        size: file.size,
+                        type: file.type,
+                        rawSize: file.rawSize,
+                        imageData: file.base64Image,
+                        exercise: exercise
+                      });
 
+                      newFile.save();
+                  });
             });
+
+            this.get('queue').clear();
+            
             this.set('Name', "");
             this.set('Description', "");
             this.set('Objective', "");

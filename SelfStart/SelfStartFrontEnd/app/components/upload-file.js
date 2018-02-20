@@ -101,7 +101,7 @@ export default Component.extend({
         type: file.type,
         rawSize: file.rawSize,
         imageData: file.base64Image,
-        exercise: this.newExerID
+        // exercise: this.newExerID
       });
       newFile.save().then(() => {
         this.get('queue').removeObject(file);
