@@ -3,6 +3,7 @@ import Ember from "ember";
 
 export default Component.extend({
   DS: Ember.inject.service('store'),
+  iName: null,
   ImageIsAdding: false,
 
   model: Ember.computed(function(){

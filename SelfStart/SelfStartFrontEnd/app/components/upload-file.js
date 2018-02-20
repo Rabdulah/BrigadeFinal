@@ -4,10 +4,11 @@ import fileObject from "../utils/file-object";
 
 export default Component.extend({
   DS: Ember.inject.service('store'),
+  ImageName: null,
   model: null,
   flag: null,
   accept: 'audio/*,video/*,image/*',
-  multiple: true,
+  multiple: false,
   queue: [],
   savingInProgress: false,
 
@@ -92,8 +93,9 @@ export default Component.extend({
 
     saveFile: function (file) {
       console.log(this.get('queue'));
+      console.log(this.ImageName);
       var newFile = this.get('DS').createRecord(this.get('model'), {
-        name: file.name,
+        name: this.ImageName,
         size: file.size,
         type: file.type,
         rawSize: file.rawSize,

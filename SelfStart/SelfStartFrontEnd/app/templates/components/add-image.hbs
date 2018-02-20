@@ -1,0 +1,31 @@
+<div class="ui fluid raised very padded text container segment">
+   <h2 id="exercise" class="ui fluid centered header">New Image</h2>
+
+    <form class="ui form">
+        
+        <div class="field">
+            <label>Image Name</label>
+            {{input type ="text" value=iName placeholder="Image Name"}}
+        </div>
+
+        <div class = "field">
+            {{upload-file 
+                model = 'image'
+                maximumFileSize = 6
+                multiple=false
+                flag = ImageIsAdding
+                ImageName = iName
+                newExerID = exerID
+            }}
+
+            {{!-- {{simple-example iName=ImageName}} --}}
+            <br><br>
+        </div>
+
+        {{!-- <div class = "inline">
+            <button class="ui button" type="submit" {{action "submit"}}>Add New Image(s)</button>
+            <button class="ui button" type="submit" {{action "cancel"}}>Cancel</button>
+        </div> --}}
+    </form>
+</div>
+

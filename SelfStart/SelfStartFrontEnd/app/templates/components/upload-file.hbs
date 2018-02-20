@@ -8,10 +8,14 @@
           </div>
         {{else}}
           <img src="{{file.base64Image}}">
+          {{!-- <br>
+            <button class="ui blue button">
+              Upload New Image
+            </button> --}}
         {{/if }}
       </div>
       <div class="middle aligned content">
-        <div class="header">{{file.name}}</div>
+        {{!-- <div class="header">{{file.name}}</div> --}}
         <div class="meta">
           <span>Size: {{file.size}}</span>
         </div>
@@ -45,13 +49,13 @@
            accept="{{accept}}" multiple={{multiple}}>
   </div>
   <br>
-  <button class="ui black button" {{action 'done' file}}>
+  {{!-- <button class="ui black button" {{action 'done' file}}>
     Cancel
-  </button>
+  </button> --}}
 {{/each}}
 
 
-{{#if queue}}
+{{!-- {{#if queue}}
   {{#if savingInProgress}}
     <button class="ui labeled green icon loading button">Loading</button>
   {{else}}
@@ -64,4 +68,4 @@
     <i class="remove icon"></i>
     Remove All
   </button>
-{{/if}}
+{{/if}} --}}

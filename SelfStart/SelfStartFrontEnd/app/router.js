@@ -10,6 +10,7 @@ Router.map(function() {
   this.route('home', {path: '/'});
   this.route('patients');
   this.route('exercises');
+  this.route('images');
 });
 
 export default Router;
