@@ -110,6 +110,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'components/delete-status.js should pass ESLint\n\n');
   });
 
+  QUnit.test('components/display-questions.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/display-questions.js should pass ESLint\n\n4:9 - \'Ember\' is not defined. (no-undef)\n6:16 - \'Ember\' is not defined. (no-undef)');
+  });
+
   QUnit.test('components/edit-country.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/edit-country.js should pass ESLint\n\n');
@@ -183,6 +188,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('components/welcome-page.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/welcome-page.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('controllers/form-display.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'controllers/form-display.js should pass ESLint\n\n');
   });
 
   QUnit.test('controllers/questions.js', function (assert) {
@@ -283,6 +293,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('routes/exercise.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'routes/exercise.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('routes/form-display.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/form-display.js should pass ESLint\n\n');
   });
 
   QUnit.test('routes/forms.js', function (assert) {
@@ -992,6 +1007,35 @@ define('self-start-front-end/tests/integration/components/delete-status-test', [
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/display-questions-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('display-questions', 'Integration | Component | display questions', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "ohDdx9uF",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"display-questions\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "X5z97jjl",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"display-questions\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/edit-country-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -1495,6 +1539,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/delete-status-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('integration/components/display-questions-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/display-questions-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('integration/components/edit-country-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/edit-country-test.js should pass ESLint\n\n');
@@ -1568,6 +1617,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('unit/adapters/application-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/adapters/application-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/controllers/form-display-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/controllers/form-display-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/controllers/home-test.js', function (assert) {
@@ -1660,6 +1714,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/routes/exercise-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/routes/form-display-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/form-display-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/routes/forms-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/routes/forms-test.js should pass ESLint\n\n');
@@ -1747,6 +1806,20 @@ define('self-start-front-end/tests/unit/adapters/application-test', ['ember-quni
   (0, _emberQunit.test)('it exists', function (assert) {
     var adapter = this.subject();
     assert.ok(adapter);
+  });
+});
+define('self-start-front-end/tests/unit/controllers/form-display-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('controller:form-display', 'Unit | Controller | form display', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var controller = this.subject();
+    assert.ok(controller);
   });
 });
 define('self-start-front-end/tests/unit/controllers/home-test', ['ember-qunit'], function (_emberQunit) {
@@ -1988,6 +2061,19 @@ define('self-start-front-end/tests/unit/routes/exercise-test', ['ember-qunit'], 
   'use strict';
 
   (0, _emberQunit.moduleFor)('route:exercise', 'Unit | Route | exercise', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
+define('self-start-front-end/tests/unit/routes/form-display-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:form-display', 'Unit | Route | form display', {
     // Specify the other units that are required for this test.
     // needs: ['controller:foo']
   });

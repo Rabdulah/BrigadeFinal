@@ -33,9 +33,14 @@
         </div>
         {{show-form-questions questions=form.questions}}
       </div>
-      <div class="six wide column right aligned">
-          {{manage-form ID=form.id questions=form.questions fName=form.name}}
-        </div>
+      <div class="three wide column right aligned">
+        {{manage-form ID=form.id questions=form.questions fName=form.name}}
+      </div>
+      <a id="questions">
+        {{#link-to 'formDisplay' (query-params id=form.id)}}
+              <button class="ui button">View Form</button>
+        {{/link-to}}
+      </a>
       <div class="two wide column right aligned">
         {{edit-form ID=form.id}}
       </div>
