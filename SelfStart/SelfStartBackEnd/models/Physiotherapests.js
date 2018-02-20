@@ -27,6 +27,6 @@ var physiotherapestsSchema = mongoose.Schema({
     }
 
 });
-var PhysiotherapestsSchema = mongoose.model('physiotherapest', physiotherapestsSchema);
+var PhysiotherapestsSchema = mongoose.model('physiotherapist', physiotherapestsSchema);
 exports.Model = PhysiotherapestsSchema;
 
