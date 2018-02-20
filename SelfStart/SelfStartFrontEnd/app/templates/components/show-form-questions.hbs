@@ -2,14 +2,12 @@
   <h3>Questions: </h3>
   {{#each questions as |oneQuestion|}}
     <div class="ui grid">
-      <div class="thirteen wide column">
-        <li>{{oneQuestion.questionText}}</li>
+      <div class="fourteen wide column">
+        <li>  {{oneQuestion.questionText}}</li>
+      <div class="two wide column right aligned">
+        <button {{action 'removeQuestion' oneQuestion thisForm oneQuestion.id thisForm.id}}>Remove</button>
       </div>
-      {{!-- <div class="two wide column right aligned">
-        <button class="ui mini circular icon basic red button" {{action 'openModal' oneQuestion.id}}
-                title="Remove"><i class="remove icon"></i>
-        </button>
-      </div> --}}
+      </div>
     </div>
   {{/each}}
 </div>
