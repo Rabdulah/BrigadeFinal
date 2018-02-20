@@ -1,3 +1,8 @@
 {{#each formModel.questions as |q|}}
-{{q.questionText}}
+
+    {{q.questionText}}<br>
+    {{#isMC q.type}}
+    MC
+    {{/isMC}}
+
 {{/each}}

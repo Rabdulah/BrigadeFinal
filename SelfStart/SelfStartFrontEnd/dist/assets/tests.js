@@ -112,7 +112,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/display-questions.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/display-questions.js should pass ESLint\n\n4:9 - \'Ember\' is not defined. (no-undef)\n6:16 - \'Ember\' is not defined. (no-undef)');
+    assert.ok(false, 'components/display-questions.js should pass ESLint\n\n3:1 - \'Ember\' is not defined. (no-undef)\n11:9 - \'Ember\' is not defined. (no-undef)\n13:16 - \'Ember\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/edit-country.js', function (assert) {
