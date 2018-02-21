@@ -30,6 +30,12 @@
                     <label>True/False</label>
                 </div>
             </div>
+            <div class="field">
+                <div class="ui radio checkbox">
+                    <input name="type" type="radio" {{action 'picture'}}>
+                    <label>Picture</label>
+                </div>
+            </div>
         </div>
 
 
@@ -37,6 +43,13 @@
     {{input type="text" value = rquestion placeholder = "Question"}}
     <br><br>
     {{input type="text" value = rhelp placeholder = "Help"}}
+    <br><br>
+{{/if}}
+
+{{#if picture}}
+    {{input type="text" value = pquestion placeholder = "Question"}}
+    <br><br>
+    {{input type="text" value = phelp placeholder = "Help"}}
     <br><br>
 {{/if}}
 

@@ -7,5 +7,6 @@ export default DS.Model.extend({
   type: DS.attr(),
   optionNumber: DS.attr('number'),
   optionString: DS.attr(),
-  forms: DS.hasMany('form')
+  forms: DS.hasMany('form'),
+  image: DS.attr(),
 });

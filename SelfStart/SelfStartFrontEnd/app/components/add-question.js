@@ -9,6 +9,7 @@ export default Component.extend({
     multipleChoice:false,
     rating: false,
     trueFalse:false,
+    picture: false,
     option2:false,
     option3:false,
     option4:false,
@@ -22,6 +23,15 @@ export default Component.extend({
 
       multipleChoice (){
         this.set('multipleChoice', true);
+        this.set('shortAns', false);
+        this.set('trueFalse', false);
+        this.set('rating',false);
+        this.set('picture', false);
+      },
+
+      picture () {
+        this.set('picture', true);
+        this.set('multipleChoice', false);
         this.set('shortAns', false);
         this.set('trueFalse', false);
         this.set('rating',false);
@@ -92,6 +102,7 @@ export default Component.extend({
         this.set('multipleChoice', false);
         this.set('trueFalse', false);
         this.set('rating',false);
+        this.set('picture', false);
       },
 
       trueFalse (){
@@ -99,6 +110,7 @@ export default Component.extend({
         this.set('shortAns', false);
         this.set('multipleChoice', false);
         this.set('rating',false);
+        this.set('picture', false);
       },
 
       rating (){
@@ -106,6 +118,7 @@ export default Component.extend({
         this.set('shortAns', false);
         this.set('multipleChoice', false);
         this.set('rating',true);
+        this.set('picture', false);
       },
 
       addQuestion (){
@@ -147,6 +160,12 @@ export default Component.extend({
           help = self.get('rhelp');
           question = self.get('rquestion');
           qtype = "Rating";
+        }
+
+        if(this.picture) {
+          help = self.get('phelp');
+          question = self.get('pquestion');
+          qtype = "Picture";
         }
 
         let newQuestion = this.get('DS').createRecord('question', {
