@@ -82,14 +82,14 @@ export default Component.extend({
 
                     console.log(file);
 
-                    var newFile = this.get('DS').createRecord(this.get('model'), {
-                        name: this.ImageName,
-                        size: file.size,
-                        type: file.type,
-                        rawSize: file.rawSize,
-                        imageData: file.base64Image
-                    });
-                    newFile.save();
+                    // var newFile = this.get('DS').createRecord(this.get('model'), {
+                    //     name: this.ImageName,
+                    //     size: file.size,
+                    //     type: file.type,
+                    //     rawSize: file.rawSize,
+                    //     imageData: file.base64Image
+                    // });
+                    // newFile.save();
                     this.get('queue').pushObject(file);
                     // this.get('modelQueue').pushObject(newFile);
               }
@@ -215,20 +215,38 @@ export default Component.extend({
                 images: []
             });
 
+            console.log(this.queue);
+
+            let secQueue = [];
+            
+            this.queue.forEach(file => {
+                secQueue.pushObject(file);
+            });
+
             exercise.save().then((exer)=>{
                 var saveImage = [];
                 console.log(exer.id);
-                this.get('queue').forEach(file => {
+                console.log(this.queue);
+                console.log(secQueue);
+                secQueue.forEach(file => {
+                    console.log("akjdajsdkasjd");
                       var newFile = this.get('DS').createRecord(this.get('model'), {
                         name: file.name,
                         size: file.size,
                         type: file.type,
                         rawSize: file.rawSize,
                         imageData: file.base64Image,
-                        exercise: exercise
+                        exercise: []
                       });
 
-                      newFile.save();
+                    newFile.get('exercise').pushObject(exercise);
+                    newFile.save();
+
+                    exercise.get('images').pushObject(newFile);
+                    this.get('DS').findRecord('exercise', exer.id).then((rec)=>{
+                       rec.save();
+                    });
+
                   });
             });
 

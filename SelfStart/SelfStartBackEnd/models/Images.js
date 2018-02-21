@@ -6,10 +6,9 @@ var imagesSchema = mongoose.Schema(
         size: String,
         rawSize: Number,
         imageData: String,
-        exercise: {type: mongoose.Schema.ObjectId, ref: 'Images'}
+        exercise: [{type: mongoose.Schema.ObjectId, ref: 'Exercise'}]
     }
 );
 
 var Images = mongoose.model('image', imagesSchema);
 exports.Model = Images;
-
