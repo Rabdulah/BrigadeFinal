@@ -2534,7 +2534,9 @@ define('self-start-front-end/models/image', ['exports', 'ember-data'], function 
     type: _emberData.default.attr(),
     size: _emberData.default.attr(),
     rawSize: _emberData.default.attr('number'),
-    imageData: _emberData.default.attr()
+    imageData: _emberData.default.attr(),
+    exercise: _emberData.default.hasMany('exercise'),
+    question: _emberData.default.hasMany('question')
   });
 });
 define('self-start-front-end/models/marital-status', ['exports', 'ember-data'], function (exports, _emberData) {
@@ -3501,6 +3503,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+8fde1fa5"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+6c2ee16a"});
 }
 //# sourceMappingURL=self-start-front-end.map

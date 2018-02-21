@@ -5,7 +5,9 @@ var imagesSchema = mongoose.Schema(
         type: String,
         size: String,
         rawSize: Number,
-        imageData: String
+        imageData: String,
+        exercise: [{type: mongoose.Schema.ObjectId, ref: 'Exercise'}],
+        question: [{type: mongoose.Schema.ObjectId, ref: 'Questions'}]
     }
 );
 
