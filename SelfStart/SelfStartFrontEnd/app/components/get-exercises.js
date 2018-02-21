@@ -5,8 +5,8 @@ export default Component.extend({
 
   init: function() {
     this._super();
-    let a = this.get('DS').find('rehabilitationplan', this.get('ID'));
-    console.log(a);
+    // let a = this.get('DS').find('rehabilitationplan', this.get('ID'));
+    // console.log(a);
   },
 
   DS: inject('store'),
@@ -24,14 +24,26 @@ export default Component.extend({
 
   actions: {
 
-    addExercise(oneExercise){
-      let rehabilitationplan = this.get('DS').find('rehabilitationplan',this.get('ID'));
-      let exerciseid = this.get('DS').findRecord('exercise', oneExercise.get('id')).then((rec) => {
-        rec.set('rehabilitationplan', rehabilitationplan)
+    addExercise(oneExercise, eid){
+      console.log(oneExercise);
+
+      this.get('DS').find('rehabilitationplan', this.get('ID')). then(function (a) {
+        a.get('exercises').pushObject(oneExercise);
+        oneExercise.get('rehabilitationplan').pushObject(a);
+      });
+
+
+      this.get('DS').findRecord('rehabilitationplan', this.get('ID')).then((rec) => {
         rec.save().then(()=>{
-          return true;
         });
       });
+
+      this.get('DS').findRecord('exercises', this.get('eid')).then((rec) => {
+        rec.save().then(()=>{
+        });
+      });
+
+
     },
 
     manageExercise() {

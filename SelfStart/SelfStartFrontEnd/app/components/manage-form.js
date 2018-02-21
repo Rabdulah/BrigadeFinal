@@ -4,7 +4,7 @@ import Ember from "ember";
 export default Component.extend({
   init: function() {
     this._super();
-    let a = this.get('DS').find('form', this.get('ID'));
+    //let a = this.get('DS').find('form', this.get('ID'));
     //console.log(a.get('name'));
  },
 

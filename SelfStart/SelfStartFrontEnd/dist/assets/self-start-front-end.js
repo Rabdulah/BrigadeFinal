@@ -1562,8 +1562,8 @@ define('self-start-front-end/components/get-exercises', ['exports'], function (e
 
     init: function init() {
       this._super();
-      var a = this.get('DS').find('rehabilitationplan', this.get('ID'));
-      console.log(a);
+      // let a = this.get('DS').find('rehabilitationplan', this.get('ID'));
+      // console.log(a);
     },
 
     DS: Ember.inject.service('store'),
@@ -1578,13 +1578,20 @@ define('self-start-front-end/components/get-exercises', ['exports'], function (e
     edit: false,
 
     actions: {
-      addExercise: function addExercise(oneExercise) {
-        var rehabilitationplan = this.get('DS').find('rehabilitationplan', this.get('ID'));
-        var exerciseid = this.get('DS').findRecord('exercise', oneExercise.get('id')).then(function (rec) {
-          rec.set('rehabilitationplan', rehabilitationplan);
-          rec.save().then(function () {
-            return true;
-          });
+      addExercise: function addExercise(oneExercise, eid) {
+        console.log(oneExercise);
+
+        this.get('DS').find('rehabilitationplan', this.get('ID')).then(function (a) {
+          a.get('exercises').pushObject(oneExercise);
+          oneExercise.get('rehabilitationplan').pushObject(a);
+        });
+
+        this.get('DS').findRecord('rehabilitationplan', this.get('ID')).then(function (rec) {
+          rec.save().then(function () {});
+        });
+
+        this.get('DS').findRecord('exercises', this.get('eid')).then(function (rec) {
+          rec.save().then(function () {});
         });
       },
       manageExercise: function manageExercise() {
@@ -1776,7 +1783,7 @@ define('self-start-front-end/components/manage-form', ['exports'], function (exp
   exports.default = Ember.Component.extend({
     init: function init() {
       this._super();
-      var a = this.get('DS').find('form', this.get('ID'));
+      //let a = this.get('DS').find('form', this.get('ID'));
       //console.log(a.get('name'));
     },
 
@@ -4108,8 +4115,9 @@ define('self-start-front-end/models/exercise', ['exports', 'ember-data'], functi
     duration: _emberData.default.attr(),
     multimediaURL: _emberData.default.attr(),
     targetDate: _emberData.default.attr(),
-    image: _emberData.default.hasMany('image', { async: true })
+    image: _emberData.default.hasMany('image', { async: true }),
     // rehabilitationPlan:DS.belongsTo('rehabilitationplan',{ async: true })
+    rehabilitationplan: _emberData.default.hasMany('rehabilitationplan')
   });
 });
 define('self-start-front-end/models/form', ['exports', 'ember-data'], function (exports, _emberData) {
@@ -4754,7 +4762,7 @@ define("self-start-front-end/templates/components/get-exercises", ["exports"], f
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "wY32yJtW", "block": "{\"symbols\":[\"oneExercise\"],\"statements\":[[0,\"\\n\"],[6,\"button\"],[9,\"class\",\"ui mini circular labeled icon green button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"i\"],[9,\"class\",\"edit icon\"],[7],[8],[0,\"\\n  Add Exercise\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui search\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui icon input\"],[7],[0,\"\\n      \"],[6,\"input\"],[9,\"class\",\"prompt\"],[9,\"type\",\"text\"],[9,\"placeholder\",\"Search Exercise\"],[7],[8],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"search icon\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui items\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"exerciseModel\"]]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui small image\"],[7],[0,\"\\n        \"],[2,\"<img src=\\\"/images/wireframe/image.png\\\">\"],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"\\n        \"],[1,[19,1,[\"name\"]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n        \"],[6,\"p\"],[7],[1,[19,1,[\"description\"]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"extra\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui right floated button\"],[3,\"action\",[[19,0,[]],\"addExercise\",[19,1,[]]]],[7],[0,\"\\n          Add\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui positive right labeled icon button\"],[7],[0,\"\\n        Done\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/get-exercises.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "wOKTf3t8", "block": "{\"symbols\":[\"oneExercise\"],\"statements\":[[0,\"\\n\"],[6,\"button\"],[9,\"class\",\"ui mini circular labeled icon green button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"i\"],[9,\"class\",\"edit icon\"],[7],[8],[0,\"\\n  Add Exercise\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui search\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui icon input\"],[7],[0,\"\\n      \"],[6,\"input\"],[9,\"class\",\"prompt\"],[9,\"type\",\"text\"],[9,\"placeholder\",\"Search Exercise\"],[7],[8],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"search icon\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui items\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"exerciseModel\"]]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui small image\"],[7],[0,\"\\n        \"],[2,\"<img src=\\\"/images/wireframe/image.png\\\">\"],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"\\n        \"],[1,[19,1,[\"name\"]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n        \"],[6,\"p\"],[7],[1,[19,1,[\"description\"]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"extra\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui right floated button\"],[3,\"action\",[[19,0,[]],\"addExercise\",[19,1,[]],[19,1,[\"id\"]]]],[7],[0,\"\\n          Add\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui positive right labeled icon button\"],[7],[0,\"\\n        Done\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/get-exercises.hbs" } });
 });
 define("self-start-front-end/templates/components/manage-form", ["exports"], function (exports) {
   "use strict";

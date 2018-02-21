@@ -152,12 +152,12 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/get-exercises.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/get-exercises.js should pass ESLint\n\n9:5 - Unexpected console statement. (no-console)\n29:11 - \'exerciseid\' is assigned a value but never used. (no-unused-vars)\n45:7 - \'Ember\' is not defined. (no-undef)');
+    assert.ok(false, 'components/get-exercises.js should pass ESLint\n\n27:30 - \'eid\' is defined but never used. (no-unused-vars)\n28:7 - Unexpected console statement. (no-console)\n57:7 - \'Ember\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/manage-form.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/manage-form.js should pass ESLint\n\n7:9 - \'a\' is assigned a value but never used. (no-unused-vars)\n36:5 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/manage-form.js should pass ESLint\n\n36:5 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/modify-question.js', function (assert) {
