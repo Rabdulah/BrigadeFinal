@@ -23,7 +23,7 @@ export default Component.extend({
         rec.set('physioID', this.get('rehabilitationplansData.physioID'));
         rec.set('goal', this.get('rehabilitationplansData.goal'));
         rec.set('timeToComplete', this.get('rehabilitationplansData.timeToComplete'));
-        //rec.set('exercises', this.get('exercises'));
+
 
         rec.save().then(()=>{
           this.get('routing').transitionTo('rehabplans');

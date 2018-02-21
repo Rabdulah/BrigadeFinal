@@ -32,6 +32,7 @@ router.route('/:exercise_id')
     /// post vs put?
     .put( function (request, response) {
         Exercise.Model.findById(request.params.exercise_id, function (error, exercise) {
+            console.log("exercise chages made")
             if (error) {
                 response.send({error: error});
             }

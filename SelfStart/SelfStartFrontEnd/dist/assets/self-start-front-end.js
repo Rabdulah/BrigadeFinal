@@ -1458,7 +1458,6 @@ define('self-start-front-end/components/edit-rehabplan', ['exports'], function (
           rec.set('physioID', _this.get('rehabilitationplansData.physioID'));
           rec.set('goal', _this.get('rehabilitationplansData.goal'));
           rec.set('timeToComplete', _this.get('rehabilitationplansData.timeToComplete'));
-          //rec.set('exercises', this.get('exercises'));
 
           rec.save().then(function () {
             _this.get('routing').transitionTo('rehabplans');
@@ -1579,18 +1578,15 @@ define('self-start-front-end/components/get-exercises', ['exports'], function (e
 
     actions: {
       addExercise: function addExercise(oneExercise, eid) {
-        console.log(oneExercise);
+        console.log(eid);
 
-        this.get('DS').find('rehabilitationplan', this.get('ID')).then(function (a) {
+        this.get('DS').findRecord('rehabilitationplan', this.get('ID')).then(function (a) {
           a.get('exercises').pushObject(oneExercise);
-          oneExercise.get('rehabilitationplan').pushObject(a);
+          oneExercise.get('rehabilitationPlan').pushObject(a);
+          a.save().then(function () {});
         });
 
-        this.get('DS').findRecord('rehabilitationplan', this.get('ID')).then(function (rec) {
-          rec.save().then(function () {});
-        });
-
-        this.get('DS').findRecord('exercises', this.get('eid')).then(function (rec) {
+        this.get('DS').findRecord('exercise', eid).then(function (rec) {
           rec.save().then(function () {});
         });
       },
@@ -5491,6 +5487,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+0951c458"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+e94979a6"});
 }
 //# sourceMappingURL=self-start-front-end.map
