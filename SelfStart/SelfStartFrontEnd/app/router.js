@@ -30,6 +30,8 @@ Router.map(function() {
   this.route('exercise');
   this.route('new-exercise');
   this.route('physiotherapists');
+  this.route('new-physiotherapist');
+  //this.route('update-physiotherapist');
 });
 
 export default Router;

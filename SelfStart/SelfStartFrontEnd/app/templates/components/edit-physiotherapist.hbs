@@ -1,0 +1,57 @@
+<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/form-style.css"> <!-- Resource style -->
+<p style="cursor: pointer;" {{action 'openModal' }}
+   title="Edit"><i class="grey write icon"></i>
+</p>
+{{#ui-modal name= modalName class=modalName }}
+<form class="cd-form floating-labels" {{action "save" on="submit"}}>
+  <br><br>
+  <fieldset>
+    <legend>Personal Info</legend>
+
+    <div class="icon">
+      <label class="cd-label">First Name</label>
+      {{input class="user" type="text" value = givenName required = true}}
+    </div>
+    <div class="icon">
+      <label class="cd-label">Last Name</label>
+      {{input class="user" type="text" value = familyName required = true}}
+    </div>
+
+  </fieldset>
+  <fieldset>
+   <div class="icon">
+      <label class="cd-label">Employment start date</label>
+      <input class="date" type="date" value={{selectedDate}}  onchange={{action 'assignDate' value="target.value"}} required>
+    </div>
+
+   <div class="icon">
+      <label class="cd-label">Employment end date</label>
+      <input class="date" type="date" value={{selectedDate}}  onchange={{action 'assignDate' value="target.value"}} required>
+    </div>
+
+</fieldset>
+  <fieldset>
+    <legend>Contact Info</legend>
+
+    <div class="icon">
+      <label class="cd-label" for="cd-email">Email</label>
+      {{input class="email" type="email" value = email required = true}}
+    </div>
+  </fieldset>
+
+  <fieldset>
+
+    <div>
+
+
+      <div class="cd-button">
+        <input type="submit" value="Submit">
+      </div>
+
+    </div>
+
+
+
+  </fieldset>
+</form>
+{{/ui-modal}}
