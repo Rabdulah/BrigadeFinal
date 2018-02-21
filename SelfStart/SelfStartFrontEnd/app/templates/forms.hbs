@@ -1,4 +1,4 @@
-<br><br><br><br><br>
+<br><br><br><br><br><br>
 <h2> Forms </h2>
 
 {{#ui-accordion }}
@@ -6,13 +6,13 @@
     <div class="ui grid">
       <div class="twelve wide column">
         <div class="title">
-          <i class="dropdown blue icon"></i>
+         <i class="ui dropdown blue icon"></i>
           {{form.name}}
         </div>
-        {{show-form-questions questions=form.questions}}
+        {{show-form-questions questions=form.questions thisForm = form}}
       </div>
       <div class="six wide column right aligned">
-          {{manage-form ID=form.id questions=form.questions fName=form.name}}
+          {{manage-form ID=form.id questions=form.questions  form=form fName=form.name}}
         </div>
       <div class="two wide column right aligned">
         {{edit-form ID=form.id}}
