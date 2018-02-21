@@ -112,7 +112,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/display-questions.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/display-questions.js should pass ESLint\n\n3:1 - \'Ember\' is not defined. (no-undef)\n11:9 - \'Ember\' is not defined. (no-undef)\n13:16 - \'Ember\' is not defined. (no-undef)');
+    assert.ok(false, 'components/display-questions.js should pass ESLint\n\n4:9 - \'Ember\' is not defined. (no-undef)\n6:16 - \'Ember\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/edit-country.js', function (assert) {
@@ -203,6 +203,16 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('controllers/rehabplans.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'controllers/rehabplans.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('helpers/mc-display.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'helpers/mc-display.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('helpers/number-of-mc.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'helpers/number-of-mc.js should pass ESLint\n\n');
   });
 
   QUnit.test('models/assesment-test.js', function (assert) {
@@ -1447,6 +1457,46 @@ define('self-start-front-end/tests/integration/components/welcome-page-test', ['
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/helpers/mc-display-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('mc-display', 'helper:mc-display', {
+    integration: true
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it renders', function (assert) {
+    this.set('inputValue', '1234');
+
+    this.render(Ember.HTMLBars.template({
+      "id": "DCrDRcfj",
+      "block": "{\"symbols\":[],\"statements\":[[1,[25,\"mc-display\",[[20,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '1234');
+  });
+});
+define('self-start-front-end/tests/integration/helpers/number-of-mc-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('number-of-mc', 'helper:number-of-mc', {
+    integration: true
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it renders', function (assert) {
+    this.set('inputValue', '1234');
+
+    this.render(Ember.HTMLBars.template({
+      "id": "gmYiInYv",
+      "block": "{\"symbols\":[],\"statements\":[[1,[25,\"number-of-mc\",[[20,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '1234');
+  });
+});
 define('self-start-front-end/tests/test-helper', ['self-start-front-end/tests/helpers/resolver', 'ember-qunit', 'ember-cli-qunit'], function (_resolver, _emberQunit, _emberCliQunit) {
   'use strict';
 
@@ -1646,6 +1696,16 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('integration/components/welcome-page-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/welcome-page-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/helpers/mc-display-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/helpers/mc-display-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/helpers/number-of-mc-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/helpers/number-of-mc-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('test-helper.js', function (assert) {

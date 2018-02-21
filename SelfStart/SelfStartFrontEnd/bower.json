@@ -1,6 +1,7 @@
 {
   "name": "self-start-front-end",
   "dependencies": {
-    "semantic-ui": "^2.2.13"
+    "semantic-ui": "^2.2.13",
+    "seiyria-bootstrap-slider": "~6.0.6"
   }
 }

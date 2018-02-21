@@ -7,5 +7,9 @@ export default DS.Model.extend({
   type: DS.attr(),
   optionNumber: DS.attr('number'),
   optionString: DS.attr(),
+  mc:DS.attr('boolean'),
+  sa:DS.attr('boolean'),
+  tf:DS.attr('boolean'),
+  ra:DS.attr('boolean'),
   forms: DS.hasMany('form')
 });
