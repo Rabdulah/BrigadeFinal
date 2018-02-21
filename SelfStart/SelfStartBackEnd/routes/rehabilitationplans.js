@@ -50,7 +50,7 @@ router.route('/:rehabilitation_id')
                 rehabilitation.timeToComplete = request.body.rehabilitationplan.timeToComplete;
                 rehabilitation.plan = request.body.rehabilitationplan.plan;
                 rehabilitation.test = request.body.rehabilitationplan.test;
-                rehabilitation.exercise = request.body.rehabilitationplan.exercise;
+                //rehabilitation.exercise = request.body.rehabilitationplan.exercise;
 
 
 

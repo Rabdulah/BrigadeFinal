@@ -50,7 +50,7 @@ router.route('/:exercise_id')
                 exercise.multimediaURL = request.body.exercise.multimediaURL;
                 exercise.targetDate = request.body.exercise.targetDate;
                 exercise.image = request.body.exercise.image;
-                exercise.rehabilitationPlan = request.body.exercise.rehabilitationPlan;
+                exercise.rehabilitationplan = request.body.exercise.rehabilitationplan;
 
                 exercise.save(function (error) {
                     if (error) {

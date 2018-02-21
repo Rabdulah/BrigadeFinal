@@ -26,15 +26,15 @@ export default Component.extend({
 
     addExercise(oneExercise, eid){
       console.log(eid);
-
       this.get('DS').findRecord('rehabilitationplan', this.get('ID')). then(function (a) {
         a.get('exercises').pushObject(oneExercise);
-        oneExercise.get('rehabilitationPlan').pushObject(a);
+        oneExercise.get('rehabilitationplan').pushObject(a);
         a.save().then(()=>{
         });
       });
 
       this.get('DS').findRecord('exercise', eid).then((rec) => {
+        console.log("find record");
         rec.save().then(()=>{
         });
       });

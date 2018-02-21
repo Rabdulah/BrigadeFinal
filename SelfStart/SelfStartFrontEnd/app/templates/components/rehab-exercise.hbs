@@ -1,10 +1,10 @@
-
-<li>test</li>
 {{#each exercises as |oneExercise|}}
   <div class="ui grid">
     <div class="thirteen wide column">
-
-      <li>{{oneExercise.name}}</li>
+      <li>
+        {{oneExercise.name}}
+        <i style=" cursor: pointer;" align=" right" title="Delete" class="red remove icon" {{action 'removeExercise' oneExercise thisForm oneExercise.id thisForm.id}} ></i>
+      </li>
     </div>
   </div>
 {{/each}}

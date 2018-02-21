@@ -642,8 +642,8 @@ define('self-start-front-end/components/add-rehabplan', ['exports'], function (e
           physioID: self.get('authorName'),
           description: self.get('description'),
           goal: self.get('goal'),
-          timeToComplete: self.get('timeToComplete'),
-          exercises: self.get('exercises')
+          timeToComplete: self.get('timeToComplete')
+          //exercises: self.get('exercises'),
           // assessmentTests: self.get('assessmentTests'),
         });
 
@@ -1585,14 +1585,14 @@ define('self-start-front-end/components/get-exercises', ['exports'], function (e
     actions: {
       addExercise: function addExercise(oneExercise, eid) {
         console.log(eid);
-
         this.get('DS').findRecord('rehabilitationplan', this.get('ID')).then(function (a) {
           a.get('exercises').pushObject(oneExercise);
-          oneExercise.get('rehabilitationPlan').pushObject(a);
+          oneExercise.get('rehabilitationplan').pushObject(a);
           a.save().then(function () {});
         });
 
         this.get('DS').findRecord('exercise', eid).then(function (rec) {
+          console.log("find record");
           rec.save().then(function () {});
         });
       },
@@ -2019,7 +2019,28 @@ define('self-start-front-end/components/rehab-exercise', ['exports'], function (
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.Component.extend({});
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+    actions: {
+      removeExercise: function removeExercise(exercise, rehabplan, eid, rid) {
+
+        console.log(exercise.id);
+        console.log(rehabplan.id);
+
+        rehabplan.get('exercises').removeObject(exercise);
+        exercise.get('rehabilitationplan').removeObject(rehabplan);
+
+        this.get('DS').findRecord('rehabilitationplan', rid).then(function (rec) {
+
+          rec.save().then(function () {});
+        });
+
+        this.get('DS').findRecord('exercise', eid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      }
+    }
+  });
 });
 define('self-start-front-end/components/rehabplan-actions-table', ['exports', 'mixins/table-common'], function (exports, _tableCommon) {
   'use strict';
@@ -4776,7 +4797,7 @@ define("self-start-front-end/templates/components/edit-rehabplan", ["exports"], 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "MEbFsr2C", "block": "{\"symbols\":[\"o\"],\"statements\":[[0,\"\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\"\\n\"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[7],[0,\"\\n\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"fieldset\"],[7],[0,\"\\n    \"],[6,\"legend\"],[7],[0,\"Rehabilitation Plan Info\"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Rehabilitation plan name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"star\",\"text\",[20,[\"rehabilitationplansData\",\"planName\"]],\"Rehab plan name\",true]]],false],[0,\"\\n      \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Author Name\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"user\",\"text\",[20,[\"rehabilitationplansData\",\"physioID\"]],\"Author Name\",true]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n    \"],[2,\"Description\"],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-textarea\"],[7],[0,\"Description\"],[8],[0,\"\\n      \"],[1,[25,\"textarea\",null,[[\"class\",\"name\",\"value\",\"placeholder\",\"required\"],[\"message\",\"cd-textarea\",[20,[\"rehabilitationplansData\",\"description\"]],\"Description\",true]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n\\n    \"],[2,\"goal\"],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Goal\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"award\",\"text\",[20,[\"rehabilitationplansData\",\"goal\"]],\"Goal\",true]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Time\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"video\",\"text\",[20,[\"rehabilitationplansData\",\"timeToComplete\"]],\"Time\",true]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n\\n\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Exercises\"],[8],[0,\"\\n      \"],[1,[25,\"get-exercises\",null,[[\"ID\",\"exercises\",\"formName\"],[[20,[\"rehabilitationplansData\",\"id\"]],[20,[\"rehabilitationplansData\",\"exercises\"]],[20,[\"rehabilitationplansData\",\"planName\"]]]]],false],[0,\"\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui inverted segment\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Current Exercises\"],[8],[0,\"\\n        \"],[1,[25,\"rehab-exercise\",null,[[\"exercises\"],[[20,[\"rehabilitationplansData\",\"exercises\"]]]]],false],[0,\"\\n\\n        \"],[6,\"ul\"],[9,\"align\",\"left\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"obj\"]]],null,{\"statements\":[[0,\"            \"],[6,\"li\"],[7],[0,\"\\n              \"],[6,\"p\"],[7],[0,\"\\n                \"],[1,[19,1,[]],false],[0,\"\\n                \"],[6,\"br\"],[7],[8],[0,\"\\n                \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Edit\"],[9,\"class\",\"gray write icon\"],[3,\"action\",[[19,0,[]],\"edit\"]],[7],[8],[0,\"\\n                \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Delete\"],[9,\"class\",\"red remove icon\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n\\n\"],[4,\"link-to\",[\"rehabplans\"],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"ui black deny button\"],[7],[0,\"Cancel\"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui positive right labeled icon button\"],[3,\"action\",[[19,0,[]],\"save\"]],[7],[0,\"\\n      Save\\n      \"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/edit-rehabplan.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "5JfMbc69", "block": "{\"symbols\":[\"o\"],\"statements\":[[0,\"\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\"\\n\"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[7],[0,\"\\n\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"fieldset\"],[7],[0,\"\\n    \"],[6,\"legend\"],[7],[0,\"Rehabilitation Plan Info\"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Rehabilitation plan name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"star\",\"text\",[20,[\"rehabilitationplansData\",\"planName\"]],\"Rehab plan name\",true]]],false],[0,\"\\n      \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Author Name\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"user\",\"text\",[20,[\"rehabilitationplansData\",\"physioID\"]],\"Author Name\",true]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n    \"],[2,\"Description\"],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-textarea\"],[7],[0,\"Description\"],[8],[0,\"\\n      \"],[1,[25,\"textarea\",null,[[\"class\",\"name\",\"value\",\"placeholder\",\"required\"],[\"message\",\"cd-textarea\",[20,[\"rehabilitationplansData\",\"description\"]],\"Description\",true]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n\\n    \"],[2,\"goal\"],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Goal\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"award\",\"text\",[20,[\"rehabilitationplansData\",\"goal\"]],\"Goal\",true]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Time\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"video\",\"text\",[20,[\"rehabilitationplansData\",\"timeToComplete\"]],\"Time\",true]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n\\n\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Exercises\"],[8],[0,\"\\n      \"],[1,[25,\"get-exercises\",null,[[\"ID\",\"exercises\",\"formName\"],[[20,[\"rehabilitationplansData\",\"id\"]],[20,[\"rehabilitationplansData\",\"exercises\"]],[20,[\"rehabilitationplansData\",\"planName\"]]]]],false],[0,\"\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui inverted segment\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Current Exercises\"],[8],[0,\"\\n        \"],[1,[25,\"rehab-exercise\",null,[[\"exercises\",\"thisForm\"],[[20,[\"rehabilitationplansData\",\"exercises\"]],[20,[\"rehabilitationplansData\"]]]]],false],[0,\"\\n\\n        \"],[6,\"ul\"],[9,\"align\",\"left\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"obj\"]]],null,{\"statements\":[[0,\"            \"],[6,\"li\"],[7],[0,\"\\n              \"],[6,\"p\"],[7],[0,\"\\n                \"],[1,[19,1,[]],false],[0,\"\\n                \"],[6,\"br\"],[7],[8],[0,\"\\n                \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Edit\"],[9,\"class\",\"gray write icon\"],[3,\"action\",[[19,0,[]],\"edit\"]],[7],[8],[0,\"\\n                \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Delete\"],[9,\"class\",\"red remove icon\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n\\n\"],[4,\"link-to\",[\"rehabplans\"],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"ui black deny button\"],[7],[0,\"Cancel\"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui positive right labeled icon button\"],[3,\"action\",[[19,0,[]],\"save\"]],[7],[0,\"\\n      Save\\n      \"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/edit-rehabplan.hbs" } });
 });
 define("self-start-front-end/templates/components/edit-status", ["exports"], function (exports) {
   "use strict";
@@ -4832,7 +4853,7 @@ define("self-start-front-end/templates/components/rehab-exercise", ["exports"], 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "bS1MfxZi", "block": "{\"symbols\":[\"oneExercise\"],\"statements\":[[0,\"\\n\"],[6,\"li\"],[7],[0,\"test\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"exercises\"]]],null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"thirteen wide column\"],[7],[0,\"\\n\\n      \"],[6,\"li\"],[7],[1,[19,1,[\"name\"]],false],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/rehab-exercise.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "LEM/M9XS", "block": "{\"symbols\":[\"oneExercise\"],\"statements\":[[4,\"each\",[[20,[\"exercises\"]]],null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"thirteen wide column\"],[7],[0,\"\\n      \"],[6,\"li\"],[7],[0,\"\\n        \"],[1,[19,1,[\"name\"]],false],[0,\"\\n        \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"align\",\" right\"],[9,\"title\",\"Delete\"],[9,\"class\",\"red remove icon\"],[3,\"action\",[[19,0,[]],\"removeExercise\",[19,1,[]],[20,[\"thisForm\"]],[19,1,[\"id\"]],[20,[\"thisForm\",\"id\"]]]],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/rehab-exercise.hbs" } });
 });
 define("self-start-front-end/templates/components/rehabplan-actions-table", ["exports"], function (exports) {
   "use strict";

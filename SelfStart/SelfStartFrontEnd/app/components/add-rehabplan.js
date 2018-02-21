@@ -49,7 +49,7 @@ export default Component.extend({
         description: self.get('description'),
         goal: self.get('goal'),
         timeToComplete: self.get('timeToComplete'),
-        exercises: self.get('exercises'),
+        //exercises: self.get('exercises'),
         // assessmentTests: self.get('assessmentTests'),
       });
 
