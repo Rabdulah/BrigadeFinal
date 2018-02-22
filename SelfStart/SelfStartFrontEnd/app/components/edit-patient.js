@@ -7,15 +7,26 @@ export default Component.extend({
   DS: inject('store'),
   routing: inject('-routing'),
   pateintsData: null,
+  selectedGender: null,
+  selectedCountry: null,
 
 
   tagName: '',
 
+init(){
+  this._super(...arguments);
 
+  var date = this.get('pateintsData').get('dateOfBirth');
+  var dateString = date.toISOString().substring(0, 10);
+  this.set('selectedDate', dateString);
 
+  this.set('selectedGender', this.get('pateintsData').get('gender'));
+  this.set('selectedCountry', this.get('pateintsData').get('country'));
+},
 
   didRender() {
     this._super(...arguments);
+
     // let date = this.get('DOB');
     // this.set('selectedDate', date.toISOString().substring(0, 10));
 
@@ -27,7 +38,7 @@ export default Component.extend({
         let inputFields = $('.floating-labels .cd-label').next();
         inputFields.each(function () {
           let singleInput = $(this);
-          //check if user is filling one of the form fields
+          //check if  is filling one of the form fields
           checkVal(singleInput);
           singleInput.on('change keyup', function () {
             checkVal(singleInput);
@@ -51,9 +62,6 @@ export default Component.extend({
     return this.get('DS').findAll('gender');
   }),
 
-  maritalStatusModel: computed(function(){
-    return this.get('DS').findAll('maritalStatus');
-  }),
 
   modalName: computed(function () {
     return 'editPatient' + this.get('ID');
@@ -62,9 +70,14 @@ export default Component.extend({
 
 
   actions: {
-
     assignDate (date){
       this.set('selectedDate', date);
+    },
+    selectGender (gender){
+      this.set('selectedGender', gender);
+    },
+    selectCountry (country){
+      this.set('selectedCountry', country);
     },
 
     save: function () {
@@ -75,19 +88,17 @@ export default Component.extend({
         rec.set('streetName', this.get('pateintsData.streetName'));
         rec.set('streetNumber', this.get('pateintsData.streetNumber'));
         rec.set('apartment', this.get('pateintsData.apartment'));
-        rec.set('country', this.get('country'));
-        rec.set('provinces', this.get('provinces'));
-        rec.set('cities', this.get('cities'));
+        rec.set('country', this.get('selectedCountry'));
+        // rec.set('province', this.get('province'));
+        // rec.set('city', this.get('city'));
         rec.set('healthCardNumber', this.get('pateintsData.healthCardNumber'));
-        rec.set('gender', this.get('gender'));
-        rec.set('maritalStatus', this.get('maritalStatus'));
-        rec.set('dateOfBirth', this.get('selectedDate'));
-        rec.set('occupation', this.get('pateintsData.occupation'));
+        rec.set('gender', this.get('selectedGender'));
+        rec.set('dateOfBirth', new Date(this.get('selectedDate')));
         rec.set('phoneNumber', this.get('pateintsData.phoneNumber'));
         rec.set('postalCode', this.get('pateintsData.postalCode'));
 
         rec.save().then(()=>{
-          this.get('routing').transitionTo('patients');
+          this.set('isEditing', null);
 
         });
       });

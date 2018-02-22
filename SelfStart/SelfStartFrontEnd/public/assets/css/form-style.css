@@ -140,10 +140,10 @@ Form
   /* wrapper for radio and checkbox input types */
   display: inline-block;
   position: relative;
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
+  -webkit--select: none;
+  -moz--select: none;
+  -ms--select: none;
+  -select: none;
   margin: 0 26px 16px 0;
   float: left;
 }
@@ -345,11 +345,11 @@ Custom icons
 .cd-form .icon input, .cd-form .icon select, .cd-form .icon textarea {
   padding-left: 54px !important;
 }
-.cd-form .user {
-  background: url('/assets/images/form/cd-icon-user.svg') no-repeat 16px center;
+.cd-form . {
+  background: url('/assets/images/form/cd-icon-.svg') no-repeat 16px center;
 }
-.cd-form [required].user {
-  background: url('/assets/images/form/cd-icon-user.svg') no-repeat 16px center, url('/assets/images/form/cd-required.svg') no-repeat top right;
+.cd-form [required]. {
+  background: url('/assets/images/form/cd-icon-.svg') no-repeat 16px center, url('/assets/images/form/cd-required.svg') no-repeat top right;
 }
 .cd-form .company {
   background: url('/assets/images/form/cd-icon-company.svg') no-repeat 16px center;

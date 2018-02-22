@@ -30,9 +30,10 @@ header h1 {
 
 .cd-bouncy-nav-trigger {
   /* button style */
-  background: #DC965A;
+  background: url('/assets/images/nav/settings-gear-63.svg') no-repeat center center; ;
+  /*background: #DC965A;*/
   color: #ffffff;
-  padding: 1.2em 2em;
+  padding: 2em 2em;
   border-radius: 10em;
 }
 .no-touch .cd-bouncy-nav-trigger:hover {

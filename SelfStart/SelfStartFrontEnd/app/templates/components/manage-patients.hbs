@@ -1,0 +1,195 @@
+<div class="title">
+  Clients
+  <div class="container" style="float: right;">
+    {{#link-to "new-patient" (query-params account = patient.account)}}
+      <a id="add" class="round-button">
+        <i class="plus icon"></i>
+      </a>
+    {{/link-to}}
+  </div>
+</div>
+
+<div class="background">
+
+
+  <br><br>
+
+
+    <div class="ui form">
+      <div class="two fields">
+
+        <div class="field">
+          {{#ui-dropdown class="selection" onChange=(action (mut queryPath))}}
+            <div class="default text">{{modelAttributes.firstObject.name}}</div>
+            <i class="dropdown icon"></i>
+            <div class="menu">
+              {{#each modelAttributes as |attribute|}}
+                <div class="item" data-value="{{attribute.key}}">
+                  {{attribute.name}}
+                </div>
+              {{/each}}
+            </div>
+          {{/ui-dropdown}}
+        </div>
+
+        <div class="field">
+          <div class="ui icon input">
+            <i class="search icon"></i>
+            {{input type="text" placeholder="Search..."  value=query }}
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+
+  <div style="display: inline" >
+    <table class="ui table ">
+      <thead >
+      <tr>
+        <th class="left aligned one wide column "> Avatar </th>
+        <th class="left aligned collapsing two wide column"{{action 'sortColumn' 'givenName' givenNameDir}}>First Name
+          {{#if (eq givenNameDir 'asc')}}
+            <i class="sort descending icon"></i>
+          {{/if}}
+          {{#if (eq givenNameDir 'desc')}}
+            <i class="sort ascending icon"></i>
+          {{/if}}
+          {{#if (eq givenNameDir '')}}
+            <i class="sort icon"></i>
+          {{/if}}
+        </th>
+        <th class="left aligned collapsing two wide  column"{{action 'sortColumn' 'familyName' familyNameDir}}>Last Name
+          {{#if (eq familyNameDir 'asc')}}
+            <i class="sort descending icon"></i>
+          {{/if}}
+          {{#if (eq familyNameDir 'desc')}}
+            <i class="sort ascending icon"></i>
+          {{/if}}
+          {{#if (eq familyNameDir '')}}
+            <i class="sort icon"></i>
+          {{/if}}
+        </th>
+
+        <th class="left aligned collapsing two wide  column"{{action 'sortColumn' 'address' addressDir}}>Address
+        {{#if (eq addressDir 'asc')}}
+          <i class="sort descending icon"></i>
+        {{/if}}
+        {{#if (eq addressDir 'desc')}}
+          <i class="sort ascending icon"></i>
+        {{/if}}
+        {{#if (eq addressDir '')}}
+          <i class="sort icon"></i>
+        {{/if}}
+      </th>
+
+        <th class="left aligned collapsing four wide  column"{{action 'sortColumn' 'email' emailDir}}>Email
+          {{#if (eq emailDir 'asc')}}
+            <i class="sort descending icon"></i>
+          {{/if}}
+          {{#if (eq emailDir 'desc')}}
+            <i class="sort ascending icon"></i>
+          {{/if}}
+          {{#if (eq emailDir '')}}
+            <i class="sort icon"></i>
+          {{/if}}
+        </th>
+        <th class="left aligned collapsing two wide  column"{{action 'sortColumn' 'phoneNumber' phoneNumberDir}}>Phone Number
+          {{#if (eq phoneNumberDir 'asc')}}
+            <i class="sort descending icon"></i>
+          {{/if}}
+          {{#if (eq phoneNumberDir 'desc')}}
+            <i class="sort ascending icon"></i>
+          {{/if}}
+          {{#if (eq phoneNumberDir '')}}
+            <i class="sort icon"></i>
+          {{/if}}
+        </th>
+
+        <th class="left aligned collapsing one wide column">Actions</th>
+
+      </tr>
+      </thead>
+    </table>
+  </div>
+
+
+
+
+
+  <div  id="myWindow" style="height:500px;overflow: scroll;">
+    <table class="ui single line table" id="tb">
+      {{!--    <tfoot>    <tr>
+        <th colspan="8">
+          <div class="ui right floated pagination menu">
+            <a class="icon item">
+              <i class="left chevron icon" {{action "loadPrevious"}}></i>
+            </a>
+            <a class="item">1</a>
+            <a class="item">2</a>
+            <a class="item">3</a>
+            <a class="item">4</a>
+            <a class="icon item">
+              <i class="right chevron icon" {{action "loadNext"}}></i>
+            </a>
+          </div>
+        </th>
+      </tr>
+      </tfoot>
+  --}}
+
+      <tbody >
+      {{#each patientsModel as |patient|}}
+        <tr >
+          <td class="left aligned two wide column ">
+            <img src="assets/images/nav/single-01.svg" class="ui mini rounded image" {{action 'toggleDetail' patient.id}}/>
+          </td>
+          <td class="left aligned three wide column " > {{patient.givenName}} </td>
+          <td class="left aligned two wide column "> {{patient.familyName}} </td>
+          <td class="left aligned three wide column "> {{patient.streetNumber}} {{patient.streetName}} </td>
+          <td class="left aligned three wide column "> {{patient.email}} </td>
+          <td class="left aligned two wide column "> {{patient.phoneNumber}} </td>
+
+
+          <td class="left aligned one wide column ">
+            <p style="cursor: pointer; float: left;" {{action 'editpatient' patient.id}} title="Edit">
+              <img src="assets/images/pencil.svg">
+              <span style="display:inline-block; width: 5px;"></span>
+            </p>
+
+            <p style="float: left;">{{delete-patient ID=patient.id flagDelete=flagDelete}}</p>
+          </td>
+          <!--<td class="left aligned one wide column ">-->
+            <!---->
+          <!--</td>-->
+        </tr>
+
+        <tr>
+          <th colspan="8">
+            {{#liquid-spacer growDuration=500}}
+              {{#if (eq isShowing  patient.id)}}
+                {{show-patient model=patient}}
+              {{/if}}
+            {{/liquid-spacer}}
+          </th> <tr></tr>
+        </tr>
+
+        <tr>
+          <th colspan="8">
+            {{#liquid-if (eq isEditing patient.id) class="editing"}}
+              {{edit-patient pateintsData=patient isEditing=isEditing}}
+            {{/liquid-if}}
+          </th>
+        </tr>
+
+      {{/each}}
+
+
+      </tbody>
+
+    </table>
+  </div>
+</div>
+
+
+

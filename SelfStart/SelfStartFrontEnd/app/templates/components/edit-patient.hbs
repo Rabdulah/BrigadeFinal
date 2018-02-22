@@ -1,17 +1,16 @@
 <link integrity="" rel="stylesheet" href="{{rootURL}}../assets/css/form-style.css"> <!-- Resource style -->
 
 <form class="cd-form floating-labels" {{action "save" on="submit"}}>
-  <br><br>
   <fieldset>
     <legend>Personal Info</legend>
 
     <div class="icon">
       <label class="cd-label">First Name</label>
-      {{input class="user" type="text" value = pateintsData.givenName required = true}}
+      {{input class="" type="text" value = pateintsData.givenName required = true}}
     </div>
     <div class="icon">
       <label class="cd-label">Last Name</label>
-      {{input class="user" type="text" value = pateintsData.familyName required = true}}
+      {{input class="" type="text" value = pateintsData.familyName required = true}}
     </div>
     <div class="icon">
       <label class="cd-label">Date of Birth</label>
@@ -21,7 +20,7 @@
     <div >
       <h4>Gender</h4>
       <p class="cd-select icon">
-        <select class="people" onchange={{action (mut gender) value="target.value"}}>
+        <select class="people" onchange={{action 'selectGender' value="target.value"}}>
           {{#each genderModel as |oneGender|}}
             <option value={{oneGender.name}} selected={{eq pateintsData.gender oneGender.name}}>
               {{oneGender.name}}
@@ -31,23 +30,7 @@
       </p>
     </div>
 
-    <div >
-      <h4>Marital Status</h4>
-      <p class="cd-select icon">
-        <select class="people" onchange={{action (mut maritalStatus) value="target.value"}}>
-          {{#each maritalStatusModel as |oneStatus|}}
-            <option value={{oneStatus.name}} selected={{eq pateintsData.maritalStatus oneStatus.name}}>
-              {{oneStatus.name}}
-            </option>
-          {{/each}}
-        </select>
-      </p>
-    </div>
 
-    <div class="icon">
-      <label class="cd-label">Occupation</label>
-      {{input class="company" type="text" value = pateintsData.occupation required = true}}
-    </div>
     <div class="icon">
       <label class="cd-label">Health Card Number</label>
       {{input class="card" type="text" value = pateintsData.healthCardNumber required = true}}
@@ -80,7 +63,7 @@
     <div >
       <h4>Country</h4>
       <p class="cd-select icon">
-        <select class="world" onchange={{action (mut country) value="target.value"}}>
+        <select class="world" onchange={{action 'selectCountry' value="target.value"}}>
           {{#each conutryModel as |oneCountry|}}
             <option value={{oneCountry.name}} selected={{eq pateintsData.country oneCountry.name}}>
               {{oneCountry.name}}
@@ -105,20 +88,16 @@
       <label class="cd-label" for="cd-email">Email</label>
       {{input class="email" type="email" value = pateintsData.email required = true}}
     </div>
-  </fieldset>
-
-  <fieldset>
 
     <div>
-
-
       <div class="cd-button">
         <input type="submit" value="Submit">
       </div>
-
     </div>
-
-
-
   </fieldset>
+
+
+
+
+
 </form>

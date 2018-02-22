@@ -19,7 +19,7 @@ export default Component.extend({
         var inputFields = $('.floating-labels .cd-label').next();
         inputFields.each(function () {
           var singleInput = $(this);
-          //check if user is filling one of the form fields
+          //check if  is filling one of the form fields
           checkVal(singleInput);
           singleInput.on('change keyup', function () {
             checkVal(singleInput);
@@ -43,9 +43,7 @@ export default Component.extend({
     return this.get('DS').findAll('gender');
   }),
 
-  maritalStatusModel: computed(function(){
-    return this.get('DS').findAll('maritalStatus');
-  }),
+
 
   actions: {
 
@@ -74,13 +72,11 @@ export default Component.extend({
         streetNumber: self.get('streetNumber'),
         apartment: self.get('apartment'),
         country: self.get('country'),
-        provinces: self.get('provinces'),
-        cities: self.get('cities'),
+        province: self.get('province'),
+        city: self.get('city'),
         dateOfBirth: self.get('selectedDate'),
         healthCardNumber: self.get('healthCardNumber'),
-        occupation: self.get('occupation'),
         gender: self.get('gender'),
-        maritalStatus: self.get('maritalStatus'),
         phoneNumber: self.get('phoneNumber'),
         postalCode: self.get('postalCode'),
 
@@ -96,13 +92,13 @@ export default Component.extend({
       this.set('streetNumber', '');
       this.set('apartment', '');
       this.set('country', '');
-      this.set('provinces', '');
-      this.set('cities', '');
+      this.set('province', '');
+      this.set('city', '');
       this.set('healthCardNumber', '');
       this.set('gender', '');
-      this.set('maritalStatus', '');
+
       this.set('dateOfBirth', '');
-      this.set('occupation', '');
+
       this.set('phoneNumber', '');
       this.set('postalCode', '');
 

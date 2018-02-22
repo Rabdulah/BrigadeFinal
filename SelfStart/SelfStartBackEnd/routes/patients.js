@@ -11,14 +11,50 @@ router.route('/')
         });
     })
     .get( function (request, response) {
-        Patients.Model.find(function (error, patients) {
-            if (error) response.send(error);
-            response.json({patient: patients});
-        });
+        let { limit, offset, sort, dir } = request.query;
+            if(!limit) {
+            Patients.Model.find(function (error, patients) {
+                if (error) response.send(error);
+                response.json({patient: patients});
+            });
+        }
+        else{
+            //  let users = schema.users.all().models;
+            //  let users = Users.Model;
+
+            offset = Number(offset || 0);
+            limit = Number(limit || 10);
+            dir = dir || 'asc';
+            sort = sort || 'id';
+
+            var query   = {};
+            var sortOrder = sort;
+            if (sortOrder) {
+                if (dir !== 'asc') {
+                    sortOrder = '-'+sort;
+                }
+            }
+            let options = {
+                sort:      sortOrder ,
+                lean:     true,
+                offset:   offset,
+                limit:    limit
+            };
+
+            Patients.Model.paginate(query, options, function(error, patients) {
+                if (error) response.send(error);
+                response.json({patient: patients.docs});
+            });
+
+        }
+
     });
 
 router.route('/:patient_id')
+
+
     .get( function (request, response) {
+
         Patients.Model.findById(request.params.patient_id, function (error, patient) {
             if (error) {
                 response.send({error: error});
@@ -43,8 +79,8 @@ router.route('/:patient_id')
                 patient.dateOfBirth = request.body.patient.dateOfBirth;
                 patient.phoneNumber = request.body.patient.phoneNumber;
                 patient.healthCardNumber = request.body.patient.healthCardNumber;
-                patient.occupation = request.body.patient.occupation;
-                patient.maritalStatus = request.body.patient.maritalStatus;
+                // patient.occupation = request.body.patient.occupation;
+                // patient.maritalStatus = request.body.patient.maritalStatus;
                 patient.gender = request.body.patient.gender;
                 patient.country = request.body.patient.country;
                 patient.province = request.body.patient.province;
@@ -52,7 +88,7 @@ router.route('/:patient_id')
                 patient.apartment = request.body.patient.apartment;
                 patient.streetNumber = request.body.patient.streetNumber;
                 patient.postalCode = request.body.patient.postalCode;
-                // patient.account = request.body.patient.account;
+                patient.account = request.body.patient.account;
                 // patient.payments = request.body.patient.payments;
                 // patient.appointments = request.body.patient.appointments;
                 // patient.plan = request.body.patient.plan;
