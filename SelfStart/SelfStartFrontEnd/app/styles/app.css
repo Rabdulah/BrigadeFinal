@@ -1,11 +1,11 @@
 .round-button {
   box-sizing: border-box;
   display:block;
-  width:60px;
-  height:60px;
+  width:55px;
+  height:55px;
   padding-top: 20px;
   padding-left: 4px;
-  line-height: 20px;
+  line-height: 16px;
   border-radius: 50%;
   text-align:center;
   text-decoration:none;
@@ -21,13 +21,22 @@
   color:white;
 }
 
-#add{
-  position: fixed;
-  bottom: 50px;
-  right: 50px;
+
+.title{
+  background-color: #013A6B;
+  background-image: -webkit-linear-gradient(150deg, #013A6B 15%, #004E95 15%);
+  min-height: 100px;
+  margin-top: 70px;
+  color: white;
+  font-size: 3em;
+  padding: 25px;
+  text-transform: uppercase;
+  font-weight: bold;
 }
 
-
+.background{
+  background-color: #e9ebee;
+}
 
 #return-to-top {
   position: fixed;

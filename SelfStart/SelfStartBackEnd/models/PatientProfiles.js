@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var mongoosePaginate = require('mongoose-paginate');
 var patientProfilesSchema = mongoose.Schema(
     {
         ID: String,
@@ -8,8 +9,8 @@ var patientProfilesSchema = mongoose.Schema(
         dateOfBirth: Date,
         phoneNumber: String,
         healthCardNumber: String,
-        occupation: String,
-        maritalStatus: String,
+        // occupation: String,
+        // maritalStatus: String,
         gender: String,
         country: String,
         province: String,
@@ -17,12 +18,12 @@ var patientProfilesSchema = mongoose.Schema(
         apartment: Number,
         streetNumber: Number,
         streetName: String,
-        postalCode: String
-        // account: {
-        //             userAccountName: String,
-        //             encryptedPassword: String,
-        //             salt: String
-        //         },
+        postalCode: String,
+        account: {
+                    userAccountName: String,
+                    encryptedPassword: String,
+                    salt: String
+                },
         // payments: [{
         //             dayTimestamp: Date,
         //             amount: Number,
@@ -34,5 +35,6 @@ var patientProfilesSchema = mongoose.Schema(
     }
 );
 
+patientProfilesSchema.plugin(mongoosePaginate);
 var PatientProfiles = mongoose.model('patient', patientProfilesSchema);
 exports.Model = PatientProfiles;

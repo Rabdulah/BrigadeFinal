@@ -10,14 +10,13 @@ export default DS.Model.extend({
   streetNumber: DS.attr('Number'),
   apartment: DS.attr('Number'),
   country:DS.attr(),
-  provinces: DS.attr(),
-  cities: DS.attr(),
+  province: DS.attr(),
+  city: DS.attr(),
   dateOfBirth: DS.attr('Date'),
   healthCardNumber: DS.attr(),
-  occupation: DS.attr(),
-  maritalStatus:  DS.attr(),
   gender: DS.attr(),
   phoneNumber: DS.attr(),
   postalCode: DS.attr(),
+  account: DS.belongsTo('userAccount')
 
 });

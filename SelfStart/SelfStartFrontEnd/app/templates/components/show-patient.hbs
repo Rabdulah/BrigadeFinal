@@ -1,0 +1,57 @@
+
+<div class="ui segment items">
+  <div class="ui raised very padded text segment" style="margin-right: 40%">
+  <div class="ui grid">
+
+
+    <div class="eight wide column">
+      <div class="item">
+        <div class="middle aligned content">
+          <p style="font-weight: bold;">Client:</p> {{model.givenName}}{{model.familyName}}
+        </div>
+      </div>
+      <br>
+      <div class="item">
+        <div class="middle aligned content">
+          <p style="font-weight: bold;">Date of Birth:</p> {{dateFormat}}
+        </div>
+      </div>
+      <br>
+      <div class="item">
+        <div class="middle aligned content">
+          <p style="font-weight: bold;">Gender:</p>{{model.gender}}
+        </div>
+      </div>
+      <br>
+      <div class="item">
+        <div class="middle aligned content">
+          <p style="font-weight: bold;">Address:</p>{{model.streetNumber}} {{model.streetName}}, {{model.postalCode}}
+          <p>{{model.city}}, {{model.province}}, {{model.country}}</p>
+        </div>
+      </div>
+    </div>
+
+    <div class="eight wide column">
+      <div class="item">
+        <div class="middle aligned content">
+          <p style="font-weight: bold;">Health Card:</p> {{model.healthCardNumber}}
+        </div>
+      </div>
+      <br>
+      <div class="item">
+        <div class="middle aligned content">
+          <p style="font-weight: bold;">Phone Number:</p>{{model.phoneNumber}}
+        </div>
+      </div>
+      <br>
+      <div class="item">
+        <div class="middle aligned content">
+          <p style="font-weight: bold;">Email:</p>
+          {{model.email}}
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+</div>

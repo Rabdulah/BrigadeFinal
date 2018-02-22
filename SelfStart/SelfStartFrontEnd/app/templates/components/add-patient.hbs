@@ -1,7 +1,31 @@
+<div class="title">
+  Add New Client
+
+  <div class="container" style="float: right;">
+    {{#link-to 'patients'}}
+      <a id="add" class="round-button">
+        <i class="remove icon"></i>
+      </a>
+    {{/link-to}}
+  </div>
+</div>
+
+
 <link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/form-style.css"> <!-- Resource style -->
 
 <form class="cd-form floating-labels" {{action "save" on="submit"}}>
-  <br><br>
+  <fieldset>
+    <legend>Account Settings</legend>
+    <div class="icon">
+      <label class="cd-label">Account Name</label>
+      {{input  type="text" value = account.userAccountName required = true}}
+    </div>
+    <div class="icon">
+      <label class="cd-label">Password</label>
+      {{input  type="text" value = account.encryptedPassword required = true}}
+    </div>
+  </fieldset>
+
   <fieldset>
     <legend>Personal Info</legend>
 
@@ -31,23 +55,7 @@
       </p>
     </div>
 
-    <div >
-      <h4>Marital Status</h4>
-      <p class="cd-select icon">
-        <select class="people" onchange={{action (mut maritalStatus) value="target.value"}}>
-          {{#each maritalStatusModel as |oneStatus|}}
-            <option value={{oneStatus.name}} selected={{eq maritalStatus.name oneStatus.name}}>
-              {{oneStatus.name}}
-            </option>
-          {{/each}}
-        </select>
-      </p>
-    </div>
 
-    <div class="icon">
-      <label class="cd-label">Occupation</label>
-      {{input class="company" type="text" value = occupation required = true}}
-    </div>
     <div class="icon">
       <label class="cd-label">Health Card Number</label>
       {{input class="card" type="text" value = healthCardNumber required = true}}
