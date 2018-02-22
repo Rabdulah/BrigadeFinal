@@ -793,6 +793,29 @@ define('self-start-front-end/components/back-to-top', ['exports'], function (exp
     }
   });
 });
+define('self-start-front-end/components/book-appointment', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+    routing: Ember.inject.service('-routing'),
+
+    tagName: '',
+
+    actions: {
+      assignDate: function assignDate(date) {
+        this.set('selectedDate', date);
+      },
+      cancel: function cancel() {
+        return true;
+      }
+    }
+
+  });
+});
 define('self-start-front-end/components/delete-country', ['exports'], function (exports) {
   'use strict';
 
@@ -1464,6 +1487,7 @@ define('self-start-front-end/components/edit-rehabplan', ['exports'], function (
           rec.set('physioID', _this.get('rehabilitationplansData.physioID'));
           rec.set('goal', _this.get('rehabilitationplansData.goal'));
           rec.set('timeToComplete', _this.get('rehabilitationplansData.timeToComplete'));
+          2;
 
           rec.save().then(function () {
             _this.get('routing').transitionTo('rehabplans');
@@ -4104,6 +4128,19 @@ define('self-start-front-end/mixins/promise-resolver', ['exports', 'ember-promis
     }
   });
 });
+define('self-start-front-end/models/appointment', ['exports', 'ember-data'], function (exports, _emberData) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _emberData.default.Model.extend({
+    date: _emberData.default.attr(),
+    reason: _emberData.default.attr(),
+    other: _emberData.default.attr(),
+    patient: _emberData.default.belongsTo('patient')
+  });
+});
 define('self-start-front-end/models/assesment-test', ['exports', 'ember-data'], function (exports, _emberData) {
   'use strict';
 
@@ -4232,7 +4269,8 @@ define('self-start-front-end/models/patient', ['exports', 'ember-data'], functio
     maritalStatus: _emberData.default.attr(),
     gender: _emberData.default.attr(),
     phoneNumber: _emberData.default.attr(),
-    postalCode: _emberData.default.attr()
+    postalCode: _emberData.default.attr(),
+    appointment: _emberData.default.hasMany('appointment')
 
   });
 });
@@ -4339,11 +4377,20 @@ define('self-start-front-end/router', ['exports', 'self-start-front-end/config/e
     this.route('exercise');
     this.route('new-exercise');
     this.route('edit-rehablinker', { path: 'rehabilitationplan/:rehabilitationplan_id' });
+    this.route('appointment');
   });
 
   exports.default = Router;
 });
 define('self-start-front-end/routes/admin', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Route.extend({});
+});
+define('self-start-front-end/routes/appointment', ['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -4599,6 +4646,14 @@ define("self-start-front-end/templates/application", ["exports"], function (expo
   });
   exports.default = Ember.HTMLBars.template({ "id": "zCUF1jJy", "block": "{\"symbols\":[],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/reset.css\"]]],[7],[8],[0,\" \"],[2,\" CSS reset \"],[0,\"\\n\\n\"],[4,\"nav-bar\",null,null,{\"statements\":[[0,\"\\n    \"],[1,[18,\"outlet\"],false],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/application.hbs" } });
 });
+define("self-start-front-end/templates/appointment", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "p5FiT6kG", "block": "{\"symbols\":[],\"statements\":[[1,[18,\"book-appointment\"],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/appointment.hbs" } });
+});
 define("self-start-front-end/templates/city", ["exports"], function (exports) {
   "use strict";
 
@@ -4686,6 +4741,14 @@ define("self-start-front-end/templates/components/back-to-top", ["exports"], fun
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "2X3Y11K3", "block": "{\"symbols\":[\"&default\"],\"statements\":[[11,1],[0,\"\\n\"],[2,\" ICON NEEDS FONT AWESOME FOR CHEVRON UP ICON \"],[0,\"\\n\"],[6,\"link\"],[9,\"href\",\"//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css\"],[9,\"rel\",\"stylesheet\"],[7],[8],[0,\"\\n\\n\"],[2,\" Return to Top \"],[0,\"\\n\"],[6,\"a\"],[9,\"href\",\"javascript:\"],[9,\"id\",\"return-to-top\"],[7],[6,\"i\"],[9,\"class\",\"icon-chevron-up\"],[7],[8],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/back-to-top.hbs" } });
+});
+define("self-start-front-end/templates/components/book-appointment", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "RddRUhKa", "block": "{\"symbols\":[],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"fieldset\"],[7],[0,\"\\n    \"],[6,\"legend\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Reason\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"star\",\"text\",[20,[\"Reason\"]]]]],false],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Other\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"user\",\"text\",[20,[\"Other\"]]]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Date\"],[8],[0,\"\\n      \"],[6,\"input\"],[9,\"class\",\"date\"],[9,\"type\",\"date\"],[10,\"value\",[18,\"selectedDate\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"assignDate\"],[[\"value\"],[\"target.value\"]]],null],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"cd-button\"],[7],[0,\"\\n        \"],[6,\"input\"],[9,\"type\",\"submit\"],[9,\"value\",\"Submit\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/book-appointment.hbs" } });
 });
 define("self-start-front-end/templates/components/delete-country", ["exports"], function (exports) {
   "use strict";
@@ -5013,7 +5076,7 @@ define("self-start-front-end/templates/components/welcome-page", ["exports"], fu
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "TwJLVOCq", "block": "{\"symbols\":[],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/home-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\"],[2,\" PRELOADER \"],[0,\"\\n\"],[6,\"div\"],[9,\"id\",\"preloader\"],[7],[6,\"div\"],[7],[6,\"em\"],[7],[8],[6,\"em\"],[7],[8],[6,\"em\"],[7],[8],[6,\"em\"],[7],[8],[8],[8],[0,\"\\n\"],[2,\" //PRELOADER \"],[0,\"\\n\\n\"],[6,\"main\"],[9,\"class\",\"cd-main-content\"],[7],[0,\"\\n\"],[4,\"admin-nav\",null,null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"cd-fixed-bg cd-bg-1 demo\"],[9,\"id\",\"section01\"],[7],[0,\"\\n    \"],[6,\"h1\"],[9,\"id\",\"logo-image\"],[7],[6,\"img\"],[9,\"src\",\"assets/images/home/Header.png\"],[9,\"style\",\"max-width: 50%;\\n  height: auto;\\n  width: auto\\\\9;\"],[7],[8],[8],[0,\"\\n\\n    \"],[6,\"h1\"],[9,\"id\",\"button01\"],[7],[4,\"stylish-button\",null,[[\"type\",\"border\",\"shape\",\"size\",\"textWidth\",\"customClasses\"],[\"ujarak\",\"medium\",\"round-s\",\"l\",\"thick\",\"btn-primary\"]],{\"statements\":[[0,\" Book Appointment \"]],\"parameters\":[]},null],[8],[0,\"\\n    \"],[6,\"h1\"],[9,\"id\",\"button02\"],[7],[4,\"stylish-button\",null,[[\"type\",\"border\",\"shape\",\"size\",\"textWidth\"],[\"ujarak\",\"medium\",\"round-s\",\"l\",\"thick\"]],{\"statements\":[[0,\" Ask a Physio \"]],\"parameters\":[]},null],[8],[0,\"\\n\\n    \"],[6,\"a\"],[9,\"href\",\"#section02\"],[7],[6,\"span\"],[7],[8],[0,\"Scroll\"],[8],[0,\"\\n\\n\\n\\n    \"],[6,\"section\"],[9,\"class\",\"cd-section\"],[9,\"style\",\"cursor: pointer;\"],[7],[0,\"\\n      \"],[6,\"ul\"],[9,\"class\",\"cd-bouncy-nav-trigger\"],[7],[0,\"Admin\"],[8],[0,\"\\n    \"],[8],[0,\" \"],[2,\" .cd-section \"],[0,\"\\n\\n\\n  \"],[8],[0,\" \"],[2,\" cd-fixed-bg \"],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"class\",\"cd-scrolling-bg cd-color-2 demo\"],[9,\"id\",\"section02\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"cd-container\"],[7],[0,\"\\n        \"],[6,\"p\"],[7],[0,\"\\n          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore incidunt suscipit similique, dolor corrupti cumque qui consectetur autem laborum fuga quas ipsam doloribus sequi, mollitia, repellendus sapiente repudiandae labore rerum amet culpa inventore, modi non. Quo nisi veritatis vitae nam, labore fugit. Inventore culpa iusto, officia exercitationem. Voluptates quibusdam odit odio incidunt consequatur, consectetur aspernatur optio vitae molestias, quas repellendus fugit ullam culpa, eligendi et dignissimos voluptatibus illum? Molestias aliquam nostrum quasi ipsa culpa, iusto explicabo ut error, consequuntur enim temporibus, adipisci tempora voluptate, id consequatur mollitia eveniet blanditiis. Illo quod repellendus alias? Cum rem doloremque adipisci accusantium? Saepe, necessitatibus!\\n        \"],[8],[0,\"\\n      \"],[8],[0,\" \"],[2,\" cd-container \"],[0,\"\\n        \"],[6,\"a\"],[9,\"href\",\"#section03\"],[7],[6,\"span\"],[7],[8],[0,\"Scroll\"],[8],[0,\"\\n      \"],[8],[0,\" \"],[2,\" cd-scrolling-bg \"],[0,\"\\n\\n\\n\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"cd-fixed-bg cd-bg-2 demo\"],[9,\"id\",\"section03\"],[7],[0,\"\\n    \"],[6,\"h2\"],[7],[0,\"Lorem ipsum dolor sit amet.\"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"href\",\"#section04\"],[7],[6,\"span\"],[7],[8],[0,\"Scroll\"],[8],[0,\"\\n  \"],[8],[0,\" \"],[2,\" cd-fixed-bg \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"cd-scrolling-bg cd-color-3 demo\"],[9,\"id\",\"section04\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cd-container\"],[7],[0,\"\\n      \"],[6,\"p\"],[7],[0,\"\\n        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore incidunt suscipit similique, dolor corrupti cumque qui consectetur autem laborum fuga quas ipsam doloribus sequi, mollitia, repellendus sapiente repudiandae labore rerum amet culpa inventore, modi non. Quo nisi veritatis vitae nam, labore fugit. Inventore culpa iusto, officia exercitationem. Voluptates quibusdam odit odio incidunt consequatur, consectetur aspernatur optio vitae molestias, quas repellendus fugit ullam culpa, eligendi et dignissimos voluptatibus illum? Molestias aliquam nostrum quasi ipsa culpa, iusto explicabo ut error, consequuntur enim temporibus, adipisci tempora voluptate, id consequatur mollitia eveniet blanditiis. Illo quod repellendus alias? Cum rem doloremque adipisci accusantium? Saepe, necessitatibus!\\n      \"],[8],[0,\"\\n    \"],[8],[0,\" \"],[2,\" cd-container \"],[0,\"\\n    \"],[6,\"a\"],[9,\"href\",\"#section05\"],[7],[6,\"span\"],[7],[8],[0,\"Scroll\"],[8],[0,\"\\n  \"],[8],[0,\" \"],[2,\" cd-scrolling-bg \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"cd-fixed-bg cd-bg-3 demo\"],[9,\"id\",\"section05\"],[7],[0,\"\\n    \"],[6,\"h2\"],[7],[0,\"Lorem ipsum dolor sit amet.\"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"href\",\"#section06\"],[7],[6,\"span\"],[7],[8],[0,\"Scroll\"],[8],[0,\"\\n  \"],[8],[0,\" \"],[2,\" cd-fixed-bg \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"cd-scrolling-bg cd-color-1 demo\"],[9,\"id\",\"section06\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cd-container\"],[7],[0,\"\\n      \"],[6,\"p\"],[7],[0,\"\\n        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore incidunt suscipit similique, dolor corrupti cumque qui consectetur autem laborum fuga quas ipsam doloribus sequi, mollitia, repellendus sapiente repudiandae labore rerum amet culpa inventore, modi non. Quo nisi veritatis vitae nam, labore fugit. Inventore culpa iusto, officia exercitationem. Voluptates quibusdam odit odio incidunt consequatur, consectetur aspernatur optio vitae molestias, quas repellendus fugit ullam culpa, eligendi et dignissimos voluptatibus illum? Molestias aliquam nostrum quasi ipsa culpa, iusto explicabo ut error, consequuntur enim temporibus, adipisci tempora voluptate, id consequatur mollitia eveniet blanditiis. Illo quod repellendus alias? Cum rem doloremque adipisci accusantium? Saepe, necessitatibus!\\n      \"],[8],[0,\"\\n    \"],[8],[0,\" \"],[2,\" cd-container \"],[0,\"\\n  \"],[8],[0,\" \"],[2,\" cd-scrolling-bg \"],[0,\"\\n\\n  \"],[6,\"a\"],[9,\"href\",\"javascript:\"],[9,\"id\",\"return-to-top\"],[7],[0,\"\\n    \"],[6,\"i\"],[9,\"class\",\"icon-chevron-up\"],[7],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[8],[0,\" \"],[2,\" cd-main-content \"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/welcome-page.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "KNw2b1Bm", "block": "{\"symbols\":[],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/home-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\"],[2,\" PRELOADER \"],[0,\"\\n\"],[6,\"div\"],[9,\"id\",\"preloader\"],[7],[6,\"div\"],[7],[6,\"em\"],[7],[8],[6,\"em\"],[7],[8],[6,\"em\"],[7],[8],[6,\"em\"],[7],[8],[8],[8],[0,\"\\n\"],[2,\" //PRELOADER \"],[0,\"\\n\\n\"],[6,\"main\"],[9,\"class\",\"cd-main-content\"],[7],[0,\"\\n\"],[4,\"admin-nav\",null,null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"cd-fixed-bg cd-bg-1 demo\"],[9,\"id\",\"section01\"],[7],[0,\"\\n    \"],[6,\"h1\"],[9,\"id\",\"logo-image\"],[7],[6,\"img\"],[9,\"src\",\"assets/images/home/Header.png\"],[9,\"style\",\"max-width: 50%;\\n  height: auto;\\n  width: auto\\\\9;\"],[7],[8],[8],[0,\"\\n\"],[4,\"link-to\",[\"appointment\"],null,{\"statements\":[[0,\"    \"],[6,\"h1\"],[9,\"id\",\"button01\"],[7],[4,\"stylish-button\",null,[[\"type\",\"border\",\"shape\",\"size\",\"textWidth\",\"customClasses\"],[\"ujarak\",\"medium\",\"round-s\",\"l\",\"thick\",\"btn-primary\"]],{\"statements\":[[0,\" Book Appointment \"]],\"parameters\":[]},null],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"    \"],[6,\"h1\"],[9,\"id\",\"button02\"],[7],[4,\"stylish-button\",null,[[\"type\",\"border\",\"shape\",\"size\",\"textWidth\"],[\"ujarak\",\"medium\",\"round-s\",\"l\",\"thick\"]],{\"statements\":[[0,\" Ask a Physio \"]],\"parameters\":[]},null],[8],[0,\"\\n\\n\\n    \"],[6,\"a\"],[9,\"href\",\"#section02\"],[7],[6,\"span\"],[7],[8],[0,\"Scroll\"],[8],[0,\"\\n\\n\\n\\n    \"],[6,\"section\"],[9,\"class\",\"cd-section\"],[9,\"style\",\"cursor: pointer;\"],[7],[0,\"\\n      \"],[6,\"ul\"],[9,\"class\",\"cd-bouncy-nav-trigger\"],[7],[0,\"Admin\"],[8],[0,\"\\n    \"],[8],[0,\" \"],[2,\" .cd-section \"],[0,\"\\n\\n\\n  \"],[8],[0,\" \"],[2,\" cd-fixed-bg \"],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"class\",\"cd-scrolling-bg cd-color-2 demo\"],[9,\"id\",\"section02\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"cd-container\"],[7],[0,\"\\n        \"],[6,\"p\"],[7],[0,\"\\n          Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore incidunt suscipit similique, dolor corrupti cumque qui consectetur autem laborum fuga quas ipsam doloribus sequi, mollitia, repellendus sapiente repudiandae labore rerum amet culpa inventore, modi non. Quo nisi veritatis vitae nam, labore fugit. Inventore culpa iusto, officia exercitationem. Voluptates quibusdam odit odio incidunt consequatur, consectetur aspernatur optio vitae molestias, quas repellendus fugit ullam culpa, eligendi et dignissimos voluptatibus illum? Molestias aliquam nostrum quasi ipsa culpa, iusto explicabo ut error, consequuntur enim temporibus, adipisci tempora voluptate, id consequatur mollitia eveniet blanditiis. Illo quod repellendus alias? Cum rem doloremque adipisci accusantium? Saepe, necessitatibus!\\n        \"],[8],[0,\"\\n      \"],[8],[0,\" \"],[2,\" cd-container \"],[0,\"\\n        \"],[6,\"a\"],[9,\"href\",\"#section03\"],[7],[6,\"span\"],[7],[8],[0,\"Scroll\"],[8],[0,\"\\n      \"],[8],[0,\" \"],[2,\" cd-scrolling-bg \"],[0,\"\\n\\n\\n\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"cd-fixed-bg cd-bg-2 demo\"],[9,\"id\",\"section03\"],[7],[0,\"\\n    \"],[6,\"h2\"],[7],[0,\"Lorem ipsum dolor sit amet.\"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"href\",\"#section04\"],[7],[6,\"span\"],[7],[8],[0,\"Scroll\"],[8],[0,\"\\n  \"],[8],[0,\" \"],[2,\" cd-fixed-bg \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"cd-scrolling-bg cd-color-3 demo\"],[9,\"id\",\"section04\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cd-container\"],[7],[0,\"\\n      \"],[6,\"p\"],[7],[0,\"\\n        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore incidunt suscipit similique, dolor corrupti cumque qui consectetur autem laborum fuga quas ipsam doloribus sequi, mollitia, repellendus sapiente repudiandae labore rerum amet culpa inventore, modi non. Quo nisi veritatis vitae nam, labore fugit. Inventore culpa iusto, officia exercitationem. Voluptates quibusdam odit odio incidunt consequatur, consectetur aspernatur optio vitae molestias, quas repellendus fugit ullam culpa, eligendi et dignissimos voluptatibus illum? Molestias aliquam nostrum quasi ipsa culpa, iusto explicabo ut error, consequuntur enim temporibus, adipisci tempora voluptate, id consequatur mollitia eveniet blanditiis. Illo quod repellendus alias? Cum rem doloremque adipisci accusantium? Saepe, necessitatibus!\\n      \"],[8],[0,\"\\n    \"],[8],[0,\" \"],[2,\" cd-container \"],[0,\"\\n    \"],[6,\"a\"],[9,\"href\",\"#section05\"],[7],[6,\"span\"],[7],[8],[0,\"Scroll\"],[8],[0,\"\\n  \"],[8],[0,\" \"],[2,\" cd-scrolling-bg \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"cd-fixed-bg cd-bg-3 demo\"],[9,\"id\",\"section05\"],[7],[0,\"\\n    \"],[6,\"h2\"],[7],[0,\"Lorem ipsum dolor sit amet.\"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"href\",\"#section06\"],[7],[6,\"span\"],[7],[8],[0,\"Scroll\"],[8],[0,\"\\n  \"],[8],[0,\" \"],[2,\" cd-fixed-bg \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"cd-scrolling-bg cd-color-1 demo\"],[9,\"id\",\"section06\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cd-container\"],[7],[0,\"\\n      \"],[6,\"p\"],[7],[0,\"\\n        Lorem ipsum dolor sit amet, consectetur adipisicing elit. Dolore incidunt suscipit similique, dolor corrupti cumque qui consectetur autem laborum fuga quas ipsam doloribus sequi, mollitia, repellendus sapiente repudiandae labore rerum amet culpa inventore, modi non. Quo nisi veritatis vitae nam, labore fugit. Inventore culpa iusto, officia exercitationem. Voluptates quibusdam odit odio incidunt consequatur, consectetur aspernatur optio vitae molestias, quas repellendus fugit ullam culpa, eligendi et dignissimos voluptatibus illum? Molestias aliquam nostrum quasi ipsa culpa, iusto explicabo ut error, consequuntur enim temporibus, adipisci tempora voluptate, id consequatur mollitia eveniet blanditiis. Illo quod repellendus alias? Cum rem doloremque adipisci accusantium? Saepe, necessitatibus!\\n      \"],[8],[0,\"\\n    \"],[8],[0,\" \"],[2,\" cd-container \"],[0,\"\\n  \"],[8],[0,\" \"],[2,\" cd-scrolling-bg \"],[0,\"\\n\\n  \"],[6,\"a\"],[9,\"href\",\"javascript:\"],[9,\"id\",\"return-to-top\"],[7],[0,\"\\n    \"],[6,\"i\"],[9,\"class\",\"icon-chevron-up\"],[7],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[8],[0,\" \"],[2,\" cd-main-content \"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/welcome-page.hbs" } });
 });
 define("self-start-front-end/templates/country", ["exports"], function (exports) {
   "use strict";

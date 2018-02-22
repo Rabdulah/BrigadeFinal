@@ -75,6 +75,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'components/back-to-top.js should pass ESLint\n\n');
   });
 
+  QUnit.test('components/book-appointment.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/book-appointment.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n4:8 - \'$\' is defined but never used. (no-unused-vars)');
+  });
+
   QUnit.test('components/delete-country.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/delete-country.js should pass ESLint\n\n');
@@ -220,6 +225,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'initializers/responsive.js should pass ESLint\n\n');
   });
 
+  QUnit.test('models/appointment.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'models/appointment.js should pass ESLint\n\n');
+  });
+
   QUnit.test('models/assesment-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'models/assesment-test.js should pass ESLint\n\n');
@@ -298,6 +308,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('routes/admin.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'routes/admin.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('routes/appointment.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/appointment.js should pass ESLint\n\n');
   });
 
   QUnit.test('routes/city.js', function (assert) {
@@ -819,6 +834,35 @@ define('self-start-front-end/tests/integration/components/back-to-top-test', ['e
     this.render(Ember.HTMLBars.template({
       "id": "DEQE/DCb",
       "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"back-to-top\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/book-appointment-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('book-appointment', 'Integration | Component | book appointment', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "NdIYnWMu",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"book-appointment\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "I23GB3If",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"book-appointment\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
       "meta": {}
     }));
 
@@ -1665,6 +1709,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/back-to-top-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('integration/components/book-appointment-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/book-appointment-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('integration/components/delete-country-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/delete-country-test.js should pass ESLint\n\n');
@@ -1820,6 +1869,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/controllers/rehabplans-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/models/appointment-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/models/appointment-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/models/assesment-test-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/models/assesment-test-test.js should pass ESLint\n\n');
@@ -1888,6 +1942,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('unit/routes/admin-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/routes/admin-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/routes/appointment-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/appointment-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/routes/city-test.js', function (assert) {
@@ -2039,6 +2098,20 @@ define('self-start-front-end/tests/unit/controllers/rehabplans-test', ['ember-qu
   (0, _emberQunit.test)('it exists', function (assert) {
     var controller = this.subject();
     assert.ok(controller);
+  });
+});
+define('self-start-front-end/tests/unit/models/appointment-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForModel)('appointment', 'Unit | Model | appointment', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var model = this.subject();
+    // let store = this.store();
+    assert.ok(!!model);
   });
 });
 define('self-start-front-end/tests/unit/models/assesment-test-test', ['ember-qunit'], function (_emberQunit) {
@@ -2227,6 +2300,19 @@ define('self-start-front-end/tests/unit/routes/admin-test', ['ember-qunit'], fun
   'use strict';
 
   (0, _emberQunit.moduleFor)('route:admin', 'Unit | Route | admin', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
+define('self-start-front-end/tests/unit/routes/appointment-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:appointment', 'Unit | Route | appointment', {
     // Specify the other units that are required for this test.
     // needs: ['controller:foo']
   });
