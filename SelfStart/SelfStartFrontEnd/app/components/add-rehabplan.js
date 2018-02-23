@@ -4,7 +4,6 @@ import { inject } from '@ember/service';
 
 export default Component.extend({
 
-  exerciseContainer : [],
 
   init: function() {
     this._super();

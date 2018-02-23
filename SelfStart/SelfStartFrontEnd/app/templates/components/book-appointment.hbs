@@ -5,6 +5,20 @@
   <fieldset>
     <legend>Book Appointment</legend>
 
+
+    <label class="cd-label">Select Physiotherapist</label>
+    <p class="cd-select icon">
+      <select class="people" value ={{selectphysio}} onchange={{action "updateValue" value="target.value"}} >
+        <option value=""  selected disabled hidden>Select Physiotherapist</option>
+        {{#each getphysio as |phsio|}}
+          <option value={{phsio.id}}>
+            {{phsio.givenName}}
+          </option>
+        {{/each}}
+      </select>
+    </p>
+
+
     <div class="icon">
       <label class="cd-label">Reason</label>
       {{input class="star" type="text" value = Reason}}

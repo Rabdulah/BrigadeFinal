@@ -77,7 +77,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/book-appointment.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/book-appointment.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n4:8 - \'$\' is defined but never used. (no-unused-vars)');
+    assert.ok(false, 'components/book-appointment.js should pass ESLint\n\n4:8 - \'$\' is defined but never used. (no-unused-vars)\n36:11 - \'physioid\' is assigned a value but never used. (no-unused-vars)\n45:9 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/delete-country.js', function (assert) {
@@ -275,6 +275,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'models/patient.js should pass ESLint\n\n');
   });
 
+  QUnit.test('models/physiotherapest.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'models/physiotherapest.js should pass ESLint\n\n');
+  });
+
   QUnit.test('models/province.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'models/province.js should pass ESLint\n\n');
@@ -378,6 +383,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('routes/patients.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'routes/patients.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('routes/physiotherapest.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/physiotherapest.js should pass ESLint\n\n');
   });
 
   QUnit.test('routes/province.js', function (assert) {
@@ -1919,6 +1929,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/models/patient-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/models/physiotherapest-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/models/physiotherapest-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/models/provinces-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/models/provinces-test.js should pass ESLint\n\n');
@@ -2012,6 +2027,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('unit/routes/patients-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/routes/patients-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/routes/physiotherapest-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/physiotherapest-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/routes/province-test.js', function (assert) {
@@ -2230,6 +2250,20 @@ define('self-start-front-end/tests/unit/models/patient-test', ['ember-qunit'], f
   'use strict';
 
   (0, _emberQunit.moduleForModel)('patient', 'Unit | Model | patient', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var model = this.subject();
+    // let store = this.store();
+    assert.ok(!!model);
+  });
+});
+define('self-start-front-end/tests/unit/models/physiotherapest-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForModel)('physiotherapest', 'Unit | Model | physiotherapest', {
     // Specify the other units that are required for this test.
     needs: []
   });
@@ -2482,6 +2516,19 @@ define('self-start-front-end/tests/unit/routes/patients-test', ['ember-qunit'], 
   'use strict';
 
   (0, _emberQunit.moduleFor)('route:patients', 'Unit | Route | patients', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
+define('self-start-front-end/tests/unit/routes/physiotherapest-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:physiotherapest', 'Unit | Route | physiotherapest', {
     // Specify the other units that are required for this test.
     // needs: ['controller:foo']
   });

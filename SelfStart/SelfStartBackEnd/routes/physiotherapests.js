@@ -41,7 +41,7 @@ router.route('/:physiotherapest_id')
                     physiotherapest.givenName = request.body.physiotherapest.givenName;
                     physiotherapest.email = request.body.physiotherapest.email;
                     physiotherapest.dateHired = request.body.physiotherapest.dateHired;
-                    physiotherapest.dateFired = request.body.physiotherapest.dateFired;
+                    physiotherapest.dateFinished = request.body.physiotherapest.dateFinished;
                     physiotherapest.treatment = request.body.physiotherapest.treatment;
                     physiotherapest.account = request.body.physiotherapest.account;
                     
@@ -58,9 +58,9 @@ router.route('/:physiotherapest_id')
         })
         
         .delete(function (request, response) {
-            Physiotherapest.Model.findByIdAndRemove(request.params.recommendations_id, function (error, deleted) {
+            Physiotherapest.Model.findByIdAndRemove(request.params.physiotherapest_id, function (error, deleted) {
                 if (!error) {
-                    response.json({recommendation: deleted});
+                    response.json({physiotherapest: deleted});
                 }
             });
         });

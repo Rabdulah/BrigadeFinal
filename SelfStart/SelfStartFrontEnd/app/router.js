@@ -31,6 +31,7 @@ Router.map(function() {
   this.route('new-exercise');
   this.route('edit-rehablinker',  { path: 'rehabilitationplan/:rehabilitationplan_id'});
   this.route('appointment');
+  this.route('physiotherapest');
 });
 
 export default Router;
