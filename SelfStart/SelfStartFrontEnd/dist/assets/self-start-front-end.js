@@ -822,8 +822,7 @@ define('self-start-front-end/components/book-appointment', ['exports'], function
 
         var self = this;
         //temp client until we get token
-        var client = this.get('DS').find('patient', '5a88738e1f0fdc2b94498e81');
-        var physioid = self.get('selectphysio');
+        var client = this.get('DS').find('patient', '5a80e1663ddc7324643209cd');
         var selectedphysio = this.get('DS').findRecord('physiotherapest', self.get('selectphysio'));
         var booking = this.get('DS').createRecord('appointment', {
           Reason: self.get('Reason'),
@@ -833,10 +832,10 @@ define('self-start-front-end/components/book-appointment', ['exports'], function
         });
         booking.save().then(function () {
           console.log(booking.get('id'));
-          client.get('appointment').pushObject(booking.get('id'));
+          client.get('appointment').pushObject(booking);
           client.save().then(function () {});
 
-          selectedphysio.get('appointment').pushObject(booking.get('id'));
+          selectedphysio.get('appointment').pushObject(booking);
           selectedphysio.save().then(function () {});
 
           _this.set('Reason', '');
@@ -5677,6 +5676,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+221f88fb"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+e94979a6"});
 }
 //# sourceMappingURL=self-start-front-end.map

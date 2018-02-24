@@ -77,7 +77,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/book-appointment.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/book-appointment.js should pass ESLint\n\n4:8 - \'$\' is defined but never used. (no-unused-vars)\n36:11 - \'physioid\' is assigned a value but never used. (no-unused-vars)\n45:9 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/book-appointment.js should pass ESLint\n\n4:8 - \'$\' is defined but never used. (no-unused-vars)\n44:9 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/delete-country.js', function (assert) {

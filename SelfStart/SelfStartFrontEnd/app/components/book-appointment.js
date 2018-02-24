@@ -32,8 +32,7 @@ export default Component.extend({
 
       let self = this;
       //temp client until we get token
-      let client = this.get('DS').find('patient', '5a88738e1f0fdc2b94498e81');
-      let physioid = self.get('selectphysio');
+      let client = this.get('DS').find('patient', '5a80e1663ddc7324643209cd');
       let selectedphysio = this.get('DS').findRecord('physiotherapest', self.get('selectphysio'));
       let booking = this.get('DS').createRecord('appointment', {
         Reason: self.get('Reason'),
@@ -43,12 +42,12 @@ export default Component.extend({
       });
       booking.save().then(() =>{
         console.log(booking.get('id'));
-        client.get('appointment').pushObject(booking.get('id'));
+        client.get('appointment').pushObject(booking);
         client.save().then(()=>{
 
         });
 
-        selectedphysio.get('appointment').pushObject(booking.get('id'));
+        selectedphysio.get('appointment').pushObject(booking);
         selectedphysio.save().then(()=>{
 
         });
