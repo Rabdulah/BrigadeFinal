@@ -30,27 +30,34 @@ export default Component.extend({
 
     save: function () {
 
+
       let self = this;
       //temp client until we get token
-      let client = this.get('DS').find('patient', '5a80e1663ddc7324643209cd');
-      let selectedphysio = this.get('DS').findRecord('physiotherapest', self.get('selectphysio'));
+      let client = '5a88738e1f0fdc2b94498e81';
       let booking = this.get('DS').createRecord('appointment', {
-        Reason: self.get('Reason'),
-        Other: self.get('Other'),
+        reason: self.get('Reason'),
+        other: self.get('Other'),
         date: self.get('selectedDate'),
-        patient : client
+      });
+      this.get('DS').findRecord('patient', client).then(function (src) {
+        booking.set('patient', src);
       });
       booking.save().then(() =>{
-        console.log(booking.get('id'));
-        client.get('appointment').pushObject(booking);
-        client.save().then(()=>{
 
+
+        console.log(booking);
+        this.get('DS').findRecord('patient', client). then(function (a) {
+          a.get('appointment').pushObject(booking);
+          a.save().then(()=>{
+          });
         });
 
-        selectedphysio.get('appointment').pushObject(booking);
-        selectedphysio.save().then(()=>{
-
+        this.get('DS').findRecord('physiotherapest', self.get('selectphysio')). then(function (a) {
+          a.get('appointment').pushObject(booking);
+          a.save().then(()=>{
+          });
         });
+
 
         this.set('Reason', '');
         this.set('Other', '');

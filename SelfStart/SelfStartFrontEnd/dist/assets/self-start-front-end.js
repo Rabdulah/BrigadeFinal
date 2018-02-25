@@ -822,21 +822,27 @@ define('self-start-front-end/components/book-appointment', ['exports'], function
 
         var self = this;
         //temp client until we get token
-        var client = this.get('DS').find('patient', '5a80e1663ddc7324643209cd');
-        var selectedphysio = this.get('DS').findRecord('physiotherapest', self.get('selectphysio'));
+        var client = '5a88738e1f0fdc2b94498e81';
         var booking = this.get('DS').createRecord('appointment', {
-          Reason: self.get('Reason'),
-          Other: self.get('Other'),
-          date: self.get('selectedDate'),
-          patient: client
+          reason: self.get('Reason'),
+          other: self.get('Other'),
+          date: self.get('selectedDate')
+        });
+        this.get('DS').findRecord('patient', client).then(function (src) {
+          booking.set('patient', src);
         });
         booking.save().then(function () {
-          console.log(booking.get('id'));
-          client.get('appointment').pushObject(booking);
-          client.save().then(function () {});
 
-          selectedphysio.get('appointment').pushObject(booking);
-          selectedphysio.save().then(function () {});
+          console.log(booking);
+          _this.get('DS').findRecord('patient', client).then(function (a) {
+            a.get('appointment').pushObject(booking);
+            a.save().then(function () {});
+          });
+
+          _this.get('DS').findRecord('physiotherapest', self.get('selectphysio')).then(function (a) {
+            a.get('appointment').pushObject(booking);
+            a.save().then(function () {});
+          });
 
           _this.set('Reason', '');
           _this.set('Other', '');
@@ -5676,6 +5682,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+e94979a6"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+221f88fb"});
 }
 //# sourceMappingURL=self-start-front-end.map

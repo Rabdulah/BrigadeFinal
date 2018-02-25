@@ -54,7 +54,7 @@ router.route('/:patient_id')
                 patient.postalCode = request.body.patient.postalCode;
                 // patient.account = request.body.patient.account;
                 // patient.payments = request.body.patient.payments;
-                // patient.appointments = request.body.patient.appointments;
+                 patient.appointments = request.body.patient.appointments;
                 // patient.plan = request.body.patient.plan;
 
 
