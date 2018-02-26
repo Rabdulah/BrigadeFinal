@@ -375,7 +375,7 @@ Main components
 #section01 a, #section02 a, #section03 a, #section04 a, #section05 a {
   padding-top: 60px;
 }
-#section01 a span, #section02 a span, #section03 a span, #section04 a span, #section05 a span {
+#section01 a, span, #section02 a span, #section03 a span, #section04 a span, #section05 a span {
   position: absolute;
   top: 0;
   left: 50%;

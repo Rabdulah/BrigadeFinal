@@ -9,6 +9,30 @@ export default Component.extend({
 
   tagName: '',
 
+  init(){
+    this._super(...arguments);
+
+    this.set('familyName', '');
+    this.set('givenName', '');
+    this.set('email', '');
+    this.set('streetName', '');
+    this.set('streetNumber', '');
+    this.set('apartment', '');
+    this.set('selectedCountry', '');
+    this.set('province', '');
+    this.set('city', '');
+    this.set('healthCardNumber', '');
+    this.set('selectedGender', '');
+    this.set('dateOfBirth', '');
+    this.set('phoneNumber', '');
+    this.set('postalCode', '');
+    this.set('userAccountName', '');
+    this.set('encryptedPassword', '');
+
+    // this.set('selectedGender', this.get('selectedGender'));
+    // this.set('selectedCountry', this.get('selectedCountry'));
+  },
+
   didRender() {
     this._super(...arguments);
 
@@ -47,14 +71,17 @@ export default Component.extend({
 
   actions: {
 
-    addPatient(){
-      this.set('isEditing', true);
-    },
-
     assignDate (date){
       this.set('selectedDate', date);
     },
 
+    selectCountry (country){
+      this.set('selectedCountry', country);
+    },
+
+    selectGender (gender){
+      this.set('selectedGender', gender);
+    },
 
     cancel() {
       return true;
@@ -64,6 +91,10 @@ export default Component.extend({
 
       let self = this;
 
+      let patientAccount = {};
+      patientAccount['userAccountName'] = self.get('userAccountName');
+      patientAccount['encryptedPassword'] =    self.get('encryptedPassword');
+
       let patient = this.get('DS').createRecord('patient', {
         familyName: self.get('familyName'),
         givenName: self.get('givenName'),
@@ -71,36 +102,20 @@ export default Component.extend({
         streetName: self.get('streetName'),
         streetNumber: self.get('streetNumber'),
         apartment: self.get('apartment'),
-        country: self.get('country'),
+        country: self.get('selectedCountry'),
         province: self.get('province'),
         city: self.get('city'),
-        dateOfBirth: self.get('selectedDate'),
+        dateOfBirth: new Date(this.get('selectedDate')),
         healthCardNumber: self.get('healthCardNumber'),
-        gender: self.get('gender'),
+        gender: self.get('selectedGender'),
         phoneNumber: self.get('phoneNumber'),
         postalCode: self.get('postalCode'),
-
-      });
-      patient.save().then(() =>{
-        this.get('routing').transitionTo('patients');
+        account: patientAccount
       });
 
-      this.set('familyName', '');
-      this.set('givenName', '');
-      this.set('email', '');
-      this.set('streetName', '');
-      this.set('streetNumber', '');
-      this.set('apartment', '');
-      this.set('country', '');
-      this.set('province', '');
-      this.set('city', '');
-      this.set('healthCardNumber', '');
-      this.set('gender', '');
-
-      this.set('dateOfBirth', '');
-
-      this.set('phoneNumber', '');
-      this.set('postalCode', '');
+        patient.save().then(() =>{
+          this.get('routing').transitionTo('patients');
+        });
 
     }
   },

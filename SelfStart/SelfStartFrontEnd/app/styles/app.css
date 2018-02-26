@@ -1,26 +1,48 @@
 .round-button {
+   box-sizing: border-box;
+   display:block;
+   width:55px;
+   height:55px;
+   padding-top: 20px;
+   padding-left: 4px;
+   line-height: 16px;
+   border-radius: 50%;
+   text-align:center;
+   text-decoration:none;
+   background-color: dodgerblue;
+   color:white;
+
+   font-size:20px;
+   font-weight:bold;
+   transition: all 0.3s ease;
+ }
+.round-button:hover {
+  background-color: #0d71bb;
+  color:white;
+}
+
+.round-remove-button {
   box-sizing: border-box;
   display:block;
   width:55px;
   height:55px;
   padding-top: 20px;
   padding-left: 4px;
-  line-height: 16px;
+  line-height: 13px;
   border-radius: 50%;
   text-align:center;
   text-decoration:none;
-  background-color: dodgerblue;
+  background-color: crimson;
   color:white;
 
   font-size:20px;
   font-weight:bold;
   transition: all 0.3s ease;
 }
-.round-button:hover {
-  background-color: #0d71bb;
+.round-remove-button:hover {
+  background-color: darkred;
   color:white;
 }
-
 
 .title{
   background-color: #013A6B;
@@ -36,6 +58,7 @@
 
 .background{
   background-color: #e9ebee;
+  height: 100vh;
 }
 
 #return-to-top {

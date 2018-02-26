@@ -9,12 +9,10 @@ Primary style
   box-sizing: border-box;
 }
 
-html {
-  font-size: 62.5%;
-}
+
 
 body {
-  font-size: 1.6rem;
+  font-size: 1rem;
   font-family: "Open Sans", sans-serif;
   color: #2b3e51;
   background-color: #ffffff;
@@ -46,7 +44,7 @@ Form
 .cd-form legend {
   padding-bottom: 10px;
   margin-bottom: 20px;
-  font-size: 2rem;
+  font-size: 1.4rem;
   border-bottom: 1px solid #ecf0f1;
 }
 .cd-form div {
@@ -55,7 +53,7 @@ Form
   margin: 20px 0;
 }
 .cd-form h4, .cd-form .cd-label {
-  font-size: 1.3rem;
+  font-size: 0.5rem;
   color: #94aab0;
   margin-bottom: 10px;
 }
@@ -64,9 +62,10 @@ Form
 }
 .cd-form input, .cd-form textarea, .cd-form select, .cd-form label {
   font-family: "Open Sans", sans-serif;
-  font-size: 1.6rem;
+  font-size: 1rem;
   color: #2b3e51;
 }
+
 .cd-form input[type="text"],
 .cd-form input[type="email"],
 .cd-form input[type="date"],
@@ -117,7 +116,7 @@ Form
   margin-top: -8px;
   display: block;
   width: 16px;
-  height: 16px;
+  height: 12px;
   background: url('/assets/images/form/cd-icon-arrow.svg') no-repeat center center;
   pointer-events: none;
 }
@@ -179,7 +178,7 @@ Form
   top: 50%;
   margin-top: -8px;
   width: 16px;
-  height: 16px;
+  height: 12px;
 }
 .cd-form input[type="radio"] + label::before,
 .cd-form input[type="checkbox"] + label::before {
@@ -293,7 +292,7 @@ Form
     margin-top: 20px;
   }
   .cd-form h4, .cd-form .cd-label {
-    font-size: 1.4rem;
+    font-size: 1rem;
     margin-bottom: 10px;
   }
   .cd-form input[type="text"],
@@ -345,12 +344,20 @@ Custom icons
 .cd-form .icon input, .cd-form .icon select, .cd-form .icon textarea {
   padding-left: 54px !important;
 }
-.cd-form . {
-  background: url('/assets/images/form/cd-icon-.svg') no-repeat 16px center;
+.cd-form .user {
+  background: url('/assets/images/form/cd-icon-user.svg') no-repeat 16px center;
 }
-.cd-form [required]. {
-  background: url('/assets/images/form/cd-icon-.svg') no-repeat 16px center, url('/assets/images/form/cd-required.svg') no-repeat top right;
+.cd-form [required].user {
+  background: url('/assets/images/form/cd-icon-user.svg') no-repeat 16px center, url('/assets/images/form/cd-required.svg') no-repeat top right;
 }
+
+.cd-form .lock {
+  background: url('/assets/images/form/lock.svg') no-repeat 16px center;
+}
+.cd-form [required].lock {
+  background: url('/assets/images/form/lock.svg') no-repeat 16px center, url('/assets/images/form/cd-required.svg') no-repeat top right;
+}
+
 .cd-form .company {
   background: url('/assets/images/form/cd-icon-company.svg') no-repeat 16px center;
 }
@@ -414,7 +421,7 @@ Custom icons
 .cd-form [required].world {
   background: url('/assets/images/form/world.svg') no-repeat 16px 16px, url('/assets/images/form/cd-required.svg') no-repeat top right;
 }
-}
+
 .cd-form .people {
   background: url('/assets/images/form/multiple-11.svg') no-repeat 16px 16px;
 }

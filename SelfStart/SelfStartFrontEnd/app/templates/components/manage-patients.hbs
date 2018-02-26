@@ -1,7 +1,7 @@
 <div class="title">
   Clients
   <div class="container" style="float: right;">
-    {{#link-to "new-patient" (query-params account = patient.account)}}
+    {{#link-to "new-patient"}}
       <a id="add" class="round-button">
         <i class="plus icon"></i>
       </a>
@@ -11,12 +11,10 @@
 
 <div class="background">
 
-
   <br><br>
-
-
-    <div class="ui form">
-      <div class="two fields">
+  <div class="ui fluid container" style="width: 90%;">
+    <div class="ui form" >
+      <div class="two fields" >
 
         <div class="field">
           {{#ui-dropdown class="selection" onChange=(action (mut queryPath))}}
@@ -43,8 +41,8 @@
 
 
 
-  <div style="display: inline" >
-    <table class="ui table ">
+  <div style="display: inline">
+    <table class="ui table">
       <thead >
       <tr>
         <th class="left aligned one wide column "> Avatar </th>
@@ -59,7 +57,7 @@
             <i class="sort icon"></i>
           {{/if}}
         </th>
-        <th class="left aligned collapsing two wide  column"{{action 'sortColumn' 'familyName' familyNameDir}}>Last Name
+        <th class="left aligned collapsing three wide  column"{{action 'sortColumn' 'familyName' familyNameDir}}>Last Name
           {{#if (eq familyNameDir 'asc')}}
             <i class="sort descending icon"></i>
           {{/if}}
@@ -71,7 +69,7 @@
           {{/if}}
         </th>
 
-        <th class="left aligned collapsing two wide  column"{{action 'sortColumn' 'address' addressDir}}>Address
+        <th class="left aligned collapsing three wide  column"{{action 'sortColumn' 'address' addressDir}}>Address
         {{#if (eq addressDir 'asc')}}
           <i class="sort descending icon"></i>
         {{/if}}
@@ -83,7 +81,7 @@
         {{/if}}
       </th>
 
-        <th class="left aligned collapsing four wide  column"{{action 'sortColumn' 'email' emailDir}}>Email
+        <th class="left aligned collapsing three wide  column"{{action 'sortColumn' 'email' emailDir}}>Email
           {{#if (eq emailDir 'asc')}}
             <i class="sort descending icon"></i>
           {{/if}}
@@ -106,7 +104,7 @@
           {{/if}}
         </th>
 
-        <th class="left aligned collapsing one wide column">Actions</th>
+        <th class="center aligned collapsing two wide column">Actions</th>
 
       </tr>
       </thead>
@@ -117,8 +115,8 @@
 
 
 
-  <div  id="myWindow" style="height:500px;overflow: scroll;">
-    <table class="ui single line table" id="tb">
+  <div  id="myWindow" style="height:600px;overflow-y: scroll; overflow-x: hidden;">
+    <table class="ui single line table" id="tb" >
       {{!--    <tfoot>    <tr>
         <th colspan="8">
           <div class="ui right floated pagination menu">
@@ -141,27 +139,25 @@
       <tbody >
       {{#each patientsModel as |patient|}}
         <tr >
-          <td class="left aligned two wide column ">
+          <td class="left aligned one wide column ">
             <img src="assets/images/nav/single-01.svg" class="ui mini rounded image" {{action 'toggleDetail' patient.id}}/>
           </td>
-          <td class="left aligned three wide column " > {{patient.givenName}} </td>
-          <td class="left aligned two wide column "> {{patient.familyName}} </td>
+          <td class="left aligned two wide column " > {{patient.givenName}} </td>
+          <td class="left aligned three wide column "> {{patient.familyName}} </td>
           <td class="left aligned three wide column "> {{patient.streetNumber}} {{patient.streetName}} </td>
           <td class="left aligned three wide column "> {{patient.email}} </td>
           <td class="left aligned two wide column "> {{patient.phoneNumber}} </td>
 
 
-          <td class="left aligned one wide column ">
-            <p style="cursor: pointer; float: left;" {{action 'editpatient' patient.id}} title="Edit">
+          <td class="right aligned one wide column ">
+            <p style="cursor: pointer; " {{action 'editpatient' patient.id}} title="Edit">
               <img src="assets/images/pencil.svg">
-              <span style="display:inline-block; width: 5px;"></span>
             </p>
-
-            <p style="float: left;">{{delete-patient ID=patient.id flagDelete=flagDelete}}</p>
           </td>
-          <!--<td class="left aligned one wide column ">-->
-            <!---->
-          <!--</td>-->
+
+          <td class="left aligned one wide column ">
+            <p >{{delete-patient ID=patient.id flagDelete=flagDelete}}</p>
+          </td>
         </tr>
 
         <tr>
@@ -183,12 +179,10 @@
         </tr>
 
       {{/each}}
-
-
       </tbody>
-
     </table>
   </div>
+</div>
 </div>
 
 

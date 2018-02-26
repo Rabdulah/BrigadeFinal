@@ -3,7 +3,7 @@
 
   <div class="container" style="float: right;">
     {{#link-to 'patients'}}
-      <a id="add" class="round-button">
+      <a id="add" class="round-remove-button">
         <i class="remove icon"></i>
       </a>
     {{/link-to}}
@@ -18,11 +18,11 @@
     <legend>Account Settings</legend>
     <div class="icon">
       <label class="cd-label">Account Name</label>
-      {{input  type="text" value = account.userAccountName required = true}}
+      {{input class="user" type="text" value = userAccountName required = true}}
     </div>
     <div class="icon">
-      <label class="cd-label">Password</label>
-      {{input  type="text" value = account.encryptedPassword required = true}}
+      <label class="cd-label">Temporary Password</label>
+      {{input class="lock" type="text" value = encryptedPassword required = true}}
     </div>
   </fieldset>
 
@@ -45,9 +45,12 @@
     <div >
       <h4>Gender</h4>
       <p class="cd-select icon">
-        <select class="people" onchange={{action (mut gender) value="target.value"}}>
+        <select class="people" onchange={{action 'selectGender' value="target.value"}} required=true>
+          <option selected="selected">
+            Select Gender
+          </option>
           {{#each genderModel as |oneGender|}}
-            <option value={{oneGender.name}} selected={{eq gender.name oneGender.name}}>
+            <option value={{oneGender.name}} selected={{eq gender oneGender.name}}>
               {{oneGender.name}}
             </option>
           {{/each}}
@@ -88,9 +91,12 @@
     <div >
       <h4>Country</h4>
       <p class="cd-select icon">
-        <select class="world" onchange={{action (mut country) value="target.value"}}>
+        <select class="world" onchange={{action 'selectCountry' value="target.value"}} required=true>
+          <option selected="selected">
+            Select Country
+          </option>
           {{#each conutryModel as |oneCountry|}}
-            <option value={{oneCountry.name}} selected={{eq country.name oneCountry.name}}>
+            <option value={{oneCountry.name}} selected={{eq country oneCountry.name}}>
               {{oneCountry.name}}
             </option>
           {{/each}}
@@ -113,20 +119,10 @@
       <label class="cd-label" for="cd-email">Email</label>
       {{input class="email" type="email" value = email required = true}}
     </div>
-  </fieldset>
 
-  <fieldset>
-
-    <div>
-
-
-      <div class="cd-button">
-        <input type="submit" value="Submit">
-      </div>
-
+    <div class="cd-button">
+      <input type="submit" value="Submit">
     </div>
-
-
-
   </fieldset>
+
 </form>

@@ -115,6 +115,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'initializers/responsive.js should pass ESLint\n\n');
   });
 
+  QUnit.test('models/appointment.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'models/appointment.js should pass ESLint\n\n');
+  });
+
   QUnit.test('models/city.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'models/city.js should pass ESLint\n\n');
@@ -145,11 +150,6 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'models/province.js should pass ESLint\n\n');
   });
 
-  QUnit.test('models/user-account.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'models/user-account.js should pass ESLint\n\n');
-  });
-
   QUnit.test('resolver.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'resolver.js should pass ESLint\n\n');
@@ -158,6 +158,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('router.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'router.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('routes/appointment.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/appointment.js should pass ESLint\n\n');
   });
 
   QUnit.test('routes/city.js', function (assert) {
@@ -994,6 +999,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/mixins/table-common-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/models/appointment-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/models/appointment-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/models/city-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/models/city-test.js should pass ESLint\n\n');
@@ -1024,9 +1034,9 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/models/provinces-test.js should pass ESLint\n\n');
   });
 
-  QUnit.test('unit/models/user-account-test.js', function (assert) {
+  QUnit.test('unit/routes/appointment-test.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'unit/models/user-account-test.js should pass ESLint\n\n');
+    assert.ok(true, 'unit/routes/appointment-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/routes/city-test.js', function (assert) {
@@ -1138,6 +1148,20 @@ define('self-start-front-end/tests/unit/mixins/table-common-test', ['self-start-
     assert.ok(subject);
   });
 });
+define('self-start-front-end/tests/unit/models/appointment-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForModel)('appointment', 'Unit | Model | appointment', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var model = this.subject();
+    // let store = this.store();
+    assert.ok(!!model);
+  });
+});
 define('self-start-front-end/tests/unit/models/city-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -1222,18 +1246,17 @@ define('self-start-front-end/tests/unit/models/provinces-test', ['ember-qunit'],
     assert.ok(!!model);
   });
 });
-define('self-start-front-end/tests/unit/models/user-account-test', ['ember-qunit'], function (_emberQunit) {
+define('self-start-front-end/tests/unit/routes/appointment-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
-  (0, _emberQunit.moduleForModel)('user-account', 'Unit | Model | user account', {
+  (0, _emberQunit.moduleFor)('route:appointment', 'Unit | Route | appointment', {
     // Specify the other units that are required for this test.
-    needs: []
+    // needs: ['controller:foo']
   });
 
   (0, _emberQunit.test)('it exists', function (assert) {
-    var model = this.subject();
-    // let store = this.store();
-    assert.ok(!!model);
+    var route = this.subject();
+    assert.ok(route);
   });
 });
 define('self-start-front-end/tests/unit/routes/city-test', ['ember-qunit'], function (_emberQunit) {

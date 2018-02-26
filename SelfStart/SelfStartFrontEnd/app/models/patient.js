@@ -17,6 +17,6 @@ export default DS.Model.extend({
   gender: DS.attr(),
   phoneNumber: DS.attr(),
   postalCode: DS.attr(),
-  account: DS.belongsTo('userAccount')
+  account: DS.attr()
 
 });
