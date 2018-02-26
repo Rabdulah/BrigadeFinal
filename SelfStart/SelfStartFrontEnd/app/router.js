@@ -11,6 +11,7 @@ Router.map(function() {
   this.route('patients');
   this.route('exercises');
   this.route('images');
+  this.route('create-client-account');
 });
 
 export default Router;

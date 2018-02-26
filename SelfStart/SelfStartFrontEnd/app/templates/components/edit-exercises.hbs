@@ -138,8 +138,8 @@
         {{/each}}
         </div>
         <div class = "content">
+            {{!-- <br> --}}
         {{#each queue as |file| }}
-                <br><br><br>
                 <div class="ui divided demo items">
                     <div class="item">
                         <div class="image">
@@ -148,15 +148,18 @@
                                     <div class="ui loader"></div>
                                 </div>
                            {{else}}
-                                <img src="{{file.base64Image}}">
+                                {{!-- <div class="ui small image"> --}}
+                                    <img src="{{file.base64Image}}">
+                                {{!-- </div> --}}
                             {{/if }}
                         </div>
                         <div class="middle aligned content">
                             <div class="description">
                                 {{#if file.isDisplayableImage}}
-                                    <label>Image Name</label>
+                                    <label>Image Name</label> <br>
                                     {{input type ="text" valueBinding=file.name placeholder="Exercise Name"}}
-                                    <button class="ui red basic button" {{action 'deleteFile' file}}>
+                                    <br><br>
+                                    <button class="ui red basic button" {{action 'deleteNewFile' file}}>
                                         Delete
                                     </button>
                                     <br>
@@ -167,17 +170,17 @@
                         </div>
                     </div>
                 </div>
-            {{else}}
-                <div class="ui fluid labeled input">
-                    <label class="ui fluid huge label" style="{{labelStyle}}">
-                        <i class="big cloud upload icon"></i>
-                        Click or Drop files into this area to upload files
-                    </label>
-                    <input type="file" value="target.value" onchange={{action "selectFile"}} style="{{inputStyle}}"
-                    accept="{{accept}}" multiple={{multiple}}>
-                </div>
-                <br>
+            {{!-- {{else}} --}}
             {{/each}}
+        <div class="ui fluid labeled input">
+            <label class="ui fluid huge label" style="{{labelStyle}}">
+                <i class="big cloud upload icon"></i>
+                    Click or Drop files into this area to upload files
+            </label>
+            <input type="file" value="target.value" onchange={{action "selectFile"}} style="{{inputStyle}}"
+                accept="{{accept}}" multiple={{multiple}}>
+        </div>
+                
         <br><br>
     </div>
 

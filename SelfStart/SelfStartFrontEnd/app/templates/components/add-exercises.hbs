@@ -133,8 +133,9 @@
                         </div>
                     </div>
                 </div>
-            {{else}}
-                <div class="ui fluid labeled input">
+            {{!-- {{else}} --}}
+            {{/each}}
+             <div class="ui fluid labeled input">
                     <label class="ui fluid huge label" style="{{labelStyle}}">
                         <i class="big cloud upload icon"></i>
                         Click or Drop files into this area to upload files
@@ -143,8 +144,6 @@
                     accept="{{accept}}" multiple={{multiple}}>
                 </div>
                 <br>
-            {{/each}}
-
 
 
             {{!-- {{upload-file 

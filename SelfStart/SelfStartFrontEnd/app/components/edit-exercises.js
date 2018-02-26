@@ -17,7 +17,7 @@ export default Component.extend({
      ID: null,
      exerID: null,
      secQueue: [],
-
+     removeImages: [],
     init: function() {
       this._super();
       
@@ -114,21 +114,24 @@ export default Component.extend({
       console.log(image.id);
       console.log(this.images);
       console.log(this.exerID);
+
+      this.secQueue.removeObject(image);
+      this.removeImages.pushObject(image);
      
-      this.get('DS').findRecord('image' , image.id).then((im)=>{
-        im.destroyRecord().then(() =>{
-          return true;
-        });
-        this.secQueue.removeObject(image);
-        this.get('DS').findRecord('image', image.id).then((rec) => {
-          rec.save();
-        });
+      // this.get('DS').findRecord('image' , image.id).then((im)=>{
+      //   im.destroyRecord();//.then(() =>{
+      //     // return true;
+      //   // });
+      //   this.secQueue.removeObject(image);
+      //   this.get('DS').findRecord('image', image.id).then((rec) => {
+      //     rec.save();
+      //   });
         // this.set(this.images, null);
         // this.get('DS').findRecord('exercise' , this.exerID).then((im)=>{
           // this.set(this.images, im.images);
         // });
 
-      });
+      // });
       // this.images.removeObject(image);
     },
 
@@ -153,10 +156,54 @@ export default Component.extend({
           detachable: false,
           onDeny: () => {
             this.secQueue.clear();
+            this.removeImages.clear();
+            this.queue.clear();
             return true;
             },
            
           onApprove: () => {
+
+            this.removeImages.forEach(file => {
+              console.log(file);
+              this.get('DS').findRecord('image', file.id).then((rec) => {
+                rec.destroyRecord();
+                rec.save();
+              });
+            });
+
+            this.queue.forEach(file => {
+            
+              console.log(file);
+
+              this.get('DS').findRecord('exercise', this.get('ID')).then((rec)=>{
+             
+                // console.log("sasdasd", exe);
+                var newFile = this.get('DS').createRecord('image', {
+                  name: file.name,
+                  size: file.size,
+                  type: file.type,
+                  rawSize: file.rawSize,
+                  imageData: file.base64Image,
+                  exercise: []
+                });
+
+                // var exe = this.get('DS').findRecord('exercise', this.get('ID'));
+                // newFile.save();
+
+                newFile.get('exercise').pushObject(rec);
+                newFile.save();
+
+                rec.get('images').pushObject(newFile);
+                this.get('DS').findRecord('exercise', this.get('ID')).then((rec)=>{
+                  rec.save();
+                });
+            });
+            });
+
+            // this.get('DS').findRecord('image', this.get('ID')).then((rec) => {
+            //   rec.save();
+            // });
+
             this.get('DS').findRecord('exercise' , this.get('ID')).then((rec)=>{
               rec.set('name', this.get('Name'));
               rec.set('description', this.get('Description'));
@@ -174,6 +221,13 @@ export default Component.extend({
                 return true;
               });
             });
+
+            window.location.reload();
+
+            this.secQueue.clear();
+            this.removeImages.clear();
+            this.queue.clear();
+
           }
         })
           .modal('show');
@@ -191,5 +245,12 @@ export default Component.extend({
         this.get('actionStep').pushObject(newActStep);
         this.set('ActionSteps', "");
       },
+
+      deleteNewFile(file){
+        this.get('queue').removeObject(file);
+        if (Ember.isEmpty(this.get('queue'))) {
+          this.set('flag', false);
+        }
+      }
     }
 });
