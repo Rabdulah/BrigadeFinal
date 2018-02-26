@@ -265,6 +265,9 @@ export default Component.extend({
             this.set("actionStep", []);
             this.set("obj", []);
             this.set('isEditing', false);
+
+            window.location.reload();
+            // windows.location.reload();
         },
         
     }

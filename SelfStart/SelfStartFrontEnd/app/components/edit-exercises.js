@@ -1,9 +1,11 @@
 import Component from '@ember/component';
 import Ember from 'ember';
+import fileObject from "../utils/file-object";
 
 export default Component.extend({
     DS: Ember.inject.service('store'),
      // ImageName: null,
+     images: null,
      model: 'image',
      flag: null,
      accept: 'audio/*,video/*,image/*',
@@ -12,8 +14,20 @@ export default Component.extend({
      modelQueue: [],
      savingInProgress: false,
      isEditing: false,
-     id: null,
-     
+     ID: null,
+     exerID: null,
+     secQueue: [],
+
+    init: function() {
+      this._super();
+      
+      // console.log(this.images)
+      // // var secQ = []
+      // this.images.forEach(file => {
+      //   this.secQueue.pushObject(file);
+      // });
+   },
+
      labelArray: [
          'height: 6.25em',
          'line-height: 5.25em',
@@ -74,7 +88,7 @@ export default Component.extend({
     Duration: Ember.computed.oneWay('exerciseData.duration'),
     TargetedDate: Ember.computed.oneWay('exerciseData.targetDate'),
     MMURL: Ember.computed.oneWay('exerciseData.multimediaURL'),
-    Images: Ember.computed.oneWay('exerciseData.images'),
+    Imgs: Ember.computed.oneWay('exerciseData.images'),
 
     modalName: Ember.computed(function () {
       return 'editExercise' + this.get('ID');
@@ -91,25 +105,31 @@ export default Component.extend({
 
                 console.log(file);
 
-                // var newFile = this.get('DS').createRecord(this.get('model'), {
-                //     name: this.ImageName,
-                //     size: file.size,
-                //     type: file.type,
-                //     rawSize: file.rawSize,
-                //     imageData: file.base64Image
-                // });
-                // newFile.save();
                 this.get('queue').pushObject(file);
-                // this.get('modelQueue').pushObject(newFile);
           }
         }
     },
     
-    deleteFile: function (file) {
-        this.get('queue').removeObject(file);
-        if (Ember.isEmpty(this.get('queue'))) {
-          this.set('flag', false);
-        }
+    deleteFile: function (image) {
+      console.log(image.id);
+      console.log(this.images);
+      console.log(this.exerID);
+     
+      this.get('DS').findRecord('image' , image.id).then((im)=>{
+        im.destroyRecord().then(() =>{
+          return true;
+        });
+        this.secQueue.removeObject(image);
+        this.get('DS').findRecord('image', image.id).then((rec) => {
+          rec.save();
+        });
+        // this.set(this.images, null);
+        // this.get('DS').findRecord('exercise' , this.exerID).then((im)=>{
+          // this.set(this.images, im.images);
+        // });
+
+      });
+      // this.images.removeObject(image);
     },
 
     done: function () {
@@ -118,13 +138,21 @@ export default Component.extend({
     },
 
       openModal: function () {
-        this.set('exerciseData', this.get('DS').peekRecord('exercise', this.get('ID')))
+        // window.location.reload();
+        this.secQueue.clear();
+        console.log(this.images);
+        this.images.forEach(file => {
+          this.secQueue.pushObject(file);
+      });
+
+        this.set('exerciseData', this.get('DS').peekRecord('exercise', this.get('ID')));
 
         Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
           closable: false,
           transition: 'horizontal flip',
           detachable: false,
           onDeny: () => {
+            this.secQueue.clear();
             return true;
             },
            
