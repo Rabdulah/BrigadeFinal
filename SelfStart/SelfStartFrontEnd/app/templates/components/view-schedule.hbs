@@ -1,0 +1,32 @@
+<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/form-style.css"> <!-- Resource style -->
+<br><br><br><br><br><br>
+{{#if isEditing}}
+  <form class="cd-form floating-labels" {{action "save" on="submit"}}>
+    <br><br>
+    <fieldset>
+      <legend>Book Appointment</legend>
+
+
+      <label class="cd-label">Select Physiotherapist</label>
+      <p class="cd-select icon">
+        <select class="people" value ={{selectphysio}} onchange={{action "updateValue" value="target.value"}} >
+          <option value=""  selected disabled hidden>Select Physiotherapist</option>
+          {{#each getphysio as |phsio|}}
+            <option value={{phsio.id}}>
+              {{phsio.givenName}}
+            </option>
+          {{/each}}
+        </select>
+      </p>
+
+      {{#each appointments_filter as |appo|}}
+        <p>{{appo.date}}</p>
+      {{/each}}
+    </fieldset>
+  </form>
+{{else}}
+  <button class="ui button" {{action 'viewschedule'}}>
+    View schedule (physio)
+  </button>
+
+{{/if}}

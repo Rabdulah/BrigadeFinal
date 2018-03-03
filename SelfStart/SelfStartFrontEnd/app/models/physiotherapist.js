@@ -8,5 +8,5 @@ export default DS.Model.extend({
   dateHired: DS.attr(),
   dateFinished:DS.attr(),
 
-  appointment: DS.hasMany('appointment')
+  appointments: DS.hasMany('appointment' , { async: true })
 });

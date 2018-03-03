@@ -1,6 +1,6 @@
 import { moduleFor, test } from 'ember-qunit';
 
-moduleFor('route:physiotherapest', 'Unit | Route | physiotherapest', {
+moduleFor('route:physiotherapist', 'Unit | Route | physiotherapist', {
   // Specify the other units that are required for this test.
   // needs: ['controller:foo']
 });

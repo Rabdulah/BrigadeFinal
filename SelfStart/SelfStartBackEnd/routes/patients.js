@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var Patients = require('../models/PatientProfiles');
+var Patients = require('../models/Patients');
 
 router.route('/')
     .post( function (request, response) {
@@ -34,7 +34,8 @@ router.route('/:patient_id')
                 response.send({error: error});
             }
             else {
-
+                console.log("patient updated");
+                console.log(request.body);
                 // update each attribute
                 patient.ID = request.body.patient.ID;
                 patient.familyName = request.body.patient.familyName;
@@ -54,7 +55,7 @@ router.route('/:patient_id')
                 patient.postalCode = request.body.patient.postalCode;
                 // patient.account = request.body.patient.account;
                 // patient.payments = request.body.patient.payments;
-                 patient.appointments = request.body.patient.appointments;
+                patient.appointments = request.body.patient.appointments;
                 // patient.plan = request.body.patient.plan;
 
 

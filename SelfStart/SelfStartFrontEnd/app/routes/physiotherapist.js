@@ -5,7 +5,11 @@ export default Route.extend({
   model() {
     return RSVP.hash({
       appointments: this.store.findAll('appointment'),
-      patient : this.store.findAll('patient'),
+      physiotherapist : this.store.findAll('physiotherapist'),
     });
   },
+
+  // afterModel(){
+  //   return this.store.findAll('physiotherapist');
+  // }
 });

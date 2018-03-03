@@ -1,5 +1,5 @@
 var mongoose = require('mongoose');
-var patientProfilesSchema = mongoose.Schema(
+var patientSchema = mongoose.Schema(
     {
         ID: String,
         familyName: String,
@@ -18,7 +18,7 @@ var patientProfilesSchema = mongoose.Schema(
         streetNumber: Number,
         streetName: String,
 
-        postalCode: String
+        postalCode: String,
         // account: {
         //             userAccountName: String,
         //             encryptedPassword: String,
@@ -29,11 +29,11 @@ var patientProfilesSchema = mongoose.Schema(
         //             amount: Number,
         //             note: String
         //         }],
-        // appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],
+        appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}]
         // askAPhysio: [{type: mongoose.Schema.ObjectId, ref: 'AskAPhysio'}],
         // plan: [{type: mongoose.Schema.ObjectId, ref: 'Treatments'}]
     }
 );
 
-var PatientProfiles = mongoose.model('patient', patientProfilesSchema);
+var PatientProfiles = mongoose.model('patient', patientSchema);
 exports.Model = PatientProfiles;

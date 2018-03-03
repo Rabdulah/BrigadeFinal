@@ -34,7 +34,7 @@ router.route('/:appointment_id')
                 response.send({error: error});
             }
             else {
-
+                console.log(request.body);
                 // update each attribute
                 appointment.date = request.body.appointment.date;
                 appointment.reason = request.body.appointment.reason;
