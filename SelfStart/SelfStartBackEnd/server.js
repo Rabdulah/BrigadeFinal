@@ -27,6 +27,8 @@ app.use(function (request, response, next) {
 app.use(passport.initialize());
 app.use(passport.session());
 
+require('./config/passport')(passport);
+
 //IMPORT OUR ROUTES ---------------------------------
 var photos = require('./routes/images'); 
 var patients = require('./routes/patients'); 

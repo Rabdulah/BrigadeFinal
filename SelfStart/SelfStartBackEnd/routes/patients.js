@@ -3,6 +3,7 @@ var router = express.Router();
 var Patients = require('../models/PatientProfiles');
 var passport = require('passport');
 var BearerStrategy = require('passport-http-bearer').Strategy;
+const config = require('../config/database');
 const jwt = require('jsonwebtoken');
 
 router.route('/')
@@ -64,8 +65,46 @@ router.route('/')
 
     });
 
-router.route('/:patient_id')
+router.route('/Authenticate')
+    .post( function (request, response) {
+        const email = request.body.patient.email;
+        const password = request.body.patient.account.encryptedPassword;
 
+        Patients.getUserByEmail(email, (err, client) => {
+            if(err) throw err;
+
+            if(!client){
+                return response.json({success: false, msg: 'User not found'});
+            } 
+
+            Patients.comparePassword(password, client.account.encryptedPassword, (err, isMatch) => {
+                if(err) throw err;
+
+                if(isMatch){
+                    const token = jwt.sign({data:client}, config.secret, { 
+                        expiresIn: 36000 //10 hours
+                    });
+
+                    response.json({ 
+                        success: true,
+                        token: 'JWT ' + token,
+                        client: client
+                    });
+
+                } else{ 
+                    return response.json({success: false, msg: 'Wrong Password'});
+                }
+
+
+            });
+        });
+    });
+
+router.get('/profile', passport.authenticate('jwt', {session: false}), (req, res,) => {
+    res.json({client: req.user});
+})
+
+router.route('/:patient_id')
 
     .get( function (request, response) {
 
