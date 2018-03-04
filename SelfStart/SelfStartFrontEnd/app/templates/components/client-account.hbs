@@ -1,0 +1,118 @@
+<div id="content">
+<div class="ui fluid raised very padded text container segment">
+    <h2 class="ui fluid centered header">Register Client Account</h2>
+
+   <form class="ui form">
+        
+        <div class="field">
+            <label>User Name</label>
+            {{input type ="text" value=UName placeholder="User Name"}}
+        </div>
+
+        <div class="field">
+            <label>Password</label>
+            {{input type ="text" value=PWord placeholder="Password"}}
+        </div>
+
+        <div class="field">
+            <label>Family Name</label>
+            {{input type ="text" value=FName placeholder="Family Name"}}
+        </div>
+        
+        <div class="field">
+            <label>Given Name</label>
+            {{input type ="text" value=credentials.GName placeholder="Email"}}
+        </div>
+
+        <div class="field">
+            <label>Email</label>
+            {{input type ="text" value=Email placeholder="Email"}}
+        </div>
+
+        <div class="field">
+            <label>Date Of Birth</label>
+            {{input type ="text" value=DOB placeholder="Date of Birth"}}
+        </div>
+
+        <div class="field">
+            <label>Phone Number</label>
+            {{input type ="text" value=phoneNumber placeholder="Phone Number"}}
+        </div>
+
+        <div class="field">
+            <label>Frequency</label>
+            {{input type ="text" value=Frequency placeholder="Frequency"}}
+        </div>
+
+        <div class="field">
+            <label>Health Card Number</label>
+            {{input type ="text" value=HCN placeholder="Health Card Number"}}
+        </div>
+
+        <div class="field">
+            <label>Occupation</label>
+            {{input type ="text" value=Occupation placeholder="Occupation"}}
+        </div>
+
+        <div class="field">
+            <label>Marital Status</label>
+            {{input type ="text" value=MaritalStatus placeholder="Marital Status"}}
+        </div>
+
+        <div class="field">
+            <label>Gender</label>
+            {{input type ="text" value=MaritalStatus placeholder="Marital Status"}}
+        </div>
+
+        <div class="field">
+            <label>Country</label>
+            {{input type ="text" value=Country placeholder="Country"}}
+        </div>
+
+        <div class="field">
+            <label>City</label>
+            {{input type ="text" value=City placeholder="City"}}
+        </div>
+
+        <div class="field">
+            <label>Province</label>
+            {{input type ="text" value=Province placeholder="Province"}}
+        </div>
+
+        <div class="field">
+            <label>Appartment</label>
+            {{input type ="text" value=Appartment placeholder="Appartment"}}
+        </div>
+
+        <div class="field">
+            <label>Street Number</label>
+            {{input type ="text" value=StreetNumber placeholder="Street Number"}}
+        </div>
+
+        <div class="field">
+            <label>Street Name</label>
+            {{input type ="text" value=StreetName placeholder="Street Name"}}
+        </div>
+
+        <div class="field">
+            <label>Postal Code</label>
+            {{input type ="text" value=PCode placeholder="Postal Code"}}
+        </div>
+
+        <div class = "inline">
+            <button class="ui button" type="submit" {{action "submit"}}>Submit</button>
+            <button class="ui button" type="submit" {{action "cancel"}}>Cancel</button>
+        </div>
+
+    </form>
+</div>
+
+
+  <button class="ui button" {{action 'addExercise'}}>
+    Add Exercise
+  </button>
+
+</div>
+{{outlet}}
+
+{{yield}}

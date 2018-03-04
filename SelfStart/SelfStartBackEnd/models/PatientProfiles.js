@@ -1,4 +1,6 @@
 var mongoose = require('mongoose');
+var bcrypt = require('bcrypt');
+
 var patientProfilesSchema = mongoose.Schema(
     {
         ID: String,
@@ -36,4 +38,33 @@ var patientProfilesSchema = mongoose.Schema(
 );
 
 var PatientProfiles = mongoose.model('patientProfile', patientProfilesSchema);
-exports.Model = PatientProfiles;
+const Client = exports.Model = PatientProfiles;
+
+//Adding Functionalities to Model
+
+//----------------------------Get User By ID-----------------------------------//
+exports.getUserByID = function(id, callback) {
+    const query = {id: id};
+    Client.findById(id, callback);
+}
+//----------------------------Get User By Email--------------------------------//
+exports.getUserByEmail = function(email, callback) {
+    const query = {email: email};
+    Client.findOne(query, callback);
+}
+//----------------------------Add New Client----------------------------------//
+exports.addClient = function(client, callback) {
+    bcrypt.genSalt(10, (err, salt) =>{
+        bcrypt.hash(client.account.encryptedPassword, salt, (err, hash) =>{
+            if(err){
+                throw err;
+            }
+            client.account.encryptedPassword = hash;
+            client.account.salt = salt;
+            client.save(callback);
+        });
+    });
+}
+
+
+  

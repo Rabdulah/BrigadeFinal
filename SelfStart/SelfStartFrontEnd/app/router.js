@@ -12,6 +12,8 @@ Router.map(function() {
   this.route('exercises');
   this.route('images');
   this.route('create-client-account');
+  this.route('account');
+  this.route('login');
 });
 
 export default Router;

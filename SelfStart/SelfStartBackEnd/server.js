@@ -9,6 +9,7 @@ var express = require('express'); // call express
 var bodyParser = require('body-parser');
 var app = express(); // define our app using express
 var port = 8082;        // set our port
+var passport = require('passport');
 
 // the following 2 middleware convert the URL reqand res to json format
 app.use(bodyParser.json({limit: '10mb'}));
@@ -21,6 +22,10 @@ app.use(function (request, response, next) {
     response.header('Access-Control-Allow-Methods', 'POST, PATCH, GET, PUT, DELETE, OPTIONS');
     next();
 });
+
+//Passport Middleware
+app.use(passport.initialize());
+app.use(passport.session());
 
 //IMPORT OUR ROUTES ---------------------------------
 var photos = require('./routes/images'); 
