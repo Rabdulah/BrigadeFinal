@@ -8,7 +8,7 @@ export default Component.extend({
     ajax: Ember.inject.service(),
 
     authentication() {
-        return this.get('ajax').request('http://localhost:8082/patients/Authenticate', {
+        return this.get('ajax').request('http://localhost:8082/Authenticate', {
           method: 'POST',
           data: {
             email: this.get('Email'),
@@ -16,6 +16,7 @@ export default Component.extend({
           },
           success: function(res) {
               localStorage.setItem('id_token', res.token);
+              localStorage.setItem('user_level', res.user.account.accType);
           }
         });
     },
@@ -23,6 +24,9 @@ export default Component.extend({
     actions: {
         submit: function() {
             this.authentication();
+        },
+        logout: function() {
+            localStorage.clear();
         }
     }
 });

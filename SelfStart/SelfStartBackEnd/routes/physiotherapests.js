@@ -1,14 +1,34 @@
 var express = require('express');
 var router = express.Router();
 var Physiotherapest = require('../models/Physiotherapests.js');
+var passport = require('passport');
+var BearerStrategy = require('passport-http-bearer').Strategy;
+const config = require('../config/database');
+const jwt = require('jsonwebtoken');
 
 router.route('/')
         .post(function (request, response) {
             var physiotherapest = new Physiotherapest.Model(request.body.physiotherapest);
-            physiotherapest.save(function (error) {
-                if (error) response.send(error);
-                response.json({physiotherapest: physiotherapest});
+
+            Physiotherapest.getUserByEmail(physiotherapest.email, (err, physio) =>{
+                if(physio) {
+                    response.json({success: false, msg: 'User already registered'});
+                }
             });
+
+            Administrators.addPhysio(physio, (err, physio) => {
+                console.log("ASDJKkajsdkjsajkd");
+                if(err) {
+                    response.json({success: false, msg: 'Failed to register user'});
+                } else{
+                    response.json({physio: physio});
+                }
+            });
+
+            // physiotherapest.save(function (error) {
+            //     if (error) response.send(error);
+            //     response.json({physiotherapest: physiotherapest});
+            // });
         })
         
         .get(function (request, response) {

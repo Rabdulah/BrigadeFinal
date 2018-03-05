@@ -72,44 +72,44 @@ router.route('/')
 
     });
 
-router.route('/Authenticate')
-    .post( function (request, response) {
-        const email = request.body.email;
-        const password = request.body.password;
+// router.route('/Authenticate')
+//     .post( function (request, response) {
+//         const email = request.body.email;
+//         const password = request.body.password;
 
-        Patients.getUserByEmail(email, (err, client) => {
-            if(err) throw err;
+//         Patients.getUserByEmail(email, (err, client) => {
+//             if(err) throw err;
 
-            if(!client){
-                return response.json({success: false, msg: 'User not found'});
-            } 
+//             if(!client){
+//                 return response.json({success: false, msg: 'User not found'});
+//             } 
 
-            Patients.comparePassword(password, client.account.encryptedPassword, (err, isMatch) => {
-                if(err) throw err;
+//             Patients.comparePassword(password, client.account.encryptedPassword, (err, isMatch) => {
+//                 if(err) throw err;
 
-                if(isMatch){
-                    const token = jwt.sign({data:client}, config.secret, { 
-                        expiresIn: 36000 //10 hours
-                    });
+//                 if(isMatch){
+//                     const token = jwt.sign({data:client}, config.secret, { 
+//                         expiresIn: 36000 //10 hours
+//                     });
 
-                    response.json({ 
-                        success: true,
-                        token: 'JWT ' + token,
-                        client: client
-                    });
+//                     response.json({ 
+//                         success: true,
+//                         token: 'JWT ' + token,
+//                         client: client
+//                     });
 
-                } else{ 
-                    return response.json({success: false, msg: 'Wrong Password'});
-                }
+//                 } else{ 
+//                     return response.json({success: false, msg: 'Wrong Password'});
+//                 }
 
 
-            });
-        });
-    });
+//             });
+//         });
+//     });
 
-router.get('/profile', passport.authenticate('jwt', {session: false}), (req, res,) => {
-    res.json({client: req.user});
-})
+// router.get('/profile', passport.authenticate('jwt', {session: false}), (req, res,) => {
+//     res.json({client: req.user});
+// })
 
 router.route('/:patient_id')
 
