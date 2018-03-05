@@ -23,7 +23,11 @@ var patientProfilesSchema = mongoose.Schema(
         account: {
                     userAccountName: String,
                     encryptedPassword: String,
-                    salt: String
+                    salt: String,
+                    accType: {
+                        type: String,
+                        default: "0"
+                    }
                 },
         payments: [{
                     dayTimestamp: Date,

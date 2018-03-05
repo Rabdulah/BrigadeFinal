@@ -6,12 +6,16 @@
         
         <div class="field">
             <label>Email</label>
-            {{input type ="text" value=UName placeholder="User Name"}}
+            {{input type ="text" value=Email placeholder="User Name"}}
         </div>
 
         <div class="field">
             <label>Password</label>
             {{input type ="text" value=PWord placeholder="Password"}}
+        </div>
+
+        <div class = "inline">
+            <button class="ui button" type="submit" {{action "submit"}}>Submit</button>
         </div>
 
     </form>

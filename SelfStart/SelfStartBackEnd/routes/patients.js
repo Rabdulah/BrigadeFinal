@@ -74,8 +74,8 @@ router.route('/')
 
 router.route('/Authenticate')
     .post( function (request, response) {
-        const email = request.body.patient.email;
-        const password = request.body.patient.account.encryptedPassword;
+        const email = request.body.email;
+        const password = request.body.password;
 
         Patients.getUserByEmail(email, (err, client) => {
             if(err) throw err;
