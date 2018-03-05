@@ -1049,7 +1049,7 @@ define('self-start-front-end/components/delete-physiotherapist', ['exports'], fu
     DS: Ember.inject.service('store'),
 
     modalName: Ember.computed(function () {
-      return 'delete-physiotherapest' + this.get('ID');
+      return 'Delete-physiotherapest' + this.get('ID');
     }),
 
     actions: {
@@ -1068,7 +1068,10 @@ define('self-start-front-end/components/delete-physiotherapist', ['exports'], fu
 
             _this.get('DS').find('physiotherapest', _this.get('ID')).then(function (physiotherapest) {
 
-              physiotherapest.destroyRecord();
+              physiotherapest.set('name', '');
+              physiotherapest.save().then(function () {
+                physiotherapest.destroyRecord();
+              });
             });
           }
         }).modal('show');
@@ -4336,6 +4339,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+c2392f5d"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+30164ec0"});
 }
 //# sourceMappingURL=self-start-front-end.map

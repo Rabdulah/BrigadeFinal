@@ -7,7 +7,7 @@ export default Component.extend({
   DS: inject('store'),
 
   modalName: computed(function () {
-    return 'delete-physiotherapest' + this.get('ID');
+    return 'Delete-physiotherapest' + this.get('ID');
   }),
 
   actions: {
@@ -24,8 +24,10 @@ export default Component.extend({
 
           this.get('DS').find('physiotherapest', this.get('ID')).then((physiotherapest) => {
     
+            physiotherapest.set('name', '');
+            physiotherapest.save().then(function () {
               physiotherapest.destroyRecord();
-          
+            });
           });
 
         }
