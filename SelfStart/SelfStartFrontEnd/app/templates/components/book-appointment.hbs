@@ -1,5 +1,6 @@
-<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/form-style.css"> <!-- Resource style -->
 <br><br><br><br><br><br>
+
+<link rel="stylesheet" href="{{rootURL}}assets/css/schedule-style.css">
 {{#if isEditing}}
 <form class="cd-form floating-labels" {{action "save" on="submit"}}>
   <br><br>
@@ -18,6 +19,8 @@
         {{/each}}
       </select>
     </p>
+
+
 
 
     <div class="icon">
@@ -42,7 +45,74 @@
       <button class="ui fluid negative button" {{action "cancelbookingappointment"}}>Cancel</button>
     </div>
   </fieldset>
+
 </form>
+<button class="ui fluid negative button" {{action "prev"}}>previous</button>
+<button class="ui fluid negative button" {{action "next"}}>next</button>
+
+<div class="cd-schedule">
+  <div class="timeline">
+    <ul>
+      <li><span>09:00</span></li>
+      <li><span>09:30</span></li>
+      <li><span>10:00</span></li>
+      <li><span>10:30</span></li>
+      <li><span>11:00</span></li>
+      <li><span>11:30</span></li>
+      <li><span>12:00</span></li>
+      <li><span>12:30</span></li>
+      <li><span>13:00</span></li>
+      <li><span>13:30</span></li>
+      <li><span>14:00</span></li>
+      <li><span>14:30</span></li>
+      <li><span>15:00</span></li>
+      <li><span>15:30</span></li>
+      <li><span>16:00</span></li>
+      <li><span>16:30</span></li>
+      <li><span>17:00</span></li>
+      <li><span>17:30</span></li>
+      <li><span>18:00</span></li>
+    </ul>
+  </div>
+  <div class="events">
+    <ul>
+
+      {{#each weekdate as |date|}}
+        <li class="events-group">
+          <div class="top-info"><span>{{date}}</span></div>
+
+          <ul>
+            <li class="single-event" data-start="09:30" data-end="10:30" data-content="event-abs-circuit" data-event="event-1">
+              <a href="#0">
+                <em class="event-name">Abs Circuit</em>
+              </a>
+            </li>
+          </ul>
+        </li>
+      {{/each}}
+
+
+    </ul>
+  </div>
+
+  <div class="event-modal">
+    <header class="header">
+      <div class="content">
+        <span class="event-date"></span>
+        <h3 class="event-name"></h3>
+      </div>
+
+      <div class="header-bg"></div>
+    </header>
+
+    <div class="body">
+      <div class="event-info"></div>
+      <div class="body-bg"></div>
+    </div>
+
+    <a href="#0" class="close">Close</a>
+  </div>
+</div>
 {{else}}
   <button class="ui button" {{action 'bookAppointment'}}>
     Book appointment
