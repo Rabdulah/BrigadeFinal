@@ -54,6 +54,7 @@ exports.getUserByEmail = function(email, callback) {
 }
 //----------------------------Add New Client----------------------------------//
 exports.addClient = function(client, callback) {
+    
     bcrypt.genSalt(10, (err, salt) =>{
         bcrypt.hash(client.account.encryptedPassword, salt, (err, hash) =>{
             if(err){
@@ -61,6 +62,7 @@ exports.addClient = function(client, callback) {
             }
             client.account.encryptedPassword = hash;
             client.account.salt = salt;
+            console.log("THIS IS THE CLIENT", client);
             client.save(callback);
         });
     });

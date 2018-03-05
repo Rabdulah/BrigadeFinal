@@ -19,6 +19,7 @@ export default DS.Model.extend({
   streetNumber: DS.attr(),
   streetName: DS.attr(),
   postalCode: DS.attr(),
-  account: DS.belongsTo('userAccount')
+  account: DS.attr()
+  // account: DS.belongsTo('userAccount')
 
 });

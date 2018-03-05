@@ -11,7 +11,14 @@ router.route('/')
         console.log(request.body.patient);
         var patient = new Patients.Model(request.body.patient);
         
+        Patients.getUserByEmail(patient.email, (err, client) =>{
+            if(client) {
+                response.json({success: false, msg: 'User already registered'});
+            }
+        });
+
         Patients.addClient(patient, (err, patient) => {
+            console.log("ASDJKkajsdkjsajkd");
             if(err) {
                 response.json({success: false, msg: 'Failed to register client'});
             } else{

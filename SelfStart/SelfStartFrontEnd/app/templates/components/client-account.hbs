@@ -21,7 +21,7 @@
         
         <div class="field">
             <label>Given Name</label>
-            {{input type ="text" value=credentials.GName placeholder="Email"}}
+            {{input type ="text" value=GName placeholder="Email"}}
         </div>
 
         <div class="field">
@@ -36,12 +36,7 @@
 
         <div class="field">
             <label>Phone Number</label>
-            {{input type ="text" value=phoneNumber placeholder="Phone Number"}}
-        </div>
-
-        <div class="field">
-            <label>Frequency</label>
-            {{input type ="text" value=Frequency placeholder="Frequency"}}
+            {{input type ="text" value=PNumber placeholder="Phone Number"}}
         </div>
 
         <div class="field">
@@ -51,22 +46,22 @@
 
         <div class="field">
             <label>Occupation</label>
-            {{input type ="text" value=Occupation placeholder="Occupation"}}
+            {{input type ="text" value=Occ placeholder="Occupation"}}
         </div>
 
         <div class="field">
             <label>Marital Status</label>
-            {{input type ="text" value=MaritalStatus placeholder="Marital Status"}}
+            {{input type ="text" value=MStatus placeholder="Marital Status"}}
         </div>
 
         <div class="field">
             <label>Gender</label>
-            {{input type ="text" value=MaritalStatus placeholder="Marital Status"}}
+            {{input type ="text" value=GDer placeholder="Marital Status"}}
         </div>
 
         <div class="field">
             <label>Country</label>
-            {{input type ="text" value=Country placeholder="Country"}}
+            {{input type ="text" value=Ctry placeholder="Country"}}
         </div>
 
         <div class="field">
@@ -76,17 +71,17 @@
 
         <div class="field">
             <label>Province</label>
-            {{input type ="text" value=Province placeholder="Province"}}
+            {{input type ="text" value=Prov placeholder="Province"}}
         </div>
 
         <div class="field">
             <label>Appartment</label>
-            {{input type ="text" value=Appartment placeholder="Appartment"}}
+            {{input type ="text" value=Apptmnt placeholder="Appartment"}}
         </div>
 
         <div class="field">
             <label>Street Number</label>
-            {{input type ="text" value=StreetNumber placeholder="Street Number"}}
+            {{input type ="text" value=SNumber placeholder="Street Number"}}
         </div>
 
         <div class="field">
@@ -107,12 +102,6 @@
     </form>
 </div>
 
-
-  <button class="ui button" {{action 'addExercise'}}>
-    Add Exercise
-  </button>
-
 </div>
-{{outlet}}
 
 {{yield}}
