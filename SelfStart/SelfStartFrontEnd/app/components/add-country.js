@@ -11,7 +11,6 @@ export default Component.extend({
 
       $('.ui.small.newCountry.modal').modal({
         closable: false,
-        detachable: false,
 
         onDeny:  () => {
           return true;

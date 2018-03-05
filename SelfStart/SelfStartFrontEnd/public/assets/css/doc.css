@@ -242,6 +242,16 @@ blockquote .author {
   border-bottom: 1px solid #DDDDDD;
   box-shadow: none;
 }
+#example .masthead.bg4.segment {
+  position: relative;
+  z-index: 3;
+  margin: 0em;
+  max-height: 250px;
+  padding: 3em 0em;
+  background-color: #FFFFFF;
+  border-bottom: 1px solid #DDDDDD;
+  box-shadow: none;
+}
 
 #example .masthead .introduction {
   display: block;

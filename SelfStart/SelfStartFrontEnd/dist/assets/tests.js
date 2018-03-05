@@ -45,9 +45,19 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'components/admin-nav.js should pass ESLint\n\n');
   });
 
+  QUnit.test('components/admin-welcome.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/admin-welcome.js should pass ESLint\n\n');
+  });
+
   QUnit.test('components/back-to-top.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/back-to-top.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/config-selection.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/config-selection.js should pass ESLint\n\n');
   });
 
   QUnit.test('components/delete-country.js', function (assert) {
@@ -160,6 +170,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'router.js should pass ESLint\n\n');
   });
 
+  QUnit.test('routes/admin.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/admin.js should pass ESLint\n\n');
+  });
+
   QUnit.test('routes/appointment.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'routes/appointment.js should pass ESLint\n\n');
@@ -168,16 +183,6 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('routes/city.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'routes/city.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('routes/country.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'routes/country.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('routes/gender.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'routes/gender.js should pass ESLint\n\n');
   });
 
   QUnit.test('routes/home.js', function (assert) {
@@ -510,6 +515,35 @@ define('self-start-front-end/tests/integration/components/admin-nav-test', ['emb
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/admin-welcome-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('admin-welcome', 'Integration | Component | admin welcome', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "U4sFj7Bv",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"admin-welcome\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "hnbbgPVV",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"admin-welcome\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/back-to-top-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -533,6 +567,35 @@ define('self-start-front-end/tests/integration/components/back-to-top-test', ['e
     this.render(Ember.HTMLBars.template({
       "id": "DEQE/DCb",
       "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"back-to-top\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/config-selection-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('config-selection', 'Integration | Component | config selection', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "bwm5g5vm",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"config-selection\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "OpO0q+BO",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"config-selection\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
       "meta": {}
     }));
 
@@ -919,9 +982,19 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/admin-nav-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('integration/components/admin-welcome-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/admin-welcome-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('integration/components/back-to-top-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/back-to-top-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/config-selection-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/config-selection-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/delete-country-test.js', function (assert) {
@@ -1039,6 +1112,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/models/provinces-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/routes/admin-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/admin-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/routes/appointment-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/routes/appointment-test.js should pass ESLint\n\n');
@@ -1047,16 +1125,6 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('unit/routes/city-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/routes/city-test.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('unit/routes/country-test.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'unit/routes/country-test.js should pass ESLint\n\n');
-  });
-
-  QUnit.test('unit/routes/gender-test.js', function (assert) {
-    assert.expect(1);
-    assert.ok(true, 'unit/routes/gender-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/routes/home-test.js', function (assert) {
@@ -1256,6 +1324,19 @@ define('self-start-front-end/tests/unit/models/provinces-test', ['ember-qunit'],
     assert.ok(!!model);
   });
 });
+define('self-start-front-end/tests/unit/routes/admin-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:admin', 'Unit | Route | admin', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
 define('self-start-front-end/tests/unit/routes/appointment-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -1273,32 +1354,6 @@ define('self-start-front-end/tests/unit/routes/city-test', ['ember-qunit'], func
   'use strict';
 
   (0, _emberQunit.moduleFor)('route:city', 'Unit | Route | city', {
-    // Specify the other units that are required for this test.
-    // needs: ['controller:foo']
-  });
-
-  (0, _emberQunit.test)('it exists', function (assert) {
-    var route = this.subject();
-    assert.ok(route);
-  });
-});
-define('self-start-front-end/tests/unit/routes/country-test', ['ember-qunit'], function (_emberQunit) {
-  'use strict';
-
-  (0, _emberQunit.moduleFor)('route:country', 'Unit | Route | country', {
-    // Specify the other units that are required for this test.
-    // needs: ['controller:foo']
-  });
-
-  (0, _emberQunit.test)('it exists', function (assert) {
-    var route = this.subject();
-    assert.ok(route);
-  });
-});
-define('self-start-front-end/tests/unit/routes/gender-test', ['ember-qunit'], function (_emberQunit) {
-  'use strict';
-
-  (0, _emberQunit.moduleFor)('route:gender', 'Unit | Route | gender', {
     // Specify the other units that are required for this test.
     // needs: ['controller:foo']
   });

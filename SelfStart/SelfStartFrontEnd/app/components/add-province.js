@@ -27,7 +27,6 @@ export default Component.extend({
 
       $('.ui.small.newProvince.modal').modal({
         closable: false,
-        detachable: false,
 
         onDeny: () => {
           return true;

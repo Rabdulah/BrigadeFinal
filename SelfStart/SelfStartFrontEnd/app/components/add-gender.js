@@ -11,7 +11,6 @@ export default Component.extend({
 
       $('.ui.small.newGender.modal').modal({
         closable: false,
-        detachable: false,
 
         onDeny:  () => {
           return true;
