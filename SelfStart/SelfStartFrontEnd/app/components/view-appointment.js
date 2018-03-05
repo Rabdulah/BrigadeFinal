@@ -11,9 +11,11 @@ export default Component.extend({
     return this.get('DS').findAll('patient');
   }),
 
+  appointmenthistory: null,
 
 
   actions: {
+
 
     bookAppointment(){
       this.set('isEditing', true);
@@ -22,9 +24,26 @@ export default Component.extend({
     cancelbookingappointment(){
       this.set('isEditing', false);
     },
-    updateValue(client){
-      this.set('selectedclient', client);
+
+    updateValue(physio){
+      this.set('selectedphysio', this.get('DS').peekRecord('physiotherapist', physio));
+      //get associated physiotherapist schedule
+      let container = this.get('selectedphysio').get('appointments').filter(function(item){
+        let cur_time = new Date();
+        cur_time=  cur_time.toISOString();
+        return item.get('date') > cur_time;
+      });
+      //set appointment filter to the container
+      this.set('appointments_filter',  container);
+
     },
+
+    // updateValue(client){
+    //   this.set('selectedclient', this.get('DS').findRecord('patient', client);
+    //
+    //
+    //
+    // },
 
   },
 

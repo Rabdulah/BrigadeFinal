@@ -1,6 +1,9 @@
 {
   "name": "self-start-front-end",
   "dependencies": {
-    "semantic-ui": "^2.2.13"
+    "semantic-ui": "^2.2.13",
+    "interact": "1.2.8",
+    "jquery-simulate": "1.0.1",
+    "fontawesome": "~4.7.0"
   }
 }

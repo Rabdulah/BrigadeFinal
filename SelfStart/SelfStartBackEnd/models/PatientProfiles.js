@@ -1,5 +1,6 @@
 var mongoose = require('mongoose');
-var patientSchema = mongoose.Schema(
+var mongoosePaginate = require('mongoose-paginate');
+var patientProfilesSchema = mongoose.Schema(
     {
         ID: String,
         familyName: String,
@@ -8,8 +9,8 @@ var patientSchema = mongoose.Schema(
         dateOfBirth: Date,
         phoneNumber: String,
         healthCardNumber: String,
-        occupation: String,
-        maritalStatus: String,
+        // occupation: String,
+        // maritalStatus: String,
         gender: String,
         country: String,
         province: String,
@@ -17,23 +18,23 @@ var patientSchema = mongoose.Schema(
         apartment: Number,
         streetNumber: Number,
         streetName: String,
-
         postalCode: String,
-        // account: {
-        //             userAccountName: String,
-        //             encryptedPassword: String,
-        //             salt: String
-        //         },
+        account: {
+                    userAccountName: String,
+                    encryptedPassword: String,
+                    salt: String
+                },
         // payments: [{
         //             dayTimestamp: Date,
         //             amount: Number,
         //             note: String
         //         }],
-        appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}]
+        appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],
         // askAPhysio: [{type: mongoose.Schema.ObjectId, ref: 'AskAPhysio'}],
         // plan: [{type: mongoose.Schema.ObjectId, ref: 'Treatments'}]
     }
 );
 
-var PatientProfiles = mongoose.model('patient', patientSchema);
+patientProfilesSchema.plugin(mongoosePaginate);
+var PatientProfiles = mongoose.model('patient', patientProfilesSchema);
 exports.Model = PatientProfiles;

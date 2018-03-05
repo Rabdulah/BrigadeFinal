@@ -392,7 +392,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('routes/patients.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'routes/patients.js should pass ESLint\n\n');
+    assert.ok(false, 'routes/patients.js should pass ESLint\n\n2:8 - \'RSVP\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('routes/physiotherapist.js', function (assert) {

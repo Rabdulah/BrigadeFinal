@@ -19,6 +19,6 @@ export default DS.Model.extend({
   gender: DS.attr(),
   phoneNumber: DS.attr(),
   postalCode: DS.attr(),
-  appointments: DS.hasMany('appointment')
+  appointments: DS.hasMany('appointment', { async: true })
 
 });
