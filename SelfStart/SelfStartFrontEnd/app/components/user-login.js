@@ -19,6 +19,7 @@ export default Component.extend({
           success: function(res) {
               localStorage.setItem('id_token', res.token);
               localStorage.setItem('user_level', res.user.account.accType);
+              localStorage.setItem('_id', res.user._id);
           }
         });
         } else {
