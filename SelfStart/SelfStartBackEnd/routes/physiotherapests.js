@@ -38,6 +38,18 @@ router.route('/')
             });
         });
 
+    router.route('/:email')
+        .get( function (request, response) {
+        Physiotherapest.getUserByEmail(request.params.email, function (error, physio) {
+            if (error) {
+                response.send({error: error});
+            }
+            else {
+                response.json({success: true, physio: physio});
+            }
+        });
+    });
+
 router.route('/:physiotherapest_id')
         .get(function (request, response) {
             Physiotherapest.Model.findById(request.params.physiotherapest_id, function (error, physiotherapest) {

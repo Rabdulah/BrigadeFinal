@@ -36,6 +36,20 @@ router.route('/')
         });
     });
 
+    router.route('/:email')
+
+    .get( function (request, response) {
+
+        Administrators.getUserByEmail(request.params.email, function (error, admin) {
+            if (error) {
+                response.send({error: error});
+            }
+            else {
+                response.json({success: true, admin: admin});
+            }
+        });
+    });
+
 router.route('/:admin_id')
     .get( function (request, response) {
         Administrators.Model.findById(request.params.admin_id, function (error, admin) {

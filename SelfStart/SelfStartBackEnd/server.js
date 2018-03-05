@@ -81,11 +81,11 @@ app.use('/administrators', administrators);
 app.use('/treatments', treatments);
 app.use('/physiotherapests', physiotherapests);
 
-var res = {};
-
 //Routes for our API
 router.route('/authenticate')
     .post(function (request, response, next) {
+        // response.write("false");
+
         console.log("sdsd");
         
         // response.json({success: false, msg: 'User not found'});
@@ -110,21 +110,23 @@ router.route('/authenticate')
                             token: 'JWT ' + token,
                             user: admin
                         });
-                        next();
+                        // return response.send();
     
                     } else{ 
                         response.json({success: false, msg: 'Wrong Password'});
-                        next();
+                        // return response.send();
                     }
                 });
             } 
         });
+        // return response.send();
+        
 
         Patients.getUserByEmail(email, (err, client) => {
             if(err) throw err;
             
             if(client){
-                    Patients.comparePassword(password, client.account.encryptedPassword, (err, isMatch) => {
+                Patients.comparePassword(password, client.account.encryptedPassword, (err, isMatch) => {
                         if(err) throw err;
     
                         if(isMatch){
@@ -132,27 +134,22 @@ router.route('/authenticate')
                                 expiresIn: 36000 //10 hours
                             });
                             
-                            res = { 
-                                success: true,
-                                token: 'JWT ' + token,
-                                user: client
-                            }
-
                             response.json({ 
                                 success: true,
                                 token: 'JWT ' + token,
                                 user: client
                             });
-                            next();
-                            console.log("asdjkasdjkaksdjasd");
+                                console.log("asdjkasdjkaksdjasd");
                         } else{ 
                             response.json({success: false, msg: 'Wrong Password'});
-                            next();
+                            return response.send();
                         }
                     });
                 } 
             });
         
+            // return response.send();
+
         Physiotherapest.getUserByEmail(email, (err, physio) => {
                 if(err) throw err;
 
@@ -170,18 +167,15 @@ router.route('/authenticate')
                                 token: 'JWT ' + token,
                                 user: physio
                             });
-                            next();
+                            return response.send();
     
                         } else{ 
                             response.json({success: false, msg: 'Wrong Password'});
-                            next();
+                            return response.send();
                         }
                     });
                 } 
             });
-            console.log(res);
-            response.json({success: false, msg: 'User not found'});
-        
 });
 
 

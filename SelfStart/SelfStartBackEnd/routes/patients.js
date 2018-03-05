@@ -111,6 +111,20 @@ router.route('/')
 //     res.json({client: req.user});
 // })
 
+router.route('/:email')
+
+    .get( function (request, response) {
+
+        Patients.getUserByEmail(request.params.email, function (error, patient) {
+            if (error) {
+                response.send({error: error});
+            }
+            else {
+                response.json({success: true, patient: patient});
+            }
+        });
+    });
+
 router.route('/:patient_id')
 
     .get( function (request, response) {
