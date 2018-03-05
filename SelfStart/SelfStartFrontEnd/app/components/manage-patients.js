@@ -8,23 +8,27 @@ export default Component.extend({
   limit: 10,
   offset: 0,
   pageSize: 10,
-  sort: 'firstName',
+  sort: 'givenName',
   dir:'',
-  givenNameDir: '',
-  familyNameDir: '',
-  emailDir: '',
-  phoneNumberDir: '',
-  addressDir: '',
+  // givenNameDir: '',
+  // familyNameDir: '',
+  // emailDir: '',
+  // phoneNumberDir: '',
+  // addressDir: '',
   query: null,
   flagDelete: false,
-  modelAttributes: [{'key': 'givenName', 'name':'First Name'},
-    {'key': 'familyName', 'name':'Last Name'},
-    {'key': 'address', 'name':'Address'},
-    {'key': 'email', 'name':'Email'},
-    {'key': 'phoneNumber', 'name':'Phone Number'}],
+  modelAttributes:
+
+    [{'key': 'givenName', 'name':'First Name', 'dir' : 'asc', 'class' :'left aligned two wide column'},
+    {'key': 'familyName', 'name':'Last Name', 'dir' : '','class' :'left aligned two wide column'},
+    {'key': 'dateOfBirth', 'name':'Date of Birth', 'dir' : '','class' :'left aligned five wide column'},
+    // {'key': 'address', 'name':'Address'},
+    {'key': 'email', 'name':'Email', 'dir' : '','class' :'left aligned four wide column'}],
+    // {'key': 'phoneNumber', 'name':'Phone Number'}],
+
   patientsModel: [],
   INDEX: null,
-  queryPath: 'firstName',
+  queryPath: 'givenName',
   scrolledLines: 0,
 
 
@@ -32,30 +36,24 @@ export default Component.extend({
   activeModel: Ember.observer('offset', 'limit', 'sort', 'dir','flagDelete', function () {
     var self = this;
 
-    this.get('store').query('patient', this.getProperties(['offset', 'limit', 'sort', 'dir'])).then(function (records) {
+    this.get('store').query('patient', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
       self.set('patientsModel', records.toArray());
 
     });
   }),
 
-  filterpateints: Ember.observer('query', function () {
-    let text = this.get('query');
-    let result = [];
-    if (text !== '') {
-      this.get('store').query('patient', this.getProperties(['offset', 'limit', 'sort', 'dir'])).then((records) => {
-        result = records.filter((m) => {
-          return m.get(this.get('queryPath')).toLowerCase().includes(text.toLowerCase());
-        });
-        this.set('patientsModel', result);
-      });
+  filterpateints: Ember.observer('query', 'queryPath', function () {
+    let queryText = this.get('query');
+    if (queryText !== null && queryText.length > 0) {
+      this.set('regex', "^"+queryText);
     } else {
-      this.get('store').query('patient', this.getProperties(['offset', 'limit', 'sort', 'dir'])).then((records) => {
-        this.set('patientsModel', records);
-      });
+      this.set('regex', '');
     }
+
+    this.get('store').query('patient', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then((records) => {
+      this.set('patientsModel', records.toArray());
+    });
   }),
-
-
 
   init() {
     this._super(...arguments);
@@ -64,11 +62,21 @@ export default Component.extend({
     this.set('pageSize', 10);
     let self = this;
     //  this.set('modelAttributes', Object.keys(this.get('store').createRecord('patient').toJSON()));
-    this.get('store').query('patient', this.getProperties(['offset', 'limit', 'sort', 'dir'])).then(function (records) {
+    this.get('store').query('patient', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
       self.set('patientsModel', records.toArray());
 
     });
+
   },
+
+
+  dateFormat: Ember.computed(function(date){
+    console.log(date);
+    var dateString = date.toISOString().substring(0, 10);
+    return dateString;
+  }),
+
+
 
   didInsertElement: function() {
     this._super(...arguments);
@@ -116,21 +124,25 @@ export default Component.extend({
     },
 
     sortColumn(columnName, direction) {
-      let dir = `${columnName}Dir`;
 
-      let sorted = this.get('patientsModel').sortBy(columnName);
-      this.get('modelAttributes').forEach((d)=>{
-        this.set(d.key+'Dir', '');
+      this.get('modelAttributes').forEach((element)=>{
+        if (element.key === columnName) {
+          if (direction === 'asc') {
+            Ember.set(element, 'dir', 'desc');
+            this.set('dir', 'desc');
+          }
+          else if (direction === 'desc') {
+            Ember.set(element, 'dir', 'asc');
+            this.set('dir', 'asc');
+          } else {
+            Ember.set(element, 'dir', 'asc');
+            this.set('dir', 'asc');
+          }
+        }
+        else
+          Ember.set(element, 'dir', '');
       });
-
-      if (direction === 'asc') {
-        this.set(dir, 'desc');
-      } else {
-        sorted =  sorted.reverse();
-        this.set(dir, 'asc');
-      }
-
-      this.set('patientsModel', sorted);
+      this.set('sort', columnName);
     },
 
     loadNext: function () {

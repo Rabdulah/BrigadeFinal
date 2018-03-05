@@ -1,19 +1,43 @@
-<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/home-style.css"> <!-- Resource style -->
+<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/home-style.css">
 
+<!--<style>-->
+  <!--.ui.visible.left.sidebar ~ .fixed,-->
+  <!--.ui.visible.left.sidebar ~ .pusher {-->
+    <!---webkit-transform: translate3d(260px, 0, 0); transform: translate3d(260px, 0, 0);-->
+  <!--}-->
+<!--</style>-->
 
-<header class="cd-header">
-  <div id="cd-logo"><a>{{#link-to 'home'}}Home{{/link-to}}</a></div>
+<div id="example" class="index pushable">
 
-  <nav class="cd-main-nav">
-    <ul>
-      <!-- inser more links here -->
-      <li><a href="#0">About</a></li>
-      <li><a href="#0">How it Works</a></li>
-      <li><a href="#0">Services</a></li>
-      <li><a href="#0">Assessment</a></li>
-      <li><a href="#0">Blog</a></li>
-      <a href="#0" >Contact</a>
-    </ul>
-  </nav> <!-- cd-main-nav -->
-</header>
-{{yield}}
+    <div class="full height">
+      <div class="following bar">
+        <div class="ui container">
+
+          <div class="ui large secondary network menu inverted">
+            <div class="item">
+              <div class="ui logo shape">
+                <div class="sides">
+                  <div class="active ui side">
+                    {{#link-to 'home'}}<img class="ui image" src="assets/images/home/Header.png">{{/link-to}}
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="right menu inverted">
+              <a class="item">About</a>
+              <a class="item">How it Works</a>
+              <a class="item">Services</a>
+              <a class="item">Assessment</a>
+              <a class="item">Blog</a>
+              <a class="item">Contact</a>
+              <a id="login" class="item">Log in</a>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {{yield}}
+
+    </div>
+  </div>

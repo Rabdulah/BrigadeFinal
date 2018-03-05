@@ -87,7 +87,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/manage-patients.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'components/manage-patients.js should pass ESLint\n\n');
+    assert.ok(false, 'components/manage-patients.js should pass ESLint\n\n74:5 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/nav-bar.js', function (assert) {
@@ -193,6 +193,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('routes/new-patient.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'routes/new-patient.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('routes/patient-file.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/patient-file.js should pass ESLint\n\n');
   });
 
   QUnit.test('routes/patients.js', function (assert) {
@@ -1069,6 +1074,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/routes/new-patient-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/routes/patient-file-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/patient-file-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/routes/patients-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/routes/patients-test.js should pass ESLint\n\n');
@@ -1328,6 +1338,19 @@ define('self-start-front-end/tests/unit/routes/new-patient-test', ['ember-qunit'
   'use strict';
 
   (0, _emberQunit.moduleFor)('route:new-patient', 'Unit | Route | new patient', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
+define('self-start-front-end/tests/unit/routes/patient-file-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:patient-file', 'Unit | Route | patient file', {
     // Specify the other units that are required for this test.
     // needs: ['controller:foo']
   });

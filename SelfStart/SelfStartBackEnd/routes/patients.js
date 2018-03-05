@@ -2,6 +2,7 @@ var express = require('express');
 var router = express.Router();
 var Patients = require('../models/PatientProfiles');
 
+
 router.route('/')
     .post( function (request, response) {
         var patient = new Patients.Model(request.body.patient);
@@ -9,9 +10,12 @@ router.route('/')
             if (error) response.send(error);
             response.json({patient: patient});
         });
+
+
     })
     .get( function (request, response) {
-        let { limit, offset, sort, dir } = request.query;
+
+        let {limit, offset, sort, dir, queryPath, regex} = request.query;
             if(!limit) {
             Patients.Model.find(function (error, patients) {
                 if (error) response.send(error);
@@ -22,24 +26,27 @@ router.route('/')
             //  let users = schema.users.all().models;
             //  let users = Users.Model;
 
-            offset = Number(offset || 0);
-            limit = Number(limit || 10);
-            dir = dir || 'asc';
-            sort = sort || 'id';
+                offset = Number(offset || 0);
+                limit = Number(limit || 10);
+                dir = dir || 'asc';
+                sort = sort || 'id';
 
-            var query   = {};
-            var sortOrder = sort;
-            if (sortOrder) {
-                if (dir !== 'asc') {
-                    sortOrder = '-'+sort;
+                let query = {};
+                if (regex !== '')
+                    query[queryPath] = new RegExp(regex, "i");
+
+                var sortOrder = sort;
+                if (sortOrder) {
+                    if (dir !== 'asc') {
+                        sortOrder = '-' + sort;
+                    }
                 }
-            }
-            let options = {
-                sort:      sortOrder ,
-                lean:     true,
-                offset:   offset,
-                limit:    limit
-            };
+                let options = {
+                    sort: sortOrder,
+                    lean: true,
+                    offset: offset,
+                    limit: limit
+                };
 
             Patients.Model.paginate(query, options, function(error, patients) {
                 if (error) response.send(error);

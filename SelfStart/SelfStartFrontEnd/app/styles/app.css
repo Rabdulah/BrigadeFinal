@@ -1,101 +1,52 @@
-.round-button {
-   box-sizing: border-box;
-   display:block;
-   width:55px;
-   height:55px;
-   padding-top: 20px;
-   padding-left: 4px;
-   line-height: 16px;
-   border-radius: 50%;
-   text-align:center;
-   text-decoration:none;
-   background-color: dodgerblue;
-   color:white;
-
-   font-size:20px;
-   font-weight:bold;
-   transition: all 0.3s ease;
- }
-.round-button:hover {
-  background-color: #0d71bb;
-  color:white;
+.following.bar .ui.container {
+  width: 1400px;
 }
 
-.round-remove-button {
-  box-sizing: border-box;
-  display:block;
-  width:55px;
-  height:55px;
-  padding-top: 20px;
-  padding-left: 4px;
-  line-height: 13px;
-  border-radius: 50%;
-  text-align:center;
-  text-decoration:none;
-  background-color: crimson;
-  color:white;
-
-  font-size:20px;
-  font-weight:bold;
-  transition: all 0.3s ease;
-}
-.round-remove-button:hover {
-  background-color: darkred;
-  color:white;
+#login {
+  background: #efd469;
+  color: darkslategrey !important;
+  width: 100px;
+  text-align: center;
 }
 
-.title{
-  background-color: #013A6B;
-  background-image: -webkit-linear-gradient(150deg, #013A6B 15%, #004E95 15%);
-  min-height: 100px;
-  margin-top: 70px;
-  color: white;
-  font-size: 3em;
-  padding: 25px;
-  text-transform: uppercase;
-  font-weight: bold;
+#login:hover {
+  background: #F0E68C;
+  color: darkslategrey !important;
+  width: 100px;
+  text-align: center;
+}
+
+#client {
+  background: #efd469;
+  color: darkslategrey !important;
+
+  text-align: center;
+}
+
+#client:hover {
+  background: #F0E68C;
+  color: darkslategrey !important;
+
+  text-align: center;
 }
 
 .background{
   background-color: #e9ebee;
-  height: 100vh;
 }
 
-#return-to-top {
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  background: rgb(0, 0, 0);
-  background: rgba(0, 0, 0, 0.7);
-  width: 50px;
-  height: 50px;
-  text-decoration: none;
-  -webkit-border-radius: 35px;
-  -moz-border-radius: 35px;
-  border-radius: 35px;
-  display: none;
-  -webkit-transition: all 0.3s linear;
-  -moz-transition: all 0.3s ease;
-  -o-transition: all 0.3s ease;
-  transition: all 0.3s ease;
-}
-#return-to-top i {
-  color: #fff;
-  margin: 0;
-  position: relative;
-  left: 16px;
-  top: 13px;
-  font-size: 19px;
-  -webkit-transition: all 0.3s ease;
-  -moz-transition: all 0.3s ease;
-  -o-transition: all 0.3s ease;
-  transition: all 0.3s ease;
-}
-#return-to-top:hover {
-  background: rgba(0, 0, 0, 0.9);
-}
-#return-to-top:hover i {
-  color: #fff;
-  top: 5px;
-}
+/*.ui.modal > .content {*/
+  /*display: block;*/
+  /*width: 100%;*/
+  /*font-size: 1em;*/
+   /*line-height: 0 !important;*/
+   /*padding: 0rem !important;*/
+  /*background: #FFFFFF;*/
+/*}*/
 
+/*@media only screen and (min-width: 1920px) {*/
+  /*.ui.modal {*/
+    /*width: 500px !important;*/
+    /*text-align: center !important;*/
+    /*margin: 0em 0em 0em -250px !important;*/
+  /*}*/
+/*}*/
