@@ -48,6 +48,7 @@ router.route('/:question_id')
                     question.sa = request.body.question.sa;
                     question.ra = request.body.question.ra;
                     question.tf = request.body.question.tf;
+                    question.answer = request.body.question.answer;
                 
                     question.save(function (error) {
                         if (error) {

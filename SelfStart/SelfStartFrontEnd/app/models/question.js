@@ -11,5 +11,6 @@ export default DS.Model.extend({
   sa:DS.attr('boolean'),
   tf:DS.attr('boolean'),
   ra:DS.attr('boolean'),
+  answers:DS.hasMany('answer'),
   forms: DS.hasMany('form')
 });

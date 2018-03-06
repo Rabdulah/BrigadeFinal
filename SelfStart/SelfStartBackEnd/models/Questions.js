@@ -10,8 +10,8 @@ var questionsSchema = mongoose.Schema({
     sa: Boolean,
     tf: Boolean,
     ra: Boolean,
-
-    form: [{type: mongoose.Schema.ObjectId, ref: 'Forms'}],
+    answer: [{type: mongoose.Schema.ObjectId, ref: 'Answers'}],
+    form: [{type: mongoose.Schema.ObjectId, ref: 'Forms'}]
 });
 
 var Questions = mongoose.model('question', questionsSchema);
