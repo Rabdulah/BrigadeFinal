@@ -44,6 +44,7 @@ router.route('/:physiotherapest_id')
                 physiotherapest.dateFired = request.body.physiotherapest.dateFired;
                 physiotherapest.treatment = request.body.physiotherapest.treatment;
                 physiotherapest.account = request.body.physiotherapest.account;
+                physiotherapest.appointments = request.body.physiotherapest.appointments;
 
                 physiotherapest.save(function (error) {
                     if (error) {

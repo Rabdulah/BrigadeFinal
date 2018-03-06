@@ -9,6 +9,8 @@ var physiotherapestsSchema = mongoose.Schema({
     dateHired: Date,
     dateFired: Date,
     treatment: [{type: mongoose.Schema.ObjectId, ref: 'Treatments'}],
+    appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],
+
     account: {
         userAccountName: String,
         encryptedPassword: String,
