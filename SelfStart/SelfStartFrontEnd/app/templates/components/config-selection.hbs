@@ -1,0 +1,137 @@
+<link href='http://fonts.googleapis.com/css?family=Ubuntu:400,700' rel='stylesheet' type='text/css'>
+
+<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/table-style.css"> <!-- Resource style -->
+
+{{#admin-nav}}
+
+  <div class="masthead segment bg4">
+    <div class="ui container">
+      <div class="introduction">
+        <h1 class="ui inverted header">
+        <span class="tagline">
+           Configure Selections
+        </span>
+        </h1>
+        <div class="ui hidden divider"></div>
+
+      </div>
+    </div>
+  </div>
+
+  <br><br><br>
+  <div class="ui centered cards" >
+    <div class="card" style="width:200px">
+      <div class="content">
+        <div class="header">Countries</div>
+      </div>
+      <div class="ui bottom attached button"  {{action "countrySelect"}}>
+        <i class="add icon"></i>Add Country
+      </div>
+    </div>
+
+    <div class="card" style="width:200px">
+      <div class="content">
+        <div class="header">Provinces</div>
+      </div>
+      <div class="ui bottom attached button" {{action "provinceSelect"}}>
+        <i class="add icon"></i>
+          Add Province
+      </div>
+    </div>
+
+    <div class="card" style="width:200px">
+      <div class="content">
+        <div class="header">Cities</div>
+      </div>
+      <div class="ui bottom attached button">
+        <i class="add icon"></i>
+        Add City
+      </div>
+    </div>
+
+    <div class="card" style="width:200px">
+      <div class="content">
+        <div class="header">Genders</div>
+      </div>
+      <div class="ui bottom attached button" {{action "genderSelect"}}>
+        <i class="add icon"></i>Add Gender
+      </div>
+    </div>
+
+  </div>
+
+
+<br>
+  {{#if genderSelected}}
+  <section id="cd-section">
+    <section id="cd-table">
+      <div class="cd-table-container">
+        <ul>
+          <li style="  text-align: center; font-size: 1.2rem; text-transform: uppercase;
+                          font-weight: bold; color: white; background-color: #f58b4c;">Genders</li>
+          {{#each model.gender as |gender|}}
+
+            <li>
+              {{gender.name}}
+              <p style="float: right;">{{delete-gender ID=gender.id}}</p>
+              <p style="float: right; padding-right: 2%;">{{edit-gender ID=gender.id}}</p>
+            </li>
+
+          {{/each}}
+        </ul>
+      </div>
+
+    </section> <!-- cd-table -->
+    {{add-gender}}
+    <br><br>
+  </section>
+  {{/if}}
+
+  {{#if countrySelected}}
+  <section id="cd-section">
+    <section id="cd-table">
+      <div class="cd-table-container">
+        <ul>
+          <li style="  text-align: center; font-size: 1.2rem; text-transform: uppercase;
+                          font-weight: bold; color: white; background-color: #f58b4c;">Countries</li>
+          {{#each model.country as |country|}}
+
+            <li>{{country.name}}
+              <p style="float: right;">{{delete-country ID=country.id}}</p>
+              <p style="float: right; padding-right: 2%;">{{edit-country ID=country.id}}</p>
+            </li>
+
+          {{/each}}
+        </ul>
+      </div>
+
+    </section> <!-- cd-table -->
+    {{add-country}}
+    <br><br>
+  </section>
+{{/if}}
+
+
+  {{#if provinceSelected}}
+  <section id="cd-section">
+    <section id="cd-table">
+      <div class="cd-table-container">
+        <ul>
+          <li style="  text-align: center; font-size: 1.2rem; text-transform: uppercase;
+                          font-weight: bold; color: white; background-color: #f58b4c;">Provinces</li>
+          {{#each model.province as |province|}}
+
+            <li>{{province.name}}
+              <p style="float: right;">{{delete-province ID=province.id}}</p>
+            </li>
+
+          {{/each}}
+        </ul>
+      </div>
+
+    </section> <!-- cd-table -->
+    {{add-province}}
+    <br><br>
+  </section>
+  {{/if}}
+{{/admin-nav}}

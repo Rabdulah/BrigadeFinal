@@ -4,43 +4,88 @@ import $ from 'jquery';
 export default Component.extend({
   tagName:'',
 
+  init() {
+    this._super(...arguments);
+
+  },
+
   didRender() {
     this._super(...arguments);
-    $(document).ready(function ($) {
-      let is_bouncy_nav_animating = false;
-      //open bouncy navigation
-      $('.cd-bouncy-nav-trigger').on('click', function () {
-        triggerBouncyNav(true);
-      });
-      //close bouncy navigation
-      $('.cd-bouncy-nav-modal .cd-close').on('click', function () {
-        triggerBouncyNav(false);
-      });
-      $('.cd-bouncy-nav-modal').on('click', function (event) {
-        if ($(event.target).is('.cd-bouncy-nav-modal')) {
-          triggerBouncyNav(false);
-        }
-      });
 
-      function triggerBouncyNav($bool) {
-        //check if no nav animation is ongoing
-        if (!is_bouncy_nav_animating) {
-          is_bouncy_nav_animating = true;
-
-          //toggle list items animation
-          $('.cd-bouncy-nav-modal').toggleClass('fade-in', $bool).toggleClass('fade-out', !$bool).find('li:last-child').one('webkitAnimationEnd oanimationend msAnimationEnd animationend', function () {
-            $('.cd-bouncy-nav-modal').toggleClass('is-visible', $bool);
-            if (!$bool) $('.cd-bouncy-nav-modal').removeClass('fade-out');
-            is_bouncy_nav_animating = false;
-          });
-
-          //check if CSS animations are supported...
-          if ($('.cd-bouncy-nav-trigger').parents('.no-csstransitions').length > 0) {
-            $('.cd-bouncy-nav-modal').toggleClass('is-visible', $bool);
-            is_bouncy_nav_animating = false;
+    if ($(window).width() > 600) {
+      $('body')
+        .visibility({
+          offset: -10,
+          observeChanges: false,
+          once: false,
+          continuous: false,
+          onTopPassed: function () {
+            requestAnimationFrame(function () {
+              $('.following.bar')
+                .addClass('light fixed')
+                .find('.menu')
+                .removeClass('inverted');
+              $('.following .additional.item')
+                .transition('scale in', 750);
+            });
+          },
+          onTopPassedReverse: function () {
+            requestAnimationFrame(function () {
+              $('.following.bar')
+                .removeClass('light fixed')
+                .find('.menu')
+                .addClass('inverted')
+                .find('.additional.item')
+                .transition('hide');
+            });
           }
-        }
+        })
+      ;
+    }
+    $('.additional.item')
+      .popup({
+        delay: {
+          show: 200,
+          hide: 50
+        },
+        position: 'bottom center'
+      });
+
+    var $menu = $('#toc'),
+      $tocSticky = $('.toc .ui.sticky'),
+      $fullHeightContainer = $('.pusher > .full.height')
+    ;
+
+    // create sidebar sticky
+    requestAnimationFrame(function () {
+        $tocSticky
+          .sticky({
+            silent: true,
+            container: $('html'),
+            context: $fullHeightContainer
+          })
+        ;
       }
-    });
-  }
+    )
+    ;
+
+    // main sidebar
+    $menu
+      .sidebar({
+        dimPage: true,
+        transition: 'overlay',
+        mobileTransition: 'uncover'
+      })
+    ;
+
+    // launch buttons
+    $menu
+      .sidebar('attach events', '.launch.button, .view-ui, .launch.item')
+    ;
+
+  },
+
+  actions: {
+
+  },
 });

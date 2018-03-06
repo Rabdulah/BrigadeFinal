@@ -23,7 +23,6 @@ export default Component.extend({
       $('.ui.' + this.get('modalName') + '.modal').modal({
         closable: false,
         transition: 'horizontal flip',
-        detachable: false,
 
         onDeny: () => {
           return true;

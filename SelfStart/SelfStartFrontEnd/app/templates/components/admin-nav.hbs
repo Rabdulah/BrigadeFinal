@@ -1,28 +1,43 @@
-{{yield}}
-<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/nav-style.css"> <!-- Resource style -->
+<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/home-style.css">
 
-<div class="cd-bouncy-nav-modal">
-
-  <nav>
-    <ul class="cd-bouncy-nav">
-     <!-- <li><a id="physiotherapist">{{#link-to 'physiotherapists'}}Physiotherapist Info{{/link-to}}</a></li>-->
-      <li><a id="patient">{{#link-to 'patients'}}Patient Info{{/link-to}}</a></li>
-      <li><a id="country">{{#link-to 'manage-selections'}}Configure form{{/link-to}}</a></li>
-      <li><a id="plan">{{#link-to 'rehabplans'}}Rehabilitation Plans{{/link-to}}</a></li>
-      <li><a id="questions">{{#link-to 'questions'}}Questions{{/link-to}}</a></li>
-      <li><a id="forms">{{#link-to 'forms'}}Forms{{/link-to}}</a></li>
-      <li><a id="exercise">{{#link-to 'exercise'}}Exercises{{/link-to}}</a></li>
-      <!--<li><a href="#0">Category 1</a></li>-->
-      <!--<li><a href="#0">Category 2</a></li>-->
-      <!--<li><a href="#0">Category 3</a></li>-->
-      <!--<li><a href="#0">Category 4</a></li>-->
-      <!--<li><a href="#0">Category 5</a></li>-->
-      <!--<li><a href="#0">Category 6</a></li>-->
-    </ul>
-  </nav>
-
-  <a href="#0" class="cd-close">Close modal</a>
-</div> <!-- cd-bouncy-nav-modal -->
+<!--<style>-->
+<!--.ui.visible.left.sidebar ~ .fixed,-->
+<!--.ui.visible.left.sidebar ~ .pusher {-->
+<!---webkit-transform: translate3d(260px, 0, 0); transform: translate3d(260px, 0, 0);-->
+<!--}-->
+<!--</style>-->
 
 
+<div id="example" class="index pushable">
 
+  <div class="full height">
+    <div class="following bar">
+      <div class="ui container">
+
+        <div class="ui large secondary network menu inverted">
+          <div class="item">
+            <div class="ui logo shape">
+              <div class="sides">
+                <div class="active ui side">
+                  {{#link-to 'admin'}}<img class="ui image" src="assets/images/home/Header.png">{{/link-to}}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="right menu inverted">
+            <a href="../patients" class="item">Clients</a>
+            <a  href="../exercises"class="item">Exercise</a>
+            <a class="item">Forms</a>
+            <a href="../manage-selections" class="item">Configure</a>
+            <a class="item">Appointments</a>
+            <a id="login" href="../" class="item">Log out</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{yield}}
+
+  </div>
+</div>

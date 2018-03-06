@@ -1,139 +1,177 @@
-<br><br><br><br><br><br>
 
+{{#if isEditing}}
 
-<div class="ui fluid raised very padded text container segment">
-  <h2 id="exercise" class="ui fluid centered header">Add New Exercise</h2>
+  <div class="ui fluid raised very padded text container segment">
+    <h2 id="exercise" class="ui fluid centered header">Add New Exercise</h2>
 
-  <form class="ui form">
+    <form class="ui form">
 
-    <div class="field">
-      <label>Exercise Name</label>
-      {{input type ="text" value=Name placeholder="Exercise Name"}}
-    </div>
-
-    <div class="field">
-      <label>Description</label>
-      {{textarea value=Description cols="80" rows="6" placeholder="Description"}}
-    </div>
-
-    <div class="field">
-      <label>Author Name</label>
-      {{input type ="text" value=AuthName placeholder="Author Name"}}
-    </div>
-
-    <div class="field">
-
-      <label>Objectives</label>
-
-      <div class="ui action input">
-        {{input type ="text" value=Objective placeholder="Objective"}}
-        <button class="ui white right labeled icon button" {{action "addObjective"}}>
-          Add Objective
-          <i class="add icon"></i>
-        </button>
+      <div class="field">
+        <label>Exercise Name</label>
+        {{input type ="text" value=Name placeholder="Exercise Name"}}
       </div>
 
-      <div class="ui inverted segment">
-        <label>Current Objectives</label>
-        <ul align = "left">
-          {{#each obj as |o|}}
-            <li>
-              <p>
-                {{o}}
-                <br>
-                <i style=" cursor: pointer;" title="Edit" {{action 'edit' }} class="gray write icon" ></i>
-                <i style=" cursor: pointer;" title="Delete" {{action "openModal" }} class="red remove icon" ></i>
-              </p>
-            </li>
-          {{/each}}
-        </ul>
-      </div>
-    </div>
-
-    <div class="field">
-      <label>Action Steps</label>
-      <div class = "ui action input">
-        {{input type ="text" value=ActionSteps placeholder="Action Steps"}}
-        <button class="ui white right labeled icon button" {{action "addActionStep"}}>
-          Add Action Step
-          <i class="add icon"></i>
-        </button>
+      <div class="field">
+        <label>Description</label>
+        {{textarea value=Description cols="80" rows="6" placeholder="Description"}}
       </div>
 
-      <div class="ui inverted segment">
-        <label>Current Action Steps</label>
-        <ol align = "left">
-          {{#each actionStep as |aS|}}
-            <li>
-              <p>
-                {{aS}}
-                <i style=" cursor: pointer;" title="Edit" {{action 'edit' }} class="gray write icon" ></i>
-                <i style=" cursor: pointer;" title="Delete" {{action "openModal"}} class="red remove icon" ></i>
-              </p>
-            </li>
-          {{/each}}
-        </ol>
+      <div class="field">
+        <label>Author Name</label>
+        {{input type ="text" value=AuthName placeholder="Author Name"}}
       </div>
-    </div>
 
-    <div class="field">
-      <label>Location</label>
-      {{input type ="text" value=Location placeholder="Location"}}
-    </div>
+      <div class="field">
 
-    <div class="field">
-      <label>Frequency</label>
-      {{!-- <i class="hourglass half icon"></i> --}}
-      {{input type ="text" value=Frequency placeholder="Frequency"}}
-    </div>
+        <label>Objectives</label>
 
-    <div class="field">
-      <label>Duration</label>
-      {{!-- <i class="calendar icon"></i> --}}
-      {{input type ="text" value=Duration placeholder="Duration"}}
-    </div>
+        <div class="ui action input">
+          {{input type ="text" value=Objective placeholder="Objective"}}
+          <button class="ui white right labeled icon button" {{action "addObjective"}}>
+            Add Objective
+            <i class="add icon"></i>
+          </button>
+        </div>
 
-    <div class="field">
-      <label>Target Date</label>
-      {{!-- <i class="add to calendar icon"></i> --}}
-      {{input type ="text" value=TargetDate placeholder="Target Date"}}
-    </div>
+        <div class="ui inverted segment">
+          <label>Current Objectives</label>
+          <ul align = "left">
+            {{#each obj as |o|}}
+              <li>
+                <p>
+                  {{o}}
+                  <br>
+                  <i style=" cursor: pointer;" title="Edit" {{action 'edit' }} class="gray write icon" ></i>
+                  <i style=" cursor: pointer;" title="Delete" {{action "openModal" }} class="red remove icon" ></i>
+                </p>
+              </li>
+            {{/each}}
+          </ul>
+        </div>
+      </div>
 
-    <div class="field">
-      <label>Multimedia URL</label>
-      {{input type ="text" value=MMURL placeholder="Multi Media URL"}}
-    </div>
+      <div class="field">
+        <label>Action Steps</label>
+        <div class = "ui action input">
+          {{input type ="text" value=ActionSteps placeholder="Action Steps"}}
+          <button class="ui white right labeled icon button" {{action "addActionStep"}}>
+            Add Action Step
+            <i class="add icon"></i>
+          </button>
+        </div>
 
-    <div class = "field">
-      {{simple-example}}
-      <br><br>
-    </div>
+        <div class="ui inverted segment">
+          <label>Current Action Steps</label>
+          <ol align = "left">
+            {{#each actionStep as |aS|}}
+              <li>
+                <p>
+                  {{aS}}
+                  <i style=" cursor: pointer;" title="Edit" {{action 'edit' }} class="gray write icon" ></i>
+                  <i style=" cursor: pointer;" title="Delete" {{action "openModal"}} class="red remove icon" ></i>
+                </p>
+              </li>
+            {{/each}}
+          </ol>
+        </div>
+      </div>
 
-    <div class = "inline">
-      <button class="ui button" type="submit" {{action "submit"}}>Submit</button>
-      <button class="ui button" type="submit" {{action "cancel"}}>Cancel</button>
-    </div>
+      <div class="field">
+        <label>Location</label>
+        {{input type ="text" value=Location placeholder="Location"}}
+      </div>
 
-  </form>
-</div>
+      <div class="field">
+        <label>Frequency</label>
+        {{!-- <i class="hourglass half icon"></i> --}}
+        {{input type ="text" value=Frequency placeholder="Frequency"}}
+      </div>
 
-{{#ui-modal name=modalName class=modalName}}
-  <div class="ui icon header">
-    <i class=" warning sign icon"></i>
-    Please Confirm
+      <div class="field">
+        <label>Duration</label>
+        {{!-- <i class="calendar icon"></i> --}}
+        {{input type ="text" value=Duration placeholder="Duration"}}
+      </div>
+
+      <div class="field">
+        <label>Target Date</label>
+        {{!-- <i class="add to calendar icon"></i> --}}
+        {{input type ="text" value=TargetDate placeholder="Target Date"}}
+      </div>
+
+      <div class="field">
+        <label>Multimedia URL</label>
+        {{input type ="text" value=MMURL placeholder="Multi Media URL"}}
+      </div>
+
+      <div class = "field">
+
+        {{#each queue as |file| }}
+          <div class="ui divided demo items">
+            <div class="item">
+              <div class="image">
+                {{#if file.isUploading}}
+                  <div class="ui active inverted dimmer">
+                    <div class="ui loader"></div>
+                  </div>
+                {{else}}
+                  <img src="{{file.base64Image}}">
+                {{/if }}
+              </div>
+              <div class="middle aligned content">
+                <div class="description">
+                  {{#if file.isDisplayableImage}}
+                    <label>Image Name</label>
+                    {{input type ="text" valueBinding=file.name placeholder="Exercise Name"}}
+                    <button class="ui red basic button" {{action 'deleteFile' file}}>
+                      Delete
+                    </button>
+                    <br>
+                  {{else}}
+                    <p>Unsupported image</p>
+                  {{/if}}
+                </div>
+              </div>
+            </div>
+          </div>
+        {{!-- {{else}} --}}
+        {{/each}}
+        <div class="ui fluid labeled input">
+          <label class="ui fluid huge label" style="{{labelStyle}}">
+            <i class="big cloud upload icon"></i>
+            Click or Drop files into this area to upload files
+          </label>
+          <input type="file" value="target.value" onchange={{action "selectFile"}} style="{{inputStyle}}"
+                 accept="{{accept}}" multiple={{multiple}}>
+        </div>
+        <br>
+
+
+        {{!-- {{upload-file
+            model = 'image'
+            maximumFileSize = 6
+            multiple=true
+            flag = ImageIsAdding
+            ImageName = iName
+            newExerID = id
+            notInAddExercise = false
+        }} --}}
+        {{!-- {{simple-example iName=ImageName}} --}}
+        {{!-- <br><br>
+        {{simple-example exerID = id}} --}}
+        {{!-- <br><br> --}}
+      </div>
+
+      <div class = "inline">
+        <button class="ui button" type="submit" {{action "submit"}}>Submit</button>
+        <button class="ui button" type="submit" {{action "cancel"}}>Cancel</button>
+      </div>
+
+    </form>
   </div>
-  <div class="content">
-    <p>Are you sure you want to delete this comment?</p>
-  </div>
-  <br>
-  <div class="actions">
-    <div class="ui red cancel inverted button">
-      <i class = "remove icon"></i>
-      No
-    </div>
-    <div class="ui green ok inverted button">
-      <i class="checkmark icon"></i>
-      Yes
-    </div>
-  </div>
-{{/ui-modal}}
+
+{{else}}
+  <button class="ui button" {{action 'addExercise'}}>
+    Add Exercise
+  </button>
+{{/if}}

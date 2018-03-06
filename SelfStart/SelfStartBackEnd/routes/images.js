@@ -40,6 +40,8 @@ router.route('/:image_id')
                 image.size = request.body.image.size;
                 image.rawSize = request.body.image.rawSize;
                 image.imageData = request.body.image.imageData;
+                image.exercise = request.body.image.exercise;
+
 
                 image.save(function (error) {
                     if (error) {
@@ -63,3 +65,4 @@ router.route('/:image_id')
     });
 
 module.exports = router;
+

@@ -1,0 +1,123 @@
+{{#nav-bar}}
+<div class="masthead segment bg4">
+  <div class="ui container">
+    <div class="introduction">
+      <h1 class="ui inverted header">
+      <span class="tagline">
+         Complete Registration
+      </span>
+      </h1>
+      <div class="ui hidden divider"></div>
+
+    </div>
+  </div>
+</div>
+
+<div class="background">
+
+  <br>
+
+  <div class = "ui centered very padded raised segment container" style="background-color: white">
+    <link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/form-style.css"> <!-- Resource style -->
+
+    <form class="cd-form floating-labels" {{action "save" on="submit"}}>
+
+     <fieldset>
+        <legend>Personal Info</legend>
+
+        <div class="icon">
+          <label class="cd-label">First Name</label>
+          {{input class="user" type="text" value = givenName required = true}}
+        </div>
+        <div class="icon">
+          <label class="cd-label">Last Name</label>
+          {{input class="user" type="text" value = familyName required = true}}
+        </div>
+        <div class="icon">
+          <label class="cd-label">Date of Birth</label>
+          <input class="date" type="date" value={{selectedDate}}  onchange={{action 'assignDate' value="target.value"}} required>
+        </div>
+
+        <div >
+          <h4>Gender</h4>
+          <p class="cd-select icon">
+            <select class="people" onchange={{action 'selectGender' value="target.value"}} required=true>
+              <option selected="selected">
+                Select Gender
+              </option>
+              {{#each genderModel as |oneGender|}}
+                <option value={{oneGender.name}} selected={{eq gender oneGender.name}}>
+                  {{oneGender.name}}
+                </option>
+              {{/each}}
+            </select>
+          </p>
+        </div>
+
+
+        <div class="icon">
+          <label class="cd-label">Health Card Number</label>
+          {{input class="card" type="text" value = healthCardNumber required = true}}
+        </div>
+      </fieldset>
+
+
+      <fieldset>
+        <legend>Address</legend>
+
+        <div class="icon">
+          <label class="cd-label">Number</label>
+          {{input class="home" type="text" value = streetNumber required = true}}
+        </div>
+        <div class="icon">
+          <label class="cd-label">Street Name</label>
+          {{input class="home" type="text" value = streetName required = true}}
+        </div>
+        <div class="icon">
+          <label class="cd-label" for="cd-name">Unit</label>
+          {{input class="bookmark" type="text" value = apartment}}
+        </div>
+
+        <div class="icon">
+          <label class="cd-label" for="cd-name">Postal/ZIP Code</label>
+          {{input class="flag" type="text" value = postalCode required = true}}
+        </div>
+
+
+        <div >
+          <h4>Country</h4>
+          <p class="cd-select icon">
+            <select class="world" onchange={{action 'selectCountry' value="target.value"}} required=true>
+              <option selected="selected">
+                Select Country
+              </option>
+              {{#each conutryModel as |oneCountry|}}
+                <option value={{oneCountry.name}} selected={{eq country oneCountry.name}}>
+                  {{oneCountry.name}}
+                </option>
+              {{/each}}
+            </select>
+          </p>
+        </div>
+
+      </fieldset>
+
+
+      <fieldset>
+        <legend>Contact Info</legend>
+
+        <div class="icon">
+          <label class="cd-label" for="cd-name">Phone Number</label>
+          {{input class="phone" type="text" value = phoneNumber required = true}}
+        </div>
+
+        <div class="cd-button" style="float: left">
+          <input type="submit" value="Submit">
+        </div>
+      </fieldset>
+
+    </form>
+  </div>
+</div>
+
+{{/nav-bar}}

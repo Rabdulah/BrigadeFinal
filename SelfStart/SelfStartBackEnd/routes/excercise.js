@@ -5,7 +5,6 @@ var Exercise = require('../models/Exercise');
 router.route('/')
     .post( function (request, response) {
         var exercise = new Exercise.Model(request.body.exercise);
-        console.log(request.body.exercise);
         exercise.save(function (error) {
             if (error) response.send(error);
             response.json({exercise: exercise});
@@ -15,6 +14,7 @@ router.route('/')
         Exercise.Model.find(function (error, exercises) {
             if (error) response.send(error);
             response.json({exercise: exercises});
+
         });
     });
 

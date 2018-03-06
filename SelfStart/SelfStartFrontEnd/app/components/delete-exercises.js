@@ -1,31 +1,39 @@
 import Component from '@ember/component';
-import Ember from "ember";
+
+import Ember from 'ember';
+
 
 export default Component.extend({
   DS: Ember.inject.service('store'),
 
-  modalName: Ember.computed(function(){
-    return 'Delete-exercise' + this.get('ID');
+
+  modalName : Ember.computed(function() {
+    return 'delete-exercises' + this.get('ID');
+
   }),
 
   actions: {
     openModal: function () {
+
+      // console.log(this.get('modalName'));
       Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
-        closeable: false,
+        closable: false,
         detachable: false,
-        transition: 'fly down',
         onDeny: () => {
           return true;
         },
+
         onApprove: () => {
-          this.get('DS').find('exercise', this.get('ID')).then((exercise) => {
-            exercise.destroyRecord().then(() => {
+          this.get('DS').find('exercise' , this.get('ID')).then((exercise)=>{
+            exercise.destroyRecord().then(() =>{
+
               return true;
             });
           })
         }
-      })
-        .modal('show');
+
+      }).modal('show');
     },
   }
+
 });

@@ -9,6 +9,30 @@ export default Component.extend({
 
   tagName: '',
 
+  init(){
+    this._super(...arguments);
+
+    this.set('familyName', '');
+    this.set('givenName', '');
+    this.set('email', '');
+    this.set('streetName', '');
+    this.set('streetNumber', '');
+    this.set('apartment', '');
+    this.set('selectedCountry', '');
+    this.set('province', '');
+    this.set('city', '');
+    this.set('healthCardNumber', '');
+    this.set('selectedGender', '');
+    this.set('dateOfBirth', '');
+    this.set('phoneNumber', '');
+    this.set('postalCode', '');
+    this.set('userAccountName', '');
+    this.set('encryptedPassword', '');
+
+    // this.set('selectedGender', this.get('selectedGender'));
+    // this.set('selectedCountry', this.get('selectedCountry'));
+  },
+
   didRender() {
     this._super(...arguments);
 
@@ -19,7 +43,7 @@ export default Component.extend({
         var inputFields = $('.floating-labels .cd-label').next();
         inputFields.each(function () {
           var singleInput = $(this);
-          //check if user is filling one of the form fields
+          //check if  is filling one of the form fields
           checkVal(singleInput);
           singleInput.on('change keyup', function () {
             checkVal(singleInput);
@@ -43,20 +67,21 @@ export default Component.extend({
     return this.get('DS').findAll('gender');
   }),
 
-  maritalStatusModel: computed(function(){
-    return this.get('DS').findAll('maritalStatus');
-  }),
+
 
   actions: {
-
-    addPatient(){
-      this.set('isEditing', true);
-    },
 
     assignDate (date){
       this.set('selectedDate', date);
     },
 
+    selectCountry (country){
+      this.set('selectedCountry', country);
+    },
+
+    selectGender (gender){
+      this.set('selectedGender', gender);
+    },
 
     cancel() {
       return true;
@@ -66,6 +91,10 @@ export default Component.extend({
 
       let self = this;
 
+      let patientAccount = {};
+      patientAccount['userAccountName'] = self.get('userAccountName');
+      patientAccount['encryptedPassword'] =    self.get('encryptedPassword');
+
       let patient = this.get('DS').createRecord('patient', {
         familyName: self.get('familyName'),
         givenName: self.get('givenName'),
@@ -73,38 +102,20 @@ export default Component.extend({
         streetName: self.get('streetName'),
         streetNumber: self.get('streetNumber'),
         apartment: self.get('apartment'),
-        country: self.get('country'),
-        provinces: self.get('provinces'),
-        cities: self.get('cities'),
-        dateOfBirth: self.get('selectedDate'),
+        country: self.get('selectedCountry'),
+        province: self.get('province'),
+        city: self.get('city'),
+        dateOfBirth: new Date(this.get('selectedDate')),
         healthCardNumber: self.get('healthCardNumber'),
-        occupation: self.get('occupation'),
-        gender: self.get('gender'),
-        maritalStatus: self.get('maritalStatus'),
+        gender: self.get('selectedGender'),
         phoneNumber: self.get('phoneNumber'),
         postalCode: self.get('postalCode'),
-
-      });
-      patient.save().then(() =>{
-        this.get('routing').transitionTo('patients');
+        account: patientAccount
       });
 
-      this.set('familyName', '');
-      this.set('givenName', '');
-      this.set('email', '');
-      this.set('streetName', '');
-      this.set('streetNumber', '');
-      this.set('apartment', '');
-      this.set('country', '');
-      this.set('provinces', '');
-      this.set('cities', '');
-      this.set('healthCardNumber', '');
-      this.set('gender', '');
-      this.set('maritalStatus', '');
-      this.set('dateOfBirth', '');
-      this.set('occupation', '');
-      this.set('phoneNumber', '');
-      this.set('postalCode', '');
+        patient.save().then(() =>{
+          this.get('routing').transitionTo('patients');
+        });
 
     }
   },

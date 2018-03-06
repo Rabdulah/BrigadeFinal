@@ -1,9 +1,4 @@
-// import EmberObject from '@ember/object';
 
-// export default function fileObject() {
-
-//   return true;
-// }
 import EmberObject from '@ember/object';
 
 export default EmberObject.extend({
@@ -102,5 +97,3 @@ export default EmberObject.extend({
     this.readFile();
   }
 });
-
-

@@ -1,21 +1,77 @@
 
-<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/home-style.css"> <!-- Resource style -->
+<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/home-style.css">
+
+<!--<style>-->
+  <!--.ui.visible.left.sidebar ~ .fixed,-->
+  <!--.ui.visible.left.sidebar ~ .pusher {-->
+    <!---webkit-transform: translate3d(260px, 0, 0); transform: translate3d(260px, 0, 0);-->
+  <!--}-->
+<!--</style>-->
+
+<div id="example" class="index pushable">
+
+    <div class="full height">
+      <div class="following bar">
+        <div class="ui container">
+
+          <div class="ui large secondary network menu inverted">
+            <div class="item">
+              <div class="ui logo shape">
+                <div class="sides">
+                  <div class="active ui side">
+                    {{#link-to 'home'}}<img class="ui image" src="assets/images/home/Header.png">{{/link-to}}
+                  </div>
+                </div>
+              </div>
+            </div>
 
 
-<header class="cd-header">
-  <div id="cd-logo"><a>{{#link-to 'home'}}Home{{/link-to}}</a></div>
+            <div class="right menu inverted">
+              <a class="item">About</a>
+              <a class="item">How it Works</a>
+              <a class="item">Services</a>
+              <a class="item">Assessment</a>
+              <a class="item">Blog</a>
+              <a class="item">Contact</a>
+              {{#if loggedOut}}
+                <a id="login" class="item" {{action 'openModal'}}>Log in</a>
+              {{else}}
+                <a class="item" {{action "logout"}}>Logout</a>
+                {{/if}}
+            </div>
+          </div>
+        </div>
+      </div>
 
-  <nav class="cd-main-nav">
-    <ul>
-      <!-- inser more links here -->
-      <li><a href="#0">About</a></li>
-      <li><a href="#0">How it Works</a></li>
-      <li><a href="#0">Services</a></li>
-      <li><a href="#0">Assessment</a></li>
-      <li><a href="#0">Blog</a></li>
-      <li><a id="physiotherapist">{{#link-to 'physiotherapists'}}Physiotherapist Info{{/link-to}}</a></li>
-      <a href="#0" >Contact</a>
-    </ul>
-  </nav> <!-- cd-main-nav -->
-</header>
-{{yield}}
+      {{yield}}
+
+    </div>
+  </div>
+
+
+{{#ui-modal name="login" class="login"}}
+  <link integrity="" rel="stylesheet" href="{{rootURL}}../assets/css/form-style.css"> <!-- Resource style -->
+
+  <h2 class="ui fluid centered header">Login</h2>
+
+  <div id="ui container" style="height: 250px; padding-left:10%; padding-right: 10%; padding-top: 2%">
+    <form class="ui form">
+
+      <div class="field">
+        <label>Email</label>
+        {{input type ="text" value=Email placeholder="Email"}}
+      </div>
+
+      <div class="field">
+        <label>Password</label>
+        {{input type ="password" value=PWord placeholder="Password"}}
+      </div>
+
+      <div class = "inline">
+        <button class="ui green button " {{action "submit"}}>Submit</button>
+        <button class="ui button " {{action "deny"}}>Cancel</button>
+      </div>
+
+    </form>
+  </div>
+{{/ui-modal}}

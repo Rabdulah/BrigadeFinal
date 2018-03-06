@@ -4,6 +4,8 @@ import $ from 'jquery';
 export default Component.extend({
   tagName:'',
 
+  model: null,
+
   didRender() {
     this._super(...arguments);
 
