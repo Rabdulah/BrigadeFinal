@@ -339,6 +339,676 @@ var runningTests = false;
     module.exports = { require: require, define: define };
   }
 })(this);
+;/**
+ * Copyright (c) 2014, Facebook, Inc.
+ * All rights reserved.
+ *
+ * This source code is licensed under the BSD-style license found in the
+ * https://raw.github.com/facebook/regenerator/master/LICENSE file. An
+ * additional grant of patent rights can be found in the PATENTS file in
+ * the same directory.
+ */
+
+!(function(global) {
+  "use strict";
+
+  var hasOwn = Object.prototype.hasOwnProperty;
+  var undefined; // More compressible than void 0.
+  var $Symbol = typeof Symbol === "function" ? Symbol : {};
+  var iteratorSymbol = $Symbol.iterator || "@@iterator";
+  var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
+
+  var inModule = typeof module === "object";
+  var runtime = global.regeneratorRuntime;
+  if (runtime) {
+    if (inModule) {
+      // If regeneratorRuntime is defined globally and we're in a module,
+      // make the exports object identical to regeneratorRuntime.
+      module.exports = runtime;
+    }
+    // Don't bother evaluating the rest of this file if the runtime was
+    // already defined globally.
+    return;
+  }
+
+  // Define the runtime globally (as expected by generated code) as either
+  // module.exports (if we're in a module) or a new, empty object.
+  runtime = global.regeneratorRuntime = inModule ? module.exports : {};
+
+  function wrap(innerFn, outerFn, self, tryLocsList) {
+    // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
+    var protoGenerator = outerFn && outerFn.prototype instanceof Generator ? outerFn : Generator;
+    var generator = Object.create(protoGenerator.prototype);
+    var context = new Context(tryLocsList || []);
+
+    // The ._invoke method unifies the implementations of the .next,
+    // .throw, and .return methods.
+    generator._invoke = makeInvokeMethod(innerFn, self, context);
+
+    return generator;
+  }
+  runtime.wrap = wrap;
+
+  // Try/catch helper to minimize deoptimizations. Returns a completion
+  // record like context.tryEntries[i].completion. This interface could
+  // have been (and was previously) designed to take a closure to be
+  // invoked without arguments, but in all the cases we care about we
+  // already have an existing method we want to call, so there's no need
+  // to create a new function object. We can even get away with assuming
+  // the method takes exactly one argument, since that happens to be true
+  // in every case, so we don't have to touch the arguments object. The
+  // only additional allocation required is the completion record, which
+  // has a stable shape and so hopefully should be cheap to allocate.
+  function tryCatch(fn, obj, arg) {
+    try {
+      return { type: "normal", arg: fn.call(obj, arg) };
+    } catch (err) {
+      return { type: "throw", arg: err };
+    }
+  }
+
+  var GenStateSuspendedStart = "suspendedStart";
+  var GenStateSuspendedYield = "suspendedYield";
+  var GenStateExecuting = "executing";
+  var GenStateCompleted = "completed";
+
+  // Returning this object from the innerFn has the same effect as
+  // breaking out of the dispatch switch statement.
+  var ContinueSentinel = {};
+
+  // Dummy constructor functions that we use as the .constructor and
+  // .constructor.prototype properties for functions that return Generator
+  // objects. For full spec compliance, you may wish to configure your
+  // minifier not to mangle the names of these two functions.
+  function Generator() {}
+  function GeneratorFunction() {}
+  function GeneratorFunctionPrototype() {}
+
+  var Gp = GeneratorFunctionPrototype.prototype = Generator.prototype;
+  GeneratorFunction.prototype = Gp.constructor = GeneratorFunctionPrototype;
+  GeneratorFunctionPrototype.constructor = GeneratorFunction;
+  GeneratorFunctionPrototype[toStringTagSymbol] = GeneratorFunction.displayName = "GeneratorFunction";
+
+  // Helper for defining the .next, .throw, and .return methods of the
+  // Iterator interface in terms of a single ._invoke method.
+  function defineIteratorMethods(prototype) {
+    ["next", "throw", "return"].forEach(function(method) {
+      prototype[method] = function(arg) {
+        return this._invoke(method, arg);
+      };
+    });
+  }
+
+  runtime.isGeneratorFunction = function(genFun) {
+    var ctor = typeof genFun === "function" && genFun.constructor;
+    return ctor
+      ? ctor === GeneratorFunction ||
+        // For the native GeneratorFunction constructor, the best we can
+        // do is to check its .name property.
+        (ctor.displayName || ctor.name) === "GeneratorFunction"
+      : false;
+  };
+
+  runtime.mark = function(genFun) {
+    if (Object.setPrototypeOf) {
+      Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
+    } else {
+      genFun.__proto__ = GeneratorFunctionPrototype;
+      if (!(toStringTagSymbol in genFun)) {
+        genFun[toStringTagSymbol] = "GeneratorFunction";
+      }
+    }
+    genFun.prototype = Object.create(Gp);
+    return genFun;
+  };
+
+  // Within the body of any async function, `await x` is transformed to
+  // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
+  // `value instanceof AwaitArgument` to determine if the yielded value is
+  // meant to be awaited. Some may consider the name of this method too
+  // cutesy, but they are curmudgeons.
+  runtime.awrap = function(arg) {
+    return new AwaitArgument(arg);
+  };
+
+  function AwaitArgument(arg) {
+    this.arg = arg;
+  }
+
+  function AsyncIterator(generator) {
+    function invoke(method, arg, resolve, reject) {
+      var record = tryCatch(generator[method], generator, arg);
+      if (record.type === "throw") {
+        reject(record.arg);
+      } else {
+        var result = record.arg;
+        var value = result.value;
+        if (value instanceof AwaitArgument) {
+          return Promise.resolve(value.arg).then(function(value) {
+            invoke("next", value, resolve, reject);
+          }, function(err) {
+            invoke("throw", err, resolve, reject);
+          });
+        }
+
+        return Promise.resolve(value).then(function(unwrapped) {
+          // When a yielded Promise is resolved, its final value becomes
+          // the .value of the Promise<{value,done}> result for the
+          // current iteration. If the Promise is rejected, however, the
+          // result for this iteration will be rejected with the same
+          // reason. Note that rejections of yielded Promises are not
+          // thrown back into the generator function, as is the case
+          // when an awaited Promise is rejected. This difference in
+          // behavior between yield and await is important, because it
+          // allows the consumer to decide what to do with the yielded
+          // rejection (swallow it and continue, manually .throw it back
+          // into the generator, abandon iteration, whatever). With
+          // await, by contrast, there is no opportunity to examine the
+          // rejection reason outside the generator function, so the
+          // only option is to throw it from the await expression, and
+          // let the generator function handle the exception.
+          result.value = unwrapped;
+          resolve(result);
+        }, reject);
+      }
+    }
+
+    if (typeof process === "object" && process.domain) {
+      invoke = process.domain.bind(invoke);
+    }
+
+    var previousPromise;
+
+    function enqueue(method, arg) {
+      function callInvokeWithMethodAndArg() {
+        return new Promise(function(resolve, reject) {
+          invoke(method, arg, resolve, reject);
+        });
+      }
+
+      return previousPromise =
+        // If enqueue has been called before, then we want to wait until
+        // all previous Promises have been resolved before calling invoke,
+        // so that results are always delivered in the correct order. If
+        // enqueue has not been called before, then it is important to
+        // call invoke immediately, without waiting on a callback to fire,
+        // so that the async generator function has the opportunity to do
+        // any necessary setup in a predictable way. This predictability
+        // is why the Promise constructor synchronously invokes its
+        // executor callback, and why async functions synchronously
+        // execute code before the first await. Since we implement simple
+        // async functions in terms of async generators, it is especially
+        // important to get this right, even though it requires care.
+        previousPromise ? previousPromise.then(
+          callInvokeWithMethodAndArg,
+          // Avoid propagating failures to Promises returned by later
+          // invocations of the iterator.
+          callInvokeWithMethodAndArg
+        ) : callInvokeWithMethodAndArg();
+    }
+
+    // Define the unified helper method that is used to implement .next,
+    // .throw, and .return (see defineIteratorMethods).
+    this._invoke = enqueue;
+  }
+
+  defineIteratorMethods(AsyncIterator.prototype);
+
+  // Note that simple async functions are implemented on top of
+  // AsyncIterator objects; they just return a Promise for the value of
+  // the final result produced by the iterator.
+  runtime.async = function(innerFn, outerFn, self, tryLocsList) {
+    var iter = new AsyncIterator(
+      wrap(innerFn, outerFn, self, tryLocsList)
+    );
+
+    return runtime.isGeneratorFunction(outerFn)
+      ? iter // If outerFn is a generator, return the full iterator.
+      : iter.next().then(function(result) {
+          return result.done ? result.value : iter.next();
+        });
+  };
+
+  function makeInvokeMethod(innerFn, self, context) {
+    var state = GenStateSuspendedStart;
+
+    return function invoke(method, arg) {
+      if (state === GenStateExecuting) {
+        throw new Error("Generator is already running");
+      }
+
+      if (state === GenStateCompleted) {
+        if (method === "throw") {
+          throw arg;
+        }
+
+        // Be forgiving, per 25.3.3.3.3 of the spec:
+        // https://people.mozilla.org/~jorendorff/es6-draft.html#sec-generatorresume
+        return doneResult();
+      }
+
+      while (true) {
+        var delegate = context.delegate;
+        if (delegate) {
+          if (method === "return" ||
+              (method === "throw" && delegate.iterator[method] === undefined)) {
+            // A return or throw (when the delegate iterator has no throw
+            // method) always terminates the yield* loop.
+            context.delegate = null;
+
+            // If the delegate iterator has a return method, give it a
+            // chance to clean up.
+            var returnMethod = delegate.iterator["return"];
+            if (returnMethod) {
+              var record = tryCatch(returnMethod, delegate.iterator, arg);
+              if (record.type === "throw") {
+                // If the return method threw an exception, let that
+                // exception prevail over the original return or throw.
+                method = "throw";
+                arg = record.arg;
+                continue;
+              }
+            }
+
+            if (method === "return") {
+              // Continue with the outer return, now that the delegate
+              // iterator has been terminated.
+              continue;
+            }
+          }
+
+          var record = tryCatch(
+            delegate.iterator[method],
+            delegate.iterator,
+            arg
+          );
+
+          if (record.type === "throw") {
+            context.delegate = null;
+
+            // Like returning generator.throw(uncaught), but without the
+            // overhead of an extra function call.
+            method = "throw";
+            arg = record.arg;
+            continue;
+          }
+
+          // Delegate generator ran and handled its own exceptions so
+          // regardless of what the method was, we continue as if it is
+          // "next" with an undefined arg.
+          method = "next";
+          arg = undefined;
+
+          var info = record.arg;
+          if (info.done) {
+            context[delegate.resultName] = info.value;
+            context.next = delegate.nextLoc;
+          } else {
+            state = GenStateSuspendedYield;
+            return info;
+          }
+
+          context.delegate = null;
+        }
+
+        if (method === "next") {
+          // Setting context._sent for legacy support of Babel's
+          // function.sent implementation.
+          context.sent = context._sent = arg;
+
+        } else if (method === "throw") {
+          if (state === GenStateSuspendedStart) {
+            state = GenStateCompleted;
+            throw arg;
+          }
+
+          if (context.dispatchException(arg)) {
+            // If the dispatched exception was caught by a catch block,
+            // then let that catch block handle the exception normally.
+            method = "next";
+            arg = undefined;
+          }
+
+        } else if (method === "return") {
+          context.abrupt("return", arg);
+        }
+
+        state = GenStateExecuting;
+
+        var record = tryCatch(innerFn, self, context);
+        if (record.type === "normal") {
+          // If an exception is thrown from innerFn, we leave state ===
+          // GenStateExecuting and loop back for another invocation.
+          state = context.done
+            ? GenStateCompleted
+            : GenStateSuspendedYield;
+
+          var info = {
+            value: record.arg,
+            done: context.done
+          };
+
+          if (record.arg === ContinueSentinel) {
+            if (context.delegate && method === "next") {
+              // Deliberately forget the last sent value so that we don't
+              // accidentally pass it on to the delegate.
+              arg = undefined;
+            }
+          } else {
+            return info;
+          }
+
+        } else if (record.type === "throw") {
+          state = GenStateCompleted;
+          // Dispatch the exception by looping back around to the
+          // context.dispatchException(arg) call above.
+          method = "throw";
+          arg = record.arg;
+        }
+      }
+    };
+  }
+
+  // Define Generator.prototype.{next,throw,return} in terms of the
+  // unified ._invoke helper method.
+  defineIteratorMethods(Gp);
+
+  Gp[iteratorSymbol] = function() {
+    return this;
+  };
+
+  Gp[toStringTagSymbol] = "Generator";
+
+  Gp.toString = function() {
+    return "[object Generator]";
+  };
+
+  function pushTryEntry(locs) {
+    var entry = { tryLoc: locs[0] };
+
+    if (1 in locs) {
+      entry.catchLoc = locs[1];
+    }
+
+    if (2 in locs) {
+      entry.finallyLoc = locs[2];
+      entry.afterLoc = locs[3];
+    }
+
+    this.tryEntries.push(entry);
+  }
+
+  function resetTryEntry(entry) {
+    var record = entry.completion || {};
+    record.type = "normal";
+    delete record.arg;
+    entry.completion = record;
+  }
+
+  function Context(tryLocsList) {
+    // The root entry object (effectively a try statement without a catch
+    // or a finally block) gives us a place to store values thrown from
+    // locations where there is no enclosing try statement.
+    this.tryEntries = [{ tryLoc: "root" }];
+    tryLocsList.forEach(pushTryEntry, this);
+    this.reset(true);
+  }
+
+  runtime.keys = function(object) {
+    var keys = [];
+    for (var key in object) {
+      keys.push(key);
+    }
+    keys.reverse();
+
+    // Rather than returning an object with a next method, we keep
+    // things simple and return the next function itself.
+    return function next() {
+      while (keys.length) {
+        var key = keys.pop();
+        if (key in object) {
+          next.value = key;
+          next.done = false;
+          return next;
+        }
+      }
+
+      // To avoid creating an additional object, we just hang the .value
+      // and .done properties off the next function object itself. This
+      // also ensures that the minifier will not anonymize the function.
+      next.done = true;
+      return next;
+    };
+  };
+
+  function values(iterable) {
+    if (iterable) {
+      var iteratorMethod = iterable[iteratorSymbol];
+      if (iteratorMethod) {
+        return iteratorMethod.call(iterable);
+      }
+
+      if (typeof iterable.next === "function") {
+        return iterable;
+      }
+
+      if (!isNaN(iterable.length)) {
+        var i = -1, next = function next() {
+          while (++i < iterable.length) {
+            if (hasOwn.call(iterable, i)) {
+              next.value = iterable[i];
+              next.done = false;
+              return next;
+            }
+          }
+
+          next.value = undefined;
+          next.done = true;
+
+          return next;
+        };
+
+        return next.next = next;
+      }
+    }
+
+    // Return an iterator with no values.
+    return { next: doneResult };
+  }
+  runtime.values = values;
+
+  function doneResult() {
+    return { value: undefined, done: true };
+  }
+
+  Context.prototype = {
+    constructor: Context,
+
+    reset: function(skipTempReset) {
+      this.prev = 0;
+      this.next = 0;
+      // Resetting context._sent for legacy support of Babel's
+      // function.sent implementation.
+      this.sent = this._sent = undefined;
+      this.done = false;
+      this.delegate = null;
+
+      this.tryEntries.forEach(resetTryEntry);
+
+      if (!skipTempReset) {
+        for (var name in this) {
+          // Not sure about the optimal order of these conditions:
+          if (name.charAt(0) === "t" &&
+              hasOwn.call(this, name) &&
+              !isNaN(+name.slice(1))) {
+            this[name] = undefined;
+          }
+        }
+      }
+    },
+
+    stop: function() {
+      this.done = true;
+
+      var rootEntry = this.tryEntries[0];
+      var rootRecord = rootEntry.completion;
+      if (rootRecord.type === "throw") {
+        throw rootRecord.arg;
+      }
+
+      return this.rval;
+    },
+
+    dispatchException: function(exception) {
+      if (this.done) {
+        throw exception;
+      }
+
+      var context = this;
+      function handle(loc, caught) {
+        record.type = "throw";
+        record.arg = exception;
+        context.next = loc;
+        return !!caught;
+      }
+
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        var record = entry.completion;
+
+        if (entry.tryLoc === "root") {
+          // Exception thrown outside of any try block that could handle
+          // it, so set the completion value of the entire function to
+          // throw the exception.
+          return handle("end");
+        }
+
+        if (entry.tryLoc <= this.prev) {
+          var hasCatch = hasOwn.call(entry, "catchLoc");
+          var hasFinally = hasOwn.call(entry, "finallyLoc");
+
+          if (hasCatch && hasFinally) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            } else if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else if (hasCatch) {
+            if (this.prev < entry.catchLoc) {
+              return handle(entry.catchLoc, true);
+            }
+
+          } else if (hasFinally) {
+            if (this.prev < entry.finallyLoc) {
+              return handle(entry.finallyLoc);
+            }
+
+          } else {
+            throw new Error("try statement without catch or finally");
+          }
+        }
+      }
+    },
+
+    abrupt: function(type, arg) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc <= this.prev &&
+            hasOwn.call(entry, "finallyLoc") &&
+            this.prev < entry.finallyLoc) {
+          var finallyEntry = entry;
+          break;
+        }
+      }
+
+      if (finallyEntry &&
+          (type === "break" ||
+           type === "continue") &&
+          finallyEntry.tryLoc <= arg &&
+          arg <= finallyEntry.finallyLoc) {
+        // Ignore the finally entry if control is not jumping to a
+        // location outside the try/catch block.
+        finallyEntry = null;
+      }
+
+      var record = finallyEntry ? finallyEntry.completion : {};
+      record.type = type;
+      record.arg = arg;
+
+      if (finallyEntry) {
+        this.next = finallyEntry.finallyLoc;
+      } else {
+        this.complete(record);
+      }
+
+      return ContinueSentinel;
+    },
+
+    complete: function(record, afterLoc) {
+      if (record.type === "throw") {
+        throw record.arg;
+      }
+
+      if (record.type === "break" ||
+          record.type === "continue") {
+        this.next = record.arg;
+      } else if (record.type === "return") {
+        this.rval = record.arg;
+        this.next = "end";
+      } else if (record.type === "normal" && afterLoc) {
+        this.next = afterLoc;
+      }
+    },
+
+    finish: function(finallyLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.finallyLoc === finallyLoc) {
+          this.complete(entry.completion, entry.afterLoc);
+          resetTryEntry(entry);
+          return ContinueSentinel;
+        }
+      }
+    },
+
+    "catch": function(tryLoc) {
+      for (var i = this.tryEntries.length - 1; i >= 0; --i) {
+        var entry = this.tryEntries[i];
+        if (entry.tryLoc === tryLoc) {
+          var record = entry.completion;
+          if (record.type === "throw") {
+            var thrown = record.arg;
+            resetTryEntry(entry);
+          }
+          return thrown;
+        }
+      }
+
+      // The context.catch method must only be called with a location
+      // argument that corresponds to a known catch block.
+      throw new Error("illegal catch attempt");
+    },
+
+    delegateYield: function(iterable, resultName, nextLoc) {
+      this.delegate = {
+        iterator: values(iterable),
+        resultName: resultName,
+        nextLoc: nextLoc
+      };
+
+      return ContinueSentinel;
+    }
+  };
+})(
+  // Among the various tricks for obtaining a reference to the global
+  // object, this seems to be the most reliable technique that does not
+  // use indirect eval (which violates Content Security Policy).
+  typeof global === "object" ? global :
+  typeof window === "object" ? window :
+  typeof self === "object" ? self : this
+);
+
 ;/*!
  * jQuery JavaScript Library v3.3.1
  * https://jquery.com/
@@ -10712,7 +11382,7 @@ return jQuery;
  *            Portions Copyright 2008-2011 Apple Inc. All rights reserved.
  * @license   Licensed under MIT license
  *            See https://raw.github.com/emberjs/ember.js/master/LICENSE
- * @version   2.16.2
+ * @version   2.16.4
  */
 
 var enifed, requireModule, Ember;
@@ -28547,9 +29217,11 @@ enifed('ember-glimmer/environment', ['exports', 'ember-babel', 'ember-utils', 'e
         destroyedComponents[i].destroy();
       }
 
-      _GlimmerEnvironment.prototype.commit.call(this);
-
-      this.inTransaction = false;
+      try {
+        _GlimmerEnvironment.prototype.commit.call(this);
+      } finally {
+        this.inTransaction = false;
+      }
     };
 
     return Environment;
@@ -30864,6 +31536,9 @@ enifed('ember-glimmer/renderer', ['exports', 'ember-babel', 'ember-glimmer/utils
       } finally {
         if (!completedWithoutError) {
           this._lastRevision = _reference.CURRENT_TAG.value();
+          if (this._env.inTransaction === true) {
+            this._env.commit();
+          }
         }
         this._isRenderingRoots = false;
       }
@@ -34040,9 +34715,14 @@ enifed('ember-metal', ['exports', 'ember-environment', 'ember-utils', 'ember-deb
       {
         debugStack = context$$1.env.debugStack;
       }
-      context$$1[methodName]();
-      inTransaction = false;
-      counter++;
+
+      try {
+        context$$1[methodName]();
+      } finally {
+        inTransaction = false;
+        counter++;
+      }
+
       return shouldReflush;
     };
 
@@ -54279,7 +54959,7 @@ enifed('ember-template-compiler/system/compile-options', ['exports', 'ember-util
 
   exports.default = compileOptions;
   exports.registerPlugin = registerPlugin;
-  exports.removePlugin = removePlugin;
+  exports.unregisterPlugin = unregisterPlugin;
 
 
   var USER_PLUGINS = [];
@@ -54297,13 +54977,47 @@ enifed('ember-template-compiler/system/compile-options', ['exports', 'ember-util
       options.plugins = { ast: [].concat(USER_PLUGINS, _plugins.default) };
     } else {
       var potententialPugins = [].concat(USER_PLUGINS, _plugins.default);
+      var providedPlugins = options.plugins.ast.map(function (plugin) {
+        return wrapLegacyPluginIfNeeded(plugin);
+      });
       var pluginsToAdd = potententialPugins.filter(function (plugin) {
         return options.plugins.ast.indexOf(plugin) === -1;
       });
-      options.plugins.ast = options.plugins.ast.slice().concat(pluginsToAdd);
+      options.plugins.ast = providedPlugins.concat(pluginsToAdd);
     }
 
     return options;
+  }
+
+  function wrapLegacyPluginIfNeeded(_plugin) {
+    var plugin = _plugin;
+    if (_plugin.prototype && _plugin.prototype.transform) {
+      plugin = function (env) {
+        var pluginInstantiated = false;
+
+        return {
+          name: _plugin.constructor && _plugin.constructor.name,
+
+          visitors: {
+            Program: function (node) {
+              if (!pluginInstantiated) {
+
+                pluginInstantiated = true;
+                var _plugin2 = new _plugin(env);
+
+                _plugin2.syntax = env.syntax;
+
+                return _plugin2.transform(node);
+              }
+            }
+          }
+        };
+      };
+
+      plugin.__raw = _plugin;
+    }
+
+    return plugin;
   }
 
   function registerPlugin(type, _plugin) {
@@ -54311,37 +55025,25 @@ enifed('ember-template-compiler/system/compile-options', ['exports', 'ember-util
       throw new Error('Attempting to register ' + _plugin + ' as "' + type + '" which is not a valid Glimmer plugin type.');
     }
 
-    var plugin = void 0;
-    if (_plugin.prototype && _plugin.prototype.transform) {
-      plugin = function (env) {
-        return {
-          name: _plugin.constructor && _plugin.constructor.name,
-
-          visitors: {
-            Program: function (node) {
-              var plugin = new _plugin(env);
-
-              plugin.syntax = env.syntax;
-
-              return plugin.transform(node);
-            }
-          }
-        };
-      };
-    } else {
-      plugin = _plugin;
+    for (var i = 0; i < USER_PLUGINS.length; i++) {
+      var PLUGIN = USER_PLUGINS[i];
+      if (PLUGIN === _plugin || PLUGIN.__raw === _plugin) {
+        return;
+      }
     }
+
+    var plugin = wrapLegacyPluginIfNeeded(_plugin);
 
     USER_PLUGINS = [plugin].concat(USER_PLUGINS);
   }
 
-  function removePlugin(type, PluginClass) {
+  function unregisterPlugin(type, PluginClass) {
     if (type !== 'ast') {
       throw new Error('Attempting to unregister ' + PluginClass + ' as "' + type + '" which is not a valid Glimmer plugin type.');
     }
 
     USER_PLUGINS = USER_PLUGINS.filter(function (plugin) {
-      return plugin !== PluginClass;
+      return plugin !== PluginClass && plugin.__raw !== PluginClass;
     });
   }
 });
@@ -59145,7 +59847,7 @@ enifed('ember/index', ['exports', 'require', 'ember-environment', 'node-module',
 enifed("ember/version", ["exports"], function (exports) {
   "use strict";
 
-  exports.default = "2.16.2";
+  exports.default = "2.16.4";
 });
 enifed("handlebars", ["exports"], function (exports) {
   "use strict";
@@ -66128,8 +66830,8 @@ function createDeprecatedModule(moduleId) {
 createDeprecatedModule('ember/resolver');
 createDeprecatedModule('resolver');
 
-; /*
- * # Semantic UI - 2.2.14
+;if (typeof FastBoot === 'undefined') {  /*
+ * # Semantic UI - 2.3.0
  * https://github.com/Semantic-Org/Semantic-UI
  * http://www.semantic-ui.com/
  *
@@ -66139,7 +66841,7 @@ createDeprecatedModule('resolver');
  *
  */
 /*!
- * # Semantic UI 2.2.14 - Site
+ * # Semantic UI 2.3.0 - Site
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -66627,7 +67329,7 @@ $.extend($.expr[ ":" ], {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.14 - Form Validation
+ * # Semantic UI 2.3.0 - Form Validation
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -66986,7 +67688,7 @@ $.fn.form = function(parameters) {
                   module.validate.field( validationRules );
                 }
               }
-              else if(settings.on == 'blur' || settings.on == 'change') {
+              else if(settings.on == 'blur') {
                 if(validationRules) {
                   module.validate.field( validationRules );
                 }
@@ -68334,7 +69036,7 @@ $.fn.form.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.14 - Accordion
+ * # Semantic UI 2.3.0 - Accordion
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -68504,6 +69206,7 @@ $.fn.accordion = function(parameters) {
           }
           module.debug('Opening accordion content', $activeTitle);
           settings.onOpening.call($activeContent);
+          settings.onChanging.call($activeContent);
           if(settings.exclusive) {
             module.closeOthers.call($activeTitle);
           }
@@ -68567,6 +69270,7 @@ $.fn.accordion = function(parameters) {
           if((isActive || isOpening) && !isClosing) {
             module.debug('Closing accordion content', $activeContent);
             settings.onClosing.call($activeContent);
+            settings.onChanging.call($activeContent);
             $activeTitle
               .removeClass(className.active)
             ;
@@ -68909,10 +69613,11 @@ $.fn.accordion.settings = {
   duration        : 350, // duration of animation
   easing          : 'easeOutQuad', // easing equation for animation
 
-
   onOpening       : function(){}, // callback before open animation
-  onOpen          : function(){}, // callback after open animation
   onClosing       : function(){}, // callback before closing animation
+  onChanging      : function(){}, // callback before closing or opening animation
+
+  onOpen          : function(){}, // callback after open animation
   onClose         : function(){}, // callback after closing animation
   onChange        : function(){}, // callback after closing or opening animation
 
@@ -68945,7 +69650,7 @@ $.extend( $.easing, {
 
 
 /*!
- * # Semantic UI 2.2.14 - Checkbox
+ * # Semantic UI 2.3.0 - Checkbox
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -69777,7 +70482,7 @@ $.fn.checkbox.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.14 - Dimmer
+ * # Semantic UI 2.3.0 - Dimmer
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -70016,6 +70721,7 @@ $.fn.dimmer = function(parameters) {
               }
               $dimmer
                 .transition({
+                  displayType : 'flex',
                   animation   : settings.transition + ' in',
                   queue       : false,
                   duration    : module.get.duration(),
@@ -70060,6 +70766,7 @@ $.fn.dimmer = function(parameters) {
               module.verbose('Hiding dimmer with css');
               $dimmer
                 .transition({
+                  displayType : 'flex',
                   animation   : settings.transition + ' out',
                   queue       : false,
                   duration    : module.get.duration(),
@@ -70486,7 +71193,7 @@ $.fn.dimmer.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.14 - Dropdown
+ * # Semantic UI 2.3.0 - Dropdown
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -74404,7 +75111,7 @@ $.fn.dropdown.settings.templates = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.14 - Embed
+ * # Semantic UI 2.3.0 - Embed
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -75101,7 +75808,7 @@ $.fn.embed.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.14 - Modal
+ * # Semantic UI 2.3.0 - Modal
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -75210,6 +75917,10 @@ $.fn.modal = function(parameters) {
             var
               defaultSettings = {
                 debug      : settings.debug,
+                variation  : settings.centered
+                  ? false
+                  : 'top aligned'
+                ,
                 dimmerName : 'modals'
               },
               dimmerSettings = $.extend(true, defaultSettings, settings.dimmerSettings)
@@ -75267,7 +75978,6 @@ $.fn.modal = function(parameters) {
           module.cacheSizes();
           module.set.screenHeight();
           module.set.type();
-          module.set.position();
         },
 
         refreshModals: function() {
@@ -75340,21 +76050,23 @@ $.fn.modal = function(parameters) {
             module.hide();
           },
           click: function(event) {
+            if(!settings.closable) {
+              module.verbose('Dimmer clicked but closable setting is disabled');
+              return;
+            }
             var
               $target   = $(event.target),
               isInModal = ($target.closest(selector.modal).length > 0),
               isInDOM   = $.contains(document.documentElement, event.target)
             ;
-            if(!isInModal && isInDOM) {
+            if(!isInModal && isInDOM && module.is.active()) {
               module.debug('Dimmer clicked, hiding all modals');
-              if( module.is.active() ) {
-                module.remove.clickaway();
-                if(settings.allowMultiple) {
-                  module.hide();
-                }
-                else {
-                  module.hideAll();
-                }
+              module.remove.clickaway();
+              if(settings.allowMultiple) {
+                module.hide();
+              }
+              else {
+                module.hideAll();
               }
             }
           },
@@ -75422,7 +76134,6 @@ $.fn.modal = function(parameters) {
 
             module.showDimmer();
             module.cacheSizes();
-            module.set.position();
             module.set.screenHeight();
             module.set.type();
             module.set.clickaway();
@@ -75589,7 +76300,13 @@ $.fn.modal = function(parameters) {
 
         save: {
           focus: function() {
-            $focusedElement = $(document.activeElement).blur();
+            var
+              $activeElement = $(document.activeElement),
+              inCurrentModal = $activeElement.closest($module).length > 0
+            ;
+            if(!inCurrentModal) {
+              $focusedElement = $(document.activeElement).blur();
+            }
           }
         },
 
@@ -75606,11 +76323,9 @@ $.fn.modal = function(parameters) {
             $module.removeClass(className.active);
           },
           clickaway: function() {
-            if(settings.closable) {
-              $dimmer
-                .off('click' + elementEventNamespace)
-              ;
-            }
+            $dimmer
+              .off('click' + elementEventNamespace)
+            ;
           },
           bodyStyle: function() {
             if($body.attr('style') === '') {
@@ -75708,11 +76423,9 @@ $.fn.modal = function(parameters) {
             }
           },
           clickaway: function() {
-            if(settings.closable) {
-              $dimmer
-                .on('click' + elementEventNamespace, module.event.click)
-              ;
-            }
+            $dimmer
+              .on('click' + elementEventNamespace, module.event.click)
+            ;
           },
           dimmerSettings: function() {
             if($.fn.dimmer === undefined) {
@@ -75723,8 +76436,11 @@ $.fn.modal = function(parameters) {
               defaultSettings = {
                 debug      : settings.debug,
                 dimmerName : 'modals',
-                variation  : false,
                 closable   : 'auto',
+                variation  : settings.centered
+                  ? false
+                  : 'top aligned'
+                ,
                 duration   : {
                   show     : settings.duration,
                   hide     : settings.duration
@@ -75778,25 +76494,6 @@ $.fn.modal = function(parameters) {
             else {
               module.verbose('Modal cannot fit on screen setting to scrolling');
               module.set.scrolling();
-            }
-          },
-          position: function() {
-            module.verbose('Centering modal on page', module.cache);
-            if(module.can.fit()) {
-              $module
-                .css({
-                  top: '',
-                  marginTop: module.cache.topOffset
-                })
-              ;
-            }
-            else {
-              $module
-                .css({
-                  marginTop : '',
-                  top       : $document.scrollTop()
-                })
-              ;
             }
           },
           undetached: function() {
@@ -76007,6 +76704,8 @@ $.fn.modal.settings = {
   inverted       : false,
   blurring       : false,
 
+  centered       : true,
+
   dimmerSettings : {
     closable : false,
     useCSS   : true
@@ -76069,7 +76768,7 @@ $.fn.modal.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.14 - Nag
+ * # Semantic UI 2.3.0 - Nag
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -76577,7 +77276,7 @@ $.extend( $.easing, {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.14 - Popup
+ * # Semantic UI 2.3.0 - Popup
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -77066,7 +77765,7 @@ $.fn.popup = function(parameters) {
           },
           content: function() {
             $module.removeData(metadata.content);
-            return $module.data(metadata.content) || $module.attr('title') || settings.content;
+            return $module.data(metadata.content) || settings.content || $module.attr('title');
           },
           variation: function() {
             $module.removeData(metadata.variation);
@@ -77080,9 +77779,10 @@ $.fn.popup = function(parameters) {
           },
           calculations: function() {
             var
-              targetElement    = $target[0],
-              isWindow         = ($boundary[0] == window),
-              targetPosition   = (settings.inline || (settings.popup && settings.movePopup))
+              $popupOffsetParent = module.get.offsetParent($popup),
+              targetElement      = $target[0],
+              isWindow           = ($boundary[0] == window),
+              targetPosition     = (settings.inline || (settings.popup && settings.movePopup))
                 ? $target.position()
                 : $target.offset(),
               screenPosition = (isWindow)
@@ -77126,6 +77826,17 @@ $.fn.popup = function(parameters) {
                 height : $boundary.height()
               }
             };
+
+            // if popup offset context is not same as target, then adjust calculations
+            if($popupOffsetParent.get(0) !== $offsetParent.get(0)) {
+              var
+                popupOffset        = $popupOffsetParent.offset()
+              ;
+              calculations.target.top -= popupOffset.top;
+              calculations.target.left -= popupOffset.left;
+              calculations.parent.width = $popupOffsetParent.outerWidth();
+              calculations.parent.height = $popupOffsetParent.outerHeight();
+            }
 
             // add in container calcs if fluid
             if( settings.setFluidWidth && module.is.fluid() ) {
@@ -77215,14 +77926,14 @@ $.fn.popup = function(parameters) {
               var
                 is2D     = ($node.css('transform') === 'none'),
                 isStatic = ($node.css('position') === 'static'),
-                isHTML   = $node.is('html')
+                isBody   = $node.is('body')
               ;
-              while(parentNode && !isHTML && isStatic && is2D) {
+              while(parentNode && !isBody && isStatic && is2D) {
                 parentNode = parentNode.parentNode;
                 $node    = $(parentNode);
                 is2D     = ($node.css('transform') === 'none');
                 isStatic = ($node.css('position') === 'static');
-                isHTML   = $node.is('html');
+                isBody   = $node.is('body');
               }
             }
             return ($node && $node.length > 0)
@@ -77330,6 +78041,18 @@ $.fn.popup = function(parameters) {
             target = calculations.target;
             popup  = calculations.popup;
             parent = calculations.parent;
+
+            if(module.should.centerArrow(calculations)) {
+              module.verbose('Adjusting offset to center arrow on small target element');
+              if(position == 'top left' || position == 'bottom left') {
+                offset += (target.width / 2)
+                offset -= settings.arrowPixelsFromEdge;
+              }
+              if(position == 'top right' || position == 'bottom right') {
+                offset -= (target.width / 2)
+                offset += settings.arrowPixelsFromEdge;
+              }
+            }
 
             if(target.width === 0 && target.height === 0 && !module.is.svg(target.element)) {
               module.debug('Popup target is hidden, no action taken');
@@ -77624,6 +78347,12 @@ $.fn.popup = function(parameters) {
           }
         },
 
+        should: {
+          centerArrow: function(calculations) {
+            return !module.is.basic() && calculations.target.width <= (settings.arrowPixelsFromEdge * 2);
+          }
+        },
+
         is: {
           offstage: function(distanceFromBoundary, position) {
             var
@@ -77645,6 +78374,9 @@ $.fn.popup = function(parameters) {
           },
           svg: function(element) {
             return module.supports.svg() && (element instanceof SVGGraphicsElement);
+          },
+          basic: function() {
+            return $module.hasClass(className.basic);
           },
           active: function() {
             return $module.hasClass(className.active);
@@ -77958,8 +78690,11 @@ $.fn.popup.settings = {
   // specify position to appear even if it doesn't fit
   lastResort     : false,
 
+  // number of pixels from edge of popup to pointing arrow center (used from centering)
+  arrowPixelsFromEdge: 20,
+
   // delay used to prevent accidental refiring of animations due to user error
-  delay        : {
+  delay : {
     show : 50,
     hide : 70
   },
@@ -78003,6 +78738,7 @@ $.fn.popup.settings = {
 
   className   : {
     active       : 'active',
+    basic        : 'basic',
     animating    : 'animating',
     dropdown     : 'dropdown',
     fluid        : 'fluid',
@@ -78064,7 +78800,7 @@ $.fn.popup.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.14 - Progress
+ * # Semantic UI 2.3.0 - Progress
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -78996,7 +79732,7 @@ $.fn.progress.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.14 - Rating
+ * # Semantic UI 2.3.0 - Rating
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -79505,7 +80241,7 @@ $.fn.rating.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.14 - Search
+ * # Semantic UI 2.3.0 - Search
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -79576,6 +80312,7 @@ $.fn.search = function(parameters) {
 
         initialize: function() {
           module.verbose('Initializing module');
+          module.get.settings();
           module.determine.searchFields();
           module.bind.events();
           module.set.type();
@@ -79908,6 +80645,12 @@ $.fn.search = function(parameters) {
         },
 
         get: {
+          settings: function() {
+            if($.isPlainObject(parameters) && parameters.searchFullText) {
+              settings.fullTextSearch = parameters.searchFullText;
+              module.error(settings.error.oldSearchSyntax, element);
+            }
+          },
           inputEvent: function() {
             var
               prompt = $prompt[0],
@@ -80051,8 +80794,14 @@ $.fn.search = function(parameters) {
             ;
             module.set.loading();
             module.save.results(results);
-            module.debug('Returned local search results', results);
-
+            module.debug('Returned full local search results', results);
+            if(settings.maxResults > 0) {
+              module.debug('Using specified max results', results);
+              results = results.slice(0, settings.maxResults);
+            }
+            if(settings.type == 'category') {
+              results = module.create.categoryResults(results);
+            }
             searchHTML = module.generateResults({
               results: results
             });
@@ -80080,6 +80829,7 @@ $.fn.search = function(parameters) {
           object: function(searchTerm, source, searchFields) {
             var
               results      = [],
+              exactResults = [],
               fuzzyResults = [],
               searchExp    = searchTerm.toString().replace(regExp.escape, '\\$&'),
               matchRegExp  = new RegExp(regExp.beginsWith + searchExp, 'i'),
@@ -80111,7 +80861,6 @@ $.fn.search = function(parameters) {
               module.error(error.source);
               return [];
             }
-
             // iterate through search fields looking for matches
             $.each(searchFields, function(index, field) {
               $.each(source, function(label, content) {
@@ -80123,17 +80872,30 @@ $.fn.search = function(parameters) {
                     // content starts with value (first in results)
                     addResult(results, content);
                   }
-                  else if(settings.searchFullText && module.fuzzySearch(searchTerm, content[field]) ) {
+                  else if(settings.fullTextSearch === 'exact' && module.exactSearch(searchTerm, content[field]) ) {
+                    // content fuzzy matches (last in results)
+                    addResult(exactResults, content);
+                  }
+                  else if(settings.fullTextSearch == true && module.fuzzySearch(searchTerm, content[field]) ) {
                     // content fuzzy matches (last in results)
                     addResult(fuzzyResults, content);
                   }
                 }
               });
             });
-            return $.merge(results, fuzzyResults);
+            $.merge(exactResults, fuzzyResults)
+            $.merge(results, exactResults);
+            return results;
           }
         },
-
+        exactSearch: function (query, term) {
+          query = query.toLowerCase();
+          term  = term.toLowerCase();
+          if(term.indexOf(query) > -1) {
+             return true;
+          }
+          return false;
+        },
         fuzzySearch: function(query, term) {
           var
             termLength  = term.length,
@@ -80245,6 +81007,27 @@ $.fn.search = function(parameters) {
         },
 
         create: {
+          categoryResults: function(results) {
+            var
+              categoryResults = {}
+            ;
+            $.each(results, function(index, result) {
+              if(!result.category) {
+                return;
+              }
+              if(categoryResults[result.category] === undefined) {
+                module.verbose('Creating new category of results', result.category);
+                categoryResults[result.category] = {
+                  name    : result.category,
+                  results : [result]
+                }
+              }
+              else {
+                categoryResults[result.category].results.push(result);
+              }
+            });
+            return categoryResults;
+          },
           id: function(resultIndex, categoryIndex) {
             var
               resultID      = (resultIndex + 1), // not zero indexed
@@ -80282,7 +81065,10 @@ $.fn.search = function(parameters) {
               $selectedResult = (categoryIndex !== undefined)
                 ? $results
                     .children().eq(categoryIndex)
-                      .children(selector.result).eq(resultIndex)
+                      .children(selector.results)
+                        .first()
+                        .children(selector.result)
+                          .eq(resultIndex)
                 : $results
                     .children(selector.result).eq(resultIndex)
             ;
@@ -80703,8 +81489,8 @@ $.fn.search.settings = {
   // field to display in standard results template
   displayField   : '',
 
-  // whether to include fuzzy results in local search
-  searchFullText : true,
+  // search anywhere in value (set to 'exact' to require exact matches
+  fullTextSearch : 'exact',
 
   // whether to add events to prompt automatically
   automatic      : true,
@@ -80715,7 +81501,7 @@ $.fn.search.settings = {
   // delay before searching
   searchDelay    : 200,
 
-  // maximum results returned from local
+  // maximum results returned from search
   maxResults     : 7,
 
   // whether to store lookups in local cache
@@ -80751,14 +81537,15 @@ $.fn.search.settings = {
   },
 
   error : {
-    source      : 'Cannot search. No source used, and Semantic API module was not included',
-    noResults   : 'Your search returned no results',
-    logging     : 'Error in debug logging, exiting.',
-    noEndpoint  : 'No search endpoint was specified',
-    noTemplate  : 'A valid template name was not specified.',
-    serverError : 'There was an issue querying the server.',
-    maxResults  : 'Results must be an array to use maxResults setting',
-    method      : 'The method you called is not defined.'
+    source          : 'Cannot search. No source used, and Semantic API module was not included',
+    noResults       : 'Your search returned no results',
+    logging         : 'Error in debug logging, exiting.',
+    noEndpoint      : 'No search endpoint was specified',
+    noTemplate      : 'A valid template name was not specified.',
+    oldSearchSyntax : 'searchFullText setting has been renamed fullTextSearch for consistency, please adjust your settings.',
+    serverError     : 'There was an issue querying the server.',
+    maxResults      : 'Results must be an array to use maxResults setting',
+    method          : 'The method you called is not defined.'
   },
 
   metadata: {
@@ -80860,6 +81647,7 @@ $.fn.search.settings = {
             }
 
             // each item inside category
+            html += '<div class="results">';
             $.each(category.results, function(index, result) {
               if(result[fields.url]) {
                 html  += '<a class="result" href="' + result[fields.url] + '">';
@@ -80889,6 +81677,7 @@ $.fn.search.settings = {
               ;
               html += '</a>';
             });
+            html += '</div>';
             html  += ''
               + '</div>'
             ;
@@ -80957,7 +81746,7 @@ $.fn.search.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.14 - Shape
+ * # Semantic UI 2.3.0 - Shape
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -81879,7 +82668,7 @@ $.fn.shape.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.14 - Sidebar
+ * # Semantic UI 2.3.0 - Sidebar
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -82913,7 +83702,7 @@ $.fn.sidebar.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.14 - Sticky
+ * # Semantic UI 2.3.0 - Sticky
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -83873,7 +84662,7 @@ $.fn.sticky.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.14 - Tab
+ * # Semantic UI 2.3.0 - Tab
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -84826,7 +85615,7 @@ $.fn.tab.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.14 - Transition
+ * # Semantic UI 2.3.0 - Transition
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -85922,7 +86711,7 @@ $.fn.transition.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.14 - API
+ * # Semantic UI 2.3.0 - API
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -87090,7 +87879,7 @@ $.api.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.14 - State
+ * # Semantic UI 2.3.0 - State
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -87799,7 +88588,7 @@ $.fn.state.settings = {
 })( jQuery, window, document );
 
 /*!
- * # Semantic UI 2.2.14 - Visibility
+ * # Semantic UI 2.3.0 - Visibility
  * http://github.com/semantic-org/semantic-ui/
  *
  *
@@ -89109,7 +89898,7 @@ $.fn.visibility.settings = {
 };
 
 })( jQuery, window, document );
-
+ }
 ;/*! =======================================================
                       VERSION  6.0.17              
 ========================================================= */
@@ -91004,12 +91793,5184 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
   function AjaxError(payload) {
     var message = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'Ajax operation failed';
 
+    EmberError.call(this, message);
+
+    this.payload = payload;
+  }
+
+  AjaxError.prototype = Object.create(EmberError.prototype);
+
+  /**
+   * @class InvalidError
+   * @public
+   * @extends AjaxError
+   */
+  function InvalidError(payload) {
+    AjaxError.call(this, payload, 'Request was rejected because it was invalid');
+  }
+
+  InvalidError.prototype = Object.create(AjaxError.prototype);
+
+  /**
+   * @class UnauthorizedError
+   * @public
+   * @extends AjaxError
+   */
+  function UnauthorizedError(payload) {
+    AjaxError.call(this, payload, 'Ajax authorization failed');
+  }
+
+  UnauthorizedError.prototype = Object.create(AjaxError.prototype);
+
+  /**
+   * @class ForbiddenError
+   * @public
+   * @extends AjaxError
+   */
+  function ForbiddenError(payload) {
+    AjaxError.call(this, payload, 'Request was rejected because user is not permitted to perform this operation.');
+  }
+
+  ForbiddenError.prototype = Object.create(AjaxError.prototype);
+
+  /**
+   * @class BadRequestError
+   * @public
+   * @extends AjaxError
+   */
+  function BadRequestError(payload) {
+    AjaxError.call(this, payload, 'Request was formatted incorrectly.');
+  }
+
+  BadRequestError.prototype = Object.create(AjaxError.prototype);
+
+  /**
+   * @class NotFoundError
+   * @public
+   * @extends AjaxError
+   */
+  function NotFoundError(payload) {
+    AjaxError.call(this, payload, 'Resource was not found.');
+  }
+
+  NotFoundError.prototype = Object.create(AjaxError.prototype);
+
+  /**
+   * @class TimeoutError
+   * @public
+   * @extends AjaxError
+   */
+  function TimeoutError() {
+    AjaxError.call(this, null, 'The ajax operation timed out');
+  }
+
+  TimeoutError.prototype = Object.create(AjaxError.prototype);
+
+  /**
+   * @class AbortError
+   * @public
+   * @extends AjaxError
+   */
+  function AbortError() {
+    AjaxError.call(this, null, 'The ajax operation was aborted');
+  }
+
+  AbortError.prototype = Object.create(AjaxError.prototype);
+
+  /**
+   * @class ConflictError
+   * @public
+   * @extends AjaxError
+   */
+  function ConflictError(payload) {
+    AjaxError.call(this, payload, 'The ajax operation failed due to a conflict');
+  }
+
+  ConflictError.prototype = Object.create(AjaxError.prototype);
+
+  /**
+   * @class ServerError
+   * @public
+   * @extends AjaxError
+   */
+  function ServerError(payload) {
+    AjaxError.call(this, payload, 'Request was rejected due to server error');
+  }
+
+  ServerError.prototype = Object.create(AjaxError.prototype);
+
+  /**
+   * Checks if the given error is or inherits from AjaxError
+   *
+   * @method isAjaxError
+   * @public
+   * @param  {Error} error
+   * @return {Boolean}
+   */
+  function isAjaxError(error) {
+    return error instanceof AjaxError;
+  }
+
+  /**
+   * Checks if the given status code or AjaxError object represents an
+   * unauthorized request error
+   *
+   * @method isUnauthorizedError
+   * @public
+   * @param  {Number | AjaxError} error
+   * @return {Boolean}
+   */
+  function isUnauthorizedError(error) {
+    if (isAjaxError(error)) {
+      return error instanceof UnauthorizedError;
+    } else {
+      return error === 401;
+    }
+  }
+
+  /**
+   * Checks if the given status code or AjaxError object represents a forbidden
+   * request error
+   *
+   * @method isForbiddenError
+   * @public
+   * @param  {Number | AjaxError} error
+   * @return {Boolean}
+   */
+  function isForbiddenError(error) {
+    if (isAjaxError(error)) {
+      return error instanceof ForbiddenError;
+    } else {
+      return error === 403;
+    }
+  }
+
+  /**
+   * Checks if the given status code or AjaxError object represents an invalid
+   * request error
+   *
+   * @method isInvalidError
+   * @public
+   * @param  {Number | AjaxError} error
+   * @return {Boolean}
+   */
+  function isInvalidError(error) {
+    if (isAjaxError(error)) {
+      return error instanceof InvalidError;
+    } else {
+      return error === 422;
+    }
+  }
+
+  /**
+   * Checks if the given status code or AjaxError object represents a bad request
+   * error
+   *
+   * @method isBadRequestError
+   * @public
+   * @param  {Number | AjaxError} error
+   * @return {Boolean}
+   */
+  function isBadRequestError(error) {
+    if (isAjaxError(error)) {
+      return error instanceof BadRequestError;
+    } else {
+      return error === 400;
+    }
+  }
+
+  /**
+   * Checks if the given status code or AjaxError object represents a
+   * "not found" error
+   *
+   * @method isNotFoundError
+   * @public
+   * @param  {Number | AjaxError} error
+   * @return {Boolean}
+   */
+  function isNotFoundError(error) {
+    if (isAjaxError(error)) {
+      return error instanceof NotFoundError;
+    } else {
+      return error === 404;
+    }
+  }
+
+  /**
+   * Checks if the given status code or AjaxError object represents a
+   * "timeout" error
+   *
+   * @method isTimeoutError
+   * @public
+   * @param  {AjaxError} error
+   * @return {Boolean}
+   */
+  function isTimeoutError(error) {
+    return error instanceof TimeoutError;
+  }
+
+  /**
+   * Checks if the given status code or AjaxError object represents an
+   * "abort" error
+   *
+   * @method isAbortError
+   * @public
+   * @param  {AjaxError} error
+   * @return {Boolean}
+   */
+  function isAbortError(error) {
+    if (isAjaxError(error)) {
+      return error instanceof AbortError;
+    } else {
+      return error === 0;
+    }
+  }
+
+  /**
+   * Checks if the given status code or AjaxError object represents a
+   * conflict error
+   *
+   * @method isConflictError
+   * @public
+   * @param  {Number | AjaxError} error
+   * @return {Boolean}
+   */
+  function isConflictError(error) {
+    if (isAjaxError(error)) {
+      return error instanceof ConflictError;
+    } else {
+      return error === 409;
+    }
+  }
+
+  /**
+   * Checks if the given status code or AjaxError object represents a server error
+   *
+   * @method isServerError
+   * @public
+   * @param  {Number | AjaxError} error
+   * @return {Boolean}
+   */
+  function isServerError(error) {
+    if (isAjaxError(error)) {
+      return error instanceof ServerError;
+    } else {
+      return error >= 500 && error < 600;
+    }
+  }
+
+  /**
+   * Checks if the given status code represents a successful request
+   *
+   * @method isSuccess
+   * @public
+   * @param  {Number} status
+   * @return {Boolean}
+   */
+  function isSuccess(status) {
+    var s = parseInt(status, 10);
+
+    return s >= 200 && s < 300 || s === 304;
+  }
+});
+;define('ember-ajax/index', ['exports', 'ember-ajax/request'], function (exports, _request) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _request.default;
+    }
+  });
+});
+;define('ember-ajax/mixins/ajax-request', ['exports', 'ember-ajax/errors', 'ember-ajax/utils/ajax', 'ember-ajax/-private/utils/parse-response-headers', 'ember-ajax/-private/utils/get-header', 'ember-ajax/-private/utils/url-helpers', 'ember-ajax/-private/utils/is-string', 'ember-ajax/-private/promise'], function (exports, _errors, _ajax, _parseResponseHeaders, _getHeader, _urlHelpers, _isString, _promise) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  };
+
+  var A = Ember.A,
+      EmberError = Ember.Error,
+      Logger = Ember.Logger,
+      Mixin = Ember.Mixin,
+      Test = Ember.Test,
+      get = Ember.get,
+      isEmpty = Ember.isEmpty,
+      merge = Ember.merge,
+      run = Ember.run,
+      runInDebug = Ember.runInDebug,
+      testing = Ember.testing,
+      warn = Ember.warn;
+
+  var JSONContentType = /^application\/(?:vnd\.api\+)?json/i;
+
+  function isJSONContentType(header) {
+    if (!(0, _isString.default)(header)) {
+      return false;
+    }
+    return !!header.match(JSONContentType);
+  }
+
+  function isJSONStringifyable(method, _ref) {
+    var contentType = _ref.contentType,
+        data = _ref.data,
+        headers = _ref.headers;
+
+    if (method === 'GET') {
+      return false;
+    }
+
+    if (!isJSONContentType(contentType) && !isJSONContentType((0, _getHeader.default)(headers, 'Content-Type'))) {
+      return false;
+    }
+
+    if ((typeof data === 'undefined' ? 'undefined' : _typeof(data)) !== 'object') {
+      return false;
+    }
+
+    return true;
+  }
+
+  function startsWithSlash(string) {
+    return string.charAt(0) === '/';
+  }
+
+  function endsWithSlash(string) {
+    return string.charAt(string.length - 1) === '/';
+  }
+
+  function removeLeadingSlash(string) {
+    return string.substring(1);
+  }
+
+  function stripSlashes(path) {
+    // make sure path starts with `/`
+    if (startsWithSlash(path)) {
+      path = removeLeadingSlash(path);
+    }
+
+    // remove end `/`
+    if (endsWithSlash(path)) {
+      path = path.slice(0, -1);
+    }
+    return path;
+  }
+
+  var pendingRequestCount = 0;
+  if (testing) {
+    Test.registerWaiter(function () {
+      return pendingRequestCount === 0;
+    });
+  }
+
+  /**
+   * AjaxRequest Mixin
+   *
+   * @public
+   * @mixin
+   */
+  exports.default = Mixin.create({
+
+    /**
+     * The default value for the request `contentType`
+     *
+     * For now, defaults to the same value that jQuery would assign.  In the
+     * future, the default value will be for JSON requests.
+     * @property {string} contentType
+     * @public
+     * @default
+     */
+    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
+
+    /**
+     * Headers to include on the request
+     *
+     * Some APIs require HTTP headers, e.g. to provide an API key. Arbitrary
+     * headers can be set as key/value pairs on the `RESTAdapter`'s `headers`
+     * object and Ember Data will send them along with each ajax request.
+     *
+     * ```javascript
+     * // app/services/ajax.js
+     * import AjaxService from 'ember-ajax/services/ajax';
+     *
+     * export default AjaxService.extend({
+     *   headers: {
+     *     'API_KEY': 'secret key',
+     *     'ANOTHER_HEADER': 'Some header value'
+     *   }
+     * });
+     * ```
+     *
+     * `headers` can also be used as a computed property to support dynamic
+     * headers.
+     *
+     * ```javascript
+     * // app/services/ajax.js
+     * import Ember from 'ember';
+     * import AjaxService from 'ember-ajax/services/ajax';
+     *
+     * const {
+     *   computed,
+     *   get,
+     *   inject: { service }
+     * } = Ember;
+     *
+     * export default AjaxService.extend({
+     *   session: service(),
+     *   headers: computed('session.authToken', function() {
+     *     return {
+     *       'API_KEY': get(this, 'session.authToken'),
+     *       'ANOTHER_HEADER': 'Some header value'
+     *     };
+     *   })
+     * });
+     * ```
+     *
+     * In some cases, your dynamic headers may require data from some object
+     * outside of Ember's observer system (for example `document.cookie`). You
+     * can use the `volatile` function to set the property into a non-cached mode
+     * causing the headers to be recomputed with every request.
+     *
+     * ```javascript
+     * // app/services/ajax.js
+     * import Ember from 'ember';
+     * import AjaxService from 'ember-ajax/services/ajax';
+     *
+     * const {
+     *   computed,
+     *   get,
+     *   inject: { service }
+     * } = Ember;
+     *
+     * export default AjaxService.extend({
+     *   session: service(),
+     *   headers: computed('session.authToken', function() {
+     *     return {
+     *       'API_KEY': get(document.cookie.match(/apiKey\=([^;]*)/), '1'),
+     *       'ANOTHER_HEADER': 'Some header value'
+     *     };
+     *   }).volatile()
+     * });
+     * ```
+     *
+     * @property {Object} headers
+     * @public
+     * @default
+     */
+    headers: {},
+
+    /**
+     * Make an AJAX request, ignoring the raw XHR object and dealing only with
+     * the response
+     *
+     * @method request
+     * @public
+     * @param {string} url The url to make a request to
+     * @param {Object} options The options for the request
+     * @return {Promise} The result of the request
+     */
+    request: function request(url, options) {
+      var hash = this.options(url, options);
+      var internalPromise = this._makeRequest(hash);
+
+      var ajaxPromise = new _promise.default(function (resolve, reject) {
+        internalPromise.then(function (_ref2) {
+          var response = _ref2.response;
+
+          resolve(response);
+        }).catch(function (_ref3) {
+          var response = _ref3.response;
+
+          reject(response);
+        });
+      }, 'ember-ajax: ' + hash.type + ' ' + hash.url + ' response');
+
+      ajaxPromise.xhr = internalPromise.xhr;
+
+      return ajaxPromise;
+    },
+
+
+    /**
+     * Make an AJAX request, returning the raw XHR object along with the response
+     *
+     * @method raw
+     * @public
+     * @param {string} url The url to make a request to
+     * @param {Object} options The options for the request
+     * @return {Promise} The result of the request
+     */
+    raw: function raw(url, options) {
+      var hash = this.options(url, options);
+      return this._makeRequest(hash);
+    },
+
+
+    /**
+     * Shared method to actually make an AJAX request
+     *
+     * @method _makeRequest
+     * @private
+     * @param {Object} hash The options for the request
+     * @param {string} hash.url The URL to make the request to
+     * @return {Promise} The result of the request
+     */
+    _makeRequest: function _makeRequest(hash) {
+      var _this = this;
+
+      var method = hash.method || hash.type || 'GET';
+      var requestData = { method: method, type: method, url: hash.url };
+
+      if (isJSONStringifyable(method, hash)) {
+        hash.data = JSON.stringify(hash.data);
+      }
+
+      pendingRequestCount = pendingRequestCount + 1;
+
+      var jqXHR = (0, _ajax.default)(hash);
+
+      var promise = new _promise.default(function (resolve, reject) {
+        jqXHR.done(function (payload, textStatus, jqXHR) {
+          var response = _this.handleResponse(jqXHR.status, (0, _parseResponseHeaders.default)(jqXHR.getAllResponseHeaders()), payload, requestData);
+
+          if ((0, _errors.isAjaxError)(response)) {
+            run.join(null, reject, { payload: payload, textStatus: textStatus, jqXHR: jqXHR, response: response });
+          } else {
+            run.join(null, resolve, { payload: payload, textStatus: textStatus, jqXHR: jqXHR, response: response });
+          }
+        }).fail(function (jqXHR, textStatus, errorThrown) {
+          runInDebug(function () {
+            var message = 'The server returned an empty string for ' + requestData.type + ' ' + requestData.url + ', which cannot be parsed into a valid JSON. Return either null or {}.';
+            var validJSONString = !(textStatus === 'parsererror' && jqXHR.responseText === '');
+
+            warn(message, validJSONString, {
+              id: 'ds.adapter.returned-empty-string-as-JSON'
+            });
+          });
+
+          var payload = _this.parseErrorResponse(jqXHR.responseText) || errorThrown;
+          var response = void 0;
+
+          if (errorThrown instanceof Error) {
+            response = errorThrown;
+          } else if (textStatus === 'timeout') {
+            response = new _errors.TimeoutError();
+          } else if (textStatus === 'abort') {
+            response = new _errors.AbortError();
+          } else {
+            response = _this.handleResponse(jqXHR.status, (0, _parseResponseHeaders.default)(jqXHR.getAllResponseHeaders()), payload, requestData);
+          }
+
+          run.join(null, reject, { payload: payload, textStatus: textStatus, jqXHR: jqXHR, errorThrown: errorThrown, response: response });
+        }).always(function () {
+          pendingRequestCount = pendingRequestCount - 1;
+        });
+      }, 'ember-ajax: ' + hash.type + ' ' + hash.url);
+
+      promise.xhr = jqXHR;
+
+      return promise;
+    },
+
+
+    /**
+     * calls `request()` but forces `options.type` to `POST`
+     *
+     * @method post
+     * @public
+     * @param {string} url The url to make a request to
+     * @param {Object} options The options for the request
+     * @return {Promise} The result of the request
+     */
+    post: function post(url, options) {
+      return this.request(url, this._addTypeToOptionsFor(options, 'POST'));
+    },
+
+
+    /**
+     * calls `request()` but forces `options.type` to `PUT`
+     *
+     * @method put
+     * @public
+     * @param {string} url The url to make a request to
+     * @param {Object} options The options for the request
+     * @return {Promise} The result of the request
+     */
+    put: function put(url, options) {
+      return this.request(url, this._addTypeToOptionsFor(options, 'PUT'));
+    },
+
+
+    /**
+     * calls `request()` but forces `options.type` to `PATCH`
+     *
+     * @method patch
+     * @public
+     * @param {string} url The url to make a request to
+     * @param {Object} options The options for the request
+     * @return {Promise} The result of the request
+     */
+    patch: function patch(url, options) {
+      return this.request(url, this._addTypeToOptionsFor(options, 'PATCH'));
+    },
+
+
+    /**
+     * calls `request()` but forces `options.type` to `DELETE`
+     *
+     * @method del
+     * @public
+     * @param {string} url The url to make a request to
+     * @param {Object} options The options for the request
+     * @return {Promise} The result of the request
+     */
+    del: function del(url, options) {
+      return this.request(url, this._addTypeToOptionsFor(options, 'DELETE'));
+    },
+
+
+    /**
+     * calls `request()` but forces `options.type` to `DELETE`
+     *
+     * Alias for `del()`
+     *
+     * @method delete
+     * @public
+     * @param {string} url The url to make a request to
+     * @param {Object} options The options for the request
+     * @return {Promise} The result of the request
+     */
+    delete: function _delete() {
+      return this.del.apply(this, arguments);
+    },
+
+
+    /**
+     * Wrap the `.get` method so that we issue a warning if
+     *
+     * Since `.get` is both an AJAX pattern _and_ an Ember pattern, we want to try
+     * to warn users when they try using `.get` to make a request
+     *
+     * @method get
+     * @public
+     */
+    get: function get(url) {
+      if (arguments.length > 1 || url.indexOf('/') !== -1) {
+        throw new EmberError('It seems you tried to use `.get` to make a request! Use the `.request` method instead.');
+      }
+      return this._super.apply(this, arguments);
+    },
+
+
+    /**
+     * Manipulates the options hash to include the HTTP method on the type key
+     *
+     * @method _addTypeToOptionsFor
+     * @private
+     * @param {Object} options The original request options
+     * @param {string} method The method to enforce
+     * @return {Object} The new options, with the method set
+     */
+    _addTypeToOptionsFor: function _addTypeToOptionsFor(options, method) {
+      options = options || {};
+      options.type = method;
+      return options;
+    },
+
+
+    /**
+     * Get the full "headers" hash, combining the service-defined headers with
+     * the ones provided for the request
+     *
+     * @method _getFullHeadersHash
+     * @private
+     * @param {Object} headers
+     * @return {Object}
+     */
+    _getFullHeadersHash: function _getFullHeadersHash(headers) {
+      var classHeaders = get(this, 'headers');
+      var _headers = merge({}, classHeaders);
+      return merge(_headers, headers);
+    },
+
+
+    /**
+     * @method options
+     * @private
+     * @param {string} url
+     * @param {Object} options
+     * @return {Object}
+     */
+    options: function options(url) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      options = merge({}, options);
+      options.url = this._buildURL(url, options);
+      options.type = options.type || 'GET';
+      options.dataType = options.dataType || 'json';
+      options.contentType = isEmpty(options.contentType) ? get(this, 'contentType') : options.contentType;
+
+      if (this._shouldSendHeaders(options)) {
+        options.headers = this._getFullHeadersHash(options.headers);
+      } else {
+        options.headers = options.headers || {};
+      }
+
+      return options;
+    },
+
+
+    /**
+     * Build a URL for a request
+     *
+     * If the provided `url` is deemed to be a complete URL, it will be returned
+     * directly.  If it is not complete, then the segment provided will be combined
+     * with the `host` and `namespace` options of the request class to create the
+     * full URL.
+     *
+     * @private
+     * @param {string} url the url, or url segment, to request
+     * @param {Object} [options={}] the options for the request being made
+     * @param {string} [options.host] the host to use for this request
+     * @returns {string} the URL to make a request to
+     */
+    _buildURL: function _buildURL(url) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+      if ((0, _urlHelpers.isFullURL)(url)) {
+        return url;
+      }
+
+      var urlParts = [];
+
+      var host = options.host || get(this, 'host');
+      if (host) {
+        host = stripSlashes(host);
+      }
+      urlParts.push(host);
+
+      var namespace = options.namespace || get(this, 'namespace');
+      if (namespace) {
+        namespace = stripSlashes(namespace);
+        urlParts.push(namespace);
+      }
+
+      // If the URL has already been constructed (presumably, by Ember Data), then we should just leave it alone
+      var hasNamespaceRegex = new RegExp('^(/)?' + namespace);
+      if (hasNamespaceRegex.test(url)) {
+        return url;
+      }
+
+      // *Only* remove a leading slash -- we need to maintain a trailing slash for
+      // APIs that differentiate between it being and not being present
+      if (startsWithSlash(url)) {
+        url = removeLeadingSlash(url);
+      }
+      urlParts.push(url);
+
+      return urlParts.join('/');
+    },
+
+
+    /**
+     * Takes an ajax response, and returns the json payload or an error.
+     *
+     * By default this hook just returns the json payload passed to it.
+     * You might want to override it in two cases:
+     *
+     * 1. Your API might return useful results in the response headers.
+     *    Response headers are passed in as the second argument.
+     *
+     * 2. Your API might return errors as successful responses with status code
+     *    200 and an Errors text or object.
+     *
+     * @method handleResponse
+     * @private
+     * @param  {Number} status
+     * @param  {Object} headers
+     * @param  {Object} payload
+     * @param  {Object} requestData the original request information
+     * @return {Object | AjaxError} response
+     */
+    handleResponse: function handleResponse(status, headers, payload, requestData) {
+      var error = void 0;
+
+      if (this.isSuccess(status, headers, payload)) {
+        return payload;
+      }
+
+      // Allow overriding of error payload
+      payload = this.normalizeErrorResponse(status, headers, payload);
+
+      if (this.isUnauthorizedError(status, headers, payload)) {
+        error = new _errors.UnauthorizedError(payload);
+      } else if (this.isForbiddenError(status, headers, payload)) {
+        error = new _errors.ForbiddenError(payload);
+      } else if (this.isInvalidError(status, headers, payload)) {
+        error = new _errors.InvalidError(payload);
+      } else if (this.isBadRequestError(status, headers, payload)) {
+        error = new _errors.BadRequestError(payload);
+      } else if (this.isNotFoundError(status, headers, payload)) {
+        error = new _errors.NotFoundError(payload);
+      } else if (this.isAbortError(status, headers, payload)) {
+        error = new _errors.AbortError(payload);
+      } else if (this.isConflictError(status, headers, payload)) {
+        error = new _errors.ConflictError(payload);
+      } else if (this.isServerError(status, headers, payload)) {
+        error = new _errors.ServerError(payload);
+      } else {
+        var detailedMessage = this.generateDetailedMessage(status, headers, payload, requestData);
+
+        error = new _errors.AjaxError(payload, detailedMessage);
+      }
+
+      return error;
+    },
+
+
+    /**
+     * Match the host to a provided array of strings or regexes that can match to a host
+     *
+     * @method matchHosts
+     * @private
+     * @param {string} host the host you are sending too
+     * @param {RegExp | string} matcher a string or regex that you can match the host to.
+     * @returns {Boolean} if the host passed the matcher
+     */
+    _matchHosts: function _matchHosts(host, matcher) {
+      if (matcher.constructor === RegExp) {
+        return matcher.test(host);
+      } else if (typeof matcher === 'string') {
+        return matcher === host;
+      } else {
+        Logger.warn('trustedHosts only handles strings or regexes.', matcher, 'is neither.');
+        return false;
+      }
+    },
+
+
+    /**
+     * Determine whether the headers should be added for this request
+     *
+     * This hook is used to help prevent sending headers to every host, regardless
+     * of the destination, since this could be a security issue if authentication
+     * tokens are accidentally leaked to third parties.
+     *
+     * To avoid that problem, subclasses should utilize the `headers` computed
+     * property to prevent authentication from being sent to third parties, or
+     * implement this hook for more fine-grain control over when headers are sent.
+     *
+     * By default, the headers are sent if the host of the request matches the
+     * `host` property designated on the class.
+     *
+     * @method _shouldSendHeaders
+     * @private
+     * @property {Object} hash request options hash
+     * @returns {Boolean} whether or not headers should be sent
+     */
+    _shouldSendHeaders: function _shouldSendHeaders(_ref4) {
+      var _this2 = this;
+
+      var url = _ref4.url,
+          host = _ref4.host;
+
+      url = url || '';
+      host = host || get(this, 'host') || '';
+
+      var trustedHosts = get(this, 'trustedHosts') || A();
+
+      var _parseURL = (0, _urlHelpers.parseURL)(url),
+          hostname = _parseURL.hostname;
+
+      // Add headers on relative URLs
+
+
+      if (!(0, _urlHelpers.isFullURL)(url)) {
+        return true;
+      } else if (trustedHosts.find(function (matcher) {
+        return _this2._matchHosts(hostname, matcher);
+      })) {
+        return true;
+      }
+
+      // Add headers on matching host
+      return (0, _urlHelpers.haveSameHost)(url, host);
+    },
+
+
+    /**
+     * Generates a detailed ("friendly") error message, with plenty
+     * of information for debugging (good luck!)
+     *
+     * @method generateDetailedMessage
+     * @private
+     * @param  {Number} status
+     * @param  {Object} headers
+     * @param  {Object} payload
+     * @param  {Object} requestData the original request information
+     * @return {Object} request information
+     */
+    generateDetailedMessage: function generateDetailedMessage(status, headers, payload, requestData) {
+      var shortenedPayload = void 0;
+      var payloadContentType = (0, _getHeader.default)(headers, 'Content-Type') || 'Empty Content-Type';
+
+      if (payloadContentType.toLowerCase() === 'text/html' && payload.length > 250) {
+        shortenedPayload = '[Omitted Lengthy HTML]';
+      } else {
+        shortenedPayload = JSON.stringify(payload);
+      }
+
+      var requestDescription = requestData.type + ' ' + requestData.url;
+      var payloadDescription = 'Payload (' + payloadContentType + ')';
+
+      return ['Ember AJAX Request ' + requestDescription + ' returned a ' + status, payloadDescription, shortenedPayload].join('\n');
+    },
+
+
+    /**
+     * Default `handleResponse` implementation uses this hook to decide if the
+     * response is a an authorized error.
+     *
+     * @method isUnauthorizedError
+     * @private
+     * @param {Number} status
+     * @param {Object} headers
+     * @param {Object} payload
+     * @return {Boolean}
+     */
+    isUnauthorizedError: function isUnauthorizedError(status) {
+      return (0, _errors.isUnauthorizedError)(status);
+    },
+
+
+    /**
+     * Default `handleResponse` implementation uses this hook to decide if the
+     * response is a forbidden error.
+     *
+     * @method isForbiddenError
+     * @private
+     * @param {Number} status
+     * @param {Object} headers
+     * @param {Object} payload
+     * @return {Boolean}
+     */
+    isForbiddenError: function isForbiddenError(status) {
+      return (0, _errors.isForbiddenError)(status);
+    },
+
+
+    /**
+     * Default `handleResponse` implementation uses this hook to decide if the
+     * response is a an invalid error.
+     *
+     * @method isInvalidError
+     * @private
+     * @param {Number} status
+     * @param {Object} headers
+     * @param {Object} payload
+     * @return {Boolean}
+     */
+    isInvalidError: function isInvalidError(status) {
+      return (0, _errors.isInvalidError)(status);
+    },
+
+
+    /**
+     * Default `handleResponse` implementation uses this hook to decide if the
+     * response is a bad request error.
+     *
+     * @method isBadRequestError
+     * @private
+     * @param {Number} status
+     * @param {Object} headers
+     * @param {Object} payload
+     * @return {Boolean}
+     */
+    isBadRequestError: function isBadRequestError(status) {
+      return (0, _errors.isBadRequestError)(status);
+    },
+
+
+    /**
+     * Default `handleResponse` implementation uses this hook to decide if the
+     * response is a "not found" error.
+     *
+     * @method isNotFoundError
+     * @private
+     * @param {Number} status
+     * @param {Object} headers
+     * @param {Object} payload
+     * @return {Boolean}
+     */
+    isNotFoundError: function isNotFoundError(status) {
+      return (0, _errors.isNotFoundError)(status);
+    },
+
+
+    /**
+     * Default `handleResponse` implementation uses this hook to decide if the
+     * response is an "abort" error.
+     *
+     * @method isAbortError
+     * @private
+     * @param {Number} status
+     * @param {Object} headers
+     * @param {Object} payload
+     * @return {Boolean}
+     */
+    isAbortError: function isAbortError(status) {
+      return (0, _errors.isAbortError)(status);
+    },
+
+
+    /**
+     * Default `handleResponse` implementation uses this hook to decide if the
+     * response is a "conflict" error.
+     *
+     * @method isConflictError
+     * @private
+     * @param {Number} status
+     * @param {Object} headers
+     * @param {Object} payload
+     * @return {Boolean}
+     */
+    isConflictError: function isConflictError(status) {
+      return (0, _errors.isConflictError)(status);
+    },
+
+
+    /**
+     * Default `handleResponse` implementation uses this hook to decide if the
+     * response is a server error.
+     *
+     * @method isServerError
+     * @private
+     * @param {Number} status
+     * @param {Object} headers
+     * @param {Object} payload
+     * @return {Boolean}
+     */
+    isServerError: function isServerError(status) {
+      return (0, _errors.isServerError)(status);
+    },
+
+
+    /**
+     * Default `handleResponse` implementation uses this hook to decide if the
+     * response is a success.
+     *
+     * @method isSuccess
+     * @private
+     * @param {Number} status
+     * @param {Object} headers
+     * @param {Object} payload
+     * @return {Boolean}
+     */
+    isSuccess: function isSuccess(status) {
+      return (0, _errors.isSuccess)(status);
+    },
+
+
+    /**
+     * @method parseErrorResponse
+     * @private
+     * @param {string} responseText
+     * @return {Object}
+     */
+    parseErrorResponse: function parseErrorResponse(responseText) {
+      try {
+        return JSON.parse(responseText);
+      } catch (e) {
+        return responseText;
+      }
+    },
+
+
+    /**
+     * Can be overwritten to allow re-formatting of error messages
+     *
+     * @method normalizeErrorResponse
+     * @private
+     * @param  {Number} status
+     * @param  {Object} headers
+     * @param  {Object} payload
+     * @return {*} error response
+     */
+    normalizeErrorResponse: function normalizeErrorResponse(status, headers, payload) {
+      return payload;
+    }
+  });
+});
+;define('ember-ajax/mixins/ajax-support', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var Mixin = Ember.Mixin,
+      service = Ember.inject.service,
+      alias = Ember.computed.alias;
+  exports.default = Mixin.create({
+
+    /**
+     * The AJAX service to send requests through
+     *
+     * @property {AjaxService} ajaxService
+     * @public
+     */
+    ajaxService: service('ajax'),
+
+    /**
+     * @property {string} host
+     * @public
+     */
+    host: alias('ajaxService.host'),
+
+    /**
+     * @property {string} namespace
+     * @public
+     */
+    namespace: alias('ajaxService.namespace'),
+
+    /**
+     * @property {object} headers
+     * @public
+     */
+    headers: alias('ajaxService.headers'),
+
+    ajax: function ajax(url) {
+      var augmentedOptions = this.ajaxOptions.apply(this, arguments);
+
+      return this.get('ajaxService').request(url, augmentedOptions);
+    }
+  });
+});
+;define('ember-ajax/mixins/legacy/normalize-error-response', ['exports', 'ember-ajax/-private/utils/is-string'], function (exports, _isString) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  };
+
+  var Mixin = Ember.Mixin,
+      isArray = Ember.isArray,
+      isNone = Ember.isNone,
+      merge = Ember.merge;
+
+
+  function isObject(object) {
+    return (typeof object === 'undefined' ? 'undefined' : _typeof(object)) === 'object';
+  }
+
+  exports.default = Mixin.create({
+    /**
+     * Normalize the error from the server into the same format
+     *
+     * The format we normalize to is based on the JSON API specification.  The
+     * return value should be an array of objects that match the format they
+     * describe. More details about the object format can be found
+     * [here](http://jsonapi.org/format/#error-objects)
+     *
+     * The basics of the format are as follows:
+     *
+     * ```javascript
+     * [
+     *   {
+     *     status: 'The status code for the error',
+     *     title: 'The human-readable title of the error'
+     *     detail: 'The human-readable details of the error'
+     *   }
+     * ]
+     * ```
+     *
+     * In cases where the server returns an array, then there should be one item
+     * in the array for each of the payload.  If your server returns a JSON API
+     * formatted payload already, it will just be returned directly.
+     *
+     * If your server returns something other than a JSON API format, it's
+     * suggested that you override this method to convert your own errors into the
+     * one described above.
+     *
+     * @method normalizeErrorResponse
+     * @private
+     * @param  {Number} status
+     * @param  {Object} headers
+     * @param  {Object} payload
+     * @return {Array} An array of JSON API-formatted error objects
+     */
+    normalizeErrorResponse: function normalizeErrorResponse(status, headers, payload) {
+      payload = isNone(payload) ? {} : payload;
+
+      if (isArray(payload.errors)) {
+        return payload.errors.map(function (error) {
+          if (isObject(error)) {
+            var ret = merge({}, error);
+            ret.status = '' + error.status;
+            return ret;
+          } else {
+            return {
+              status: '' + status,
+              title: error
+            };
+          }
+        });
+      } else if (isArray(payload)) {
+        return payload.map(function (error) {
+          if (isObject(error)) {
+            return {
+              status: '' + status,
+              title: error.title || 'The backend responded with an error',
+              detail: error
+            };
+          } else {
+            return {
+              status: '' + status,
+              title: '' + error
+            };
+          }
+        });
+      } else if ((0, _isString.default)(payload)) {
+        return [{
+          status: '' + status,
+          title: payload
+        }];
+      } else {
+        return [{
+          status: '' + status,
+          title: payload.title || 'The backend responded with an error',
+          detail: payload
+        }];
+      }
+    }
+  });
+});
+;define('ember-ajax/raw', ['exports', 'ember-ajax/ajax-request'], function (exports, _ajaxRequest) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = raw;
+
+
+  /**
+   * Same as `request` except it resolves an object with
+   *
+   *   {response, textStatus, jqXHR}
+   *
+   * Useful if you need access to the jqXHR object for headers, etc.
+   *
+   * @public
+   */
+  function raw() {
+    var ajax = new _ajaxRequest.default();
+    return ajax.raw.apply(ajax, arguments);
+  }
+});
+;define('ember-ajax/request', ['exports', 'ember-ajax/ajax-request'], function (exports, _ajaxRequest) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = request;
+
+
+  /**
+   * Helper function that allows you to use the default `ember-ajax` to make
+   * requests without using the service.
+   *
+   * Note: Unlike `ic-ajax`'s `request` helper function, this will *not* return a
+   * jqXHR object in the error handler.  If you need jqXHR, you can use the `raw`
+   * function instead.
+   *
+   * @public
+   */
+  function request() {
+    var ajax = new _ajaxRequest.default();
+    return ajax.request.apply(ajax, arguments);
+  }
+});
+;define('ember-ajax/services/ajax', ['exports', 'ember-ajax/mixins/ajax-request'], function (exports, _ajaxRequest) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var Service = Ember.Service;
+  exports.default = Service.extend(_ajaxRequest.default);
+});
+;define('ember-ajax/utils/ajax', ['exports', 'ember-ajax/-private/utils/is-fastboot'], function (exports, _isFastboot) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var $ = Ember.$;
+  exports.default = _isFastboot.default ? najax : $.ajax;
+});
+;define('ember-basic-dropdown/components/basic-dropdown', ['exports', 'ember-basic-dropdown/templates/components/basic-dropdown', 'ember-basic-dropdown/utils/computed-fallback-if-undefined', 'ember-basic-dropdown/utils/calculate-position', 'require'], function (exports, _basicDropdown, _computedFallbackIfUndefined, _calculatePosition, _require) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+
+  var assign = Object.assign || function EmberAssign(original) {
+    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    for (var i = 0; i < args.length; i++) {
+      var arg = args[i];
+      if (!arg) {
+        continue;
+      }
+      var updates = Object.keys(arg);
+
+      for (var _i = 0; _i < updates.length; _i++) {
+        var prop = updates[_i];
+        original[prop] = arg[prop];
+      }
+    }
+
+    return original;
+  };
+
+  exports.default = Ember.Component.extend({
+    layout: _basicDropdown.default,
+    tagName: '',
+    renderInPlace: (0, _computedFallbackIfUndefined.default)(false),
+    verticalPosition: (0, _computedFallbackIfUndefined.default)('auto'), // above | below
+    horizontalPosition: (0, _computedFallbackIfUndefined.default)('auto'), // auto-right | right | center | left
+    matchTriggerWidth: (0, _computedFallbackIfUndefined.default)(false),
+    triggerComponent: (0, _computedFallbackIfUndefined.default)('basic-dropdown/trigger'),
+    contentComponent: (0, _computedFallbackIfUndefined.default)('basic-dropdown/content'),
+    calculatePosition: (0, _computedFallbackIfUndefined.default)(_calculatePosition.default),
+    classNames: ['ember-basic-dropdown'],
+    top: null,
+    left: null,
+    right: null,
+    width: null,
+    height: null,
+
+    // Lifecycle hooks
+    init: function init() {
+      if (this.get('renderInPlace') && this.get('tagName') === '') {
+        this.set('tagName', 'div');
+      }
+      this._super.apply(this, arguments);
+      this.set('publicAPI', {});
+
+      var publicAPI = this.updateState({
+        uniqueId: Ember.guidFor(this),
+        isOpen: this.get('initiallyOpened') || false,
+        disabled: this.get('disabled') || false,
+        actions: {
+          open: this.open.bind(this),
+          close: this.close.bind(this),
+          toggle: this.toggle.bind(this),
+          reposition: this.reposition.bind(this)
+        }
+      });
+
+      this.dropdownId = this.dropdownId || 'ember-basic-dropdown-content-' + publicAPI.uniqueId;
+      var onInit = this.get('onInit');
+      if (onInit) {
+        onInit(publicAPI);
+      }
+    },
+    didReceiveAttrs: function didReceiveAttrs() {
+      this._super.apply(this, arguments);
+      var oldDisabled = !!this._oldDisabled;
+      var newDisabled = !!this.get('disabled');
+      this._oldDisabled = newDisabled;
+      if (newDisabled && !oldDisabled) {
+        Ember.run.join(this, this.disable);
+      } else if (!newDisabled && oldDisabled) {
+        Ember.run.join(this, this.enable);
+      }
+    },
+    willDestroy: function willDestroy() {
+      this._super.apply(this, arguments);
+      var registerAPI = this.get('registerAPI');
+      if (registerAPI) {
+        registerAPI(null);
+      }
+    },
+
+
+    // CPs
+    destination: Ember.computed({
+      get: function get() {
+        return this._getDestinationId();
+      },
+      set: function set(_, v) {
+        return v === undefined ? this._getDestinationId() : v;
+      }
+    }),
+
+    // Actions
+    actions: {
+      handleFocus: function handleFocus(e) {
+        var onFocus = this.get('onFocus');
+        if (onFocus) {
+          onFocus(this.get('publicAPI'), e);
+        }
+      }
+    },
+
+    // Methods
+    open: function open(e) {
+      if (this.get('isDestroyed')) {
+        return;
+      }
+      var publicAPI = this.get('publicAPI');
+      if (publicAPI.disabled || publicAPI.isOpen) {
+        return;
+      }
+      var onOpen = this.get('onOpen');
+      if (onOpen && onOpen(publicAPI, e) === false) {
+        return;
+      }
+      this.updateState({ isOpen: true });
+    },
+    close: function close(e, skipFocus) {
+      if (this.get('isDestroyed')) {
+        return;
+      }
+      var publicAPI = this.get('publicAPI');
+      if (publicAPI.disabled || !publicAPI.isOpen) {
+        return;
+      }
+      var onClose = this.get('onClose');
+      if (onClose && onClose(publicAPI, e) === false) {
+        return;
+      }
+      if (this.get('isDestroyed')) {
+        return;
+      }
+      this.setProperties({ hPosition: null, vPosition: null, top: null, left: null, right: null, width: null, height: null });
+      this.previousVerticalPosition = this.previousHorizontalPosition = null;
+      this.updateState({ isOpen: false });
+      if (skipFocus) {
+        return;
+      }
+      var trigger = document.querySelector('[data-ebd-id=' + publicAPI.uniqueId + '-trigger]');
+      if (trigger && trigger.tabIndex > -1) {
+        trigger.focus();
+      }
+    },
+    toggle: function toggle(e) {
+      if (this.get('publicAPI.isOpen')) {
+        this.close(e);
+      } else {
+        this.open(e);
+      }
+    },
+    reposition: function reposition() {
+      var publicAPI = this.get('publicAPI');
+      if (!publicAPI.isOpen) {
+        return;
+      }
+      var dropdownElement = self.document.getElementById(this.dropdownId);
+      var triggerElement = document.querySelector('[data-ebd-id=' + publicAPI.uniqueId + '-trigger]');
+      if (!dropdownElement || !triggerElement) {
+        return;
+      }
+
+      this.destinationElement = this.destinationElement || self.document.getElementById(this.get('destination'));
+      var options = this.getProperties('horizontalPosition', 'verticalPosition', 'matchTriggerWidth', 'previousHorizontalPosition', 'previousVerticalPosition', 'renderInPlace');
+      options.dropdown = this;
+      var positionData = this.get('calculatePosition')(triggerElement, dropdownElement, this.destinationElement, options);
+      return this.applyReposition(triggerElement, dropdownElement, positionData);
+    },
+    applyReposition: function applyReposition(trigger, dropdown, positions) {
+      var changes = {
+        hPosition: positions.horizontalPosition,
+        vPosition: positions.verticalPosition
+      };
+      if (positions.style) {
+        if (positions.style.top !== undefined) {
+          changes.top = positions.style.top + 'px';
+        }
+        // The component can be aligned from the right or from the left, but not from both.
+        if (positions.style.left !== undefined) {
+          changes.left = positions.style.left + 'px';
+          changes.right = null;
+          // Since we set the first run manually we may need to unset the `right` property.
+          if (positions.style.right !== undefined) {
+            positions.style.right = undefined;
+          }
+        } else if (positions.style.right !== undefined) {
+          changes.right = positions.style.right + 'px';
+          changes.left = null;
+        }
+        if (positions.style.width !== undefined) {
+          changes.width = positions.style.width + 'px';
+        }
+        if (positions.style.height !== undefined) {
+          changes.height = positions.style.height + 'px';
+        }
+        if (this.get('top') === null) {
+          // Bypass Ember on the first reposition only to avoid flickering.
+          var cssRules = [];
+          for (var prop in positions.style) {
+            if (positions.style[prop] !== undefined) {
+              if (typeof positions.style[prop] === 'number') {
+                cssRules.push(prop + ': ' + positions.style[prop] + 'px');
+              } else {
+                cssRules.push(prop + ': ' + positions.style[prop]);
+              }
+            }
+          }
+          dropdown.setAttribute('style', cssRules.join(';'));
+        }
+      }
+      this.setProperties(changes);
+      this.previousHorizontalPosition = positions.horizontalPosition;
+      this.previousVerticalPosition = positions.verticalPosition;
+      return changes;
+    },
+    disable: function disable() {
+      var publicAPI = this.get('publicAPI');
+      if (publicAPI.isOpen) {
+        publicAPI.actions.close();
+      }
+      this.updateState({ disabled: true });
+    },
+    enable: function enable() {
+      this.updateState({ disabled: false });
+    },
+    updateState: function updateState(changes) {
+      var newState = Ember.set(this, 'publicAPI', assign({}, this.get('publicAPI'), changes));
+      var registerAPI = this.get('registerAPI');
+      if (registerAPI) {
+        registerAPI(newState);
+      }
+      return newState;
+    },
+    _getDestinationId: function _getDestinationId() {
+      var config = Ember.getOwner(this).resolveRegistration('config:environment');
+      if (config.environment === 'test') {
+        if (true) {
+          var id = void 0;
+          if (_require.default.has('@ember/test-helpers/dom/get-root-element')) {
+            try {
+              id = (0, _require.default)('@ember/test-helpers/dom/get-root-element').default().id;
+            } catch (ex) {
+              id = document.querySelector('#ember-testing > .ember-view').id;
+            }
+          } else {
+            id = document.querySelector('#ember-testing > .ember-view').id;
+          }
+          return id;
+        }
+      }
+      return config['ember-basic-dropdown'] && config['ember-basic-dropdown'].destination || 'ember-basic-dropdown-wormhole';
+    }
+  });
+});
+;define('ember-basic-dropdown/components/basic-dropdown/content-element', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    attributeBindings: ['style', 'dir']
+  });
+});
+;define('ember-basic-dropdown/components/basic-dropdown/content', ['exports', 'ember-basic-dropdown/templates/components/basic-dropdown/content', 'ember-basic-dropdown/utils/computed-fallback-if-undefined', 'ember-basic-dropdown/utils/calculate-position', 'ember-basic-dropdown/utils/scroll-helpers'], function (exports, _content, _computedFallbackIfUndefined, _calculatePosition, _scrollHelpers) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  function _toConsumableArray(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+        arr2[i] = arr[i];
+      }
+
+      return arr2;
+    } else {
+      return Array.from(arr);
+    }
+  }
+
+  function closestContent(el) {
+    while (el && (!el.classList || !el.classList.contains('ember-basic-dropdown-content'))) {
+      el = el.parentElement;
+    }
+    return el;
+  }
+
+  function waitForAnimations(element, callback) {
+    self.window.requestAnimationFrame(function () {
+      var computedStyle = self.window.getComputedStyle(element);
+      if (computedStyle.animationName !== 'none' && computedStyle.animationPlayState === 'running') {
+        var eventCallback = function eventCallback() {
+          element.removeEventListener('animationend', eventCallback);
+          callback();
+        };
+        element.addEventListener('animationend', eventCallback);
+      } else {
+        callback();
+      }
+    });
+  }
+
+  /**
+   * Evaluates if the given element is in a dropdown or any of its parent dropdowns.
+   *
+   * @param {HTMLElement} el
+   * @param {String} dropdownId
+   */
+  function dropdownIsValidParent(el, dropdownId) {
+    var closestDropdown = closestContent(el);
+    if (closestDropdown) {
+      var trigger = document.querySelector('[aria-owns=' + closestDropdown.attributes.id.value + ']');
+      var parentDropdown = closestContent(trigger);
+      return parentDropdown && parentDropdown.attributes.id.value === dropdownId || dropdownIsValidParent(parentDropdown, dropdownId);
+    } else {
+      return false;
+    }
+  }
+
+  exports.default = Ember.Component.extend({
+    layout: _content.default,
+    tagName: '',
+    isTouchDevice: Boolean(!!self.window && 'ontouchstart' in self.window),
+    hasMoved: false,
+    animationClass: '',
+    transitioningInClass: 'ember-basic-dropdown--transitioning-in',
+    transitionedInClass: 'ember-basic-dropdown--transitioned-in',
+    transitioningOutClass: 'ember-basic-dropdown--transitioning-out',
+
+    // CPs
+    _contentTagName: (0, _computedFallbackIfUndefined.default)('div'),
+    animationEnabled: Ember.computed(function () {
+      var config = Ember.getOwner(this).resolveRegistration('config:environment');
+      return config.environment !== 'test';
+    }),
+
+    to: Ember.computed('destination', {
+      get: function get() {
+        return this.get('destination');
+      },
+      set: function set(_, v) {
+        (true && !(false) && Ember.deprecate('Passing `to="id-of-elmnt"` to the {{#dropdown.content}} has been deprecated. Please pass `destination="id-of-elmnt"` to the {{#basic-dropdown}} component instead', false, { id: 'ember-basic-dropdown-to-in-content', until: '0.40' }));
+
+        return v === undefined ? this.get('destination') : v;
+      }
+    }),
+    destinationElement: Ember.computed('to', function () {
+      return document.getElementById(this.get('to'));
+    }),
+
+    style: Ember.computed('top', 'left', 'right', 'width', 'height', function () {
+      var style = '';
+
+      var _getProperties = this.getProperties('top', 'left', 'right', 'width', 'height'),
+          top = _getProperties.top,
+          left = _getProperties.left,
+          right = _getProperties.right,
+          width = _getProperties.width,
+          height = _getProperties.height;
+
+      if (top) {
+        style += 'top: ' + top + ';';
+      }
+      if (left) {
+        style += 'left: ' + left + ';';
+      }
+      if (right) {
+        style += 'right: ' + right + ';';
+      }
+      if (width) {
+        style += 'width: ' + width + ';';
+      }
+      if (height) {
+        style += 'height: ' + height;
+      }
+      if (style.length > 0) {
+        return Ember.String.htmlSafe(style);
+      }
+    }),
+
+    // Lifecycle hooks
+    init: function init() {
+      this._super.apply(this, arguments);
+      this.handleRootMouseDown = this.handleRootMouseDown.bind(this);
+      this.touchStartHandler = this.touchStartHandler.bind(this);
+      this.touchMoveHandler = this.touchMoveHandler.bind(this);
+      this.wheelHandler = this.wheelHandler.bind(this);
+      var dropdown = this.get('dropdown');
+      this.scrollableAncestors = [];
+      this.dropdownId = 'ember-basic-dropdown-content-' + dropdown.uniqueId;
+      if (this.get('animationEnabled')) {
+        this.set('animationClass', this.get('transitioningInClass'));
+      }
+      this.runloopAwareReposition = function () {
+        Ember.run.join(dropdown.actions.reposition);
+      };
+    },
+    willDestroyElement: function willDestroyElement() {
+      this._super.apply(this, arguments);
+      this._teardown();
+    },
+    didReceiveAttrs: function didReceiveAttrs() {
+      this._super.apply(this, arguments);
+      var oldDropdown = this.get('oldDropdown') || {};
+      var dropdown = this.get('dropdown');
+
+      // The following condition checks whether we need to open the dropdown - either because it was
+      // closed and is now open or because it was open and then it was closed and opened pretty much at
+      // the same time, indicated by `top`, `left` and `right` being null.
+
+      var _getProperties2 = this.getProperties('top', 'left', 'right', 'renderInPlace'),
+          top = _getProperties2.top,
+          left = _getProperties2.left,
+          right = _getProperties2.right,
+          renderInPlace = _getProperties2.renderInPlace;
+
+      if ((!oldDropdown.isOpen || top === null && left === null && right === null && renderInPlace === false) && dropdown.isOpen) {
+        Ember.run.scheduleOnce('afterRender', this, this.open);
+      } else if (oldDropdown.isOpen && !dropdown.isOpen) {
+        this.close();
+      }
+      this.set('oldDropdown', dropdown);
+    },
+
+
+    // Methods
+    open: function open() {
+      var dropdown = this.get('dropdown');
+      this.triggerElement = this.triggerElement || document.querySelector('[data-ebd-id=' + dropdown.uniqueId + '-trigger]');
+      this.dropdownElement = document.getElementById(this.dropdownId);
+      self.document.addEventListener('mousedown', this.handleRootMouseDown, true);
+      if (this.get('isTouchDevice')) {
+        self.document.addEventListener('touchstart', this.touchStartHandler, true);
+        self.document.addEventListener('touchend', this.handleRootMouseDown, true);
+      }
+      var onFocusIn = this.get('onFocusIn');
+      if (onFocusIn) {
+        this.dropdownElement.addEventListener('focusin', function (e) {
+          return onFocusIn(dropdown, e);
+        });
+      }
+      var onFocusOut = this.get('onFocusOut');
+      if (onFocusOut) {
+        this.dropdownElement.addEventListener('focusout', function (e) {
+          return onFocusOut(dropdown, e);
+        });
+      }
+      var onMouseEnter = this.get('onMouseEnter');
+      if (onMouseEnter) {
+        this.dropdownElement.addEventListener('mouseenter', function (e) {
+          return onMouseEnter(dropdown, e);
+        });
+      }
+      var onMouseLeave = this.get('onMouseLeave');
+      if (onMouseLeave) {
+        this.dropdownElement.addEventListener('mouseleave', function (e) {
+          return onMouseLeave(dropdown, e);
+        });
+      }
+
+      dropdown.actions.reposition();
+
+      // Always wire up events, even if rendered in place.
+      this.scrollableAncestors = this.getScrollableAncestors();
+      this.addGlobalEvents();
+      this.addScrollHandling();
+      this.startObservingDomMutations();
+
+      if (this.get('animationEnabled')) {
+        Ember.run.scheduleOnce('afterRender', this, this.animateIn);
+      }
+    },
+    close: function close() {
+      this._teardown();
+      if (this.get('animationEnabled')) {
+        this.animateOut(this.dropdownElement);
+      }
+      this.dropdownElement = null;
+    },
+
+
+    // Methods
+    handleRootMouseDown: function handleRootMouseDown(e) {
+      if (this.hasMoved || this.dropdownElement.contains(e.target) || this.triggerElement && this.triggerElement.contains(e.target)) {
+        this.hasMoved = false;
+        return;
+      }
+
+      if (dropdownIsValidParent(e.target, this.dropdownId)) {
+        this.hasMoved = false;
+        return;
+      }
+
+      this.get('dropdown').actions.close(e, true);
+    },
+    addGlobalEvents: function addGlobalEvents() {
+      self.window.addEventListener('resize', this.runloopAwareReposition);
+      self.window.addEventListener('orientationchange', this.runloopAwareReposition);
+    },
+    startObservingDomMutations: function startObservingDomMutations() {
+      var _this = this;
+
+      this.mutationObserver = new MutationObserver(function (mutations) {
+        if (mutations[0].addedNodes.length || mutations[0].removedNodes.length) {
+          _this.runloopAwareReposition();
+        }
+      });
+      this.mutationObserver.observe(this.dropdownElement, { childList: true, subtree: true });
+    },
+    removeGlobalEvents: function removeGlobalEvents() {
+      self.window.removeEventListener('resize', this.runloopAwareReposition);
+      self.window.removeEventListener('orientationchange', this.runloopAwareReposition);
+    },
+    stopObservingDomMutations: function stopObservingDomMutations() {
+      if (this.mutationObserver) {
+        this.mutationObserver.disconnect();
+        this.mutationObserver = null;
+      }
+    },
+    animateIn: function animateIn() {
+      var _this2 = this;
+
+      waitForAnimations(this.dropdownElement, function () {
+        _this2.set('animationClass', _this2.get('transitionedInClass'));
+      });
+    },
+    animateOut: function animateOut(dropdownElement) {
+      var _clone$classList, _clone$classList2;
+
+      var parentElement = this.get('renderInPlace') ? dropdownElement.parentElement.parentElement : dropdownElement.parentElement;
+      var clone = dropdownElement.cloneNode(true);
+      clone.id = clone.id + '--clone';
+      var transitioningInClass = this.get('transitioningInClass');
+      (_clone$classList = clone.classList).remove.apply(_clone$classList, _toConsumableArray(transitioningInClass.split(' ')));
+      (_clone$classList2 = clone.classList).add.apply(_clone$classList2, _toConsumableArray(this.get('transitioningOutClass').split(' ')));
+      parentElement.appendChild(clone);
+      this.set('animationClass', transitioningInClass);
+      waitForAnimations(clone, function () {
+        parentElement.removeChild(clone);
+      });
+    },
+    touchStartHandler: function touchStartHandler() {
+      self.document.addEventListener('touchmove', this.touchMoveHandler, true);
+    },
+    touchMoveHandler: function touchMoveHandler() {
+      this.hasMoved = true;
+      self.document.removeEventListener('touchmove', this.touchMoveHandler, true);
+    },
+    wheelHandler: function wheelHandler(event) {
+      var element = this.dropdownElement;
+      if (element.contains(event.target) || element === event.target) {
+        // Discover the amount of scrollable canvas that is within the dropdown.
+        var availableScroll = (0, _scrollHelpers.getAvailableScroll)(event.target, element);
+
+        // Calculate what the event's desired change to that scrollable canvas is.
+
+        var _getScrollDeltas = (0, _scrollHelpers.getScrollDeltas)(event),
+            deltaX = _getScrollDeltas.deltaX,
+            deltaY = _getScrollDeltas.deltaY;
+
+        // If the consequence of the wheel action would result in scrolling beyond
+        // the scrollable canvas of the dropdown, call preventDefault() and clamp
+        // the value of the delta to the available scroll size.
+
+
+        if (deltaX < availableScroll.deltaXNegative) {
+          deltaX = availableScroll.deltaXNegative;
+          event.preventDefault();
+        } else if (deltaX > availableScroll.deltaXPositive) {
+          deltaX = availableScroll.deltaXPositive;
+          event.preventDefault();
+        } else if (deltaY < availableScroll.deltaYNegative) {
+          deltaY = availableScroll.deltaYNegative;
+          event.preventDefault();
+        } else if (deltaY > availableScroll.deltaYPositive) {
+          deltaY = availableScroll.deltaYPositive;
+          event.preventDefault();
+        }
+
+        // Add back in the default behavior for the two good states that the above
+        // `preventDefault()` code will break.
+        // - Two-axis scrolling on a one-axis scroll container
+        // - The last relevant wheel event if the scroll is overshooting
+
+        // Also, don't attempt to do this if both of `deltaX` or `deltaY` are 0.
+        if (event.defaultPrevented && (deltaX || deltaY)) {
+          (0, _scrollHelpers.distributeScroll)(deltaX, deltaY, event.target, element);
+        }
+      } else {
+        // Scrolling outside of the dropdown is prohibited.
+        event.preventDefault();
+      }
+    },
+
+
+    // All ancestors with scroll (except the BODY, which is treated differently)
+    getScrollableAncestors: function getScrollableAncestors() {
+      var scrollableAncestors = [];
+      if (this.triggerElement) {
+        var nextScrollable = (0, _calculatePosition.getScrollParent)(this.triggerElement.parentNode);
+        while (nextScrollable && nextScrollable.tagName.toUpperCase() !== 'BODY' && nextScrollable.tagName.toUpperCase() !== 'HTML') {
+          scrollableAncestors.push(nextScrollable);
+          nextScrollable = (0, _calculatePosition.getScrollParent)(nextScrollable.parentNode);
+        }
+      }
+      return scrollableAncestors;
+    },
+    addScrollHandling: function addScrollHandling() {
+      if (this.get('preventScroll') === true) {
+        this.addPreventScrollEvent();
+        this.removeScrollHandling = this.removePreventScrollEvent;
+      } else {
+        this.addScrollEvents();
+        this.removeScrollHandling = this.removeScrollEvents;
+      }
+    },
+
+
+    // Assigned at runtime to ensure that changes to the `preventScroll` property
+    // don't result in not cleaning up after ourselves.
+    removeScrollHandling: function removeScrollHandling() {},
+
+
+    // These two functions wire up scroll handling if `preventScroll` is true.
+    // These prevent all scrolling that isn't inside of the dropdown.
+    addPreventScrollEvent: function addPreventScrollEvent() {
+      self.document.addEventListener('wheel', this.wheelHandler, { capture: true, passive: false });
+    },
+    removePreventScrollEvent: function removePreventScrollEvent() {
+      self.document.removeEventListener('wheel', this.wheelHandler, { capture: true, passive: false });
+    },
+
+
+    // These two functions wire up scroll handling if `preventScroll` is false.
+    // These trigger reposition of the dropdown.
+    addScrollEvents: function addScrollEvents() {
+      var _this3 = this;
+
+      self.window.addEventListener('scroll', this.runloopAwareReposition);
+      this.scrollableAncestors.forEach(function (el) {
+        el.addEventListener('scroll', _this3.runloopAwareReposition);
+      });
+    },
+    removeScrollEvents: function removeScrollEvents() {
+      var _this4 = this;
+
+      self.window.removeEventListener('scroll', this.runloopAwareReposition);
+      this.scrollableAncestors.forEach(function (el) {
+        el.removeEventListener('scroll', _this4.runloopAwareReposition);
+      });
+    },
+    _teardown: function _teardown() {
+      this.removeGlobalEvents();
+      this.removeScrollHandling();
+      this.scrollableAncestors = [];
+      this.stopObservingDomMutations();
+      self.document.removeEventListener('mousedown', this.handleRootMouseDown, true);
+      if (this.get('isTouchDevice')) {
+        self.document.removeEventListener('touchstart', this.touchStartHandler, true);
+        self.document.removeEventListener('touchend', this.handleRootMouseDown, true);
+      }
+    }
+  });
+});
+;define("ember-basic-dropdown/components/basic-dropdown/trigger", ["exports", "ember-basic-dropdown/templates/components/basic-dropdown/trigger", "ember-basic-dropdown/utils/computed-fallback-if-undefined"], function (exports, _trigger, _computedFallbackIfUndefined) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+
+  var isTouchDevice = !!self.window && 'ontouchstart' in self.window;
+
+  function trueStringIfPresent(path) {
+    return Ember.computed(path, function () {
+      if (this.get(path)) {
+        return 'true';
+      } else {
+        return null;
+      }
+    });
+  }
+
+  exports.default = Ember.Component.extend({
+    layout: _trigger.default,
+    isTouchDevice: isTouchDevice,
+    classNames: ['ember-basic-dropdown-trigger'],
+    role: (0, _computedFallbackIfUndefined.default)('button'),
+
+    // Need this intermediary property, because in older ember versions the passed in attribute would
+    // be bound and CP calculations wouldn't be taken into consideration
+    ariaRole: Ember.computed.readOnly('role'),
+    tabindex: 0,
+    eventType: 'mousedown',
+    classNameBindings: ['inPlaceClass', 'hPositionClass', 'vPositionClass'],
+    attributeBindings: ['ariaRole:role', 'style', 'uniqueId:data-ebd-id', 'tabIndex:tabindex', 'dropdownId:aria-owns', 'ariaLabel:aria-label', 'ariaLabelledBy:aria-labelledby', 'ariaDescribedBy:aria-describedby', 'aria-autocomplete', 'aria-activedescendant', 'aria-disabled', 'aria-expanded', 'aria-haspopup', 'aria-invalid', 'aria-pressed', 'aria-required', 'title'],
+
+    // Lifecycle hooks
+    init: function init() {
+      var _this = this;
+
+      this._super.apply(this, arguments);
+      var dropdown = this.get('dropdown');
+      this.uniqueId = dropdown.uniqueId + "-trigger";
+      this.dropdownId = this.dropdownId || "ember-basic-dropdown-content-" + dropdown.uniqueId;
+      this._touchMoveHandler = this._touchMoveHandler.bind(this);
+      this._mouseupHandler = function () {
+        self.document.removeEventListener('mouseup', _this._mouseupHandler, true);
+        self.document.body.classList.remove('ember-basic-dropdown-text-select-disabled');
+      };
+    },
+    didInsertElement: function didInsertElement() {
+      this._super.apply(this, arguments);
+      this.addMandatoryHandlers();
+      this.addOptionalHandlers();
+    },
+    willDestroyElement: function willDestroyElement() {
+      this._super.apply(this, arguments);
+      self.document.removeEventListener('touchmove', this._touchMoveHandler);
+      self.document.removeEventListener('mouseup', this._mouseupHandler, true);
+    },
+
+
+    // CPs
+    'aria-disabled': trueStringIfPresent('dropdown.disabled'),
+    'aria-expanded': trueStringIfPresent('dropdown.isOpen'),
+    'aria-invalid': trueStringIfPresent('ariaInvalid'),
+    'aria-pressed': trueStringIfPresent('ariaPressed'),
+    'aria-required': trueStringIfPresent('ariaRequired'),
+
+    tabIndex: Ember.computed('dropdown.disabled', 'tabindex', function () {
+      var tabindex = this.get('tabindex');
+      if (tabindex === false || this.get('dropdown.disabled')) {
+        return undefined;
+      } else {
+        return tabindex || 0;
+      }
+    }).readOnly(),
+
+    inPlaceClass: Ember.computed('renderInPlace', function () {
+      if (this.get('renderInPlace')) {
+        return 'ember-basic-dropdown-trigger--in-place';
+      }
+    }),
+
+    hPositionClass: Ember.computed('hPosition', function () {
+      var hPosition = this.get('hPosition');
+      if (hPosition) {
+        return "ember-basic-dropdown-trigger--" + hPosition;
+      }
+    }),
+
+    vPositionClass: Ember.computed('vPosition', function () {
+      var vPosition = this.get('vPosition');
+      if (vPosition) {
+        return "ember-basic-dropdown-trigger--" + vPosition;
+      }
+    }),
+
+    // Actions
+    actions: {
+      handleMouseDown: function handleMouseDown(e) {
+        var dropdown = this.get('dropdown');
+        if (dropdown.disabled) {
+          return;
+        }
+        // execute user-supplied onMouseDown function before default toggle action;
+        // short-circuit default behavior if user-supplied function returns `false`
+        var onMouseDown = this.get('onMouseDown');
+        if (onMouseDown && onMouseDown(dropdown, e) === false) {
+          return;
+        }
+        if (this.get('eventType') === 'mousedown') {
+          if (e.button !== 0) {
+            return;
+          }
+          this.stopTextSelectionUntilMouseup();
+          if (this.toggleIsBeingHandledByTouchEvents) {
+            // Some devises have both touchscreen & mouse, and they are not mutually exclusive
+            // In those cases the touchdown handler is fired first, and it sets a flag to
+            // short-circuit the mouseup so the component is not opened and immediately closed.
+            this.toggleIsBeingHandledByTouchEvents = false;
+            return;
+          }
+          dropdown.actions.toggle(e);
+        }
+      },
+      handleClick: function handleClick(e) {
+        var dropdown = this.get('dropdown');
+        if (!dropdown || dropdown.disabled) {
+          return;
+        }
+        if (this.get('eventType') === 'click') {
+          if (this.toggleIsBeingHandledByTouchEvents) {
+            // Some devises have both touchscreen & mouse, and they are not mutually exclusive
+            // In those cases the touchdown handler is fired first, and it sets a flag to
+            // short-circuit the mouseup so the component is not opened and immediately closed.
+            this.toggleIsBeingHandledByTouchEvents = false;
+            return;
+          }
+          dropdown.actions.toggle(e);
+        }
+      },
+      handleTouchEnd: function handleTouchEnd(e) {
+        this.toggleIsBeingHandledByTouchEvents = true;
+        var dropdown = this.get('dropdown');
+        if (e && e.defaultPrevented || dropdown.disabled) {
+          return;
+        }
+        if (!this.hasMoved) {
+          // execute user-supplied onTouchEnd function before default toggle action;
+          // short-circuit default behavior if user-supplied function returns `false`
+          var onTouchEnd = this.get('onTouchEnd');
+          if (onTouchEnd && onTouchEnd(dropdown, e) === false) {
+            return;
+          }
+          dropdown.actions.toggle(e);
+        }
+        this.hasMoved = false;
+        self.document.removeEventListener('touchmove', this._touchMoveHandler);
+        // This next three lines are stolen from hammertime. This prevents the default
+        // behaviour of the touchend, but synthetically trigger a focus and a (delayed) click
+        // to simulate natural behaviour.
+        e.target.focus();
+        setTimeout(function () {
+          if (!e.target) {
+            return;
+          }
+          var event = void 0;
+          try {
+            event = document.createEvent('MouseEvents');
+            event.initMouseEvent('click', true, true, window);
+          } catch (e) {
+            event = new Event('click');
+          } finally {
+            e.target.dispatchEvent(event);
+          }
+        }, 0);
+        e.preventDefault();
+      },
+      handleKeyDown: function handleKeyDown(e) {
+        var dropdown = this.get('dropdown');
+        if (dropdown.disabled) {
+          return;
+        }
+        var onKeyDown = this.get('onKeyDown');
+        if (onKeyDown && onKeyDown(dropdown, e) === false) {
+          return;
+        }
+        if (e.keyCode === 13) {
+          // Enter
+          dropdown.actions.toggle(e);
+        } else if (e.keyCode === 32) {
+          // Space
+          e.preventDefault(); // prevents the space to trigger a scroll page-next
+          dropdown.actions.toggle(e);
+        } else if (e.keyCode === 27) {
+          dropdown.actions.close(e);
+        }
+      }
+    },
+
+    // Methods
+    _touchMoveHandler: function _touchMoveHandler() {
+      this.hasMoved = true;
+      self.document.removeEventListener('touchmove', this._touchMoveHandler);
+    },
+    stopTextSelectionUntilMouseup: function stopTextSelectionUntilMouseup() {
+      self.document.addEventListener('mouseup', this._mouseupHandler, true);
+      self.document.body.classList.add('ember-basic-dropdown-text-select-disabled');
+    },
+    addMandatoryHandlers: function addMandatoryHandlers() {
+      var _this2 = this;
+
+      if (this.get('isTouchDevice')) {
+        // If the component opens on click there is no need of any of this, as the device will
+        // take care tell apart faux clicks from scrolls.
+        this.element.addEventListener('touchstart', function () {
+          self.document.addEventListener('touchmove', _this2._touchMoveHandler);
+        });
+        this.element.addEventListener('touchend', function (e) {
+          return _this2.send('handleTouchEnd', e);
+        });
+      }
+      this.element.addEventListener('mousedown', function (e) {
+        return _this2.send('handleMouseDown', e);
+      });
+      this.element.addEventListener('click', function (e) {
+        return _this2.send('handleClick', e);
+      });
+      this.element.addEventListener('keydown', function (e) {
+        return _this2.send('handleKeyDown', e);
+      });
+    },
+    addOptionalHandlers: function addOptionalHandlers() {
+      var dropdown = this.get('dropdown');
+      var onMouseEnter = this.get('onMouseEnter');
+      if (onMouseEnter) {
+        this.element.addEventListener('mouseenter', function (e) {
+          return onMouseEnter(dropdown, e);
+        });
+      }
+      var onMouseLeave = this.get('onMouseLeave');
+      if (onMouseLeave) {
+        this.element.addEventListener('mouseleave', function (e) {
+          return onMouseLeave(dropdown, e);
+        });
+      }
+      var onFocus = this.get('onFocus');
+      if (onFocus) {
+        this.element.addEventListener('focus', function (e) {
+          return onFocus(dropdown, e);
+        });
+      }
+      var onBlur = this.get('onBlur');
+      if (onBlur) {
+        this.element.addEventListener('blur', function (e) {
+          return onBlur(dropdown, e);
+        });
+      }
+      var onFocusIn = this.get('onFocusIn');
+      if (onFocusIn) {
+        this.element.addEventListener('focusin', function (e) {
+          return onFocusIn(dropdown, e);
+        });
+      }
+      var onFocusOut = this.get('onFocusOut');
+      if (onFocusOut) {
+        this.element.addEventListener('focusout', function (e) {
+          return onFocusOut(dropdown, e);
+        });
+      }
+    }
+  });
+});
+;define("ember-basic-dropdown/templates/components/basic-dropdown", ["exports"], function (exports) {
+  "use strict";
+
+  exports.__esModule = true;
+  exports.default = Ember.HTMLBars.template({ "id": "AImstd1x", "block": "{\"symbols\":[\"&default\"],\"statements\":[[11,1,[[25,\"hash\",null,[[\"uniqueId\",\"isOpen\",\"disabled\",\"actions\",\"trigger\",\"content\"],[[20,[\"publicAPI\",\"uniqueId\"]],[20,[\"publicAPI\",\"isOpen\"]],[20,[\"publicAPI\",\"disabled\"]],[20,[\"publicAPI\",\"actions\"]],[25,\"component\",[[20,[\"triggerComponent\"]]],[[\"dropdown\",\"hPosition\",\"onFocus\",\"renderInPlace\",\"vPosition\"],[[25,\"readonly\",[[20,[\"publicAPI\"]]],null],[25,\"readonly\",[[20,[\"hPosition\"]]],null],[25,\"action\",[[19,0,[]],\"handleFocus\"],null],[25,\"readonly\",[[20,[\"renderInPlace\"]]],null],[25,\"readonly\",[[20,[\"vPosition\"]]],null]]]],[25,\"component\",[[20,[\"contentComponent\"]]],[[\"dropdown\",\"hPosition\",\"renderInPlace\",\"preventScroll\",\"vPosition\",\"destination\",\"top\",\"left\",\"right\",\"width\",\"height\"],[[25,\"readonly\",[[20,[\"publicAPI\"]]],null],[25,\"readonly\",[[20,[\"hPosition\"]]],null],[25,\"readonly\",[[20,[\"renderInPlace\"]]],null],[25,\"readonly\",[[20,[\"preventScroll\"]]],null],[25,\"readonly\",[[20,[\"vPosition\"]]],null],[25,\"readonly\",[[20,[\"destination\"]]],null],[25,\"readonly\",[[20,[\"top\"]]],null],[25,\"readonly\",[[20,[\"left\"]]],null],[25,\"readonly\",[[20,[\"right\"]]],null],[25,\"readonly\",[[20,[\"width\"]]],null],[25,\"readonly\",[[20,[\"height\"]]],null]]]]]]]]],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "ember-basic-dropdown/templates/components/basic-dropdown.hbs" } });
+});
+;define("ember-basic-dropdown/templates/components/basic-dropdown/content", ["exports"], function (exports) {
+  "use strict";
+
+  exports.__esModule = true;
+  exports.default = Ember.HTMLBars.template({ "id": "0Vdmgxfx", "block": "{\"symbols\":[\"&default\"],\"statements\":[[4,\"if\",[[20,[\"dropdown\",\"isOpen\"]]],null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ember-basic-dropdown-content-wormhole-origin\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"renderInPlace\"]]],null,{\"statements\":[[4,\"if\",[[20,[\"overlay\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"ember-basic-dropdown-overlay\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"basic-dropdown/content-element\",null,[[\"tagName\",\"id\",\"class\",\"style\",\"dir\"],[[20,[\"_contentTagName\"]],[20,[\"dropdownId\"]],[25,\"concat\",[\"ember-basic-dropdown-content \",[20,[\"class\"]],\" \",[20,[\"defaultClass\"]],\" \",[25,\"if\",[[20,[\"renderInPlace\"]],\"ember-basic-dropdown-content--in-place \"],null],[25,\"if\",[[20,[\"hPosition\"]],[25,\"concat\",[\"ember-basic-dropdown-content--\",[20,[\"hPosition\"]]],null]],null],\" \",[25,\"if\",[[20,[\"vPosition\"]],[25,\"concat\",[\"ember-basic-dropdown-content--\",[20,[\"vPosition\"]]],null]],null],\" \",[20,[\"animationClass\"]]],null],[20,[\"style\"]],[20,[\"dir\"]]]],{\"statements\":[[0,\"        \"],[11,1],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[]},{\"statements\":[[4,\"-in-element\",[[20,[\"destinationElement\"]]],null,{\"statements\":[[4,\"if\",[[20,[\"overlay\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"ember-basic-dropdown-overlay\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"basic-dropdown/content-element\",null,[[\"tagName\",\"id\",\"class\",\"style\",\"dir\"],[[20,[\"_contentTagName\"]],[20,[\"dropdownId\"]],[25,\"concat\",[\"ember-basic-dropdown-content \",[20,[\"class\"]],\" \",[20,[\"defaultClass\"]],\" \",[25,\"if\",[[20,[\"renderInPlace\"]],\"ember-basic-dropdown-content--in-place \"],null],[25,\"if\",[[20,[\"hPosition\"]],[25,\"concat\",[\"ember-basic-dropdown-content--\",[20,[\"hPosition\"]]],null]],null],\" \",[25,\"if\",[[20,[\"vPosition\"]],[25,\"concat\",[\"ember-basic-dropdown-content--\",[20,[\"vPosition\"]]],null]],null],\" \",[20,[\"animationClass\"]]],null],[20,[\"style\"]],[20,[\"dir\"]]]],{\"statements\":[[0,\"        \"],[11,1],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[]},null]],\"parameters\":[]}],[0,\"  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[6,\"div\"],[10,\"id\",[18,\"dropdownId\"],null],[9,\"class\",\"ember-basic-dropdown-content-placeholder\"],[9,\"style\",\"display: none;\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "ember-basic-dropdown/templates/components/basic-dropdown/content.hbs" } });
+});
+;define("ember-basic-dropdown/templates/components/basic-dropdown/trigger", ["exports"], function (exports) {
+  "use strict";
+
+  exports.__esModule = true;
+  exports.default = Ember.HTMLBars.template({ "id": "idnzW3uN", "block": "{\"symbols\":[\"&default\"],\"statements\":[[11,1]],\"hasEval\":false}", "meta": { "moduleName": "ember-basic-dropdown/templates/components/basic-dropdown/trigger.hbs" } });
+});
+;define('ember-basic-dropdown/utils/calculate-position', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  exports.default = function (_, _2, _destination, _ref) {
+    var renderInPlace = _ref.renderInPlace;
+
+    if (renderInPlace) {
+      return calculateInPlacePosition.apply(undefined, arguments);
+    } else {
+      return calculateWormholedPosition.apply(undefined, arguments);
+    }
+  };
+
+  exports.calculateWormholedPosition = calculateWormholedPosition;
+  exports.calculateInPlacePosition = calculateInPlacePosition;
+  exports.getScrollParent = getScrollParent;
+  function calculateWormholedPosition(trigger, content, destination, _ref2) {
+    var horizontalPosition = _ref2.horizontalPosition,
+        verticalPosition = _ref2.verticalPosition,
+        matchTriggerWidth = _ref2.matchTriggerWidth,
+        previousHorizontalPosition = _ref2.previousHorizontalPosition,
+        previousVerticalPosition = _ref2.previousVerticalPosition;
+
+    // Collect information about all the involved DOM elements
+    var scroll = { left: window.pageXOffset, top: window.pageYOffset };
+
+    var _trigger$getBoundingC = trigger.getBoundingClientRect(),
+        triggerLeft = _trigger$getBoundingC.left,
+        triggerTop = _trigger$getBoundingC.top,
+        triggerWidth = _trigger$getBoundingC.width,
+        triggerHeight = _trigger$getBoundingC.height;
+
+    var _content$getBoundingC = content.getBoundingClientRect(),
+        dropdownHeight = _content$getBoundingC.height,
+        dropdownWidth = _content$getBoundingC.width;
+
+    var viewportWidth = self.document.body.clientWidth || self.window.innerWidth;
+    var style = {};
+
+    // Apply containers' offset
+    var anchorElement = destination.parentNode;
+    var anchorPosition = window.getComputedStyle(anchorElement).position;
+    while (anchorPosition !== 'relative' && anchorPosition !== 'absolute' && anchorElement.tagName.toUpperCase() !== 'BODY') {
+      anchorElement = anchorElement.parentNode;
+      anchorPosition = window.getComputedStyle(anchorElement).position;
+    }
+    if (anchorPosition === 'relative' || anchorPosition === 'absolute') {
+      var rect = anchorElement.getBoundingClientRect();
+      triggerLeft = triggerLeft - rect.left;
+      triggerTop = triggerTop - rect.top;
+      var _anchorElement = anchorElement,
+          offsetParent = _anchorElement.offsetParent;
+
+      if (offsetParent) {
+        triggerLeft -= anchorElement.offsetParent.scrollLeft;
+        triggerTop -= anchorElement.offsetParent.scrollTop;
+      }
+    }
+
+    // Calculate drop down width
+    dropdownWidth = matchTriggerWidth ? triggerWidth : dropdownWidth;
+    if (matchTriggerWidth) {
+      style.width = dropdownWidth;
+    }
+
+    // Calculate horizontal position
+    var triggerLeftWithScroll = triggerLeft + scroll.left;
+    if (horizontalPosition === 'auto' || horizontalPosition === 'auto-left') {
+      // Calculate the number of visible horizontal pixels if we were to place the
+      // dropdown on the left and right
+      var leftVisible = Math.min(viewportWidth, triggerLeft + dropdownWidth) - Math.max(0, triggerLeft);
+      var rightVisible = Math.min(viewportWidth, triggerLeft + triggerWidth) - Math.max(0, triggerLeft + triggerWidth - dropdownWidth);
+
+      if (dropdownWidth > leftVisible && rightVisible > leftVisible) {
+        // If the drop down won't fit left-aligned, and there is more space on the
+        // right than on the left, then force right-aligned
+        horizontalPosition = 'right';
+      } else if (dropdownWidth > rightVisible && leftVisible > rightVisible) {
+        // If the drop down won't fit right-aligned, and there is more space on
+        // the left than on the right, then force left-aligned
+        horizontalPosition = 'left';
+      } else {
+        // Keep same position as previous
+        horizontalPosition = previousHorizontalPosition || 'left';
+      }
+    } else if (horizontalPosition === 'auto-right') {
+      // Calculate the number of visible horizontal pixels if we were to place the
+      // dropdown on the left and right
+      var _leftVisible = Math.min(viewportWidth, triggerLeft + dropdownWidth) - Math.max(0, triggerLeft);
+      var _rightVisible = Math.min(viewportWidth, triggerLeft + triggerWidth) - Math.max(0, triggerLeft + triggerWidth - dropdownWidth);
+
+      if (dropdownWidth > _rightVisible && _leftVisible > _rightVisible) {
+        // If the drop down won't fit right-aligned, and there is more space on the
+        // left than on the right, then force left-aligned
+        horizontalPosition = 'left';
+      } else if (dropdownWidth > _leftVisible && _rightVisible > _leftVisible) {
+        // If the drop down won't fit left-aligned, and there is more space on
+        // the right than on the left, then force right-aligned
+        horizontalPosition = 'right';
+      } else {
+        // Keep same position as previous
+        horizontalPosition = previousHorizontalPosition || 'right';
+      }
+    }
+    if (horizontalPosition === 'right') {
+      style.right = viewportWidth - (triggerLeftWithScroll + triggerWidth);
+    } else if (horizontalPosition === 'center') {
+      style.left = triggerLeftWithScroll + (triggerWidth - dropdownWidth) / 2;
+    } else {
+      style.left = triggerLeftWithScroll;
+    }
+
+    // Calculate vertical position
+    var triggerTopWithScroll = triggerTop;
+
+    /**
+     * Fixes bug where the dropdown always stays on the same position on the screen when
+     * the <body> is relatively positioned
+     */
+    var isBodyPositionRelative = window.getComputedStyle(document.body).getPropertyValue('position') === 'relative';
+    if (!isBodyPositionRelative) {
+      triggerTopWithScroll += scroll.top;
+    }
+
+    if (verticalPosition === 'above') {
+      style.top = triggerTopWithScroll - dropdownHeight;
+    } else if (verticalPosition === 'below') {
+      style.top = triggerTopWithScroll + triggerHeight;
+    } else {
+      var viewportBottom = scroll.top + self.window.innerHeight;
+      var enoughRoomBelow = triggerTopWithScroll + triggerHeight + dropdownHeight < viewportBottom;
+      var enoughRoomAbove = triggerTop > dropdownHeight;
+
+      if (previousVerticalPosition === 'below' && !enoughRoomBelow && enoughRoomAbove) {
+        verticalPosition = 'above';
+      } else if (previousVerticalPosition === 'above' && !enoughRoomAbove && enoughRoomBelow) {
+        verticalPosition = 'below';
+      } else if (!previousVerticalPosition) {
+        verticalPosition = enoughRoomBelow ? 'below' : 'above';
+      } else {
+        verticalPosition = previousVerticalPosition;
+      }
+      style.top = triggerTopWithScroll + (verticalPosition === 'below' ? triggerHeight : -dropdownHeight);
+    }
+
+    return { horizontalPosition: horizontalPosition, verticalPosition: verticalPosition, style: style };
+  } /**
+      Function used to calculate the position of the content of the dropdown.
+      @public
+      @method calculatePosition
+      @param {DomElement} trigger The trigger of the dropdown
+      @param {DomElement} content The content of the dropdown
+      @param {DomElement} destination The element in which the content is going to be placed.
+      @param {Object} options The directives that define how the position is calculated
+        - {String} horizontalPosition How the users want the dropdown to be positioned horizontally. Values: right | center | left
+        - {String} verticalPosition How the users want the dropdown to be positioned vertically. Values: above | below
+        - {Boolean} matchTriggerWidth If the user wants the width of the dropdown to match the width of the trigger
+        - {String} previousHorizontalPosition How the dropdown was positioned for the last time. Same values than horizontalPosition, but can be null the first time.
+        - {String} previousVerticalPosition How the dropdown was positioned for the last time. Same values than verticalPosition, but can be null the first time.
+        - {Boolean} renderInPlace Boolean flat that is truthy if the component is rendered in place.
+      @return {Object} How the component is going to be positioned.
+        - {String} horizontalPosition The new horizontal position.
+        - {String} verticalPosition The new vertical position.
+        - {Object} CSS properties to be set on the dropdown. It supports `top`, `left`, `right` and `width`.
+    */
+  function calculateInPlacePosition(trigger, content, destination, _ref3) {
+    var horizontalPosition = _ref3.horizontalPosition,
+        verticalPosition = _ref3.verticalPosition;
+
+    var dropdownRect = void 0;
+    var positionData = {};
+    if (horizontalPosition === 'auto') {
+      var triggerRect = trigger.getBoundingClientRect();
+      dropdownRect = content.getBoundingClientRect();
+      var viewportRight = window.pageXOffset + self.window.innerWidth;
+      positionData.horizontalPosition = triggerRect.left + dropdownRect.width > viewportRight ? 'right' : 'left';
+    } else if (horizontalPosition === 'center') {
+      var _trigger$getBoundingC2 = trigger.getBoundingClientRect(),
+          triggerWidth = _trigger$getBoundingC2.width;
+
+      var _content$getBoundingC2 = content.getBoundingClientRect(),
+          dropdownWidth = _content$getBoundingC2.width;
+
+      positionData.style = { left: (triggerWidth - dropdownWidth) / 2 };
+    } else if (horizontalPosition === 'auto-right') {
+      var _triggerRect = trigger.getBoundingClientRect();
+      var _dropdownRect = content.getBoundingClientRect();
+      positionData.horizontalPosition = _triggerRect.right > _dropdownRect.width ? 'right' : 'left';
+    } else if (horizontalPosition === 'right') {
+      positionData.horizontalPosition = 'right';
+    }
+
+    if (verticalPosition === 'above') {
+      positionData.verticalPosition = verticalPosition;
+      dropdownRect = dropdownRect || content.getBoundingClientRect();
+      positionData.style = { top: -dropdownRect.height };
+    } else {
+      positionData.verticalPosition = 'below';
+    }
+    return positionData;
+  }
+
+  function getScrollParent(element) {
+    var style = self.window.getComputedStyle(element);
+    var excludeStaticParent = style.position === "absolute";
+    var overflowRegex = /(auto|scroll)/;
+
+    if (style.position === "fixed") return document.body;
+    for (var parent = element; parent = parent.parentElement;) {
+      style = self.window.getComputedStyle(parent);
+      if (excludeStaticParent && style.position === "static") {
+        continue;
+      }
+      if (overflowRegex.test(style.overflow + style.overflowY + style.overflowX)) {
+        return parent;
+      }
+    }
+
+    return document.body;
+  }
+});
+;define("ember-basic-dropdown/utils/computed-fallback-if-undefined", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = computedFallbackIfUndefined;
+  function computedFallbackIfUndefined(fallback) {
+    return Ember.computed({
+      get: function get() {
+        return fallback;
+      },
+      set: function set(_, v) {
+        return v === undefined ? fallback : v;
+      }
+    });
+  }
+});
+;define('ember-basic-dropdown/utils/scroll-helpers', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.getScrollDeltas = getScrollDeltas;
+  exports.getScrollLineHeight = getScrollLineHeight;
+  exports.getAvailableScroll = getAvailableScroll;
+  exports.distributeScroll = distributeScroll;
+
+  /**
+   * Mode that expresses the deltas in pixels.
+   *
+   * @property DOM_DELTA_PIXEL
+   */
+  var DOM_DELTA_PIXEL = exports.DOM_DELTA_PIXEL = 0;
+  /**
+   * Mode that expresses the deltas in lines.
+   *
+   * This only happens in Firefox for Windows.
+   *
+   * Reference: https://stackoverflow.com/a/37474225
+   *
+   * @property DOM_DELTA_LINE
+   */
+  var DOM_DELTA_LINE = exports.DOM_DELTA_LINE = 1;
+  /**
+   * Mode that expresses the deltas in pages.
+   *
+   * This only happens in Firefox for Windows with
+   * a custom OS setting activated.
+   *
+   * Reference: https://stackoverflow.com/a/37474225
+   */
+  var DOM_DELTA_PAGE = exports.DOM_DELTA_PAGE = 2;
+
+  /**
+   * Number of lines per page considered for
+   * DOM_DELTA_PAGE.
+   *
+   * @property LINES_PER_PAGE
+   */
+  var LINES_PER_PAGE = exports.LINES_PER_PAGE = 3;
+
+  /**
+   * Returns the deltas calculated in pixels.
+   *
+   * @param {Number} event.deltaX horizontal delta
+   * @param {Number} event.deltaY vertical delta
+   * @param {DeltaMode} event.deltaMode delta mode tells which unit is being used.
+   * @return {Object} Object with deltaX and deltaY properties
+   */
+  function getScrollDeltas(_ref) {
+    var _ref$deltaX = _ref.deltaX,
+        deltaX = _ref$deltaX === undefined ? 0 : _ref$deltaX,
+        _ref$deltaY = _ref.deltaY,
+        deltaY = _ref$deltaY === undefined ? 0 : _ref$deltaY,
+        _ref$deltaMode = _ref.deltaMode,
+        deltaMode = _ref$deltaMode === undefined ? DOM_DELTA_PIXEL : _ref$deltaMode;
+
+    if (deltaMode !== DOM_DELTA_PIXEL) {
+      if (deltaMode === DOM_DELTA_PAGE) {
+        deltaX *= LINES_PER_PAGE;
+        deltaY *= LINES_PER_PAGE;
+      }
+      var _scrollLineHeight = getScrollLineHeight();
+      deltaX *= _scrollLineHeight;
+      deltaY *= _scrollLineHeight;
+    }
+
+    return { deltaX: deltaX, deltaY: deltaY };
+  }
+
+  var scrollLineHeight = null;
+  function getScrollLineHeight() {
+    if (!scrollLineHeight) {
+      var iframe = document.createElement('iframe');
+      iframe.src = '#';
+      iframe.style.position = 'absolute';
+      iframe.style.visibility = 'hidden';
+      iframe.style.width = '0px';
+      iframe.style.height = '0px';
+      iframe.style.border = 'none';
+      document.body.appendChild(iframe);
+      var iframeDocument = iframe.contentWindow.document;
+      iframeDocument.open();
+      iframeDocument.write('<!doctype html><html><head></head><body><span>X</span></body></html>');
+      iframeDocument.close();
+      scrollLineHeight = iframeDocument.body.firstElementChild.offsetHeight;
+      document.body.removeChild(iframe);
+    }
+    return scrollLineHeight;
+  }
+
+  function getAvailableScroll(element, container) {
+    var availableScroll = {
+      deltaXNegative: 0,
+      deltaXPositive: 0,
+      deltaYNegative: 0,
+      deltaYPositive: 0
+    };
+
+    var scrollLeftMax = void 0,
+        scrollTopMax = void 0;
+    while (container.contains(element) || container === element) {
+      scrollLeftMax = element.scrollWidth - element.clientWidth;
+      scrollTopMax = element.scrollHeight - element.clientHeight;
+
+      availableScroll.deltaXNegative += -element.scrollLeft;
+      availableScroll.deltaXPositive += scrollLeftMax - element.scrollLeft;
+      availableScroll.deltaYNegative += -element.scrollTop;
+      availableScroll.deltaYPositive += scrollTopMax - element.scrollTop;
+      element = element.parentNode;
+    }
+
+    return availableScroll;
+  }
+
+  /**
+   * Calculates the scroll distribution for `element` inside` container.
+   *
+   * @param {Number} deltaX
+   * @param {Number} deltaY
+   * @param {Element} element
+   * @param {Element} container
+   * @param {ScrollInformation[]} accumulator
+   * @return {ScrollInforamtion}
+   */
+  function calculateScrollDistribution(deltaX, deltaY, element, container) {
+    var accumulator = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : [];
+
+    var scrollInformation = {
+      element: element,
+      scrollLeft: 0,
+      scrollTop: 0
+    };
+    var scrollLeftMax = element.scrollWidth - element.clientWidth;
+    var scrollTopMax = element.scrollHeight - element.clientHeight;
+
+    var availableScroll = {
+      deltaXNegative: -element.scrollLeft,
+      deltaXPositive: scrollLeftMax - element.scrollLeft,
+      deltaYNegative: -element.scrollTop,
+      deltaYPositive: scrollTopMax - element.scrollTop
+    };
+
+    var elementStyle = window.getComputedStyle(element);
+
+    if (elementStyle.overflowX !== 'hidden') {
+      // The `deltaX` can be larger than the available scroll for the element, thus overshooting.
+      // The result of that is that it scrolls the element as far as possible. We don't need to
+      // calculate exactly because we reduce the amount of desired scroll for the
+      // parent elements by the correct amount below.
+      scrollInformation.scrollLeft = element.scrollLeft + deltaX;
+      if (deltaX > availableScroll.deltaXPositive) {
+        deltaX = deltaX - availableScroll.deltaXPositive;
+      } else if (deltaX < availableScroll.deltaXNegative) {
+        deltaX = deltaX - availableScroll.deltaXNegative;
+      } else {
+        deltaX = 0;
+      }
+    }
+
+    if (elementStyle.overflowY !== 'hidden') {
+      scrollInformation.scrollTop = element.scrollTop + deltaY;
+      if (deltaY > availableScroll.deltaYPositive) {
+        deltaY = deltaY - availableScroll.deltaYPositive;
+      } else if (deltaY < availableScroll.deltaYNegative) {
+        deltaY = deltaY - availableScroll.deltaYNegative;
+      } else {
+        deltaY = 0;
+      }
+    }
+
+    if (element !== container && (deltaX || deltaY)) {
+      return calculateScrollDistribution(deltaX, deltaY, element.parentNode, container, accumulator.concat([scrollInformation]));
+    }
+
+    return accumulator.concat([scrollInformation]);
+  }
+
+  // Recursively walks up scroll containers until the delta is distributed or we
+  // run out of elements in the allowed-to-scroll container.
+  function distributeScroll(deltaX, deltaY, element, container) {
+    var scrollInfos = calculateScrollDistribution(deltaX, deltaY, element, container);
+    var info = void 0;
+
+    for (var i = 0; i < scrollInfos.length; i++) {
+      info = scrollInfos[i];
+      info.element.scrollLeft = info.scrollLeft;
+      info.element.scrollTop = info.scrollTop;
+    }
+  }
+});
+;define('ember-cli-app-version/initializer-factory', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = initializerFactory;
+  var classify = Ember.String.classify,
+      libraries = Ember.libraries;
+  function initializerFactory(name, version) {
+    var registered = false;
+
+    return function () {
+      if (!registered && name && version) {
+        var appName = classify(name);
+        libraries.register(appName, version);
+        registered = true;
+      }
+    };
+  }
+});
+;define("ember-cli-app-version/utils/regexp", ["exports"], function (exports) {
+  "use strict";
+
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
   var versionRegExp = exports.versionRegExp = /\d[.]\d[.]\d/;
   var shaRegExp = exports.shaRegExp = /[a-z\d]{8}/;
-};
+});
+;define('ember-concurrency/-buffer-policy', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  function _toConsumableArray(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+        arr2[i] = arr[i];
+      }
+
+      return arr2;
+    } else {
+      return Array.from(arr);
+    }
+  }
+
+  var saturateActiveQueue = function saturateActiveQueue(scheduler) {
+    while (scheduler.activeTaskInstances.length < scheduler.maxConcurrency) {
+      var taskInstance = scheduler.queuedTaskInstances.shift();
+      if (!taskInstance) {
+        break;
+      }
+      scheduler.activeTaskInstances.push(taskInstance);
+    }
+  };
+
+  function numPerformSlots(scheduler) {
+    return scheduler.maxConcurrency - scheduler.queuedTaskInstances.length - scheduler.activeTaskInstances.length;
+  }
+
+  var enqueueTasksPolicy = exports.enqueueTasksPolicy = {
+    requiresUnboundedConcurrency: true,
+    schedule: function schedule(scheduler) {
+      // [a,b,_] [c,d,e,f] becomes
+      // [a,b,c] [d,e,f]
+      saturateActiveQueue(scheduler);
+    },
+    getNextPerformStatus: function getNextPerformStatus(scheduler) {
+      return numPerformSlots(scheduler) > 0 ? 'succeed' : 'enqueue';
+    }
+  };
+
+  var dropQueuedTasksPolicy = exports.dropQueuedTasksPolicy = {
+    cancelReason: 'it belongs to a \'drop\' Task that was already running',
+    schedule: function schedule(scheduler) {
+      // [a,b,_] [c,d,e,f] becomes
+      // [a,b,c] []
+      saturateActiveQueue(scheduler);
+      scheduler.spliceTaskInstances(this.cancelReason, scheduler.queuedTaskInstances, 0, scheduler.queuedTaskInstances.length);
+    },
+    getNextPerformStatus: function getNextPerformStatus(scheduler) {
+      return numPerformSlots(scheduler) > 0 ? 'succeed' : 'drop';
+    }
+  };
+
+  var cancelOngoingTasksPolicy = exports.cancelOngoingTasksPolicy = {
+    cancelReason: 'it belongs to a \'restartable\' Task that was .perform()ed again',
+    schedule: function schedule(scheduler) {
+      // [a,b,_] [c,d,e,f] becomes
+      // [d,e,f] []
+      var activeTaskInstances = scheduler.activeTaskInstances;
+      var queuedTaskInstances = scheduler.queuedTaskInstances;
+      activeTaskInstances.push.apply(activeTaskInstances, _toConsumableArray(queuedTaskInstances));
+      queuedTaskInstances.length = 0;
+
+      var numToShift = Math.max(0, activeTaskInstances.length - scheduler.maxConcurrency);
+      scheduler.spliceTaskInstances(this.cancelReason, activeTaskInstances, 0, numToShift);
+    },
+    getNextPerformStatus: function getNextPerformStatus(scheduler) {
+      return numPerformSlots(scheduler) > 0 ? 'succeed' : 'cancel_previous';
+    }
+  };
+
+  var dropButKeepLatestPolicy = exports.dropButKeepLatestPolicy = {
+    cancelReason: 'it belongs to a \'keepLatest\' Task that was already running',
+    schedule: function schedule(scheduler) {
+      // [a,b,_] [c,d,e,f] becomes
+      // [d,e,f] []
+      saturateActiveQueue(scheduler);
+      scheduler.spliceTaskInstances(this.cancelReason, scheduler.queuedTaskInstances, 0, scheduler.queuedTaskInstances.length - 1);
+    }
+  };
+});
+;define('ember-concurrency/-cancelable-promise-helpers', ['exports', 'ember-concurrency/-task-instance', 'ember-concurrency/utils'], function (exports, _taskInstance, _utils) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.hash = exports.race = exports.allSettled = exports.all = undefined;
+
+  var _marked = regeneratorRuntime.mark(resolver);
+
+  var asyncAll = taskAwareVariantOf(Ember.RSVP.Promise, 'all', identity);
+
+  function resolver(value) {
+    return regeneratorRuntime.wrap(function resolver$(_context) {
+      while (1) {
+        switch (_context.prev = _context.next) {
+          case 0:
+            return _context.abrupt('return', value);
+
+          case 1:
+          case 'end':
+            return _context.stop();
+        }
+      }
+    }, _marked, this);
+  }
+
+  /**
+   * A cancelation-aware variant of [Promise.all](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/all).
+   * The normal version of a `Promise.all` just returns a regular, uncancelable
+   * Promise. The `ember-concurrency` variant of `all()` has the following
+   * additional behavior:
+   *
+   * - if the task that `yield`ed `all()` is canceled, any of the
+   *   {@linkcode TaskInstance}s passed in to `all` will be canceled
+   * - if any of the {@linkcode TaskInstance}s (or regular promises) passed in reject (or
+   *   are canceled), all of the other unfinished `TaskInstance`s will
+   *   be automatically canceled.
+   *
+   * [Check out the "Awaiting Multiple Child Tasks example"](/#/docs/examples/joining-tasks)
+   */
+  var all = exports.all = function all(things) {
+    if (things.length === 0) {
+      return things;
+    }
+
+    for (var i = 0; i < things.length; ++i) {
+      var t = things[i];
+      if (!(t && t[_utils.yieldableSymbol])) {
+        return asyncAll(things);
+      }
+    }
+
+    var isAsync = false;
+    var taskInstances = things.map(function (thing) {
+      var ti = _taskInstance.default.create({
+        // TODO: consider simpler iterator than full on generator fn?
+        fn: resolver,
+        args: [thing]
+      })._start();
+
+      if (ti._completionState !== 1) {
+        isAsync = true;
+      }
+      return ti;
+    });
+
+    if (isAsync) {
+      return asyncAll(taskInstances);
+    } else {
+      return taskInstances.map(function (ti) {
+        return ti.value;
+      });
+    }
+  };
+
+  /**
+   * A cancelation-aware variant of [RSVP.allSettled](http://emberjs.com/api/classes/RSVP.html#method_allSettled).
+   * The normal version of a `RSVP.allSettled` just returns a regular, uncancelable
+   * Promise. The `ember-concurrency` variant of `allSettled()` has the following
+   * additional behavior:
+   *
+   * - if the task that `yield`ed `allSettled()` is canceled, any of the
+   *   {@linkcode TaskInstance}s passed in to `allSettled` will be canceled
+   */
+  var allSettled = exports.allSettled = taskAwareVariantOf(Ember.RSVP, 'allSettled', identity);
+
+  /**
+   * A cancelation-aware variant of [Promise.race](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise/race).
+   * The normal version of a `Promise.race` just returns a regular, uncancelable
+   * Promise. The `ember-concurrency` variant of `race()` has the following
+   * additional behavior:
+   *
+   * - if the task that `yield`ed `race()` is canceled, any of the
+   *   {@linkcode TaskInstance}s passed in to `race` will be canceled
+   * - once any of the tasks/promises passed in complete (either success, failure,
+   *   or cancelation), any of the {@linkcode TaskInstance}s passed in will be canceled
+   *
+   * [Check out the "Awaiting Multiple Child Tasks example"](/#/docs/examples/joining-tasks)
+   */
+  var race = exports.race = taskAwareVariantOf(Ember.RSVP.Promise, 'race', identity);
+
+  /**
+   * A cancelation-aware variant of [RSVP.hash](http://emberjs.com/api/classes/RSVP.html#hash).
+   * The normal version of a `RSVP.hash` just returns a regular, uncancelable
+   * Promise. The `ember-concurrency` variant of `hash()` has the following
+   * additional behavior:
+   *
+   * - if the task that `yield`ed `hash()` is canceled, any of the
+   *   {@linkcode TaskInstance}s passed in to `allSettled` will be canceled
+   * - if any of the items rejects/cancels, all other cancelable items
+   *   (e.g. {@linkcode TaskInstance}s) will be canceled
+   */
+  var hash = exports.hash = taskAwareVariantOf(Ember.RSVP, 'hash', getValues);
+
+  function identity(obj) {
+    return obj;
+  }
+
+  function getValues(obj) {
+    return Object.keys(obj).map(function (k) {
+      return obj[k];
+    });
+  }
+
+  function taskAwareVariantOf(obj, method, getItems) {
+    return function (thing) {
+      var items = getItems(thing);
+      var defer = Ember.RSVP.defer();
+
+      obj[method](thing).then(defer.resolve, defer.reject);
+
+      var hasCancelled = false;
+      var cancelAll = function cancelAll() {
+        if (hasCancelled) {
+          return;
+        }
+        hasCancelled = true;
+        items.forEach(function (it) {
+          if (it) {
+            if (it instanceof _taskInstance.default) {
+              it.cancel();
+            } else if (typeof it.__ec_cancel__ === 'function') {
+              it.__ec_cancel__();
+            }
+          }
+        });
+      };
+
+      var promise = defer.promise.finally(cancelAll);
+      promise.__ec_cancel__ = cancelAll;
+      return promise;
+    };
+  }
+});
+;define('ember-concurrency/-encapsulated-task', ['exports', 'ember-concurrency/-task-instance'], function (exports, _taskInstance) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _taskInstance.default.extend({
+    _makeIterator: function _makeIterator() {
+      var perform = this.get('perform');
+      (true && !(typeof perform === 'function') && Ember.assert("The object passed to `task()` must define a `perform` generator function, e.g. `perform: function * (a,b,c) {...}`, or better yet `*perform(a,b,c) {...}`", typeof perform === 'function'));
+
+      return perform.apply(this, this.args);
+    },
+
+
+    perform: null
+  });
+});
+;define('ember-concurrency/-evented-observable', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Object.extend({
+    obj: null,
+    eventName: null,
+
+    subscribe: function subscribe(onNext) {
+      var obj = this.obj;
+      var eventName = this.eventName;
+      obj.on(eventName, onNext);
+
+      var isDisposed = false;
+      return {
+        dispose: function dispose() {
+          if (isDisposed) {
+            return;
+          }
+          isDisposed = true;
+          obj.off(eventName, onNext);
+        }
+      };
+    }
+  });
+});
+;define('ember-concurrency/-helpers', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.taskHelperClosure = taskHelperClosure;
+
+  function _toConsumableArray(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+        arr2[i] = arr[i];
+      }
+
+      return arr2;
+    } else {
+      return Array.from(arr);
+    }
+  }
+
+  function taskHelperClosure(helperName, taskMethod, _args, hash) {
+    var task = _args[0];
+    var outerArgs = _args.slice(1);
+
+    return Ember.run.bind(null, function () {
+      if (!task || typeof task[taskMethod] !== 'function') {
+        (true && !(false) && Ember.assert('The first argument passed to the `' + helperName + '` helper should be a Task object (without quotes); you passed ' + task, false));
+
+        return;
+      }
+
+      for (var _len = arguments.length, innerArgs = Array(_len), _key = 0; _key < _len; _key++) {
+        innerArgs[_key] = arguments[_key];
+      }
+
+      if (hash && hash.value) {
+        var event = innerArgs.pop();
+        innerArgs.push(Ember.get(event, hash.value));
+      }
+
+      return task[taskMethod].apply(task, _toConsumableArray(outerArgs).concat(innerArgs));
+    });
+  }
+});
+;define('ember-concurrency/-property-modifiers-mixin', ['exports', 'ember-concurrency/-scheduler', 'ember-concurrency/-buffer-policy'], function (exports, _scheduler, _bufferPolicy) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.propertyModifiers = undefined;
+  exports.resolveScheduler = resolveScheduler;
+  var propertyModifiers = exports.propertyModifiers = {
+    // by default, task(...) expands to task(...).enqueue().maxConcurrency(Infinity)
+    _bufferPolicy: _bufferPolicy.enqueueTasksPolicy,
+    _maxConcurrency: Infinity,
+    _taskGroupPath: null,
+    _hasUsedModifier: false,
+    _hasSetBufferPolicy: false,
+
+    restartable: function restartable() {
+      return setBufferPolicy(this, _bufferPolicy.cancelOngoingTasksPolicy);
+    },
+    enqueue: function enqueue() {
+      return setBufferPolicy(this, _bufferPolicy.enqueueTasksPolicy);
+    },
+    drop: function drop() {
+      return setBufferPolicy(this, _bufferPolicy.dropQueuedTasksPolicy);
+    },
+    keepLatest: function keepLatest() {
+      return setBufferPolicy(this, _bufferPolicy.dropButKeepLatestPolicy);
+    },
+    maxConcurrency: function maxConcurrency(n) {
+      this._hasUsedModifier = true;
+      this._maxConcurrency = n;
+      assertModifiersNotMixedWithGroup(this);
+      return this;
+    },
+    group: function group(taskGroupPath) {
+      this._taskGroupPath = taskGroupPath;
+      assertModifiersNotMixedWithGroup(this);
+      return this;
+    },
+    debug: function debug() {
+      this._debug = true;
+      return this;
+    }
+  };
+
+  function setBufferPolicy(obj, policy) {
+    obj._hasSetBufferPolicy = true;
+    obj._hasUsedModifier = true;
+    obj._bufferPolicy = policy;
+    assertModifiersNotMixedWithGroup(obj);
+
+    if (obj._maxConcurrency === Infinity) {
+      obj._maxConcurrency = 1;
+    }
+
+    return obj;
+  }
+
+  function assertModifiersNotMixedWithGroup(obj) {
+    (true && !(!obj._hasUsedModifier || !obj._taskGroupPath) && Ember.assert('ember-concurrency does not currently support using both .group() with other task modifiers (e.g. drop(), enqueue(), restartable())', !obj._hasUsedModifier || !obj._taskGroupPath));
+  }
+
+  function resolveScheduler(propertyObj, obj, TaskGroup) {
+    if (propertyObj._taskGroupPath) {
+      var taskGroup = obj.get(propertyObj._taskGroupPath);
+      (true && !(taskGroup instanceof TaskGroup) && Ember.assert('Expected path \'' + propertyObj._taskGroupPath + '\' to resolve to a TaskGroup object, but instead was ' + taskGroup, taskGroup instanceof TaskGroup));
+
+      return taskGroup._scheduler;
+    } else {
+      return _scheduler.default.create({
+        bufferPolicy: propertyObj._bufferPolicy,
+        maxConcurrency: propertyObj._maxConcurrency
+      });
+    }
+  }
+});
+;define('ember-concurrency/-scheduler', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+
+  var SEEN_INDEX = 0;
+
+  var Scheduler = Ember.Object.extend({
+    lastPerformed: null,
+    lastStarted: null,
+    lastRunning: null,
+    lastSuccessful: null,
+    lastComplete: null,
+    lastErrored: null,
+    lastCanceled: null,
+    lastIncomplete: null,
+    performCount: 0,
+
+    boundHandleFulfill: null,
+    boundHandleReject: null,
+
+    init: function init() {
+      this._super.apply(this, arguments);
+      this.activeTaskInstances = [];
+      this.queuedTaskInstances = [];
+    },
+    cancelAll: function cancelAll(reason) {
+      var seen = [];
+      this.spliceTaskInstances(reason, this.activeTaskInstances, 0, this.activeTaskInstances.length, seen);
+      this.spliceTaskInstances(reason, this.queuedTaskInstances, 0, this.queuedTaskInstances.length, seen);
+      flushTaskCounts(seen);
+    },
+    spliceTaskInstances: function spliceTaskInstances(cancelReason, taskInstances, index, count, seen) {
+      for (var i = index; i < index + count; ++i) {
+        var taskInstance = taskInstances[i];
+
+        if (!taskInstance.hasStarted) {
+          // This tracking logic is kinda spread all over the place...
+          // maybe TaskInstances themselves could notify
+          // some delegate of queued state changes upon cancelation?
+          taskInstance.task.decrementProperty('numQueued');
+        }
+
+        taskInstance.cancel(cancelReason);
+        if (seen) {
+          seen.push(taskInstance.task);
+        }
+      }
+      taskInstances.splice(index, count);
+    },
+    schedule: function schedule(taskInstance) {
+      Ember.set(this, 'lastPerformed', taskInstance);
+      this.incrementProperty('performCount');
+      taskInstance.task.incrementProperty('numQueued');
+      this.queuedTaskInstances.push(taskInstance);
+      this._flushQueues();
+    },
+    _flushQueues: function _flushQueues() {
+      var seen = [];
+
+      for (var i = 0; i < this.activeTaskInstances.length; ++i) {
+        seen.push(this.activeTaskInstances[i].task);
+      }
+
+      this.activeTaskInstances = filterFinished(this.activeTaskInstances);
+
+      this.bufferPolicy.schedule(this);
+
+      var lastStarted = null;
+      for (var _i = 0; _i < this.activeTaskInstances.length; ++_i) {
+        var taskInstance = this.activeTaskInstances[_i];
+        if (!taskInstance.hasStarted) {
+          this._startTaskInstance(taskInstance);
+          lastStarted = taskInstance;
+        }
+        seen.push(taskInstance.task);
+      }
+
+      if (lastStarted) {
+        Ember.set(this, 'lastStarted', lastStarted);
+      }
+      Ember.set(this, 'lastRunning', lastStarted);
+
+      for (var _i2 = 0; _i2 < this.queuedTaskInstances.length; ++_i2) {
+        seen.push(this.queuedTaskInstances[_i2].task);
+      }
+
+      flushTaskCounts(seen);
+      Ember.set(this, 'concurrency', this.activeTaskInstances.length);
+    },
+    _startTaskInstance: function _startTaskInstance(taskInstance) {
+      var _this = this;
+
+      var task = taskInstance.task;
+      task.decrementProperty('numQueued');
+      task.incrementProperty('numRunning');
+
+      taskInstance._start()._onFinalize(function () {
+        task.decrementProperty('numRunning');
+        var state = taskInstance._completionState;
+        Ember.set(_this, 'lastComplete', taskInstance);
+        if (state === 1) {
+          Ember.set(_this, 'lastSuccessful', taskInstance);
+        } else {
+          if (state === 2) {
+            Ember.set(_this, 'lastErrored', taskInstance);
+          } else if (state === 3) {
+            Ember.set(_this, 'lastCanceled', taskInstance);
+          }
+          Ember.set(_this, 'lastIncomplete', taskInstance);
+        }
+        Ember.run.once(_this, _this._flushQueues);
+      });
+    }
+  });
+
+  function flushTaskCounts(tasks) {
+    SEEN_INDEX++;
+    for (var i = 0, l = tasks.length; i < l; ++i) {
+      var task = tasks[i];
+      if (task._seenIndex < SEEN_INDEX) {
+        task._seenIndex = SEEN_INDEX;
+        updateTaskChainCounts(task);
+      }
+    }
+  }
+
+  function updateTaskChainCounts(task) {
+    var numRunning = task.numRunning;
+    var numQueued = task.numQueued;
+    var taskGroup = task.get('group');
+
+    while (taskGroup) {
+      Ember.set(taskGroup, 'numRunning', numRunning);
+      Ember.set(taskGroup, 'numQueued', numQueued);
+      taskGroup = taskGroup.get('group');
+    }
+  }
+
+  function filterFinished(taskInstances) {
+    var ret = [];
+    for (var i = 0, l = taskInstances.length; i < l; ++i) {
+      var taskInstance = taskInstances[i];
+      if (Ember.get(taskInstance, 'isFinished') === false) {
+        ret.push(taskInstance);
+      }
+    }
+    return ret;
+  }
+
+  exports.default = Scheduler;
+});
+;define('ember-concurrency/-task-group', ['exports', 'ember-concurrency/utils', 'ember-concurrency/-task-state-mixin', 'ember-concurrency/-property-modifiers-mixin'], function (exports, _utils, _taskStateMixin, _propertyModifiersMixin) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.TaskGroup = undefined;
+  exports.TaskGroupProperty = TaskGroupProperty;
+  var TaskGroup = exports.TaskGroup = Ember.Object.extend(_taskStateMixin.default, {
+    isTaskGroup: true,
+
+    toString: function toString() {
+      return '<TaskGroup:' + this._propertyName + '>';
+    },
+
+
+    _numRunningOrNumQueued: Ember.computed.or('numRunning', 'numQueued'),
+    isRunning: Ember.computed.bool('_numRunningOrNumQueued'),
+    isQueued: false
+  });
+
+  function TaskGroupProperty() {
+    for (var _len = arguments.length, decorators = Array(_len), _key = 0; _key < _len; _key++) {
+      decorators[_key] = arguments[_key];
+    }
+
+    var taskFn = decorators.pop();
+    var tp = this;
+    _utils._ComputedProperty.call(this, function (_propertyName) {
+      return TaskGroup.create({
+        fn: taskFn,
+        context: this,
+        _origin: this,
+        _taskGroupPath: tp._taskGroupPath,
+        _scheduler: (0, _propertyModifiersMixin.resolveScheduler)(tp, this, TaskGroup),
+        _propertyName: _propertyName
+      });
+    });
+  }
+
+  TaskGroupProperty.prototype = Object.create(_utils._ComputedProperty.prototype);
+  (0, _utils.objectAssign)(TaskGroupProperty.prototype, _propertyModifiersMixin.propertyModifiers, {
+    constructor: TaskGroupProperty
+  });
+});
+;define('ember-concurrency/-task-instance', ['exports', 'ember-concurrency/utils'], function (exports, _utils) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.PERFORM_TYPE_LINKED = exports.PERFORM_TYPE_UNLINKED = exports.PERFORM_TYPE_DEFAULT = undefined;
+  exports.getRunningInstance = getRunningInstance;
+  exports.didCancel = didCancel;
+  exports.go = go;
+  exports.wrap = wrap;
+
+
+  var TASK_CANCELATION_NAME = 'TaskCancelation';
+
+  var COMPLETION_PENDING = 0;
+  var COMPLETION_SUCCESS = 1;
+  var COMPLETION_ERROR = 2;
+  var COMPLETION_CANCEL = 3;
+
+  var GENERATOR_STATE_BEFORE_CREATE = "BEFORE_CREATE";
+  var GENERATOR_STATE_HAS_MORE_VALUES = "HAS_MORE_VALUES";
+  var GENERATOR_STATE_DONE = "DONE";
+  var GENERATOR_STATE_ERRORED = "ERRORED";
+
+  var PERFORM_TYPE_DEFAULT = exports.PERFORM_TYPE_DEFAULT = "PERFORM_TYPE_DEFAULT";
+  var PERFORM_TYPE_UNLINKED = exports.PERFORM_TYPE_UNLINKED = "PERFORM_TYPE_UNLINKED";
+  var PERFORM_TYPE_LINKED = exports.PERFORM_TYPE_LINKED = "PERFORM_TYPE_LINKED";
+
+  var TASK_INSTANCE_STACK = [];
+
+  function getRunningInstance() {
+    return TASK_INSTANCE_STACK[TASK_INSTANCE_STACK.length - 1];
+  }
+
+  function handleYieldedUnknownThenable(thenable, taskInstance, resumeIndex) {
+    thenable.then(function (value) {
+      taskInstance.proceed(resumeIndex, _utils.YIELDABLE_CONTINUE, value);
+    }, function (error) {
+      taskInstance.proceed(resumeIndex, _utils.YIELDABLE_THROW, error);
+    });
+  }
+
+  /**
+   * Returns true if the object passed to it is a TaskCancelation error.
+   * If you call `someTask.perform().catch(...)` or otherwise treat
+   * a {@linkcode TaskInstance} like a promise, you may need to
+   * handle the cancelation of a TaskInstance differently from
+   * other kinds of errors it might throw, and you can use this
+   * convenience function to distinguish cancelation from errors.
+   *
+   * ```js
+   * click() {
+   *   this.get('myTask').perform().catch(e => {
+   *     if (!didCancel(e)) { throw e; }
+   *   });
+   * }
+   * ```
+   *
+   * @param {Object} error the caught error, which might be a TaskCancelation
+   * @returns {Boolean}
+   */
+  function didCancel(e) {
+    return e && e.name === TASK_CANCELATION_NAME;
+  }
+
+  function forwardToInternalPromise(method) {
+    return function () {
+      var _get;
+
+      this._hasSubscribed = true;
+      return (_get = this.get('_promise'))[method].apply(_get, arguments);
+    };
+  }
+
+  function spliceSlice(str, index, count, add) {
+    return str.slice(0, index) + (add || "") + str.slice(index + count);
+  }
+
+  /**
+    A `TaskInstance` represent a single execution of a
+    {@linkcode Task}. Every call to {@linkcode Task#perform} returns
+    a `TaskInstance`.
+  
+    `TaskInstance`s are cancelable, either explicitly
+    via {@linkcode TaskInstance#cancel} or {@linkcode Task#cancelAll},
+    or automatically due to the host object being destroyed, or
+    because concurrency policy enforced by a
+    {@linkcode TaskProperty Task Modifier} canceled the task instance.
+  
+    <style>
+      .ignore-this--this-is-here-to-hide-constructor,
+      #TaskInstance { display: none }
+    </style>
+  
+    @class TaskInstance
+  */
+  var taskInstanceAttrs = {
+    iterator: null,
+    _disposer: null,
+    _completionState: COMPLETION_PENDING,
+    task: null,
+    args: [],
+    _hasSubscribed: false,
+    _runLoop: true,
+    _debug: false,
+    cancelReason: null,
+    _performType: PERFORM_TYPE_DEFAULT,
+    _expectsLinkedYield: false,
+
+    /**
+     * If this TaskInstance runs to completion by returning a property
+     * other than a rejecting promise, this property will be set
+     * with that value.
+     *
+     * @memberof TaskInstance
+     * @instance
+     * @readOnly
+     */
+    value: null,
+
+    /**
+     * If this TaskInstance is canceled or throws an error (or yields
+     * a promise that rejects), this property will be set with that error.
+     * Otherwise, it is null.
+     *
+     * @memberof TaskInstance
+     * @instance
+     * @readOnly
+     */
+    error: null,
+
+    /**
+     * True if the task instance is fulfilled.
+     *
+     * @memberof TaskInstance
+     * @instance
+     * @readOnly
+     */
+    isSuccessful: false,
+
+    /**
+     * True if the task instance resolves to a rejection.
+     *
+     * @memberof TaskInstance
+     * @instance
+     * @readOnly
+     */
+    isError: false,
+
+    /**
+     * True if the task instance was canceled before it could run to completion.
+     *
+     * @memberof TaskInstance
+     * @instance
+     * @readOnly
+     */
+    isCanceled: Ember.computed.and('isCanceling', 'isFinished'),
+    isCanceling: false,
+
+    /**
+     * True if the task instance has started, else false.
+     *
+     * @memberof TaskInstance
+     * @instance
+     * @readOnly
+     */
+    hasStarted: false,
+
+    /**
+     * True if the task has run to completion.
+     *
+     * @memberof TaskInstance
+     * @instance
+     * @readOnly
+     */
+    isFinished: false,
+
+    /**
+     * True if the task is still running.
+     *
+     * @memberof TaskInstance
+     * @instance
+     * @readOnly
+     */
+    isRunning: Ember.computed.not('isFinished'),
+
+    /**
+     * Describes the state that the task instance is in. Can be used for debugging,
+     * or potentially driving some UI state. Possible values are:
+     *
+     * - `"dropped"`: task instance was canceled before it started
+     * - `"canceled"`: task instance was canceled before it could finish
+     * - `"finished"`: task instance ran to completion (even if an exception was thrown)
+     * - `"running"`: task instance is currently running (returns true even if
+     *     is paused on a yielded promise)
+     * - `"waiting"`: task instance hasn't begun running yet (usually
+     *     because the task is using the {@linkcode TaskProperty#enqueue .enqueue()}
+     *     task modifier)
+     *
+     * The animated timeline examples on the [Task Concurrency](/#/docs/task-concurrency)
+     * docs page make use of this property.
+     *
+     * @memberof TaskInstance
+     * @instance
+     * @readOnly
+     */
+    state: Ember.computed('isDropped', 'isCanceling', 'hasStarted', 'isFinished', function () {
+      if (Ember.get(this, 'isDropped')) {
+        return 'dropped';
+      } else if (Ember.get(this, 'isCanceling')) {
+        return 'canceled';
+      } else if (Ember.get(this, 'isFinished')) {
+        return 'finished';
+      } else if (Ember.get(this, 'hasStarted')) {
+        return 'running';
+      } else {
+        return 'waiting';
+      }
+    }),
+
+    /**
+     * True if the TaskInstance was canceled before it could
+     * ever start running. For example, calling
+     * {@linkcode Task#perform .perform()} twice on a
+     * task with the {@linkcode TaskProperty#drop .drop()} modifier applied
+     * will result in the second task instance being dropped.
+     *
+     * @memberof TaskInstance
+     * @instance
+     * @readOnly
+     */
+    isDropped: Ember.computed('isCanceling', 'hasStarted', function () {
+      return Ember.get(this, 'isCanceling') && !Ember.get(this, 'hasStarted');
+    }),
+
+    _index: 1,
+
+    _start: function _start() {
+      if (this.hasStarted || this.isCanceling) {
+        return this;
+      }
+      Ember.set(this, 'hasStarted', true);
+      this._scheduleProceed(_utils.YIELDABLE_CONTINUE, undefined);
+      return this;
+    },
+    toString: function toString() {
+      var taskString = "" + this.task;
+      return spliceSlice(taskString, -1, 0, '.perform()');
+    },
+    cancel: function cancel() {
+      var cancelReason = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : ".cancel() was explicitly called";
+
+      if (this.isCanceling || Ember.get(this, 'isFinished')) {
+        return;
+      }
+      Ember.set(this, 'isCanceling', true);
+
+      var name = Ember.get(this, 'task._propertyName') || "<unknown>";
+      Ember.set(this, 'cancelReason', 'TaskInstance \'' + name + '\' was canceled because ' + cancelReason + '. For more information, see: http://ember-concurrency.com/#/docs/task-cancelation-help');
+
+      if (this.hasStarted) {
+        this._proceedSoon(_utils.YIELDABLE_CANCEL, null);
+      } else {
+        this._finalize(null, COMPLETION_CANCEL);
+      }
+    },
+
+
+    _defer: null,
+    _promise: Ember.computed(function () {
+      this._defer = Ember.RSVP.defer();
+      this._maybeResolveDefer();
+      return this._defer.promise;
+    }),
+
+    _maybeResolveDefer: function _maybeResolveDefer() {
+      if (!this._defer || !this._completionState) {
+        return;
+      }
+
+      if (this._completionState === COMPLETION_SUCCESS) {
+        this._defer.resolve(this.value);
+      } else {
+        this._defer.reject(this.error);
+      }
+    },
+
+
+    /**
+     * Returns a promise that resolves with the value returned
+     * from the task's (generator) function, or rejects with
+     * either the exception thrown from the task function, or
+     * an error with a `.name` property with value `"TaskCancelation"`.
+     *
+     * @method then
+     * @memberof TaskInstance
+     * @instance
+     * @return {Promise}
+     */
+    then: forwardToInternalPromise('then'),
+
+    /**
+     * @method catch
+     * @memberof TaskInstance
+     * @instance
+     * @return {Promise}
+     */
+    catch: forwardToInternalPromise('catch'),
+
+    /**
+     * @method finally
+     * @memberof TaskInstance
+     * @instance
+     * @return {Promise}
+     */
+    finally: forwardToInternalPromise('finally'),
+
+    _finalize: function _finalize(_value, _completionState) {
+      var completionState = _completionState;
+      var value = _value;
+      this._index++;
+
+      if (this.isCanceling) {
+        completionState = COMPLETION_CANCEL;
+        value = new Error(this.cancelReason);
+
+        if (this._debug || Ember.ENV.DEBUG_TASKS) {
+          Ember.Logger.log(this.cancelReason);
+        }
+
+        value.name = TASK_CANCELATION_NAME;
+        value.taskInstance = this;
+      }
+
+      Ember.set(this, '_completionState', completionState);
+      Ember.set(this, '_result', value);
+
+      if (completionState === COMPLETION_SUCCESS) {
+        Ember.set(this, 'isSuccessful', true);
+        Ember.set(this, 'value', value);
+      } else if (completionState === COMPLETION_ERROR) {
+        Ember.set(this, 'isError', true);
+        Ember.set(this, 'error', value);
+      } else if (completionState === COMPLETION_CANCEL) {
+        Ember.set(this, 'error', value);
+      }
+
+      Ember.set(this, 'isFinished', true);
+
+      this._dispose();
+      this._runFinalizeCallbacks();
+    },
+
+
+    _finalizeCallbacks: null,
+    _onFinalize: function _onFinalize(callback) {
+      if (!this._finalizeCallbacks) {
+        this._finalizeCallbacks = [];
+      }
+      this._finalizeCallbacks.push(callback);
+
+      if (this._completionState) {
+        this._runFinalizeCallbacks();
+      }
+    },
+    _runFinalizeCallbacks: function _runFinalizeCallbacks() {
+      this._maybeResolveDefer();
+      if (this._finalizeCallbacks) {
+        for (var i = 0, l = this._finalizeCallbacks.length; i < l; ++i) {
+          this._finalizeCallbacks[i]();
+        }
+        this._finalizeCallbacks = null;
+      }
+
+      this._maybeThrowUnhandledTaskErrorLater();
+    },
+    _maybeThrowUnhandledTaskErrorLater: function _maybeThrowUnhandledTaskErrorLater() {
+      var _this = this;
+
+      // this backports the Ember 2.0+ RSVP _onError 'after' microtask behavior to Ember < 2.0
+      if (!this._hasSubscribed && this._completionState === COMPLETION_ERROR) {
+        Ember.run.schedule(Ember.run.queues[Ember.run.queues.length - 1], function () {
+          if (!_this._hasSubscribed && !didCancel(_this.error)) {
+            Ember.RSVP.reject(_this.error);
+          }
+        });
+      }
+    },
+    _dispose: function _dispose() {
+      if (this._disposer) {
+        var disposer = this._disposer;
+        this._disposer = null;
+
+        // TODO: test erroring disposer
+        disposer();
+      }
+    },
+    _isGeneratorDone: function _isGeneratorDone() {
+      var state = this._generatorState;
+      return state === GENERATOR_STATE_DONE || state === GENERATOR_STATE_ERRORED;
+    },
+    _resumeGenerator: function _resumeGenerator(nextValue, iteratorMethod) {
+      (true && !(!this._isGeneratorDone()) && Ember.assert("The task generator function has already run to completion. This is probably an ember-concurrency bug.", !this._isGeneratorDone()));
+
+
+      try {
+        TASK_INSTANCE_STACK.push(this);
+
+        var iterator = this._getIterator();
+        var result = iterator[iteratorMethod](nextValue);
+
+        this._generatorValue = result.value;
+        if (result.done) {
+          this._generatorState = GENERATOR_STATE_DONE;
+        } else {
+          this._generatorState = GENERATOR_STATE_HAS_MORE_VALUES;
+        }
+      } catch (e) {
+        this._generatorValue = e;
+        this._generatorState = GENERATOR_STATE_ERRORED;
+      } finally {
+        if (this._expectsLinkedYield) {
+          if (!this._generatorValue || this._generatorValue._performType !== PERFORM_TYPE_LINKED) {
+            Ember.Logger.warn("You performed a .linked() task without immediately yielding/returning it. This is currently unsupported (but might be supported in future version of ember-concurrency).");
+          }
+          this._expectsLinkedYield = false;
+        }
+
+        TASK_INSTANCE_STACK.pop();
+      }
+    },
+    _getIterator: function _getIterator() {
+      if (!this.iterator) {
+        this.iterator = this._makeIterator();
+      }
+      return this.iterator;
+    },
+    _makeIterator: function _makeIterator() {
+      return this.fn.apply(this.context, this.args);
+    },
+    _advanceIndex: function _advanceIndex(index) {
+      if (this._index === index) {
+        return ++this._index;
+      }
+    },
+    _proceedSoon: function _proceedSoon(yieldResumeType, value) {
+      var _this2 = this;
+
+      this._advanceIndex(this._index);
+      if (this._runLoop) {
+        Ember.run.join(function () {
+          Ember.run.schedule('actions', _this2, _this2._proceed, yieldResumeType, value);
+        });
+      } else {
+        setTimeout(function () {
+          return _this2._proceed(yieldResumeType, value);
+        }, 1);
+      }
+    },
+    proceed: function proceed(index, yieldResumeType, value) {
+      if (this._completionState) {
+        return;
+      }
+      if (!this._advanceIndex(index)) {
+        return;
+      }
+      this._proceedSoon(yieldResumeType, value);
+    },
+    _scheduleProceed: function _scheduleProceed(yieldResumeType, value) {
+      var _this3 = this;
+
+      if (this._completionState) {
+        return;
+      }
+
+      if (this._runLoop && !Ember.run.currentRunLoop) {
+        Ember.run(this, this._proceed, yieldResumeType, value);
+        return;
+      } else if (!this._runLoop && Ember.run.currentRunLoop) {
+        setTimeout(function () {
+          return _this3._proceed(yieldResumeType, value);
+        }, 1);
+        return;
+      } else {
+        this._proceed(yieldResumeType, value);
+      }
+    },
+    _proceed: function _proceed(yieldResumeType, value) {
+      if (this._completionState) {
+        return;
+      }
+
+      if (this._generatorState === GENERATOR_STATE_DONE) {
+        this._handleResolvedReturnedValue(yieldResumeType, value);
+      } else {
+        this._handleResolvedContinueValue(yieldResumeType, value);
+      }
+    },
+    _handleResolvedReturnedValue: function _handleResolvedReturnedValue(yieldResumeType, value) {
+      (true && !(this._completionState === COMPLETION_PENDING) && Ember.assert("expected completion state to be pending", this._completionState === COMPLETION_PENDING));
+      (true && !(this._generatorState === GENERATOR_STATE_DONE) && Ember.assert("expected generator to be done", this._generatorState === GENERATOR_STATE_DONE));
+
+
+      switch (yieldResumeType) {
+        case _utils.YIELDABLE_CONTINUE:
+        case _utils.YIELDABLE_RETURN:
+          this._finalize(value, COMPLETION_SUCCESS);
+          break;
+        case _utils.YIELDABLE_THROW:
+          this._finalize(value, COMPLETION_ERROR);
+          break;
+        case _utils.YIELDABLE_CANCEL:
+          Ember.set(this, 'isCanceling', true);
+          this._finalize(null, COMPLETION_CANCEL);
+          break;
+      }
+    },
+
+
+    _generatorState: GENERATOR_STATE_BEFORE_CREATE,
+    _generatorValue: null,
+    _handleResolvedContinueValue: function _handleResolvedContinueValue(_yieldResumeType, resumeValue) {
+      var iteratorMethod = _yieldResumeType;
+      if (iteratorMethod === _utils.YIELDABLE_CANCEL) {
+        Ember.set(this, 'isCanceling', true);
+        iteratorMethod = _utils.YIELDABLE_RETURN;
+      }
+
+      this._dispose();
+
+      var beforeIndex = this._index;
+      this._resumeGenerator(resumeValue, iteratorMethod);
+
+      if (!this._advanceIndex(beforeIndex)) {
+        return;
+      }
+
+      if (this._generatorState === GENERATOR_STATE_ERRORED) {
+        this._finalize(this._generatorValue, COMPLETION_ERROR);
+        return;
+      }
+
+      this._handleYieldedValue();
+    },
+    _handleYieldedValue: function _handleYieldedValue() {
+      var yieldedValue = this._generatorValue;
+      if (!yieldedValue) {
+        this._proceedWithSimpleValue(yieldedValue);
+        return;
+      }
+
+      if (yieldedValue instanceof _utils.RawValue) {
+        this._proceedWithSimpleValue(yieldedValue.value);
+        return;
+      }
+
+      this._addDisposer(yieldedValue.__ec_cancel__);
+
+      if (yieldedValue[_utils.yieldableSymbol]) {
+        this._invokeYieldable(yieldedValue);
+      } else if (typeof yieldedValue.then === 'function') {
+        handleYieldedUnknownThenable(yieldedValue, this, this._index);
+      } else {
+        this._proceedWithSimpleValue(yieldedValue);
+      }
+    },
+    _proceedWithSimpleValue: function _proceedWithSimpleValue(yieldedValue) {
+      this.proceed(this._index, _utils.YIELDABLE_CONTINUE, yieldedValue);
+    },
+    _addDisposer: function _addDisposer(maybeDisposer) {
+      if (typeof maybeDisposer === 'function') {
+        var priorDisposer = this._disposer;
+        if (priorDisposer) {
+          this._disposer = function () {
+            priorDisposer();
+            maybeDisposer();
+          };
+        } else {
+          this._disposer = maybeDisposer;
+        }
+      }
+    },
+    _invokeYieldable: function _invokeYieldable(yieldedValue) {
+      try {
+        var maybeDisposer = yieldedValue[_utils.yieldableSymbol](this, this._index);
+        this._addDisposer(maybeDisposer);
+      } catch (e) {
+        // TODO: handle erroneous yieldable implementation
+      }
+    }
+  };
+
+  taskInstanceAttrs[_utils.yieldableSymbol] = function handleYieldedTaskInstance(parentTaskInstance, resumeIndex) {
+    var yieldedTaskInstance = this;
+    yieldedTaskInstance._hasSubscribed = true;
+
+    yieldedTaskInstance._onFinalize(function () {
+      var state = yieldedTaskInstance._completionState;
+      if (state === COMPLETION_SUCCESS) {
+        parentTaskInstance.proceed(resumeIndex, _utils.YIELDABLE_CONTINUE, yieldedTaskInstance.value);
+      } else if (state === COMPLETION_ERROR) {
+        parentTaskInstance.proceed(resumeIndex, _utils.YIELDABLE_THROW, yieldedTaskInstance.error);
+      } else if (state === COMPLETION_CANCEL) {
+        parentTaskInstance.proceed(resumeIndex, _utils.YIELDABLE_CANCEL, null);
+      }
+    });
+
+    return function disposeYieldedTaskInstance() {
+      if (yieldedTaskInstance._performType !== PERFORM_TYPE_UNLINKED) {
+        if (yieldedTaskInstance._performType === PERFORM_TYPE_DEFAULT) {
+          var parentObj = Ember.get(parentTaskInstance, 'task.context');
+          var childObj = Ember.get(yieldedTaskInstance, 'task.context');
+          if (parentObj && childObj && parentObj !== childObj && parentObj.isDestroying && Ember.get(yieldedTaskInstance, 'isRunning')) {
+            var parentName = '`' + parentTaskInstance.task._propertyName + '`';
+            var childName = '`' + yieldedTaskInstance.task._propertyName + '`';
+            Ember.Logger.warn('ember-concurrency detected a potentially hazardous "self-cancel loop" between parent task ' + parentName + ' and child task ' + childName + '. If you want child task ' + childName + ' to be canceled when parent task ' + parentName + ' is canceled, please change `.perform()` to `.linked().perform()`. If you want child task ' + childName + ' to keep running after parent task ' + parentName + ' is canceled, change it to `.unlinked().perform()`');
+          }
+        }
+        yieldedTaskInstance.cancel();
+      }
+    };
+  };
+
+  var TaskInstance = Ember.Object.extend(taskInstanceAttrs);
+
+  function go(args, fn) {
+    var attrs = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+
+    return TaskInstance.create(Object.assign({ args: args, fn: fn, context: this }, attrs))._start();
+  }
+
+  function wrap(fn) {
+    var attrs = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    return function wrappedRunnerFunction() {
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      return go.call(this, args, fn, attrs);
+    };
+  }
+
+  exports.default = TaskInstance;
+});
+;define('ember-concurrency/-task-property', ['exports', 'ember-concurrency/-task-instance', 'ember-concurrency/-task-state-mixin', 'ember-concurrency/-task-group', 'ember-concurrency/-property-modifiers-mixin', 'ember-concurrency/utils', 'ember-concurrency/-encapsulated-task'], function (exports, _taskInstance, _taskStateMixin, _taskGroup, _propertyModifiersMixin, _utils, _encapsulatedTask) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.Task = undefined;
+  exports.TaskProperty = TaskProperty;
+
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  function _toConsumableArray(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+        arr2[i] = arr[i];
+      }
+
+      return arr2;
+    } else {
+      return Array.from(arr);
+    }
+  }
+
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  };
+
+  var PerformProxy = Ember.Object.extend({
+    _task: null,
+    _performType: null,
+    _linkedObject: null,
+
+    perform: function perform() {
+      for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+        args[_key] = arguments[_key];
+      }
+
+      return this._task._performShared(args, this._performType, this._linkedObject);
+    }
+  });
+
+  /**
+    The `Task` object lives on a host Ember object (e.g.
+    a Component, Route, or Controller). You call the
+    {@linkcode Task#perform .perform()} method on this object
+    to create run individual {@linkcode TaskInstance}s,
+    and at any point, you can call the {@linkcode Task#cancelAll .cancelAll()}
+    method on this object to cancel all running or enqueued
+    {@linkcode TaskInstance}s.
+  
+  
+    <style>
+      .ignore-this--this-is-here-to-hide-constructor,
+      #Task{ display: none }
+    </style>
+  
+    @class Task
+  */
+  var Task = exports.Task = Ember.Object.extend(_taskStateMixin.default, _defineProperty({
+    /**
+     * `true` if any current task instances are running.
+     *
+     * @memberof Task
+     * @member {boolean} isRunning
+     * @instance
+     * @readOnly
+     */
+
+    /**
+     * `true` if any future task instances are queued.
+     *
+     * @memberof Task
+     * @member {boolean} isQueued
+     * @instance
+     * @readOnly
+     */
+
+    /**
+     * `true` if the task is not in the running or queued state.
+     *
+     * @memberof Task
+     * @member {boolean} isIdle
+     * @instance
+     * @readOnly
+     */
+
+    /**
+     * The current state of the task: `"running"`, `"queued"` or `"idle"`.
+     *
+     * @memberof Task
+     * @member {string} state
+     * @instance
+     * @readOnly
+     */
+
+    /**
+     * The most recently started task instance.
+     *
+     * @memberof Task
+     * @member {TaskInstance} last
+     * @instance
+     * @readOnly
+     */
+
+    /**
+     * The most recent task instance that is currently running.
+     *
+     * @memberof Task
+     * @member {TaskInstance} lastRunning
+     * @instance
+     * @readOnly
+     */
+
+    /**
+     * The most recently performed task instance.
+     *
+     * @memberof Task
+     * @member {TaskInstance} lastPerformed
+     * @instance
+     * @readOnly
+     */
+
+    /**
+     * The most recent task instance that succeeded.
+     *
+     * @memberof Task
+     * @member {TaskInstance} lastSuccessful
+     * @instance
+     * @readOnly
+     */
+
+    /**
+     * The most recently completed task instance.
+     *
+     * @memberof Task
+     * @member {TaskInstance} lastComplete
+     * @instance
+     * @readOnly
+     */
+
+    /**
+     * The most recent task instance that errored.
+     *
+     * @memberof Task
+     * @member {TaskInstance} lastErrored
+     * @instance
+     * @readOnly
+     */
+
+    /**
+     * The most recently canceled task instance.
+     *
+     * @memberof Task
+     * @member {TaskInstance} lastCanceled
+     * @instance
+     * @readOnly
+     */
+
+    /**
+     * The most recent task instance that is incomplete.
+     *
+     * @memberof Task
+     * @member {TaskInstance} lastIncomplete
+     * @instance
+     * @readOnly
+     */
+
+    /**
+     * The number of times this task has been performed.
+     *
+     * @memberof Task
+     * @member {number} performCount
+     * @instance
+     * @readOnly
+     */
+
+    fn: null,
+    context: null,
+    _observes: null,
+    _curryArgs: null,
+    _linkedObjects: null,
+
+    init: function init() {
+      this._super.apply(this, arguments);
+
+      if (_typeof(this.fn) === 'object') {
+        var owner = Ember.getOwner(this.context);
+        var ownerInjection = owner ? owner.ownerInjection() : {};
+        this._taskInstanceFactory = _encapsulatedTask.default.extend(ownerInjection, this.fn);
+      }
+
+      (0, _utils._cleanupOnDestroy)(this.context, this, 'cancelAll', 'the object it lives on was destroyed or unrendered');
+    },
+    _curry: function _curry() {
+      var task = this._clone();
+
+      for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+        args[_key2] = arguments[_key2];
+      }
+
+      task._curryArgs = [].concat(_toConsumableArray(this._curryArgs || []), _toConsumableArray(args));
+      return task;
+    },
+    linked: function linked() {
+      var taskInstance = (0, _taskInstance.getRunningInstance)();
+      if (!taskInstance) {
+        throw new Error('You can only call .linked() from within a task.');
+      }
+
+      return PerformProxy.create({
+        _task: this,
+        _performType: _taskInstance.PERFORM_TYPE_LINKED,
+        _linkedObject: taskInstance
+      });
+    },
+    unlinked: function unlinked() {
+      return PerformProxy.create({
+        _task: this,
+        _performType: _taskInstance.PERFORM_TYPE_UNLINKED
+      });
+    },
+    _clone: function _clone() {
+      return Task.create({
+        fn: this.fn,
+        context: this.context,
+        _origin: this._origin,
+        _taskGroupPath: this._taskGroupPath,
+        _scheduler: this._scheduler,
+        _propertyName: this._propertyName
+      });
+    },
+
+
+    /**
+     * This property is true if this task is NOT running, i.e. the number
+     * of currently running TaskInstances is zero.
+     *
+     * This property is useful for driving the state/style of buttons
+     * and loading UI, among other things.
+     *
+     * @memberof Task
+     * @instance
+     * @readOnly
+     */
+
+    /**
+     * This property is true if this task is running, i.e. the number
+     * of currently running TaskInstances is greater than zero.
+     *
+     * This property is useful for driving the state/style of buttons
+     * and loading UI, among other things.
+     *
+     * @memberof Task
+     * @instance
+     * @readOnly
+     */
+
+    /**
+     * EXPERIMENTAL
+     *
+     * This value describes what would happen to the TaskInstance returned
+     * from .perform() if .perform() were called right now.  Returns one of
+     * the following values:
+     *
+     * - `succeed`: new TaskInstance will start running immediately
+     * - `drop`: new TaskInstance will be dropped
+     * - `enqueue`: new TaskInstance will be enqueued for later execution
+     *
+     * @memberof Task
+     * @instance
+     * @private
+     * @readOnly
+     */
+
+    /**
+     * EXPERIMENTAL
+     *
+     * Returns true if calling .perform() right now would immediately start running
+     * the returned TaskInstance.
+     *
+     * @memberof Task
+     * @instance
+     * @private
+     * @readOnly
+     */
+
+    /**
+     * EXPERIMENTAL
+     *
+     * Returns true if calling .perform() right now would immediately cancel (drop)
+     * the returned TaskInstance.
+     *
+     * @memberof Task
+     * @instance
+     * @private
+     * @readOnly
+     */
+
+    /**
+     * EXPERIMENTAL
+     *
+     * Returns true if calling .perform() right now would enqueue the TaskInstance
+     * rather than execute immediately.
+     *
+     * @memberof Task
+     * @instance
+     * @private
+     * @readOnly
+     */
+
+    /**
+     * EXPERIMENTAL
+     *
+     * Returns true if calling .perform() right now would cause a previous task to be canceled
+     *
+     * @memberof Task
+     * @instance
+     * @private
+     * @readOnly
+     */
+
+    /**
+     * The current number of active running task instances. This
+     * number will never exceed maxConcurrency.
+     *
+     * @memberof Task
+     * @instance
+     * @readOnly
+     */
+
+    /**
+     * Cancels all running or queued `TaskInstance`s for this Task.
+     * If you're trying to cancel a specific TaskInstance (rather
+     * than all of the instances running under this task) call
+     * `.cancel()` on the specific TaskInstance.
+     *
+     * @method cancelAll
+     * @memberof Task
+     * @instance
+     */
+
+    toString: function toString() {
+      return '<Task:' + this._propertyName + '>';
+    },
+
+
+    _taskInstanceFactory: _taskInstance.default,
+
+    /**
+     * Creates a new {@linkcode TaskInstance} and attempts to run it right away.
+     * If running this task instance would increase the task's concurrency
+     * to a number greater than the task's maxConcurrency, this task
+     * instance might be immediately canceled (dropped), or enqueued
+     * to run at later time, after the currently running task(s) have finished.
+     *
+     * @method perform
+     * @memberof Task
+     * @param {*} arg* - args to pass to the task function
+     * @instance
+     */
+    perform: function perform() {
+      for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+        args[_key3] = arguments[_key3];
+      }
+
+      return this._performShared(args, _taskInstance.PERFORM_TYPE_DEFAULT, null);
+    },
+    _performShared: function _performShared(args, performType, linkedObject) {
+      var fullArgs = this._curryArgs ? [].concat(_toConsumableArray(this._curryArgs), _toConsumableArray(args)) : args;
+      var taskInstance = this._taskInstanceFactory.create({
+        fn: this.fn,
+        args: fullArgs,
+        context: this.context,
+        owner: this.context,
+        task: this,
+        _debug: this._debug,
+        _origin: this,
+        _performType: performType
+      });
+
+      if (performType === _taskInstance.PERFORM_TYPE_LINKED) {
+        linkedObject._expectsLinkedYield = true;
+      }
+
+      if (this.context.isDestroying) {
+        // TODO: express this in terms of lifetimes; a task linked to
+        // a dead lifetime should immediately cancel.
+        taskInstance.cancel();
+      }
+
+      this._scheduler.schedule(taskInstance);
+      return taskInstance;
+    }
+  }, _utils.INVOKE, function () {
+    return this.perform.apply(this, arguments);
+  }));
+
+  /**
+    A {@link TaskProperty} is the Computed Property-like object returned
+    from the {@linkcode task} function. You can call Task Modifier methods
+    on this object to configure the behavior of the {@link Task}.
+  
+    See [Managing Task Concurrency](/#/docs/task-concurrency) for an
+    overview of all the different task modifiers you can use and how
+    they impact automatic cancelation / enqueueing of task instances.
+  
+    <style>
+      .ignore-this--this-is-here-to-hide-constructor,
+      #TaskProperty { display: none }
+    </style>
+  
+    @class TaskProperty
+  */
+  function TaskProperty(taskFn) {
+    var tp = this;
+    _utils._ComputedProperty.call(this, function (_propertyName) {
+      taskFn.displayName = _propertyName + ' (task)';
+      return Task.create({
+        fn: tp.taskFn,
+        context: this,
+        _origin: this,
+        _taskGroupPath: tp._taskGroupPath,
+        _scheduler: (0, _propertyModifiersMixin.resolveScheduler)(tp, this, _taskGroup.TaskGroup),
+        _propertyName: _propertyName,
+        _debug: tp._debug
+      });
+    });
+
+    this.taskFn = taskFn;
+    this.eventNames = null;
+    this.cancelEventNames = null;
+    this._observes = null;
+  }
+
+  TaskProperty.prototype = Object.create(_utils._ComputedProperty.prototype);
+  (0, _utils.objectAssign)(TaskProperty.prototype, _propertyModifiersMixin.propertyModifiers, {
+    constructor: TaskProperty,
+
+    setup: function setup(proto, taskName) {
+      if (this._maxConcurrency !== Infinity && !this._hasSetBufferPolicy) {
+        Ember.Logger.warn('The use of maxConcurrency() without a specified task modifier is deprecated and won\'t be supported in future versions of ember-concurrency. Please specify a task modifier instead, e.g. `' + taskName + ': task(...).enqueue().maxConcurrency(' + this._maxConcurrency + ')`');
+      }
+
+      registerOnPrototype(Ember.addListener, proto, this.eventNames, taskName, 'perform', false);
+      registerOnPrototype(Ember.addListener, proto, this.cancelEventNames, taskName, 'cancelAll', false);
+      registerOnPrototype(Ember.addObserver, proto, this._observes, taskName, 'perform', true);
+    },
+    on: function on() {
+      this.eventNames = this.eventNames || [];
+      this.eventNames.push.apply(this.eventNames, arguments);
+      return this;
+    },
+    cancelOn: function cancelOn() {
+      this.cancelEventNames = this.cancelEventNames || [];
+      this.cancelEventNames.push.apply(this.cancelEventNames, arguments);
+      return this;
+    },
+    observes: function observes() {
+      for (var _len4 = arguments.length, properties = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+        properties[_key4] = arguments[_key4];
+      }
+
+      this._observes = properties;
+      return this;
+    },
+    perform: function perform() {
+      throw new Error("It looks like you tried to perform a task via `this.nameOfTask.perform()`, which isn't supported. Use `this.get('nameOfTask').perform()` instead.");
+    }
+  });
+
+  function registerOnPrototype(addListenerOrObserver, proto, names, taskName, taskMethod, once) {
+    if (names) {
+      for (var i = 0; i < names.length; ++i) {
+        var name = names[i];
+        addListenerOrObserver(proto, name, null, makeTaskCallback(taskName, taskMethod, once));
+      }
+    }
+  }
+
+  function makeTaskCallback(taskName, method, once) {
+    return function () {
+      var task = this.get(taskName);
+
+      if (once) {
+        Ember.run.scheduleOnce.apply(undefined, ['actions', task, method].concat(Array.prototype.slice.call(arguments)));
+      } else {
+        task[method].apply(task, arguments);
+      }
+    };
+  }
+});
+;define('ember-concurrency/-task-state-mixin', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  var alias = Ember.computed.alias;
+  exports.default = Ember.Mixin.create({
+    isRunning: Ember.computed.gt('numRunning', 0),
+    isQueued: Ember.computed.gt('numQueued', 0),
+    isIdle: Ember.computed('isRunning', 'isQueued', function () {
+      return !this.get('isRunning') && !this.get('isQueued');
+    }),
+
+    state: Ember.computed('isRunning', 'isQueued', function () {
+      if (this.get('isRunning')) {
+        return 'running';
+      } else if (this.get('isQueued')) {
+        return 'queued';
+      } else {
+        return 'idle';
+      }
+    }),
+
+    _propertyName: null,
+    _origin: null,
+    name: alias('_propertyName'),
+
+    concurrency: alias('numRunning'),
+    last: alias('_scheduler.lastStarted'),
+    lastRunning: alias('_scheduler.lastRunning'),
+    lastPerformed: alias('_scheduler.lastPerformed'),
+    lastSuccessful: alias('_scheduler.lastSuccessful'),
+    lastComplete: alias('_scheduler.lastComplete'),
+    lastErrored: alias('_scheduler.lastErrored'),
+    lastCanceled: alias('_scheduler.lastCanceled'),
+    lastIncomplete: alias('_scheduler.lastIncomplete'),
+    performCount: alias('_scheduler.performCount'),
+
+    numRunning: 0,
+    numQueued: 0,
+    _seenIndex: 0,
+
+    cancelAll: function cancelAll() {
+      var reason = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : ".cancelAll() was explicitly called on the Task";
+
+      this._scheduler.cancelAll(reason);
+    },
+
+
+    group: Ember.computed(function () {
+      return this._taskGroupPath && this.context.get(this._taskGroupPath);
+    }),
+
+    _scheduler: null
+
+  });
+});
+;define('ember-concurrency/-wait-for', ['exports', 'ember-concurrency/utils'], function (exports, _utils) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.waitForQueue = waitForQueue;
+  exports.waitForEvent = waitForEvent;
+  exports.waitForProperty = waitForProperty;
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  var WaitForQueueYieldable = function () {
+    function WaitForQueueYieldable(queueName) {
+      _classCallCheck(this, WaitForQueueYieldable);
+
+      this.queueName = queueName;
+    }
+
+    _createClass(WaitForQueueYieldable, [{
+      key: _utils.yieldableSymbol,
+      value: function value(taskInstance, resumeIndex) {
+        Ember.run.schedule(this.queueName, function () {
+          taskInstance.proceed(resumeIndex, _utils.YIELDABLE_CONTINUE, null);
+        });
+      }
+    }]);
+
+    return WaitForQueueYieldable;
+  }();
+
+  var WaitForEventYieldable = function () {
+    function WaitForEventYieldable(object, eventName) {
+      _classCallCheck(this, WaitForEventYieldable);
+
+      this.object = object;
+      this.eventName = eventName;
+    }
+
+    _createClass(WaitForEventYieldable, [{
+      key: _utils.yieldableSymbol,
+      value: function value(taskInstance, resumeIndex) {
+        var _this = this;
+
+        var unbind = function unbind() {};
+        var fn = function fn(event) {
+          unbind();
+          taskInstance.proceed(resumeIndex, _utils.YIELDABLE_CONTINUE, event);
+        };
+
+        if (typeof this.object.addEventListener === 'function') {
+          // assume that we're dealing with a DOM `EventTarget`.
+          this.object.addEventListener(this.eventName, fn);
+
+          // unfortunately this is required, because IE 11 does not support the
+          // `once` option: https://caniuse.com/#feat=once-event-listener
+          unbind = function unbind() {
+            _this.object.removeEventListener(_this.eventName, fn);
+          };
+
+          return unbind;
+        } else {
+          // assume that we're dealing with either `Ember.Evented` or a compatible
+          // interface, like jQuery.
+          this.object.one(this.eventName, fn);
+
+          return function () {
+            _this.object.off(_this.eventName, fn);
+          };
+        }
+      }
+    }]);
+
+    return WaitForEventYieldable;
+  }();
+
+  var WaitForPropertyYieldable = function () {
+    function WaitForPropertyYieldable(object, key) {
+      var predicateCallback = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : Boolean;
+
+      _classCallCheck(this, WaitForPropertyYieldable);
+
+      this.object = object;
+      this.key = key;
+
+      if (typeof predicateCallback === 'function') {
+        this.predicateCallback = predicateCallback;
+      } else {
+        this.predicateCallback = function (v) {
+          return v === predicateCallback;
+        };
+      }
+    }
+
+    _createClass(WaitForPropertyYieldable, [{
+      key: _utils.yieldableSymbol,
+      value: function value(taskInstance, resumeIndex) {
+        var _this2 = this;
+
+        var observerFn = function observerFn() {
+          var value = Ember.get(_this2.object, _this2.key);
+          var predicateValue = _this2.predicateCallback(value);
+          if (predicateValue) {
+            taskInstance.proceed(resumeIndex, _utils.YIELDABLE_CONTINUE, value);
+            return true;
+          }
+        };
+
+        if (!observerFn()) {
+          this.object.addObserver(this.key, null, observerFn);
+          return function () {
+            _this2.object.removeObserver(_this2.key, null, observerFn);
+          };
+        }
+      }
+    }]);
+
+    return WaitForPropertyYieldable;
+  }();
+
+  /**
+   * Use `waitForQueue` to pause the task until a certain run loop queue is reached.
+   *
+   * ```js
+   * import { task, waitForQueue } from 'ember-concurrency';
+   * export default Component.extend({
+   *   myTask: task(function * () {
+   *     yield waitForQueue('afterRender');
+   *     console.log("now we're in the afterRender queue");
+   *   })
+   * });
+   * ```
+   *
+   * @param {string} queueName the name of the Ember run loop queue
+   */
+  function waitForQueue(queueName) {
+    return new WaitForQueueYieldable(queueName);
+  }
+
+  /**
+   * Use `waitForEvent` to pause the task until an event is fired. The event
+   * can either be a jQuery event or an Ember.Evented event (or any event system
+   * where the object supports `.on()` `.one()` and `.off()`).
+   *
+   * ```js
+   * import { task, waitForEvent } from 'ember-concurrency';
+   * export default Component.extend({
+   *   myTask: task(function * () {
+   *     console.log("Please click anywhere..");
+   *     let clickEvent = yield waitForEvent($('body'), 'click');
+   *     console.log("Got event", clickEvent);
+   *
+   *     let emberEvent = yield waitForEvent(this, 'foo');
+   *     console.log("Got foo event", emberEvent);
+   *
+   *     // somewhere else: component.trigger('foo', { value: 123 });
+   *   })
+   * });
+   * ```
+   *
+   * @param {object} object the Ember Object or jQuery selector (with ,on(), .one(), and .off())
+   *                 that the event fires from
+   * @param {function} eventName the name of the event to wait for
+   */
+  function waitForEvent(object, eventName) {
+    (true && !((0, _utils.isEventedObject)(object)) && Ember.assert(object + ' must include Ember.Evented (or support `.one()` and `.off()`) or DOM EventTarget (or support `addEventListener` and  `removeEventListener`) to be able to use `waitForEvent`', (0, _utils.isEventedObject)(object)));
+
+    return new WaitForEventYieldable(object, eventName);
+  }
+
+  /**
+   * Use `waitForProperty` to pause the task until a property on an object
+   * changes to some expected value. This can be used for a variety of use
+   * cases, including synchronizing with another task by waiting for it
+   * to become idle, or change state in some other way. If you omit the
+   * callback, `waitForProperty` will resume execution when the observed
+   * property becomes truthy. If you provide a callback, it'll be called
+   * immediately with the observed property's current value, and multiple
+   * times thereafter whenever the property changes, until you return
+   * a truthy value from the callback, or the current task is canceled.
+   * You can also pass in a non-Function value in place of the callback,
+   * in which case the task will continue executing when the property's
+   * value becomes the value that you passed in.
+   *
+   * ```js
+   * import { task, waitForProperty } from 'ember-concurrency';
+   * export default Component.extend({
+   *   foo: 0,
+   *
+   *   myTask: task(function * () {
+   *     console.log("Waiting for `foo` to become 5");
+   *
+   *     yield waitForProperty(this, 'foo', v => v === 5);
+   *     // alternatively: yield waitForProperty(this, 'foo', 5);
+   *
+   *     // somewhere else: this.set('foo', 5)
+   *
+   *     console.log("`foo` is 5!");
+   *
+   *     // wait for another task to be idle before running:
+   *     yield waitForProperty(this, 'otherTask.isIdle');
+   *     console.log("otherTask is idle!");
+   *   })
+   * });
+   * ```
+   *
+   * @param {object} object an object (most likely an Ember Object)
+   * @param {string} key the property name that is observed for changes
+   * @param {function} callbackOrValue a Function that should return a truthy value
+   *                                   when the task should continue executing, or
+   *                                   a non-Function value that the watched property
+   *                                   needs to equal before the task will continue running
+   */
+  function waitForProperty(object, key, predicateCallback) {
+    return new WaitForPropertyYieldable(object, key, predicateCallback);
+  }
+});
+;define('ember-concurrency/helpers/cancel-all', ['exports', 'ember-concurrency/-helpers'], function (exports, _helpers) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.cancelHelper = cancelHelper;
+
+
+  var CANCEL_REASON = "the 'cancel-all' template helper was invoked";
+
+  function cancelHelper(args) {
+    var cancelable = args[0];
+    if (!cancelable || typeof cancelable.cancelAll !== 'function') {
+      (true && !(false) && Ember.assert('The first argument passed to the `cancel-all` helper should be a Task or TaskGroup (without quotes); you passed ' + cancelable, false));
+    }
+
+    return (0, _helpers.taskHelperClosure)('cancel-all', 'cancelAll', [cancelable, CANCEL_REASON]);
+  }
+
+  exports.default = Ember.Helper.helper(cancelHelper);
+});
+;define('ember-concurrency/helpers/perform', ['exports', 'ember-concurrency/-helpers'], function (exports, _helpers) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.performHelper = performHelper;
+  function performHelper(args, hash) {
+    return (0, _helpers.taskHelperClosure)('perform', 'perform', args, hash);
+  }
+
+  exports.default = Ember.Helper.helper(performHelper);
+});
+;define('ember-concurrency/helpers/task', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  function _toConsumableArray(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+        arr2[i] = arr[i];
+      }
+
+      return arr2;
+    } else {
+      return Array.from(arr);
+    }
+  }
+
+  function _toArray(arr) {
+    return Array.isArray(arr) ? arr : Array.from(arr);
+  }
+
+  function taskHelper(_ref) {
+    var _ref2 = _toArray(_ref),
+        task = _ref2[0],
+        args = _ref2.slice(1);
+
+    return task._curry.apply(task, _toConsumableArray(args));
+  }
+
+  exports.default = Ember.Helper.helper(taskHelper);
+});
+;define('ember-concurrency/index', ['exports', 'ember-concurrency/utils', 'ember-concurrency/-task-property', 'ember-concurrency/-task-instance', 'ember-concurrency/-task-group', 'ember-concurrency/-evented-observable', 'ember-concurrency/-cancelable-promise-helpers', 'ember-concurrency/-wait-for'], function (exports, _utils, _taskProperty, _taskInstance, _taskGroup, _eventedObservable, _cancelablePromiseHelpers, _waitFor) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.waitForProperty = exports.waitForEvent = exports.waitForQueue = exports.timeout = exports.race = exports.hash = exports.didCancel = exports.allSettled = exports.all = undefined;
+  exports.task = task;
+  exports.taskGroup = taskGroup;
+  exports.events = events;
+
+
+  /**
+   * A Task is a cancelable, restartable, asynchronous operation that
+   * is driven by a generator function. Tasks are automatically canceled
+   * when the object they live on is destroyed (e.g. a Component
+   * is unrendered).
+   *
+   * To define a task, use the `task(...)` function, and pass in
+   * a generator function, which will be invoked when the task
+   * is performed. The reason generator functions are used is
+   * that they (like the proposed ES7 async-await syntax) can
+   * be used to elegantly express asynchronous, cancelable
+   * operations.
+   *
+   * You can also define an
+   * <a href="/#/docs/encapsulated-task">Encapsulated Task</a>
+   * by passing in an object that defined a `perform` generator
+   * function property.
+   *
+   * The following Component defines a task called `myTask` that,
+   * when performed, prints a message to the console, sleeps for 1 second,
+   * prints a final message to the console, and then completes.
+   *
+   * ```js
+   * import { task, timeout } from 'ember-concurrency';
+   * export default Component.extend({
+   *   myTask: task(function * () {
+   *     console.log("Pausing for a second...");
+   *     yield timeout(1000);
+   *     console.log("Done!");
+   *   })
+   * });
+   * ```
+   *
+   * ```hbs
+   * <button {{action myTask.perform}}>Perform Task</button>
+   * ```
+   *
+   * By default, tasks have no concurrency constraints
+   * (multiple instances of a task can be running at the same time)
+   * but much of a power of tasks lies in proper usage of Task Modifiers
+   * that you can apply to a task.
+   *
+   * @param {function} generatorFunction the generator function backing the task.
+   * @returns {TaskProperty}
+   */
+  function task() {
+    for (var _len = arguments.length, args = Array(_len), _key = 0; _key < _len; _key++) {
+      args[_key] = arguments[_key];
+    }
+
+    return new (Function.prototype.bind.apply(_taskProperty.TaskProperty, [null].concat(args)))();
+  }
+
+  /**
+   * "Task Groups" provide a means for applying
+   * task modifiers to groups of tasks. Once a {@linkcode Task} is declared
+   * as part of a group task, modifiers like `drop()` or `restartable()`
+   * will no longer affect the individual `Task`. Instead those
+   * modifiers can be applied to the entire group.
+   *
+   * ```js
+   * import { task, taskGroup } from 'ember-concurrency';
+   *
+   * export default Controller.extend({
+   *   chores: taskGroup().drop(),
+   *
+   *   mowLawn:       task(taskFn).group('chores'),
+   *   doDishes:      task(taskFn).group('chores'),
+   *   changeDiapers: task(taskFn).group('chores')
+   * });
+   * ```
+   *
+   * @returns {TaskGroup}
+  */
+  function taskGroup() {
+    for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+      args[_key2] = arguments[_key2];
+    }
+
+    return new (Function.prototype.bind.apply(_taskGroup.TaskGroupProperty, [null].concat(args)))();
+  }
+
+  function events(obj, eventName) {
+    return _eventedObservable.default.create({ obj: obj, eventName: eventName });
+  }
+
+  exports.all = _cancelablePromiseHelpers.all;
+  exports.allSettled = _cancelablePromiseHelpers.allSettled;
+  exports.didCancel = _taskInstance.didCancel;
+  exports.hash = _cancelablePromiseHelpers.hash;
+  exports.race = _cancelablePromiseHelpers.race;
+  exports.timeout = _utils.timeout;
+  exports.waitForQueue = _waitFor.waitForQueue;
+  exports.waitForEvent = _waitFor.waitForEvent;
+  exports.waitForProperty = _waitFor.waitForProperty;
+});
+;define('ember-concurrency/initializers/ember-concurrency', ['exports', 'ember-concurrency'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = {
+    name: 'ember-concurrency',
+    initialize: function initialize() {}
+  };
+});
+;define('ember-concurrency/utils', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.isEventedObject = isEventedObject;
+  exports.Arguments = Arguments;
+  exports._cleanupOnDestroy = _cleanupOnDestroy;
+  exports.timeout = timeout;
+  exports.RawValue = RawValue;
+  exports.raw = raw;
+  exports.rawTimeout = rawTimeout;
+
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  function isEventedObject(c) {
+    return c && (typeof c.one === 'function' && typeof c.off === 'function' || typeof c.addEventListener === 'function' && typeof c.removeEventListener === 'function');
+  }
+
+  function Arguments(args, defer) {
+    this.args = args;
+    this.defer = defer;
+  }
+
+  Arguments.prototype.resolve = function (value) {
+    if (this.defer) {
+      this.defer.resolve(value);
+    }
+  };
+
+  var objectAssign = exports.objectAssign = Object.assign || function objectAssign(target) {
+    'use strict';
+
+    if (target == null) {
+      throw new TypeError('Cannot convert undefined or null to object');
+    }
+
+    target = Object(target);
+    for (var index = 1; index < arguments.length; index++) {
+      var source = arguments[index];
+      if (source != null) {
+        for (var key in source) {
+          if (Object.prototype.hasOwnProperty.call(source, key)) {
+            target[key] = source[key];
+          }
+        }
+      }
+    }
+    return target;
+  };
+
+  function _cleanupOnDestroy(owner, object, cleanupMethodName) {
+    for (var _len = arguments.length, args = Array(_len > 3 ? _len - 3 : 0), _key = 3; _key < _len; _key++) {
+      args[_key - 3] = arguments[_key];
+    }
+
+    // TODO: find a non-mutate-y, non-hacky way of doing this.
+
+    if (!owner.willDestroy) {
+      // we're running in non Ember object (possibly in a test mock)
+      return;
+    }
+
+    if (!owner.willDestroy.__ember_processes_destroyers__) {
+      var oldWillDestroy = owner.willDestroy;
+      var disposers = [];
+
+      owner.willDestroy = function () {
+        for (var i = 0, l = disposers.length; i < l; i++) {
+          disposers[i]();
+        }
+        oldWillDestroy.apply(owner, arguments);
+      };
+      owner.willDestroy.__ember_processes_destroyers__ = disposers;
+    }
+
+    owner.willDestroy.__ember_processes_destroyers__.push(function () {
+      object[cleanupMethodName].apply(object, args);
+    });
+  }
+
+  var INVOKE = exports.INVOKE = "__invoke_symbol__";
+
+  var locations = ['ember-glimmer/helpers/action', 'ember-routing-htmlbars/keywords/closure-action', 'ember-routing/keywords/closure-action'];
+
+  for (var i = 0; i < locations.length; i++) {
+    if (locations[i] in Ember.__loader.registry) {
+      exports.INVOKE = INVOKE = Ember.__loader.require(locations[i])['INVOKE'];
+      break;
+    }
+  }
+
+  // TODO: Symbol polyfill?
+  var yieldableSymbol = exports.yieldableSymbol = "__ec_yieldable__";
+  var YIELDABLE_CONTINUE = exports.YIELDABLE_CONTINUE = "next";
+  var YIELDABLE_THROW = exports.YIELDABLE_THROW = "throw";
+  var YIELDABLE_RETURN = exports.YIELDABLE_RETURN = "return";
+  var YIELDABLE_CANCEL = exports.YIELDABLE_CANCEL = "cancel";
+
+  var _ComputedProperty = exports._ComputedProperty = Ember.ComputedProperty;
+
+  /**
+   *
+   * Yielding `timeout(ms)` will pause a task for the duration
+   * of time passed in, in milliseconds.
+   *
+   * The task below, when performed, will print a message to the
+   * console every second.
+   *
+   * ```js
+   * export default Component.extend({
+   *   myTask: task(function * () {
+   *     while (true) {
+   *       console.log("Hello!");
+   *       yield timeout(1000);
+   *     }
+   *   })
+   * });
+   * ```
+   *
+   * @param {number} ms - the amount of time to sleep before resuming
+   *   the task, in milliseconds
+   */
+  function timeout(ms) {
+    var timerId = void 0;
+    var promise = new Ember.RSVP.Promise(function (r) {
+      timerId = Ember.run.later(r, ms);
+    });
+    promise.__ec_cancel__ = function () {
+      Ember.run.cancel(timerId);
+    };
+    return promise;
+  }
+
+  function RawValue(value) {
+    this.value = value;
+  }
+
+  function raw(value) {
+    return new RawValue(value);
+  }
+
+  function rawTimeout(ms) {
+    return _defineProperty({}, yieldableSymbol, function (taskInstance, resumeIndex) {
+      var _this = this;
+
+      var timerId = setTimeout(function () {
+        taskInstance.proceed(resumeIndex, YIELDABLE_CONTINUE, _this._result);
+      }, ms);
+      return function () {
+        window.clearInterval(timerId);
+      };
+    });
+  }
+});
 ;define('ember-cp-validations/-private/ember-validator', ['exports', 'ember-cp-validations/validators/base', 'ember-validators'], function (exports, _base, _emberValidators) {
   'use strict';
 
@@ -91834,8 +97795,6 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
 
     return result;
   }
-
-  exports.default = Ember.Helper.helper(notEqualHelper);
 });
 ;define('ember-cp-validations/utils/assign', ['exports'], function (exports) {
   'use strict';
@@ -92191,10 +98150,6 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
 
   var Promise = RSVP.Promise;
 
-  /**
-   *  @class Exclusion
-   *  @module Validators
-   */
 
   /**
    * ## Running Manual Validations
@@ -94876,6 +100831,2572 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
     }
   }
 });
+;define('ember-power-select/components/power-select-multiple', ['exports', 'ember-power-select/templates/components/power-select-multiple', 'ember-power-select/utils/computed-fallback-if-undefined'], function (exports, _powerSelectMultiple, _computedFallbackIfUndefined) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    layout: _powerSelectMultiple.default,
+    // Config
+    triggerComponent: (0, _computedFallbackIfUndefined.default)('power-select-multiple/trigger'),
+    beforeOptionsComponent: (0, _computedFallbackIfUndefined.default)(null),
+
+    // CPs
+    concatenatedTriggerClass: Ember.computed('triggerClass', function () {
+      var classes = ['ember-power-select-multiple-trigger'];
+      if (this.get('triggerClass')) {
+        classes.push(this.get('triggerClass'));
+      }
+      return classes.join(' ');
+    }),
+
+    selected: Ember.computed({
+      get: function get() {
+        return [];
+      },
+      set: function set(_, v) {
+        if (v === null || v === undefined) {
+          return [];
+        }
+        return v;
+      }
+    }),
+
+    computedTabIndex: Ember.computed('tabindex', 'searchEnabled', 'triggerComponent', function () {
+      if (this.get('triggerComponent') === 'power-select-multiple/trigger' && this.get('searchEnabled') !== false) {
+        return '-1';
+      } else {
+        return this.get('tabindex');
+      }
+    }),
+
+    // Actions
+    actions: {
+      handleOpen: function handleOpen(select, e) {
+        var action = this.get('onopen');
+        if (action && action(select, e) === false) {
+          return false;
+        }
+        this.focusInput();
+      },
+      handleFocus: function handleFocus(select, e) {
+        var action = this.get('onfocus');
+        if (action) {
+          action(select, e);
+        }
+        this.focusInput();
+      },
+      handleKeydown: function handleKeydown(select, e) {
+        var action = this.get('onkeydown');
+        if (action && action(select, e) === false) {
+          e.stopPropagation();
+          return false;
+        }
+        if (e.keyCode === 13 && select.isOpen) {
+          e.stopPropagation();
+          if (select.highlighted !== undefined) {
+            if (!select.selected || select.selected.indexOf(select.highlighted) === -1) {
+              select.actions.choose(select.highlighted, e);
+              return false;
+            } else {
+              select.actions.close(e);
+              return false;
+            }
+          } else {
+            select.actions.close(e);
+            return false;
+          }
+        }
+      },
+      buildSelection: function buildSelection(option, select) {
+        var newSelection = (select.selected || []).slice(0);
+        var idx = -1;
+        for (var i = 0; i < newSelection.length; i++) {
+          if (Ember.isEqual(newSelection[i], option)) {
+            idx = i;
+            break;
+          }
+        }
+        if (idx > -1) {
+          newSelection.splice(idx, 1);
+        } else {
+          newSelection.push(option);
+        }
+        return newSelection;
+      }
+    },
+
+    // Methods
+    focusInput: function focusInput() {
+      var input = this.element.querySelector('.ember-power-select-trigger-multiple-input');
+      if (input) {
+        input.focus();
+      }
+    }
+  });
+});
+;define('ember-power-select/components/power-select-multiple/trigger', ['exports', 'ember-power-select/templates/components/power-select-multiple/trigger'], function (exports, _trigger) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+
+  var ua = self.window && self.window.navigator ? self.window.navigator.userAgent : '';
+  var isIE = ua.indexOf('MSIE ') > -1 || ua.indexOf('Trident/') > -1;
+  var isTouchDevice = !!self.window && 'ontouchstart' in self.window;
+
+  exports.default = Ember.Component.extend({
+    tagName: '',
+    layout: _trigger.default,
+    textMeasurer: Ember.inject.service(),
+    _lastIsOpen: false,
+
+    // Lifecycle hooks
+    didInsertElement: function didInsertElement() {
+      var _this = this;
+
+      this._super.apply(this, arguments);
+      var select = this.get('select');
+      this.input = document.getElementById('ember-power-select-trigger-multiple-input-' + select.uniqueId);
+      var inputStyle = this.input ? window.getComputedStyle(this.input) : null;
+      this.inputFont = inputStyle ? inputStyle.fontStyle + ' ' + inputStyle.fontVariant + ' ' + inputStyle.fontWeight + ' ' + inputStyle.fontSize + '/' + inputStyle.lineHeight + ' ' + inputStyle.fontFamily : null;
+      var optionsList = document.getElementById('ember-power-select-multiple-options-' + select.uniqueId);
+      var chooseOption = function chooseOption(e) {
+        var selectedIndex = e.target.getAttribute('data-selected-index');
+        if (selectedIndex) {
+          e.stopPropagation();
+          e.preventDefault();
+
+          var _select = _this.get('select');
+          var object = _this.selectedObject(_select.selected, selectedIndex);
+          _select.actions.choose(object);
+        }
+      };
+      if (isTouchDevice) {
+        optionsList.addEventListener('touchstart', chooseOption);
+      }
+      optionsList.addEventListener('mousedown', chooseOption);
+    },
+    didReceiveAttrs: function didReceiveAttrs() {
+      var oldSelect = this.get('oldSelect') || {};
+      var select = this.set('oldSelect', this.get('select'));
+      if (oldSelect.isOpen && !select.isOpen) {
+        Ember.run.scheduleOnce('actions', null, select.actions.search, '');
+      }
+    },
+
+
+    // CPs
+    triggerMultipleInputStyle: Ember.computed('select.searchText.length', 'select.selected.length', function () {
+      var select = this.get('select');
+      Ember.run.scheduleOnce('actions', select.actions.reposition);
+      if (!select.selected || select.selected.length === 0) {
+        return Ember.String.htmlSafe('width: 100%;');
+      } else {
+        var textWidth = 0;
+        if (this.inputFont) {
+          textWidth = this.get('textMeasurer').width(select.searchText, this.inputFont);
+        }
+        return Ember.String.htmlSafe('width: ' + (textWidth + 25) + 'px');
+      }
+    }),
+
+    maybePlaceholder: Ember.computed('placeholder', 'select.selected.length', function () {
+      if (isIE) {
+        return null;
+      }
+      var select = this.get('select');
+      return !select.selected || Ember.get(select.selected, 'length') === 0 ? this.get('placeholder') || '' : '';
+    }),
+
+    // Actions
+    actions: {
+      onInput: function onInput(e) {
+        var action = this.get('onInput');
+        if (action && action(e) === false) {
+          return;
+        }
+        this.get('select').actions.open(e);
+      },
+      onKeydown: function onKeydown(e) {
+        var _getProperties = this.getProperties('onKeydown', 'select'),
+            onKeydown = _getProperties.onKeydown,
+            select = _getProperties.select;
+
+        if (onKeydown && onKeydown(e) === false) {
+          e.stopPropagation();
+          return false;
+        }
+        if (e.keyCode === 8) {
+          e.stopPropagation();
+          if (Ember.isBlank(e.target.value)) {
+            var lastSelection = select.selected[select.selected.length - 1];
+            if (lastSelection) {
+              select.actions.select(this.get('buildSelection')(lastSelection, select), e);
+              if (typeof lastSelection === 'string') {
+                select.actions.search(lastSelection);
+              } else {
+                var searchField = this.get('searchField');
+                (true && !(searchField) && Ember.assert('`{{power-select-multiple}}` requires a `searchField` when the options are not strings to remove options using backspace', searchField));
+
+                select.actions.search(Ember.get(lastSelection, searchField));
+              }
+              select.actions.open(e);
+            }
+          }
+        } else if (e.keyCode >= 48 && e.keyCode <= 90 || e.keyCode === 32) {
+          // Keys 0-9, a-z or SPACE
+          e.stopPropagation();
+        }
+      }
+    },
+
+    // Methods
+    selectedObject: function selectedObject(list, index) {
+      if (list.objectAt) {
+        return list.objectAt(index);
+      } else {
+        return Ember.get(list, index);
+      }
+    }
+  });
+});
+;define('ember-power-select/components/power-select', ['exports', 'ember-power-select/templates/components/power-select', 'ember-power-select/utils/computed-fallback-if-undefined', 'ember-power-select/utils/computed-options-matcher', 'ember-power-select/utils/group-utils', 'ember-concurrency'], function (exports, _powerSelect, _computedFallbackIfUndefined, _computedOptionsMatcher, _groupUtils, _emberConcurrency) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  function _toConsumableArray(arr) {
+    if (Array.isArray(arr)) {
+      for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) {
+        arr2[i] = arr[i];
+      }
+
+      return arr2;
+    } else {
+      return Array.from(arr);
+    }
+  }
+
+  // Copied from Ember. It shouldn't be necessary in Ember 2.5+
+  var assign = Object.assign || function EmberAssign(original) {
+    for (var _len = arguments.length, args = Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+      args[_key - 1] = arguments[_key];
+    }
+
+    for (var i = 0; i < args.length; i++) {
+      var arg = args[i];
+      if (!arg) {
+        continue;
+      }
+
+      var updates = Object.keys(arg);
+
+      for (var _i = 0; _i < updates.length; _i++) {
+        var prop = updates[_i];
+        original[prop] = arg[prop];
+      }
+    }
+
+    return original;
+  };
+
+  function concatWithProperty(strings, property) {
+    if (property) {
+      strings.push(property);
+    }
+    return strings.join(' ');
+  }
+
+  function toPlainArray(collection) {
+    return collection.toArray ? collection.toArray() : collection;
+  }
+
+  var initialState = {
+    options: [], // Contains the resolved collection of options
+    results: [], // Contains the active set of results
+    resultsCount: 0, // Contains the number of results incuding those nested/disabled
+    selected: undefined, // Contains the resolved selected option
+    highlighted: undefined, // Contains the currently highlighted option (if any)
+    searchText: '', // Contains the text of the current search
+    lastSearchedText: '', // Contains the text of the last finished search
+    loading: false, // Truthy if there is a pending promise that will update the results
+    isActive: false, // Truthy if the trigger is focused. Other subcomponents can mark it as active depending on other logic.
+    // Private API (for now)
+    _expirableSearchText: '',
+    _repeatingChar: ''
+  };
+
+  exports.default = Ember.Component.extend({
+    // HTML
+    layout: _powerSelect.default,
+    tagName: '',
+
+    // Options
+    searchEnabled: (0, _computedFallbackIfUndefined.default)(true),
+    matchTriggerWidth: (0, _computedFallbackIfUndefined.default)(true),
+    preventScroll: (0, _computedFallbackIfUndefined.default)(false),
+    matcher: (0, _computedFallbackIfUndefined.default)(_groupUtils.defaultMatcher),
+    loadingMessage: (0, _computedFallbackIfUndefined.default)('Loading options...'),
+    noMatchesMessage: (0, _computedFallbackIfUndefined.default)('No results found'),
+    searchMessage: (0, _computedFallbackIfUndefined.default)('Type to search'),
+    closeOnSelect: (0, _computedFallbackIfUndefined.default)(true),
+    defaultHighlighted: (0, _computedFallbackIfUndefined.default)(_groupUtils.defaultHighlighted),
+    typeAheadMatcher: (0, _computedFallbackIfUndefined.default)(_groupUtils.defaultTypeAheadMatcher),
+
+    afterOptionsComponent: (0, _computedFallbackIfUndefined.default)(null),
+    beforeOptionsComponent: (0, _computedFallbackIfUndefined.default)('power-select/before-options'),
+    optionsComponent: (0, _computedFallbackIfUndefined.default)('power-select/options'),
+    groupComponent: (0, _computedFallbackIfUndefined.default)('power-select/power-select-group'),
+    selectedItemComponent: (0, _computedFallbackIfUndefined.default)(null),
+    triggerComponent: (0, _computedFallbackIfUndefined.default)('power-select/trigger'),
+    searchMessageComponent: (0, _computedFallbackIfUndefined.default)('power-select/search-message'),
+    placeholderComponent: (0, _computedFallbackIfUndefined.default)('power-select/placeholder'),
+    buildSelection: (0, _computedFallbackIfUndefined.default)(function buildSelection(option) {
+      return option;
+    }),
+
+    _triggerTagName: (0, _computedFallbackIfUndefined.default)('div'),
+    _contentTagName: (0, _computedFallbackIfUndefined.default)('div'),
+
+    // Private state
+    publicAPI: initialState,
+
+    // Lifecycle hooks
+    init: function init() {
+      var _this = this;
+
+      this._super.apply(this, arguments);
+      this._publicAPIActions = {
+        search: function search() {
+          for (var _len2 = arguments.length, args = Array(_len2), _key2 = 0; _key2 < _len2; _key2++) {
+            args[_key2] = arguments[_key2];
+          }
+
+          return _this.send.apply(_this, ['search'].concat(args));
+        },
+        highlight: function highlight() {
+          for (var _len3 = arguments.length, args = Array(_len3), _key3 = 0; _key3 < _len3; _key3++) {
+            args[_key3] = arguments[_key3];
+          }
+
+          return _this.send.apply(_this, ['highlight'].concat(args));
+        },
+        select: function select() {
+          for (var _len4 = arguments.length, args = Array(_len4), _key4 = 0; _key4 < _len4; _key4++) {
+            args[_key4] = arguments[_key4];
+          }
+
+          return _this.send.apply(_this, ['select'].concat(args));
+        },
+        choose: function choose() {
+          for (var _len5 = arguments.length, args = Array(_len5), _key5 = 0; _key5 < _len5; _key5++) {
+            args[_key5] = arguments[_key5];
+          }
+
+          return _this.send.apply(_this, ['choose'].concat(args));
+        },
+        scrollTo: function scrollTo() {
+          for (var _len6 = arguments.length, args = Array(_len6), _key6 = 0; _key6 < _len6; _key6++) {
+            args[_key6] = arguments[_key6];
+          }
+
+          return Ember.run.scheduleOnce.apply(undefined, ['afterRender', _this, _this.send, 'scrollTo'].concat(args));
+        }
+      };
+      (true && !(this.get('onchange') && typeof this.get('onchange') === 'function') && Ember.assert('{{power-select}} requires an `onchange` function', this.get('onchange') && typeof this.get('onchange') === 'function'));
+    },
+    willDestroy: function willDestroy() {
+      this._super.apply(this, arguments);
+      this._removeObserversInOptions();
+      this._removeObserversInSelected();
+      var action = this.get('registerAPI');
+      if (action) {
+        action(null);
+      }
+    },
+
+
+    // CPs
+    inTesting: Ember.computed(function () {
+      var config = Ember.getOwner(this).resolveRegistration('config:environment');
+      return config.environment === 'test';
+    }),
+
+    selected: Ember.computed({
+      get: function get() {
+        return null;
+      },
+      set: function set(_, selected) {
+        if (selected && selected.then) {
+          this.get('_updateSelectedTask').perform(selected);
+        } else {
+          Ember.run.scheduleOnce('actions', this, this.updateSelection, selected);
+        }
+        return selected;
+      }
+    }),
+
+    options: Ember.computed({
+      get: function get() {
+        return [];
+      },
+      set: function set(_, options, oldOptions) {
+        if (options === oldOptions) {
+          return options;
+        }
+        if (options && options.then) {
+          this.get('_updateOptionsTask').perform(options);
+        } else {
+          Ember.run.scheduleOnce('actions', this, this.updateOptions, options);
+        }
+        return options;
+      }
+    }),
+
+    optionMatcher: (0, _computedOptionsMatcher.default)('matcher', _groupUtils.defaultMatcher),
+
+    typeAheadOptionMatcher: (0, _computedOptionsMatcher.default)('typeAheadMatcher', _groupUtils.defaultTypeAheadMatcher),
+
+    concatenatedTriggerClasses: Ember.computed('triggerClass', 'publicAPI.isActive', function () {
+      var classes = ['ember-power-select-trigger'];
+      if (this.get('publicAPI.isActive')) {
+        classes.push('ember-power-select-trigger--active');
+      }
+      return concatWithProperty(classes, this.get('triggerClass'));
+    }),
+
+    concatenatedDropdownClasses: Ember.computed('dropdownClass', 'publicAPI.isActive', function () {
+      var classes = ['ember-power-select-dropdown'];
+      if (this.get('publicAPI.isActive')) {
+        classes.push('ember-power-select-dropdown--active');
+      }
+      return concatWithProperty(classes, this.get('dropdownClass'));
+    }),
+
+    mustShowSearchMessage: Ember.computed('publicAPI.{loading,searchText,resultsCount}', 'search', 'searchMessage', function () {
+      var publicAPI = this.get('publicAPI');
+      return !publicAPI.loading && publicAPI.searchText.length === 0 && !!this.get('search') && !!this.get('searchMessage') && publicAPI.resultsCount === 0;
+    }),
+
+    mustShowNoMessages: Ember.computed('search', 'publicAPI.{lastSearchedText,resultsCount,loading}', function () {
+      var publicAPI = this.get('publicAPI');
+      return !publicAPI.loading && publicAPI.resultsCount === 0 && (!this.get('search') || publicAPI.lastSearchedText.length > 0);
+    }),
+
+    // Actions
+    actions: {
+      registerAPI: function registerAPI(dropdown) {
+        if (!dropdown) {
+          return;
+        }
+        var publicAPI = assign({}, this.get('publicAPI'), dropdown);
+        publicAPI.actions = assign({}, dropdown.actions, this._publicAPIActions);
+        this.setProperties({
+          publicAPI: publicAPI,
+          optionsId: 'ember-power-select-options-' + publicAPI.uniqueId
+        });
+        var action = this.get('registerAPI');
+        if (action) {
+          action(publicAPI);
+        }
+      },
+      onOpen: function onOpen(_, e) {
+        var action = this.get('onopen');
+        if (action && action(this.get('publicAPI'), e) === false) {
+          return false;
+        }
+        if (e) {
+          this.openingEvent = e;
+          if (e.type === 'keydown' && (e.keyCode === 38 || e.keyCode === 40)) {
+            e.preventDefault();
+          }
+        }
+        this.resetHighlighted();
+      },
+      onClose: function onClose(_, e) {
+        var action = this.get('onclose');
+        if (action && action(this.get('publicAPI'), e) === false) {
+          return false;
+        }
+        if (e) {
+          this.openingEvent = null;
+        }
+        this.updateState({ highlighted: undefined });
+      },
+      onInput: function onInput(e) {
+        var term = e.target.value;
+        var action = this.get('oninput');
+        var publicAPI = this.get('publicAPI');
+        var correctedTerm = void 0;
+        if (action) {
+          correctedTerm = action(term, publicAPI, e);
+          if (correctedTerm === false) {
+            return;
+          }
+        }
+        publicAPI.actions.search(typeof correctedTerm === 'string' ? correctedTerm : term);
+      },
+      highlight: function highlight(option /* , e */) {
+        if (option && Ember.get(option, 'disabled')) {
+          return;
+        }
+        this.updateState({ highlighted: option });
+      },
+      select: function select(selected, e) {
+        var publicAPI = this.get('publicAPI');
+        if (!Ember.isEqual(publicAPI.selected, selected)) {
+          this.get('onchange')(selected, publicAPI, e);
+        }
+      },
+      search: function search(term) {
+        if (Ember.isBlank(term)) {
+          this._resetSearch();
+        } else if (this.get('search')) {
+          this._performSearch(term);
+        } else {
+          this._performFilter(term);
+        }
+      },
+      choose: function choose(selected, e) {
+        if (!this.get('inTesting')) {
+          if (e && e.clientY) {
+            if (this.openingEvent && this.openingEvent.clientY) {
+              if (Math.abs(this.openingEvent.clientY - e.clientY) < 2) {
+                return;
+              }
+            }
+          }
+        }
+        var publicAPI = this.get('publicAPI');
+        publicAPI.actions.select(this.get('buildSelection')(selected, publicAPI), e);
+        if (this.get('closeOnSelect')) {
+          publicAPI.actions.close(e);
+          return false;
+        }
+      },
+
+
+      // keydowns handled by the trigger provided by ember-basic-dropdown
+      onTriggerKeydown: function onTriggerKeydown(_, e) {
+        var onkeydown = this.get('onkeydown');
+        if (onkeydown && onkeydown(this.get('publicAPI'), e) === false) {
+          return false;
+        }
+        if (e.ctrlKey || e.metaKey) {
+          return false;
+        }
+        if (e.keyCode >= 48 && e.keyCode <= 90 || // Keys 0-9, a-z
+        this._isNumpadKeyEvent(e)) {
+          this.get('triggerTypingTask').perform(e);
+        } else if (e.keyCode === 32) {
+          // Space
+          return this._handleKeySpace(e);
+        } else {
+          return this._routeKeydown(e);
+        }
+      },
+
+
+      // keydowns handled by inputs inside the component
+      onKeydown: function onKeydown(e) {
+        var onkeydown = this.get('onkeydown');
+        if (onkeydown && onkeydown(this.get('publicAPI'), e) === false) {
+          return false;
+        }
+        return this._routeKeydown(e);
+      },
+      scrollTo: function scrollTo(option) {
+        if (!self.document || !option) {
+          return;
+        }
+        var publicAPI = this.get('publicAPI');
+        var userDefinedScrollTo = this.get('scrollTo');
+        if (userDefinedScrollTo) {
+          for (var _len7 = arguments.length, rest = Array(_len7 > 1 ? _len7 - 1 : 0), _key7 = 1; _key7 < _len7; _key7++) {
+            rest[_key7 - 1] = arguments[_key7];
+          }
+
+          return userDefinedScrollTo.apply(undefined, [option, publicAPI].concat(_toConsumableArray(rest)));
+        }
+        var optionsList = self.document.getElementById('ember-power-select-options-' + publicAPI.uniqueId);
+        if (!optionsList) {
+          return;
+        }
+        var index = (0, _groupUtils.indexOfOption)(publicAPI.results, option);
+        if (index === -1) {
+          return;
+        }
+        var optionElement = optionsList.querySelectorAll('[data-option-index]').item(index);
+        if (!optionElement) {
+          return;
+        }
+        var optionTopScroll = optionElement.offsetTop - optionsList.offsetTop;
+        var optionBottomScroll = optionTopScroll + optionElement.offsetHeight;
+        if (optionBottomScroll > optionsList.offsetHeight + optionsList.scrollTop) {
+          optionsList.scrollTop = optionBottomScroll - optionsList.offsetHeight;
+        } else if (optionTopScroll < optionsList.scrollTop) {
+          optionsList.scrollTop = optionTopScroll;
+        }
+      },
+      onTriggerFocus: function onTriggerFocus(_, event) {
+        this.send('activate');
+        var action = this.get('onfocus');
+        if (action) {
+          action(this.get('publicAPI'), event);
+        }
+      },
+      onFocus: function onFocus(event) {
+        this.send('activate');
+        var action = this.get('onfocus');
+        if (action) {
+          action(this.get('publicAPI'), event);
+        }
+      },
+      onTriggerBlur: function onTriggerBlur(_, event) {
+        this.send('deactivate');
+        var action = this.get('onblur');
+        if (action) {
+          action(this.get('publicAPI'), event);
+        }
+      },
+      onBlur: function onBlur(event) {
+        this.send('deactivate');
+        var action = this.get('onblur');
+        if (action) {
+          action(this.get('publicAPI'), event);
+        }
+      },
+      activate: function activate() {
+        Ember.run.scheduleOnce('actions', this, 'setIsActive', true);
+      },
+      deactivate: function deactivate() {
+        Ember.run.scheduleOnce('actions', this, 'setIsActive', false);
+      }
+    },
+
+    // Tasks
+    triggerTypingTask: (0, _emberConcurrency.task)( /*#__PURE__*/regeneratorRuntime.mark(function _callee(e) {
+      var searchStartOffset, publicAPI, repeatingChar, charCode, term, c, match;
+      return regeneratorRuntime.wrap(function _callee$(_context) {
+        while (1) {
+          switch (_context.prev = _context.next) {
+            case 0:
+              // In general, a user doing this interaction means to have a different result.
+              searchStartOffset = 1;
+              publicAPI = this.get('publicAPI');
+              repeatingChar = publicAPI._repeatingChar;
+              charCode = e.keyCode;
+
+              if (this._isNumpadKeyEvent(e)) {
+                charCode -= 48; // Adjust char code offset for Numpad key codes. Check here for numapd key code behavior: https://goo.gl/Qwc9u4
+              }
+              term = void 0;
+
+              // Check if user intends to cycle through results. _repeatingChar can only be the first character.
+
+              c = String.fromCharCode(charCode);
+
+              if (c === publicAPI._repeatingChar) {
+                term = c;
+              } else {
+                term = publicAPI._expirableSearchText + c;
+              }
+
+              if (term.length > 1) {
+                // If the term is longer than one char, the user is in the middle of a non-cycling interaction
+                // so the offset is just zero (the current selection is a valid match).
+                searchStartOffset = 0;
+                repeatingChar = '';
+              } else {
+                repeatingChar = c;
+              }
+
+              // When the select is open, the "selection" is just highlighted.
+              if (publicAPI.isOpen && publicAPI.highlighted) {
+                searchStartOffset += (0, _groupUtils.indexOfOption)(publicAPI.options, publicAPI.highlighted);
+              } else if (!publicAPI.isOpen && publicAPI.selected) {
+                searchStartOffset += (0, _groupUtils.indexOfOption)(publicAPI.options, publicAPI.selected);
+              } else {
+                searchStartOffset = 0;
+              }
+
+              // The char is always appended. That way, searching for words like "Aaron" will work even
+              // if "Aa" would cycle through the results.
+              this.updateState({ _expirableSearchText: publicAPI._expirableSearchText + c, _repeatingChar: repeatingChar });
+              match = this.findWithOffset(publicAPI.options, term, searchStartOffset, true);
+
+              if (match !== undefined) {
+                if (publicAPI.isOpen) {
+                  publicAPI.actions.highlight(match, e);
+                  publicAPI.actions.scrollTo(match, e);
+                } else {
+                  publicAPI.actions.select(match, e);
+                }
+              }
+              _context.next = 15;
+              return (0, _emberConcurrency.timeout)(1000);
+
+            case 15:
+              this.updateState({ _expirableSearchText: '', _repeatingChar: '' });
+
+            case 16:
+            case 'end':
+              return _context.stop();
+          }
+        }
+      }, _callee, this);
+    })).restartable(),
+
+    _updateSelectedTask: (0, _emberConcurrency.task)( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(selectionPromise) {
+      var selection;
+      return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              _context2.next = 2;
+              return selectionPromise;
+
+            case 2:
+              selection = _context2.sent;
+
+              this.updateSelection(selection);
+
+            case 4:
+            case 'end':
+              return _context2.stop();
+          }
+        }
+      }, _callee2, this);
+    })).restartable(),
+
+    _updateOptionsTask: (0, _emberConcurrency.task)( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(optionsPromise) {
+      var options;
+      return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              if (optionsPromise instanceof Ember.ArrayProxy) {
+                this.updateOptions(optionsPromise.get('content'));
+              }
+              this.updateState({ loading: true });
+              _context3.prev = 2;
+              _context3.next = 5;
+              return optionsPromise;
+
+            case 5:
+              options = _context3.sent;
+
+              this.updateOptions(options);
+
+            case 7:
+              _context3.prev = 7;
+
+              this.updateState({ loading: false });
+              return _context3.finish(7);
+
+            case 10:
+            case 'end':
+              return _context3.stop();
+          }
+        }
+      }, _callee3, this, [[2,, 7, 10]]);
+    })).restartable(),
+
+    handleAsyncSearchTask: (0, _emberConcurrency.task)( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(term, searchThenable) {
+      var results, resultsArray;
+      return regeneratorRuntime.wrap(function _callee4$(_context4) {
+        while (1) {
+          switch (_context4.prev = _context4.next) {
+            case 0:
+              _context4.prev = 0;
+
+              this.updateState({ loading: true });
+              _context4.next = 4;
+              return searchThenable;
+
+            case 4:
+              results = _context4.sent;
+              resultsArray = toPlainArray(results);
+
+              this.updateState({
+                results: resultsArray,
+                _rawSearchResults: results,
+                lastSearchedText: term,
+                resultsCount: (0, _groupUtils.countOptions)(results),
+                loading: false
+              });
+              this.resetHighlighted();
+              _context4.next = 13;
+              break;
+
+            case 10:
+              _context4.prev = 10;
+              _context4.t0 = _context4['catch'](0);
+
+              this.updateState({ lastSearchedText: term, loading: false });
+
+            case 13:
+              _context4.prev = 13;
+
+              if (typeof searchThenable.cancel === 'function') {
+                searchThenable.cancel();
+              }
+              return _context4.finish(13);
+
+            case 16:
+            case 'end':
+              return _context4.stop();
+          }
+        }
+      }, _callee4, this, [[0, 10, 13, 16]]);
+    })).restartable(),
+
+    // Methods
+    setIsActive: function setIsActive(isActive) {
+      this.updateState({ isActive: isActive });
+    },
+    filter: function filter(options, term) {
+      var skipDisabled = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : false;
+
+      return (0, _groupUtils.filterOptions)(options || [], term, this.get('optionMatcher'), skipDisabled);
+    },
+    findWithOffset: function findWithOffset(options, term, offset) {
+      var skipDisabled = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
+      return (0, _groupUtils.findOptionWithOffset)(options || [], term, this.get('typeAheadOptionMatcher'), offset, skipDisabled);
+    },
+    updateOptions: function updateOptions(options) {
+      this._removeObserversInOptions();
+      if (!options) {
+        return;
+      }
+      if (true) {
+        (function walk(collection) {
+          for (var i = 0; i < Ember.get(collection, 'length'); i++) {
+            var entry = collection.objectAt ? collection.objectAt(i) : collection[i];
+            var subOptions = Ember.get(entry, 'options');
+            var isGroup = !!Ember.get(entry, 'groupName') && !!subOptions;
+            if (isGroup) {
+              (true && !(!subOptions.then) && Ember.assert('ember-power-select doesn\'t support promises inside groups. Please, resolve those promises and turn them into arrays before passing them to ember-power-select', !subOptions.then));
+
+              walk(subOptions);
+            }
+          }
+        })(options);
+      }
+      if (options && options.addObserver) {
+        options.addObserver('[]', this, this._updateOptionsAndResults);
+        this._observedOptions = options;
+      }
+      this._updateOptionsAndResults(options);
+    },
+    updateSelection: function updateSelection(selection) {
+      this._removeObserversInSelected();
+      if (Ember.isArray(selection)) {
+        if (selection && selection.addObserver) {
+          selection.addObserver('[]', this, this._updateSelectedArray);
+          this._observedSelected = selection;
+        }
+        this._updateSelectedArray(selection);
+      } else if (selection !== this.get('publicAPI').selected) {
+        this.updateState({ selected: selection, highlighted: selection });
+      }
+    },
+    resetHighlighted: function resetHighlighted() {
+      var publicAPI = this.get('publicAPI');
+      var defaultHightlighted = this.get('defaultHighlighted');
+      var highlighted = void 0;
+      if (typeof defaultHightlighted === 'function') {
+        highlighted = defaultHightlighted(publicAPI);
+      } else {
+        highlighted = defaultHightlighted;
+      }
+      this.updateState({ highlighted: highlighted });
+    },
+    _updateOptionsAndResults: function _updateOptionsAndResults(opts) {
+      if (Ember.get(this, 'isDestroying')) {
+        return;
+      }
+      var options = toPlainArray(opts);
+      var publicAPI = void 0;
+      if (this.get('search')) {
+        // external search
+        publicAPI = this.updateState({ options: options, results: options, resultsCount: (0, _groupUtils.countOptions)(options), loading: false });
+      } else {
+        // filter
+        publicAPI = this.get('publicAPI');
+        var results = Ember.isBlank(publicAPI.searchText) ? options : this.filter(options, publicAPI.searchText);
+        publicAPI = this.updateState({ results: results, options: options, resultsCount: (0, _groupUtils.countOptions)(results), loading: false });
+      }
+      if (publicAPI.isOpen) {
+        this.resetHighlighted();
+      }
+    },
+    _updateSelectedArray: function _updateSelectedArray(selection) {
+      if (Ember.get(this, 'isDestroyed')) {
+        return;
+      }
+      this.updateState({ selected: toPlainArray(selection) });
+    },
+    _resetSearch: function _resetSearch() {
+      var results = this.get('publicAPI').options;
+      this.get('handleAsyncSearchTask').cancelAll();
+      this.updateState({
+        results: results,
+        searchText: '',
+        lastSearchedText: '',
+        resultsCount: (0, _groupUtils.countOptions)(results),
+        loading: false
+      });
+    },
+    _performFilter: function _performFilter(term) {
+      var results = this.filter(this.get('publicAPI').options, term);
+      this.updateState({ results: results, searchText: term, lastSearchedText: term, resultsCount: (0, _groupUtils.countOptions)(results) });
+      this.resetHighlighted();
+    },
+    _performSearch: function _performSearch(term) {
+      var searchAction = this.get('search');
+      var publicAPI = this.updateState({ searchText: term });
+      var search = searchAction(term, publicAPI);
+      if (!search) {
+        publicAPI = this.updateState({ lastSearchedText: term });
+      } else if (search.then) {
+        this.get('handleAsyncSearchTask').perform(term, search);
+      } else {
+        var resultsArray = toPlainArray(search);
+        this.updateState({ results: resultsArray, lastSearchedText: term, resultsCount: (0, _groupUtils.countOptions)(resultsArray) });
+        this.resetHighlighted();
+      }
+    },
+    _routeKeydown: function _routeKeydown(e) {
+      if (e.keyCode === 38 || e.keyCode === 40) {
+        // Up & Down
+        return this._handleKeyUpDown(e);
+      } else if (e.keyCode === 13) {
+        // ENTER
+        return this._handleKeyEnter(e);
+      } else if (e.keyCode === 9) {
+        // Tab
+        return this._handleKeyTab(e);
+      } else if (e.keyCode === 27) {
+        // ESC
+        return this._handleKeyESC(e);
+      }
+    },
+    _handleKeyUpDown: function _handleKeyUpDown(e) {
+      var publicAPI = this.get('publicAPI');
+      if (publicAPI.isOpen) {
+        e.preventDefault();
+        e.stopPropagation();
+        var step = e.keyCode === 40 ? 1 : -1;
+        var newHighlighted = (0, _groupUtils.advanceSelectableOption)(publicAPI.results, publicAPI.highlighted, step);
+        publicAPI.actions.highlight(newHighlighted, e);
+        publicAPI.actions.scrollTo(newHighlighted);
+      } else {
+        publicAPI.actions.open(e);
+      }
+    },
+    _handleKeyEnter: function _handleKeyEnter(e) {
+      var publicAPI = this.get('publicAPI');
+      if (publicAPI.isOpen && publicAPI.highlighted !== undefined) {
+        publicAPI.actions.choose(publicAPI.highlighted, e);
+        return false;
+      }
+    },
+    _handleKeySpace: function _handleKeySpace(e) {
+      var publicAPI = this.get('publicAPI');
+      if (publicAPI.isOpen && publicAPI.highlighted !== undefined) {
+        e.preventDefault(); // Prevents scrolling of the page.
+        publicAPI.actions.choose(publicAPI.highlighted, e);
+        return false;
+      }
+    },
+    _handleKeyTab: function _handleKeyTab(e) {
+      this.get('publicAPI').actions.close(e);
+    },
+    _handleKeyESC: function _handleKeyESC(e) {
+      this.get('publicAPI').actions.close(e);
+    },
+    _removeObserversInOptions: function _removeObserversInOptions() {
+      if (this._observedOptions) {
+        this._observedOptions.removeObserver('[]', this, this._updateOptionsAndResults);
+      }
+    },
+    _removeObserversInSelected: function _removeObserversInSelected() {
+      if (this._observedSelected) {
+        this._observedSelected.removeObserver('[]', this, this._updateSelectedArray);
+      }
+    },
+    _isNumpadKeyEvent: function _isNumpadKeyEvent(e) {
+      return e.keyCode >= 96 && e.keyCode <= 105;
+    },
+    updateState: function updateState(changes) {
+      var newState = Ember.set(this, 'publicAPI', assign({}, this.get('publicAPI'), changes));
+      var registerAPI = this.get('registerAPI');
+      if (registerAPI) {
+        registerAPI(newState);
+      }
+      return newState;
+    }
+  });
+});
+;define('ember-power-select/components/power-select/before-options', ['exports', 'ember-power-select/templates/components/power-select/before-options'], function (exports, _beforeOptions) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    tagName: '',
+    layout: _beforeOptions.default,
+    autofocus: true,
+
+    // Lifecycle hooks
+    didInsertElement: function didInsertElement() {
+      this._super.apply(this, arguments);
+
+      if (this.get('autofocus')) {
+        this.focusInput();
+      }
+    },
+    willDestroyElement: function willDestroyElement() {
+      this._super.apply(this, arguments);
+      if (this.get('searchEnabled')) {
+        Ember.run.scheduleOnce('actions', this, this.get('select').actions.search, '');
+      }
+    },
+
+
+    // Actions
+    actions: {
+      onKeydown: function onKeydown(e) {
+        var onKeydown = this.get('onKeydown');
+        if (onKeydown(e) === false) {
+          return false;
+        }
+        if (e.keyCode === 13) {
+          var select = this.get('select');
+          select.actions.close(e);
+        }
+      }
+    },
+
+    // Methods
+    focusInput: function focusInput() {
+      this.input = self.document.querySelector('.ember-power-select-search-input[aria-controls="' + this.get('listboxId') + '"]');
+      if (this.input) {
+        Ember.run.scheduleOnce('afterRender', this.input, 'focus');
+      }
+    }
+  });
+});
+;define('ember-power-select/components/power-select/options', ['exports', 'ember-power-select/templates/components/power-select/options'], function (exports, _options) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+
+  (function (ElementProto) {
+    if (typeof ElementProto.matches !== 'function') {
+      ElementProto.matches = ElementProto.msMatchesSelector || ElementProto.mozMatchesSelector || ElementProto.webkitMatchesSelector;
+    }
+
+    if (typeof ElementProto.closest !== 'function') {
+      ElementProto.closest = function closest(selector) {
+        var element = this;
+        while (element && element.nodeType === 1) {
+          if (element.matches(selector)) {
+            return element;
+          }
+          element = element.parentNode;
+        }
+        return null;
+      };
+    }
+  })(window.Element.prototype);
+
+  exports.default = Ember.Component.extend({
+    isTouchDevice: !!self.window && 'ontouchstart' in self.window,
+    layout: _options.default,
+    tagName: 'ul',
+    attributeBindings: ['role', 'aria-controls'],
+    role: 'listbox',
+
+    // Lifecycle hooks
+    didInsertElement: function didInsertElement() {
+      var _this = this;
+
+      this._super.apply(this, arguments);
+      if (this.get('role') === 'group') {
+        return;
+      }
+      var findOptionAndPerform = function findOptionAndPerform(action, e) {
+        var optionItem = e.target.closest('[data-option-index]');
+        if (!optionItem) {
+          return;
+        }
+        if (optionItem.closest('[aria-disabled=true]')) {
+          return; // Abort if the item or an ancestor is disabled
+        }
+        var optionIndex = optionItem.getAttribute('data-option-index');
+        action(_this._optionFromIndex(optionIndex), e);
+      };
+      this.element.addEventListener('mouseup', function (e) {
+        return findOptionAndPerform(_this.get('select.actions.choose'), e);
+      });
+      this.element.addEventListener('mouseover', function (e) {
+        return findOptionAndPerform(_this.get('select.actions.highlight'), e);
+      });
+      if (this.get('isTouchDevice')) {
+        this._addTouchEvents();
+      }
+      if (this.get('role') !== 'group') {
+        var select = this.get('select');
+        select.actions.scrollTo(select.highlighted);
+      }
+    },
+
+
+    // CPs
+    'aria-controls': Ember.computed('select.uniqueId', function () {
+      return 'ember-power-select-trigger-' + this.get('select.uniqueId');
+    }),
+
+    // Methods
+    _addTouchEvents: function _addTouchEvents() {
+      var _this2 = this;
+
+      var touchMoveHandler = function touchMoveHandler() {
+        _this2.hasMoved = true;
+        if (_this2.element) {
+          _this2.element.removeEventListener('touchmove', touchMoveHandler);
+        }
+      };
+      // Add touch event handlers to detect taps
+      this.element.addEventListener('touchstart', function () {
+        _this2.element.addEventListener('touchmove', touchMoveHandler);
+      });
+      this.element.addEventListener('touchend', function (e) {
+        var optionItem = e.target.closest('[data-option-index]');
+
+        if (!optionItem) {
+          return;
+        }
+
+        e.preventDefault();
+        if (_this2.hasMoved) {
+          _this2.hasMoved = false;
+          return;
+        }
+
+        var optionIndex = optionItem.getAttribute('data-option-index');
+        _this2.get('select.actions.choose')(_this2._optionFromIndex(optionIndex), e);
+      });
+    },
+    _optionFromIndex: function _optionFromIndex(index) {
+      var parts = index.split('.');
+      var options = this.get('options');
+      var option = options[parseInt(parts[0], 10)];
+      for (var i = 1; i < parts.length; i++) {
+        option = option.options[parseInt(parts[i], 10)];
+      }
+      return option;
+    }
+  });
+});
+;define('ember-power-select/components/power-select/placeholder', ['exports', 'ember-power-select/templates/components/power-select/placeholder'], function (exports, _placeholder) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    layout: _placeholder.default,
+    tagName: ''
+  });
+});
+;define('ember-power-select/components/power-select/power-select-group', ['exports', 'ember-power-select/templates/components/power-select/power-select-group'], function (exports, _powerSelectGroup) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    layout: _powerSelectGroup.default,
+    tagName: '',
+    disabled: Ember.computed.reads('group.disabled'),
+    groupName: Ember.computed.reads('group.groupName')
+  });
+});
+;define('ember-power-select/components/power-select/search-message', ['exports', 'ember-power-select/templates/components/power-select/search-message'], function (exports, _searchMessage) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    layout: _searchMessage.default,
+    tagName: ''
+  });
+});
+;define('ember-power-select/components/power-select/trigger', ['exports', 'ember-power-select/templates/components/power-select/trigger'], function (exports, _trigger) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    layout: _trigger.default,
+    tagName: '',
+
+    // Actions
+    actions: {
+      clear: function clear(e) {
+        e.stopPropagation();
+        this.get('select').actions.select(null);
+        if (e.type === 'touchstart') {
+          return false;
+        }
+      }
+    }
+  });
+});
+;define('ember-power-select/helpers/ember-power-select-is-group', ['exports', 'ember-power-select/utils/group-utils'], function (exports, _groupUtils) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.emberPowerSelectIsGroup = emberPowerSelectIsGroup;
+
+  var _slicedToArray = function () {
+    function sliceIterator(arr, i) {
+      var _arr = [];
+      var _n = true;
+      var _d = false;
+      var _e = undefined;
+
+      try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);
+
+          if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;
+        _e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"]) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }
+
+      return _arr;
+    }
+
+    return function (arr, i) {
+      if (Array.isArray(arr)) {
+        return arr;
+      } else if (Symbol.iterator in Object(arr)) {
+        return sliceIterator(arr, i);
+      } else {
+        throw new TypeError("Invalid attempt to destructure non-iterable instance");
+      }
+    };
+  }();
+
+  function emberPowerSelectIsGroup(_ref) {
+    var _ref2 = _slicedToArray(_ref, 1),
+        maybeGroup = _ref2[0];
+
+    return (0, _groupUtils.isGroup)(maybeGroup);
+  }
+
+  exports.default = Ember.Helper.helper(emberPowerSelectIsGroup);
+});
+;define('ember-power-select/helpers/ember-power-select-is-selected', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.emberPowerSelectIsSelected = emberPowerSelectIsSelected;
+
+  var _slicedToArray = function () {
+    function sliceIterator(arr, i) {
+      var _arr = [];
+      var _n = true;
+      var _d = false;
+      var _e = undefined;
+
+      try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);
+
+          if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;
+        _e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"]) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }
+
+      return _arr;
+    }
+
+    return function (arr, i) {
+      if (Array.isArray(arr)) {
+        return arr;
+      } else if (Symbol.iterator in Object(arr)) {
+        return sliceIterator(arr, i);
+      } else {
+        throw new TypeError("Invalid attempt to destructure non-iterable instance");
+      }
+    };
+  }();
+
+  // TODO: Make it private or scoped to the component
+  function emberPowerSelectIsSelected(_ref) /* , hash*/{
+    var _ref2 = _slicedToArray(_ref, 2),
+        option = _ref2[0],
+        selected = _ref2[1];
+
+    if (selected === undefined || selected === null) {
+      return false;
+    }
+    if (Ember.isArray(selected)) {
+      for (var i = 0; i < selected.length; i++) {
+        if (Ember.isEqual(selected[i], option)) {
+          return true;
+        }
+      }
+      return false;
+    } else {
+      return Ember.isEqual(option, selected);
+    }
+  }
+
+  exports.default = Ember.Helper.helper(emberPowerSelectIsSelected);
+});
+;define('ember-power-select/helpers/ember-power-select-true-string-if-present', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.emberPowerSelectTrueStringIfPresent = emberPowerSelectTrueStringIfPresent;
+
+  var _slicedToArray = function () {
+    function sliceIterator(arr, i) {
+      var _arr = [];
+      var _n = true;
+      var _d = false;
+      var _e = undefined;
+
+      try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);
+
+          if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;
+        _e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"]) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }
+
+      return _arr;
+    }
+
+    return function (arr, i) {
+      if (Array.isArray(arr)) {
+        return arr;
+      } else if (Symbol.iterator in Object(arr)) {
+        return sliceIterator(arr, i);
+      } else {
+        throw new TypeError("Invalid attempt to destructure non-iterable instance");
+      }
+    };
+  }();
+
+  function emberPowerSelectTrueStringIfPresent(_ref) /* , hash*/{
+    var _ref2 = _slicedToArray(_ref, 1),
+        bool = _ref2[0];
+
+    return bool ? 'true' : false;
+  }
+
+  exports.default = Ember.Helper.helper(emberPowerSelectTrueStringIfPresent);
+});
+;define("ember-power-select/templates/components/power-select-multiple", ["exports"], function (exports) {
+  "use strict";
+
+  exports.__esModule = true;
+  exports.default = Ember.HTMLBars.template({ "id": "F+ag2mn5", "block": "{\"symbols\":[\"option\",\"select\",\"option\",\"select\",\"&default\",\"&inverse\"],\"statements\":[[4,\"if\",[[22,6]],null,{\"statements\":[[4,\"power-select\",null,[[\"afterOptionsComponent\",\"allowClear\",\"ariaDescribedBy\",\"ariaInvalid\",\"ariaLabel\",\"ariaLabelledBy\",\"beforeOptionsComponent\",\"buildSelection\",\"calculatePosition\",\"class\",\"closeOnSelect\",\"defaultHighlighted\",\"destination\",\"dir\",\"disabled\",\"dropdownClass\",\"extra\",\"groupComponent\",\"horizontalPosition\",\"initiallyOpened\",\"loadingMessage\",\"matcher\",\"matchTriggerWidth\",\"noMatchesMessage\",\"onblur\",\"onchange\",\"onclose\",\"onfocus\",\"oninput\",\"onkeydown\",\"onopen\",\"options\",\"optionsComponent\",\"placeholder\",\"placeholderComponent\",\"preventScroll\",\"registerAPI\",\"renderInPlace\",\"required\",\"scrollTo\",\"search\",\"searchEnabled\",\"searchField\",\"searchMessage\",\"searchPlaceholder\",\"selected\",\"selectedItemComponent\",\"tabindex\",\"tagName\",\"triggerClass\",\"triggerComponent\",\"triggerId\",\"verticalPosition\"],[[20,[\"afterOptionsComponent\"]],[20,[\"allowClear\"]],[20,[\"ariaDescribedBy\"]],[20,[\"ariaInvalid\"]],[20,[\"ariaLabel\"]],[20,[\"ariaLabelledBy\"]],[20,[\"beforeOptionsComponent\"]],[25,\"action\",[[19,0,[]],\"buildSelection\"],null],[20,[\"calculatePosition\"]],[20,[\"class\"]],[20,[\"closeOnSelect\"]],[20,[\"defaultHighlighted\"]],[20,[\"destination\"]],[20,[\"dir\"]],[20,[\"disabled\"]],[20,[\"dropdownClass\"]],[20,[\"extra\"]],[20,[\"groupComponent\"]],[20,[\"horizontalPosition\"]],[20,[\"initiallyOpened\"]],[20,[\"loadingMessage\"]],[20,[\"matcher\"]],[20,[\"matchTriggerWidth\"]],[20,[\"noMatchesMessage\"]],[20,[\"onblur\"]],[20,[\"onchange\"]],[20,[\"onclose\"]],[25,\"action\",[[19,0,[]],\"handleFocus\"],null],[20,[\"oninput\"]],[25,\"action\",[[19,0,[]],\"handleKeydown\"],null],[25,\"action\",[[19,0,[]],\"handleOpen\"],null],[20,[\"options\"]],[20,[\"optionsComponent\"]],[20,[\"placeholder\"]],[20,[\"placeholderComponent\"]],[20,[\"preventScroll\"]],[25,\"readonly\",[[20,[\"registerAPI\"]]],null],[20,[\"renderInPlace\"]],[20,[\"required\"]],[20,[\"scrollTo\"]],[20,[\"search\"]],[20,[\"searchEnabled\"]],[20,[\"searchField\"]],[20,[\"searchMessage\"]],[20,[\"searchPlaceholder\"]],[20,[\"selected\"]],[20,[\"selectedItemComponent\"]],[20,[\"computedTabIndex\"]],[20,[\"tagName\"]],[20,[\"concatenatedTriggerClass\"]],[25,\"component\",[[20,[\"triggerComponent\"]]],[[\"tabindex\"],[[20,[\"tabindex\"]]]]],[20,[\"triggerId\"]],[20,[\"verticalPosition\"]]]],{\"statements\":[[0,\"    \"],[11,5,[[19,3,[]],[19,4,[]]]],[0,\"\\n\"]],\"parameters\":[3,4]},{\"statements\":[[0,\"    \"],[11,6],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[]},{\"statements\":[[4,\"power-select\",null,[[\"afterOptionsComponent\",\"allowClear\",\"ariaDescribedBy\",\"ariaInvalid\",\"ariaLabel\",\"ariaLabelledBy\",\"beforeOptionsComponent\",\"buildSelection\",\"calculatePosition\",\"class\",\"closeOnSelect\",\"defaultHighlighted\",\"destination\",\"dir\",\"disabled\",\"dropdownClass\",\"extra\",\"groupComponent\",\"horizontalPosition\",\"initiallyOpened\",\"loadingMessage\",\"matcher\",\"matchTriggerWidth\",\"noMatchesMessage\",\"onblur\",\"onchange\",\"onclose\",\"onfocus\",\"oninput\",\"onkeydown\",\"onopen\",\"options\",\"optionsComponent\",\"placeholder\",\"placeholderComponent\",\"preventScroll\",\"registerAPI\",\"renderInPlace\",\"required\",\"scrollTo\",\"search\",\"searchEnabled\",\"searchField\",\"searchMessage\",\"searchPlaceholder\",\"selected\",\"selectedItemComponent\",\"tabindex\",\"tagName\",\"triggerClass\",\"triggerComponent\",\"triggerId\",\"verticalPosition\"],[[20,[\"afterOptionsComponent\"]],[20,[\"allowClear\"]],[20,[\"ariaDescribedBy\"]],[20,[\"ariaInvalid\"]],[20,[\"ariaLabel\"]],[20,[\"ariaLabelledBy\"]],[20,[\"beforeOptionsComponent\"]],[25,\"action\",[[19,0,[]],\"buildSelection\"],null],[20,[\"calculatePosition\"]],[20,[\"class\"]],[20,[\"closeOnSelect\"]],[20,[\"defaultHighlighted\"]],[20,[\"destination\"]],[20,[\"dir\"]],[20,[\"disabled\"]],[20,[\"dropdownClass\"]],[20,[\"extra\"]],[20,[\"groupComponent\"]],[20,[\"horizontalPosition\"]],[20,[\"initiallyOpened\"]],[20,[\"loadingMessage\"]],[20,[\"matcher\"]],[20,[\"matchTriggerWidth\"]],[20,[\"noMatchesMessage\"]],[20,[\"onblur\"]],[20,[\"onchange\"]],[20,[\"onclose\"]],[25,\"action\",[[19,0,[]],\"handleFocus\"],null],[20,[\"oninput\"]],[25,\"action\",[[19,0,[]],\"handleKeydown\"],null],[25,\"action\",[[19,0,[]],\"handleOpen\"],null],[20,[\"options\"]],[20,[\"optionsComponent\"]],[20,[\"placeholder\"]],[20,[\"placeholderComponent\"]],[20,[\"preventScroll\"]],[25,\"readonly\",[[20,[\"registerAPI\"]]],null],[20,[\"renderInPlace\"]],[20,[\"required\"]],[20,[\"scrollTo\"]],[20,[\"search\"]],[20,[\"searchEnabled\"]],[20,[\"searchField\"]],[20,[\"searchMessage\"]],[20,[\"searchPlaceholder\"]],[20,[\"selected\"]],[20,[\"selectedItemComponent\"]],[20,[\"computedTabIndex\"]],[20,[\"tagName\"]],[20,[\"concatenatedTriggerClass\"]],[25,\"component\",[[20,[\"triggerComponent\"]]],[[\"tabindex\"],[[20,[\"tabindex\"]]]]],[20,[\"triggerId\"]],[20,[\"verticalPosition\"]]]],{\"statements\":[[0,\"    \"],[11,5,[[19,1,[]],[19,2,[]]]],[0,\"\\n\"]],\"parameters\":[1,2]},null]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "ember-power-select/templates/components/power-select-multiple.hbs" } });
+});
+;define("ember-power-select/templates/components/power-select-multiple/trigger", ["exports"], function (exports) {
+  "use strict";
+
+  exports.__esModule = true;
+  exports.default = Ember.HTMLBars.template({ "id": "s33uz+e1", "block": "{\"symbols\":[\"opt\",\"idx\",\"&default\"],\"statements\":[[6,\"ul\"],[10,\"id\",[26,[\"ember-power-select-multiple-options-\",[20,[\"select\",\"uniqueId\"]]]]],[9,\"class\",\"ember-power-select-multiple-options\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"select\",\"selected\"]]],null,{\"statements\":[[0,\"    \"],[6,\"li\"],[10,\"class\",[26,[\"ember-power-select-multiple-option \",[25,\"if\",[[19,1,[\"disabled\"]],\"ember-power-select-multiple-option--disabled\"],null]]]],[7],[0,\"\\n\"],[4,\"unless\",[[20,[\"select\",\"disabled\"]]],null,{\"statements\":[[0,\"        \"],[6,\"span\"],[9,\"role\",\"button\"],[9,\"aria-label\",\"remove element\"],[9,\"class\",\"ember-power-select-multiple-remove-btn\"],[10,\"data-selected-index\",[19,2,[]],null],[7],[0,\"\\n          ×\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"selectedItemComponent\"]]],null,{\"statements\":[[0,\"        \"],[1,[25,\"component\",[[20,[\"selectedItemComponent\"]]],[[\"option\",\"select\"],[[25,\"readonly\",[[19,1,[]]],null],[25,\"readonly\",[[20,[\"select\"]]],null]]]],false],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"        \"],[11,3,[[19,1,[]],[20,[\"select\"]]]],[0,\"\\n\"]],\"parameters\":[]}],[0,\"    \"],[8],[0,\"\\n\"]],\"parameters\":[1,2]},{\"statements\":[[4,\"if\",[[25,\"and\",[[20,[\"placeholder\"]],[25,\"not\",[[20,[\"searchEnabled\"]]],null]],null]],null,{\"statements\":[[0,\"      \"],[6,\"span\"],[9,\"class\",\"ember-power-select-placeholder\"],[7],[1,[18,\"placeholder\"],false],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[]}],[4,\"if\",[[20,[\"searchEnabled\"]]],null,{\"statements\":[[0,\"    \"],[6,\"input\"],[9,\"type\",\"search\"],[9,\"class\",\"ember-power-select-trigger-multiple-input\"],[9,\"tabindex\",\"0\"],[9,\"autocomplete\",\"off\"],[9,\"autocorrect\",\"off\"],[9,\"autocapitalize\",\"off\"],[9,\"spellcheck\",\"false\"],[10,\"id\",[26,[\"ember-power-select-trigger-multiple-input-\",[20,[\"select\",\"uniqueId\"]]]]],[10,\"value\",[20,[\"select\",\"searchText\"]],null],[10,\"aria-controls\",[18,\"listboxId\"],null],[10,\"style\",[18,\"triggerMultipleInputStyle\"],null],[10,\"placeholder\",[18,\"maybePlaceholder\"],null],[10,\"disabled\",[20,[\"select\",\"disabled\"]],null],[10,\"oninput\",[25,\"action\",[[19,0,[]],\"onInput\"],null],null],[10,\"onFocus\",[18,\"onFocus\"],null],[10,\"onBlur\",[18,\"onBlur\"],null],[10,\"tabindex\",[18,\"tabindex\"],null],[10,\"onkeydown\",[25,\"action\",[[19,0,[]],\"onKeydown\"],null],null],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[8],[0,\"\\n\"],[6,\"span\"],[9,\"class\",\"ember-power-select-status-icon\"],[7],[8]],\"hasEval\":false}", "meta": { "moduleName": "ember-power-select/templates/components/power-select-multiple/trigger.hbs" } });
+});
+;define("ember-power-select/templates/components/power-select", ["exports"], function (exports) {
+  "use strict";
+
+  exports.__esModule = true;
+  exports.default = Ember.HTMLBars.template({ "id": "wXg4fXXl", "block": "{\"symbols\":[\"dropdown\",\"option\",\"term\",\"opt\",\"term\",\"&default\",\"&inverse\"],\"statements\":[[4,\"basic-dropdown\",null,[[\"classNames\",\"horizontalPosition\",\"calculatePosition\",\"destination\",\"initiallyOpened\",\"matchTriggerWidth\",\"preventScroll\",\"onClose\",\"onOpen\",\"registerAPI\",\"renderInPlace\",\"verticalPosition\",\"disabled\"],[[25,\"readonly\",[[20,[\"classNames\"]]],null],[25,\"readonly\",[[20,[\"horizontalPosition\"]]],null],[20,[\"calculatePosition\"]],[25,\"readonly\",[[20,[\"destination\"]]],null],[25,\"readonly\",[[20,[\"initiallyOpened\"]]],null],[25,\"readonly\",[[20,[\"matchTriggerWidth\"]]],null],[25,\"readonly\",[[20,[\"preventScroll\"]]],null],[25,\"action\",[[19,0,[]],\"onClose\"],null],[25,\"action\",[[19,0,[]],\"onOpen\"],null],[25,\"action\",[[19,0,[]],\"registerAPI\"],null],[25,\"readonly\",[[20,[\"renderInPlace\"]]],null],[25,\"readonly\",[[20,[\"verticalPosition\"]]],null],[25,\"readonly\",[[20,[\"disabled\"]]],null]]],{\"statements\":[[0,\"\\n\"],[4,\"component\",[[19,1,[\"trigger\"]]],[[\"role\",\"tagName\",\"ariaDescribedBy\",\"ariaInvalid\",\"ariaLabel\",\"ariaLabelledBy\",\"ariaRequired\",\"class\",\"extra\",\"id\",\"eventType\",\"onKeyDown\",\"onFocus\",\"onBlur\",\"tabindex\"],[[25,\"readonly\",[[20,[\"triggerRole\"]]],null],[25,\"readonly\",[[20,[\"_triggerTagName\"]]],null],[25,\"readonly\",[[20,[\"ariaDescribedBy\"]]],null],[25,\"readonly\",[[20,[\"ariaInvalid\"]]],null],[25,\"readonly\",[[20,[\"ariaLabel\"]]],null],[25,\"readonly\",[[20,[\"ariaLabelledBy\"]]],null],[25,\"readonly\",[[20,[\"required\"]]],null],[25,\"readonly\",[[20,[\"concatenatedTriggerClasses\"]]],null],[25,\"readonly\",[[20,[\"extra\"]]],null],[25,\"readonly\",[[20,[\"triggerId\"]]],null],\"mousedown\",[25,\"action\",[[19,0,[]],\"onTriggerKeydown\"],null],[25,\"action\",[[19,0,[]],\"onTriggerFocus\"],null],[25,\"action\",[[19,0,[]],\"onTriggerBlur\"],null],[25,\"readonly\",[[20,[\"tabindex\"]]],null]]],{\"statements\":[[4,\"component\",[[20,[\"triggerComponent\"]]],[[\"allowClear\",\"buildSelection\",\"extra\",\"listboxId\",\"loadingMessage\",\"onFocus\",\"onBlur\",\"onInput\",\"placeholder\",\"placeholderComponent\",\"onKeydown\",\"searchEnabled\",\"searchField\",\"select\",\"selectedItemComponent\"],[[25,\"readonly\",[[20,[\"allowClear\"]]],null],[25,\"readonly\",[[20,[\"buildSelection\"]]],null],[25,\"readonly\",[[20,[\"extra\"]]],null],[25,\"readonly\",[[20,[\"optionsId\"]]],null],[25,\"readonly\",[[20,[\"loadingMessage\"]]],null],[25,\"action\",[[19,0,[]],\"onFocus\"],null],[25,\"action\",[[19,0,[]],\"onBlur\"],null],[25,\"action\",[[19,0,[]],\"onInput\"],null],[25,\"readonly\",[[20,[\"placeholder\"]]],null],[25,\"readonly\",[[20,[\"placeholderComponent\"]]],null],[25,\"action\",[[19,0,[]],\"onKeydown\"],null],[25,\"readonly\",[[20,[\"searchEnabled\"]]],null],[25,\"readonly\",[[20,[\"searchField\"]]],null],[25,\"readonly\",[[20,[\"publicAPI\"]]],null],[25,\"readonly\",[[20,[\"selectedItemComponent\"]]],null]]],{\"statements\":[[0,\"      \"],[11,6,[[19,4,[]],[19,5,[]]]],[0,\"\\n\"]],\"parameters\":[4,5]},null]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"component\",[[19,1,[\"content\"]]],[[\"_contentTagName\",\"class\"],[[20,[\"_contentTagName\"]],[25,\"readonly\",[[20,[\"concatenatedDropdownClasses\"]]],null]]],{\"statements\":[[0,\"    \"],[1,[25,\"component\",[[20,[\"beforeOptionsComponent\"]]],[[\"extra\",\"listboxId\",\"onInput\",\"onKeydown\",\"searchEnabled\",\"onFocus\",\"onBlur\",\"placeholder\",\"placeholderComponent\",\"searchPlaceholder\",\"select\",\"selectedItemComponent\"],[[25,\"readonly\",[[20,[\"extra\"]]],null],[25,\"readonly\",[[20,[\"optionsId\"]]],null],[25,\"action\",[[19,0,[]],\"onInput\"],null],[25,\"action\",[[19,0,[]],\"onKeydown\"],null],[25,\"readonly\",[[20,[\"searchEnabled\"]]],null],[25,\"action\",[[19,0,[]],\"onFocus\"],null],[25,\"action\",[[19,0,[]],\"onBlur\"],null],[25,\"readonly\",[[20,[\"placeholder\"]]],null],[25,\"readonly\",[[20,[\"placeholderComponent\"]]],null],[25,\"readonly\",[[20,[\"searchPlaceholder\"]]],null],[25,\"readonly\",[[20,[\"publicAPI\"]]],null],[25,\"readonly\",[[20,[\"selectedItemComponent\"]]],null]]]],false],[0,\"\\n\"],[4,\"if\",[[20,[\"mustShowSearchMessage\"]]],null,{\"statements\":[[0,\"      \"],[1,[25,\"component\",[[20,[\"searchMessageComponent\"]]],[[\"searchMessage\",\"select\"],[[25,\"readonly\",[[20,[\"searchMessage\"]]],null],[25,\"readonly\",[[20,[\"publicAPI\"]]],null]]]],false],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[4,\"if\",[[20,[\"mustShowNoMessages\"]]],null,{\"statements\":[[4,\"if\",[[22,7]],null,{\"statements\":[[0,\"        \"],[11,7],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[4,\"if\",[[20,[\"noMatchesMessage\"]]],null,{\"statements\":[[0,\"        \"],[6,\"ul\"],[9,\"class\",\"ember-power-select-options\"],[9,\"role\",\"listbox\"],[7],[0,\"\\n          \"],[6,\"li\"],[9,\"class\",\"ember-power-select-option ember-power-select-option--no-matches-message\"],[9,\"role\",\"option\"],[7],[0,\"\\n            \"],[1,[18,\"noMatchesMessage\"],false],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"]],\"parameters\":[]},null]],\"parameters\":[]}]],\"parameters\":[]},{\"statements\":[[4,\"component\",[[20,[\"optionsComponent\"]]],[[\"class\",\"extra\",\"groupIndex\",\"loadingMessage\",\"id\",\"options\",\"optionsComponent\",\"groupComponent\",\"select\"],[\"ember-power-select-options\",[25,\"readonly\",[[20,[\"extra\"]]],null],\"\",[25,\"readonly\",[[20,[\"loadingMessage\"]]],null],[25,\"readonly\",[[20,[\"optionsId\"]]],null],[25,\"readonly\",[[20,[\"publicAPI\",\"results\"]]],null],[25,\"readonly\",[[20,[\"optionsComponent\"]]],null],[25,\"readonly\",[[20,[\"groupComponent\"]]],null],[25,\"readonly\",[[20,[\"publicAPI\"]]],null]]],{\"statements\":[[0,\"        \"],[11,6,[[19,2,[]],[19,3,[]]]],[0,\"\\n\"]],\"parameters\":[2,3]},null],[0,\"    \"]],\"parameters\":[]}]],\"parameters\":[]}],[0,\"    \"],[1,[25,\"component\",[[20,[\"afterOptionsComponent\"]]],[[\"select\",\"extra\"],[[25,\"readonly\",[[20,[\"publicAPI\"]]],null],[25,\"readonly\",[[20,[\"extra\"]]],null]]]],false],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[1]},null]],\"hasEval\":false}", "meta": { "moduleName": "ember-power-select/templates/components/power-select.hbs" } });
+});
+;define("ember-power-select/templates/components/power-select/before-options", ["exports"], function (exports) {
+  "use strict";
+
+  exports.__esModule = true;
+  exports.default = Ember.HTMLBars.template({ "id": "xCM911PY", "block": "{\"symbols\":[],\"statements\":[[4,\"if\",[[20,[\"searchEnabled\"]]],null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ember-power-select-search\"],[7],[0,\"\\n    \"],[6,\"input\"],[9,\"type\",\"search\"],[9,\"autocomplete\",\"off\"],[9,\"autocorrect\",\"off\"],[9,\"autocapitalize\",\"off\"],[9,\"spellcheck\",\"false\"],[9,\"role\",\"combobox\"],[9,\"class\",\"ember-power-select-search-input\"],[10,\"value\",[20,[\"select\",\"searchText\"]],null],[10,\"aria-controls\",[18,\"listboxId\"],null],[10,\"placeholder\",[18,\"searchPlaceholder\"],null],[10,\"oninput\",[18,\"onInput\"],null],[10,\"onfocus\",[18,\"onFocus\"],null],[10,\"onblur\",[18,\"onBlur\"],null],[10,\"onkeydown\",[25,\"action\",[[19,0,[]],\"onKeydown\"],null],null],[7],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "ember-power-select/templates/components/power-select/before-options.hbs" } });
+});
+;define("ember-power-select/templates/components/power-select/options", ["exports"], function (exports) {
+  "use strict";
+
+  exports.__esModule = true;
+  exports.default = Ember.HTMLBars.template({ "id": "bmWLcyI9", "block": "{\"symbols\":[\"opt\",\"index\",\"option\",\"&default\"],\"statements\":[[4,\"if\",[[20,[\"select\",\"loading\"]]],null,{\"statements\":[[4,\"if\",[[20,[\"loadingMessage\"]]],null,{\"statements\":[[0,\"    \"],[6,\"li\"],[9,\"class\",\"ember-power-select-option ember-power-select-option--loading-message\"],[9,\"role\",\"option\"],[7],[1,[18,\"loadingMessage\"],false],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[]},null],[4,\"each\",[[20,[\"options\"]]],null,{\"statements\":[[4,\"if\",[[25,\"ember-power-select-is-group\",[[19,1,[]]],null]],null,{\"statements\":[[4,\"component\",[[20,[\"groupComponent\"]]],[[\"group\",\"select\",\"extra\"],[[25,\"readonly\",[[19,1,[]]],null],[25,\"readonly\",[[20,[\"select\"]]],null],[25,\"readonly\",[[20,[\"extra\"]]],null]]],{\"statements\":[[4,\"component\",[[20,[\"optionsComponent\"]]],[[\"options\",\"select\",\"groupIndex\",\"optionsComponent\",\"groupComponent\",\"extra\",\"role\",\"class\"],[[25,\"readonly\",[[19,1,[\"options\"]]],null],[25,\"readonly\",[[20,[\"select\"]]],null],[25,\"concat\",[[20,[\"groupIndex\"]],[19,2,[]],\".\"],null],[25,\"readonly\",[[20,[\"optionsComponent\"]]],null],[25,\"readonly\",[[20,[\"groupComponent\"]]],null],[25,\"readonly\",[[20,[\"extra\"]]],null],\"group\",\"ember-power-select-options\"]],{\"statements\":[[0,\"        \"],[11,4,[[19,3,[]],[20,[\"select\"]]]],[0,\"\\n\"]],\"parameters\":[3]},null]],\"parameters\":[]},null]],\"parameters\":[]},{\"statements\":[[0,\"    \"],[6,\"li\"],[9,\"class\",\"ember-power-select-option\"],[10,\"aria-selected\",[26,[[25,\"ember-power-select-is-selected\",[[19,1,[]],[20,[\"select\",\"selected\"]]],null]]]],[10,\"aria-disabled\",[25,\"ember-power-select-true-string-if-present\",[[19,1,[\"disabled\"]]],null],null],[10,\"aria-current\",[26,[[25,\"eq\",[[19,1,[]],[20,[\"select\",\"highlighted\"]]],null]]]],[10,\"data-option-index\",[26,[[18,\"groupIndex\"],[19,2,[]]]]],[9,\"role\",\"option\"],[7],[0,\"\\n      \"],[11,4,[[19,1,[]],[20,[\"select\"]]]],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[1,2]},null]],\"hasEval\":false}", "meta": { "moduleName": "ember-power-select/templates/components/power-select/options.hbs" } });
+});
+;define("ember-power-select/templates/components/power-select/placeholder", ["exports"], function (exports) {
+  "use strict";
+
+  exports.__esModule = true;
+  exports.default = Ember.HTMLBars.template({ "id": "D0epo/Tt", "block": "{\"symbols\":[],\"statements\":[[4,\"if\",[[20,[\"placeholder\"]]],null,{\"statements\":[[0,\"  \"],[6,\"span\"],[9,\"class\",\"ember-power-select-placeholder\"],[7],[1,[18,\"placeholder\"],false],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "ember-power-select/templates/components/power-select/placeholder.hbs" } });
+});
+;define("ember-power-select/templates/components/power-select/power-select-group", ["exports"], function (exports) {
+  "use strict";
+
+  exports.__esModule = true;
+  exports.default = Ember.HTMLBars.template({ "id": "zSJbQzMm", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"li\"],[9,\"class\",\"ember-power-select-group\"],[10,\"aria-disabled\",[25,\"ember-power-select-true-string-if-present\",[[20,[\"disabled\"]]],null],null],[9,\"role\",\"option\"],[7],[0,\"\\n  \"],[6,\"span\"],[9,\"class\",\"ember-power-select-group-name\"],[7],[1,[18,\"groupName\"],false],[8],[0,\"\\n  \"],[11,1],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "ember-power-select/templates/components/power-select/power-select-group.hbs" } });
+});
+;define("ember-power-select/templates/components/power-select/search-message", ["exports"], function (exports) {
+  "use strict";
+
+  exports.__esModule = true;
+  exports.default = Ember.HTMLBars.template({ "id": "5TTVq9jZ", "block": "{\"symbols\":[],\"statements\":[[6,\"ul\"],[9,\"class\",\"ember-power-select-options\"],[9,\"role\",\"listbox\"],[7],[0,\"\\n  \"],[6,\"li\"],[9,\"class\",\"ember-power-select-option ember-power-select-option--search-message\"],[9,\"role\",\"option\"],[7],[0,\"\\n    \"],[1,[18,\"searchMessage\"],false],[0,\"\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "ember-power-select/templates/components/power-select/search-message.hbs" } });
+});
+;define("ember-power-select/templates/components/power-select/trigger", ["exports"], function (exports) {
+  "use strict";
+
+  exports.__esModule = true;
+  exports.default = Ember.HTMLBars.template({ "id": "RwJSFOrS", "block": "{\"symbols\":[\"&default\"],\"statements\":[[4,\"if\",[[20,[\"select\",\"selected\"]]],null,{\"statements\":[[4,\"if\",[[20,[\"selectedItemComponent\"]]],null,{\"statements\":[[0,\"    \"],[1,[25,\"component\",[[20,[\"selectedItemComponent\"]]],[[\"extra\",\"option\",\"select\"],[[25,\"readonly\",[[20,[\"extra\"]]],null],[25,\"readonly\",[[20,[\"select\",\"selected\"]]],null],[25,\"readonly\",[[20,[\"select\"]]],null]]]],false],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"    \"],[6,\"span\"],[9,\"class\",\"ember-power-select-selected-item\"],[7],[11,1,[[20,[\"select\",\"selected\"]],[20,[\"select\"]]]],[8],[0,\"\\n\"]],\"parameters\":[]}],[4,\"if\",[[25,\"and\",[[20,[\"allowClear\"]],[25,\"not\",[[20,[\"select\",\"disabled\"]]],null]],null]],null,{\"statements\":[[0,\"    \"],[6,\"span\"],[9,\"class\",\"ember-power-select-clear-btn\"],[10,\"onmousedown\",[25,\"action\",[[19,0,[]],\"clear\"],null],null],[10,\"ontouchstart\",[25,\"action\",[[19,0,[]],\"clear\"],null],null],[7],[0,\"×\"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[1,[25,\"component\",[[20,[\"placeholderComponent\"]]],[[\"placeholder\"],[[20,[\"placeholder\"]]]]],false],[0,\"\\n\"]],\"parameters\":[]}],[6,\"span\"],[9,\"class\",\"ember-power-select-status-icon\"],[7],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "ember-power-select/templates/components/power-select/trigger.hbs" } });
+});
+;define('ember-power-select/utils/computed-fallback-if-undefined', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = computedFallbackIfUndefined;
+  function computedFallbackIfUndefined(fallback) {
+    return Ember.computed({
+      get: function get() {
+        return fallback;
+      },
+      set: function set(_, v) {
+        return v === undefined ? fallback : v;
+      }
+    });
+  }
+});
+;define('ember-power-select/utils/computed-options-matcher', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = computedOptionsMatcher;
+  function computedOptionsMatcher(matcherField, defaultMatcher) {
+    return Ember.computed('searchField', matcherField, function () {
+      var _getProperties = this.getProperties(matcherField, 'searchField'),
+          matcher = _getProperties[matcherField],
+          searchField = _getProperties.searchField;
+
+      if (searchField && matcher === defaultMatcher) {
+        return function (option, text) {
+          return matcher(Ember.get(option, searchField), text);
+        };
+      } else {
+        return function (option, text) {
+          (true && !(matcher !== defaultMatcher || typeof option === 'string') && Ember.assert('{{power-select}} If you want the default filtering to work on options that are not plain strings, you need to provide `searchField`', matcher !== defaultMatcher || typeof option === 'string'));
+
+          return matcher(option, text);
+        };
+      }
+    });
+  }
+});
+;define('ember-power-select/utils/group-utils', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.isGroup = isGroup;
+  exports.countOptions = countOptions;
+  exports.indexOfOption = indexOfOption;
+  exports.optionAtIndex = optionAtIndex;
+  exports.findOptionWithOffset = findOptionWithOffset;
+  exports.filterOptions = filterOptions;
+  exports.defaultHighlighted = defaultHighlighted;
+  exports.advanceSelectableOption = advanceSelectableOption;
+  exports.stripDiacritics = stripDiacritics;
+  exports.defaultMatcher = defaultMatcher;
+  exports.defaultTypeAheadMatcher = defaultTypeAheadMatcher;
+  function isGroup(entry) {
+    return !!entry && !!Ember.get(entry, 'groupName') && !!Ember.get(entry, 'options');
+  }
+
+  function countOptions(collection) {
+    var counter = 0;
+    (function walk(collection) {
+      if (!collection) {
+        return null;
+      }
+      for (var i = 0; i < Ember.get(collection, 'length'); i++) {
+        var entry = collection.objectAt ? collection.objectAt(i) : collection[i];
+        if (isGroup(entry)) {
+          walk(Ember.get(entry, 'options'));
+        } else {
+          counter++;
+        }
+      }
+    })(collection);
+    return counter;
+  }
+
+  function indexOfOption(collection, option) {
+    var index = 0;
+    return function walk(collection) {
+      if (!collection) {
+        return null;
+      }
+      for (var i = 0; i < Ember.get(collection, 'length'); i++) {
+        var entry = collection.objectAt ? collection.objectAt(i) : collection[i];
+        if (isGroup(entry)) {
+          var result = walk(Ember.get(entry, 'options'));
+          if (result > -1) {
+            return result;
+          }
+        } else if (entry === option) {
+          return index;
+        } else {
+          index++;
+        }
+      }
+      return -1;
+    }(collection);
+  }
+
+  function optionAtIndex(originalCollection, index) {
+    var counter = 0;
+    return function walk(collection, ancestorIsDisabled) {
+      if (!collection || index < 0) {
+        return { disabled: false, option: undefined };
+      }
+      var localCounter = 0;
+      var length = Ember.get(collection, 'length');
+      while (counter <= index && localCounter < length) {
+        var entry = collection.objectAt ? collection.objectAt(localCounter) : collection[localCounter];
+        if (isGroup(entry)) {
+          var found = walk(Ember.get(entry, 'options'), ancestorIsDisabled || !!Ember.get(entry, 'disabled'));
+          if (found) {
+            return found;
+          }
+        } else if (counter === index) {
+          return { disabled: ancestorIsDisabled || !!Ember.get(entry, 'disabled'), option: entry };
+        } else {
+          counter++;
+        }
+        localCounter++;
+      }
+    }(originalCollection, false) || { disabled: false, option: undefined };
+  }
+
+  function copyGroup(group, suboptions) {
+    var groupCopy = { groupName: group.groupName, options: suboptions };
+    if (group.hasOwnProperty('disabled')) {
+      groupCopy.disabled = group.disabled;
+    }
+    return groupCopy;
+  }
+
+  function findOptionWithOffset(options, text, matcher, offset) {
+    var skipDisabled = arguments.length > 4 && arguments[4] !== undefined ? arguments[4] : false;
+
+    var counter = 0;
+    var foundBeforeOffset = void 0,
+        foundAfterOffset = void 0;
+    var canStop = function canStop() {
+      return !!foundAfterOffset;
+    };
+
+    (function walk(options, ancestorIsDisabled) {
+      var length = Ember.get(options, 'length');
+
+      for (var i = 0; i < length; i++) {
+        var entry = options.objectAt ? options.objectAt(i) : options[i];
+        var entryIsDisabled = !!Ember.get(entry, 'disabled');
+        if (!skipDisabled || !entryIsDisabled) {
+          if (isGroup(entry)) {
+            walk(Ember.get(entry, 'options'), ancestorIsDisabled || entryIsDisabled);
+            if (canStop()) {
+              return;
+            }
+          } else if (matcher(entry, text) >= 0) {
+            if (counter < offset) {
+              if (!foundBeforeOffset) {
+                foundBeforeOffset = entry;
+              }
+            } else {
+              foundAfterOffset = entry;
+            }
+            counter++;
+          } else {
+            counter++;
+          }
+
+          if (canStop()) {
+            return;
+          }
+        }
+      }
+    })(options, false);
+
+    return foundAfterOffset ? foundAfterOffset : foundBeforeOffset;
+  }
+
+  function filterOptions(options, text, matcher) {
+    var skipDisabled = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : false;
+
+    var opts = Ember.A();
+    var length = Ember.get(options, 'length');
+    for (var i = 0; i < length; i++) {
+      var entry = options.objectAt ? options.objectAt(i) : options[i];
+      if (!skipDisabled || !Ember.get(entry, 'disabled')) {
+        if (isGroup(entry)) {
+          var suboptions = filterOptions(Ember.get(entry, 'options'), text, matcher, skipDisabled);
+          if (Ember.get(suboptions, 'length') > 0) {
+            opts.push(copyGroup(entry, suboptions));
+          }
+        } else if (matcher(entry, text) >= 0) {
+          opts.push(entry);
+        }
+      }
+    }
+    return opts;
+  }
+
+  function defaultHighlighted(select) {
+    var results = select.results,
+        highlighted = select.highlighted,
+        selected = select.selected;
+
+    var option = highlighted || selected;
+    if (option === undefined || indexOfOption(results, option) === -1) {
+      return advanceSelectableOption(results, option, 1);
+    }
+    return option;
+  }
+
+  function advanceSelectableOption(options, currentOption, step) {
+    var resultsLength = countOptions(options);
+    var startIndex = Math.min(Math.max(indexOfOption(options, currentOption) + step, 0), resultsLength - 1);
+
+    var _optionAtIndex = optionAtIndex(options, startIndex),
+        disabled = _optionAtIndex.disabled,
+        option = _optionAtIndex.option;
+
+    while (option && disabled) {
+      var next = optionAtIndex(options, startIndex += step);
+      disabled = next.disabled;
+      option = next.option;
+    }
+    return option;
+  }
+
+  var DIACRITICS = {
+    'Ⓐ': 'A',
+    'Ａ': 'A',
+    'À': 'A',
+    'Á': 'A',
+    'Â': 'A',
+    'Ầ': 'A',
+    'Ấ': 'A',
+    'Ẫ': 'A',
+    'Ẩ': 'A',
+    'Ã': 'A',
+    'Ā': 'A',
+    'Ă': 'A',
+    'Ằ': 'A',
+    'Ắ': 'A',
+    'Ẵ': 'A',
+    'Ẳ': 'A',
+    'Ȧ': 'A',
+    'Ǡ': 'A',
+    'Ä': 'A',
+    'Ǟ': 'A',
+    'Ả': 'A',
+    'Å': 'A',
+    'Ǻ': 'A',
+    'Ǎ': 'A',
+    'Ȁ': 'A',
+    'Ȃ': 'A',
+    'Ạ': 'A',
+    'Ậ': 'A',
+    'Ặ': 'A',
+    'Ḁ': 'A',
+    'Ą': 'A',
+    'Ⱥ': 'A',
+    'Ɐ': 'A',
+    'Ꜳ': 'AA',
+    'Æ': 'AE',
+    'Ǽ': 'AE',
+    'Ǣ': 'AE',
+    'Ꜵ': 'AO',
+    'Ꜷ': 'AU',
+    'Ꜹ': 'AV',
+    'Ꜻ': 'AV',
+    'Ꜽ': 'AY',
+    'Ⓑ': 'B',
+    'Ｂ': 'B',
+    'Ḃ': 'B',
+    'Ḅ': 'B',
+    'Ḇ': 'B',
+    'Ƀ': 'B',
+    'Ƃ': 'B',
+    'Ɓ': 'B',
+    'Ⓒ': 'C',
+    'Ｃ': 'C',
+    'Ć': 'C',
+    'Ĉ': 'C',
+    'Ċ': 'C',
+    'Č': 'C',
+    'Ç': 'C',
+    'Ḉ': 'C',
+    'Ƈ': 'C',
+    'Ȼ': 'C',
+    'Ꜿ': 'C',
+    'Ⓓ': 'D',
+    'Ｄ': 'D',
+    'Ḋ': 'D',
+    'Ď': 'D',
+    'Ḍ': 'D',
+    'Ḑ': 'D',
+    'Ḓ': 'D',
+    'Ḏ': 'D',
+    'Đ': 'D',
+    'Ƌ': 'D',
+    'Ɗ': 'D',
+    'Ɖ': 'D',
+    'Ꝺ': 'D',
+    'Ǳ': 'DZ',
+    'Ǆ': 'DZ',
+    'ǲ': 'Dz',
+    'ǅ': 'Dz',
+    'Ⓔ': 'E',
+    'Ｅ': 'E',
+    'È': 'E',
+    'É': 'E',
+    'Ê': 'E',
+    'Ề': 'E',
+    'Ế': 'E',
+    'Ễ': 'E',
+    'Ể': 'E',
+    'Ẽ': 'E',
+    'Ē': 'E',
+    'Ḕ': 'E',
+    'Ḗ': 'E',
+    'Ĕ': 'E',
+    'Ė': 'E',
+    'Ë': 'E',
+    'Ẻ': 'E',
+    'Ě': 'E',
+    'Ȅ': 'E',
+    'Ȇ': 'E',
+    'Ẹ': 'E',
+    'Ệ': 'E',
+    'Ȩ': 'E',
+    'Ḝ': 'E',
+    'Ę': 'E',
+    'Ḙ': 'E',
+    'Ḛ': 'E',
+    'Ɛ': 'E',
+    'Ǝ': 'E',
+    'Ⓕ': 'F',
+    'Ｆ': 'F',
+    'Ḟ': 'F',
+    'Ƒ': 'F',
+    'Ꝼ': 'F',
+    'Ⓖ': 'G',
+    'Ｇ': 'G',
+    'Ǵ': 'G',
+    'Ĝ': 'G',
+    'Ḡ': 'G',
+    'Ğ': 'G',
+    'Ġ': 'G',
+    'Ǧ': 'G',
+    'Ģ': 'G',
+    'Ǥ': 'G',
+    'Ɠ': 'G',
+    'Ꞡ': 'G',
+    'Ᵹ': 'G',
+    'Ꝿ': 'G',
+    'Ⓗ': 'H',
+    'Ｈ': 'H',
+    'Ĥ': 'H',
+    'Ḣ': 'H',
+    'Ḧ': 'H',
+    'Ȟ': 'H',
+    'Ḥ': 'H',
+    'Ḩ': 'H',
+    'Ḫ': 'H',
+    'Ħ': 'H',
+    'Ⱨ': 'H',
+    'Ⱶ': 'H',
+    'Ɥ': 'H',
+    'Ⓘ': 'I',
+    'Ｉ': 'I',
+    'Ì': 'I',
+    'Í': 'I',
+    'Î': 'I',
+    'Ĩ': 'I',
+    'Ī': 'I',
+    'Ĭ': 'I',
+    'İ': 'I',
+    'Ï': 'I',
+    'Ḯ': 'I',
+    'Ỉ': 'I',
+    'Ǐ': 'I',
+    'Ȉ': 'I',
+    'Ȋ': 'I',
+    'Ị': 'I',
+    'Į': 'I',
+    'Ḭ': 'I',
+    'Ɨ': 'I',
+    'Ⓙ': 'J',
+    'Ｊ': 'J',
+    'Ĵ': 'J',
+    'Ɉ': 'J',
+    'Ⓚ': 'K',
+    'Ｋ': 'K',
+    'Ḱ': 'K',
+    'Ǩ': 'K',
+    'Ḳ': 'K',
+    'Ķ': 'K',
+    'Ḵ': 'K',
+    'Ƙ': 'K',
+    'Ⱪ': 'K',
+    'Ꝁ': 'K',
+    'Ꝃ': 'K',
+    'Ꝅ': 'K',
+    'Ꞣ': 'K',
+    'Ⓛ': 'L',
+    'Ｌ': 'L',
+    'Ŀ': 'L',
+    'Ĺ': 'L',
+    'Ľ': 'L',
+    'Ḷ': 'L',
+    'Ḹ': 'L',
+    'Ļ': 'L',
+    'Ḽ': 'L',
+    'Ḻ': 'L',
+    'Ł': 'L',
+    'Ƚ': 'L',
+    'Ɫ': 'L',
+    'Ⱡ': 'L',
+    'Ꝉ': 'L',
+    'Ꝇ': 'L',
+    'Ꞁ': 'L',
+    'Ǉ': 'LJ',
+    'ǈ': 'Lj',
+    'Ⓜ': 'M',
+    'Ｍ': 'M',
+    'Ḿ': 'M',
+    'Ṁ': 'M',
+    'Ṃ': 'M',
+    'Ɱ': 'M',
+    'Ɯ': 'M',
+    'Ⓝ': 'N',
+    'Ｎ': 'N',
+    'Ǹ': 'N',
+    'Ń': 'N',
+    'Ñ': 'N',
+    'Ṅ': 'N',
+    'Ň': 'N',
+    'Ṇ': 'N',
+    'Ņ': 'N',
+    'Ṋ': 'N',
+    'Ṉ': 'N',
+    'Ƞ': 'N',
+    'Ɲ': 'N',
+    'Ꞑ': 'N',
+    'Ꞥ': 'N',
+    'Ǌ': 'NJ',
+    'ǋ': 'Nj',
+    'Ⓞ': 'O',
+    'Ｏ': 'O',
+    'Ò': 'O',
+    'Ó': 'O',
+    'Ô': 'O',
+    'Ồ': 'O',
+    'Ố': 'O',
+    'Ỗ': 'O',
+    'Ổ': 'O',
+    'Õ': 'O',
+    'Ṍ': 'O',
+    'Ȭ': 'O',
+    'Ṏ': 'O',
+    'Ō': 'O',
+    'Ṑ': 'O',
+    'Ṓ': 'O',
+    'Ŏ': 'O',
+    'Ȯ': 'O',
+    'Ȱ': 'O',
+    'Ö': 'O',
+    'Ȫ': 'O',
+    'Ỏ': 'O',
+    'Ő': 'O',
+    'Ǒ': 'O',
+    'Ȍ': 'O',
+    'Ȏ': 'O',
+    'Ơ': 'O',
+    'Ờ': 'O',
+    'Ớ': 'O',
+    'Ỡ': 'O',
+    'Ở': 'O',
+    'Ợ': 'O',
+    'Ọ': 'O',
+    'Ộ': 'O',
+    'Ǫ': 'O',
+    'Ǭ': 'O',
+    'Ø': 'O',
+    'Ǿ': 'O',
+    'Ɔ': 'O',
+    'Ɵ': 'O',
+    'Ꝋ': 'O',
+    'Ꝍ': 'O',
+    'Ƣ': 'OI',
+    'Ꝏ': 'OO',
+    'Ȣ': 'OU',
+    'Ⓟ': 'P',
+    'Ｐ': 'P',
+    'Ṕ': 'P',
+    'Ṗ': 'P',
+    'Ƥ': 'P',
+    'Ᵽ': 'P',
+    'Ꝑ': 'P',
+    'Ꝓ': 'P',
+    'Ꝕ': 'P',
+    'Ⓠ': 'Q',
+    'Ｑ': 'Q',
+    'Ꝗ': 'Q',
+    'Ꝙ': 'Q',
+    'Ɋ': 'Q',
+    'Ⓡ': 'R',
+    'Ｒ': 'R',
+    'Ŕ': 'R',
+    'Ṙ': 'R',
+    'Ř': 'R',
+    'Ȑ': 'R',
+    'Ȓ': 'R',
+    'Ṛ': 'R',
+    'Ṝ': 'R',
+    'Ŗ': 'R',
+    'Ṟ': 'R',
+    'Ɍ': 'R',
+    'Ɽ': 'R',
+    'Ꝛ': 'R',
+    'Ꞧ': 'R',
+    'Ꞃ': 'R',
+    'Ⓢ': 'S',
+    'Ｓ': 'S',
+    'ẞ': 'S',
+    'Ś': 'S',
+    'Ṥ': 'S',
+    'Ŝ': 'S',
+    'Ṡ': 'S',
+    'Š': 'S',
+    'Ṧ': 'S',
+    'Ṣ': 'S',
+    'Ṩ': 'S',
+    'Ș': 'S',
+    'Ş': 'S',
+    'Ȿ': 'S',
+    'Ꞩ': 'S',
+    'Ꞅ': 'S',
+    'Ⓣ': 'T',
+    'Ｔ': 'T',
+    'Ṫ': 'T',
+    'Ť': 'T',
+    'Ṭ': 'T',
+    'Ț': 'T',
+    'Ţ': 'T',
+    'Ṱ': 'T',
+    'Ṯ': 'T',
+    'Ŧ': 'T',
+    'Ƭ': 'T',
+    'Ʈ': 'T',
+    'Ⱦ': 'T',
+    'Ꞇ': 'T',
+    'Ꜩ': 'TZ',
+    'Ⓤ': 'U',
+    'Ｕ': 'U',
+    'Ù': 'U',
+    'Ú': 'U',
+    'Û': 'U',
+    'Ũ': 'U',
+    'Ṹ': 'U',
+    'Ū': 'U',
+    'Ṻ': 'U',
+    'Ŭ': 'U',
+    'Ü': 'U',
+    'Ǜ': 'U',
+    'Ǘ': 'U',
+    'Ǖ': 'U',
+    'Ǚ': 'U',
+    'Ủ': 'U',
+    'Ů': 'U',
+    'Ű': 'U',
+    'Ǔ': 'U',
+    'Ȕ': 'U',
+    'Ȗ': 'U',
+    'Ư': 'U',
+    'Ừ': 'U',
+    'Ứ': 'U',
+    'Ữ': 'U',
+    'Ử': 'U',
+    'Ự': 'U',
+    'Ụ': 'U',
+    'Ṳ': 'U',
+    'Ų': 'U',
+    'Ṷ': 'U',
+    'Ṵ': 'U',
+    'Ʉ': 'U',
+    'Ⓥ': 'V',
+    'Ｖ': 'V',
+    'Ṽ': 'V',
+    'Ṿ': 'V',
+    'Ʋ': 'V',
+    'Ꝟ': 'V',
+    'Ʌ': 'V',
+    'Ꝡ': 'VY',
+    'Ⓦ': 'W',
+    'Ｗ': 'W',
+    'Ẁ': 'W',
+    'Ẃ': 'W',
+    'Ŵ': 'W',
+    'Ẇ': 'W',
+    'Ẅ': 'W',
+    'Ẉ': 'W',
+    'Ⱳ': 'W',
+    'Ⓧ': 'X',
+    'Ｘ': 'X',
+    'Ẋ': 'X',
+    'Ẍ': 'X',
+    'Ⓨ': 'Y',
+    'Ｙ': 'Y',
+    'Ỳ': 'Y',
+    'Ý': 'Y',
+    'Ŷ': 'Y',
+    'Ỹ': 'Y',
+    'Ȳ': 'Y',
+    'Ẏ': 'Y',
+    'Ÿ': 'Y',
+    'Ỷ': 'Y',
+    'Ỵ': 'Y',
+    'Ƴ': 'Y',
+    'Ɏ': 'Y',
+    'Ỿ': 'Y',
+    'Ⓩ': 'Z',
+    'Ｚ': 'Z',
+    'Ź': 'Z',
+    'Ẑ': 'Z',
+    'Ż': 'Z',
+    'Ž': 'Z',
+    'Ẓ': 'Z',
+    'Ẕ': 'Z',
+    'Ƶ': 'Z',
+    'Ȥ': 'Z',
+    'Ɀ': 'Z',
+    'Ⱬ': 'Z',
+    'Ꝣ': 'Z',
+    'ⓐ': 'a',
+    'ａ': 'a',
+    'ẚ': 'a',
+    'à': 'a',
+    'á': 'a',
+    'â': 'a',
+    'ầ': 'a',
+    'ấ': 'a',
+    'ẫ': 'a',
+    'ẩ': 'a',
+    'ã': 'a',
+    'ā': 'a',
+    'ă': 'a',
+    'ằ': 'a',
+    'ắ': 'a',
+    'ẵ': 'a',
+    'ẳ': 'a',
+    'ȧ': 'a',
+    'ǡ': 'a',
+    'ä': 'a',
+    'ǟ': 'a',
+    'ả': 'a',
+    'å': 'a',
+    'ǻ': 'a',
+    'ǎ': 'a',
+    'ȁ': 'a',
+    'ȃ': 'a',
+    'ạ': 'a',
+    'ậ': 'a',
+    'ặ': 'a',
+    'ḁ': 'a',
+    'ą': 'a',
+    'ⱥ': 'a',
+    'ɐ': 'a',
+    'ꜳ': 'aa',
+    'æ': 'ae',
+    'ǽ': 'ae',
+    'ǣ': 'ae',
+    'ꜵ': 'ao',
+    'ꜷ': 'au',
+    'ꜹ': 'av',
+    'ꜻ': 'av',
+    'ꜽ': 'ay',
+    'ⓑ': 'b',
+    'ｂ': 'b',
+    'ḃ': 'b',
+    'ḅ': 'b',
+    'ḇ': 'b',
+    'ƀ': 'b',
+    'ƃ': 'b',
+    'ɓ': 'b',
+    'ⓒ': 'c',
+    'ｃ': 'c',
+    'ć': 'c',
+    'ĉ': 'c',
+    'ċ': 'c',
+    'č': 'c',
+    'ç': 'c',
+    'ḉ': 'c',
+    'ƈ': 'c',
+    'ȼ': 'c',
+    'ꜿ': 'c',
+    'ↄ': 'c',
+    'ⓓ': 'd',
+    'ｄ': 'd',
+    'ḋ': 'd',
+    'ď': 'd',
+    'ḍ': 'd',
+    'ḑ': 'd',
+    'ḓ': 'd',
+    'ḏ': 'd',
+    'đ': 'd',
+    'ƌ': 'd',
+    'ɖ': 'd',
+    'ɗ': 'd',
+    'ꝺ': 'd',
+    'ǳ': 'dz',
+    'ǆ': 'dz',
+    'ⓔ': 'e',
+    'ｅ': 'e',
+    'è': 'e',
+    'é': 'e',
+    'ê': 'e',
+    'ề': 'e',
+    'ế': 'e',
+    'ễ': 'e',
+    'ể': 'e',
+    'ẽ': 'e',
+    'ē': 'e',
+    'ḕ': 'e',
+    'ḗ': 'e',
+    'ĕ': 'e',
+    'ė': 'e',
+    'ë': 'e',
+    'ẻ': 'e',
+    'ě': 'e',
+    'ȅ': 'e',
+    'ȇ': 'e',
+    'ẹ': 'e',
+    'ệ': 'e',
+    'ȩ': 'e',
+    'ḝ': 'e',
+    'ę': 'e',
+    'ḙ': 'e',
+    'ḛ': 'e',
+    'ɇ': 'e',
+    'ɛ': 'e',
+    'ǝ': 'e',
+    'ⓕ': 'f',
+    'ｆ': 'f',
+    'ḟ': 'f',
+    'ƒ': 'f',
+    'ꝼ': 'f',
+    'ⓖ': 'g',
+    'ｇ': 'g',
+    'ǵ': 'g',
+    'ĝ': 'g',
+    'ḡ': 'g',
+    'ğ': 'g',
+    'ġ': 'g',
+    'ǧ': 'g',
+    'ģ': 'g',
+    'ǥ': 'g',
+    'ɠ': 'g',
+    'ꞡ': 'g',
+    'ᵹ': 'g',
+    'ꝿ': 'g',
+    'ⓗ': 'h',
+    'ｈ': 'h',
+    'ĥ': 'h',
+    'ḣ': 'h',
+    'ḧ': 'h',
+    'ȟ': 'h',
+    'ḥ': 'h',
+    'ḩ': 'h',
+    'ḫ': 'h',
+    'ẖ': 'h',
+    'ħ': 'h',
+    'ⱨ': 'h',
+    'ⱶ': 'h',
+    'ɥ': 'h',
+    'ƕ': 'hv',
+    'ⓘ': 'i',
+    'ｉ': 'i',
+    'ì': 'i',
+    'í': 'i',
+    'î': 'i',
+    'ĩ': 'i',
+    'ī': 'i',
+    'ĭ': 'i',
+    'ï': 'i',
+    'ḯ': 'i',
+    'ỉ': 'i',
+    'ǐ': 'i',
+    'ȉ': 'i',
+    'ȋ': 'i',
+    'ị': 'i',
+    'į': 'i',
+    'ḭ': 'i',
+    'ɨ': 'i',
+    'ı': 'i',
+    'ⓙ': 'j',
+    'ｊ': 'j',
+    'ĵ': 'j',
+    'ǰ': 'j',
+    'ɉ': 'j',
+    'ⓚ': 'k',
+    'ｋ': 'k',
+    'ḱ': 'k',
+    'ǩ': 'k',
+    'ḳ': 'k',
+    'ķ': 'k',
+    'ḵ': 'k',
+    'ƙ': 'k',
+    'ⱪ': 'k',
+    'ꝁ': 'k',
+    'ꝃ': 'k',
+    'ꝅ': 'k',
+    'ꞣ': 'k',
+    'ⓛ': 'l',
+    'ｌ': 'l',
+    'ŀ': 'l',
+    'ĺ': 'l',
+    'ľ': 'l',
+    'ḷ': 'l',
+    'ḹ': 'l',
+    'ļ': 'l',
+    'ḽ': 'l',
+    'ḻ': 'l',
+    'ſ': 'l',
+    'ł': 'l',
+    'ƚ': 'l',
+    'ɫ': 'l',
+    'ⱡ': 'l',
+    'ꝉ': 'l',
+    'ꞁ': 'l',
+    'ꝇ': 'l',
+    'ǉ': 'lj',
+    'ⓜ': 'm',
+    'ｍ': 'm',
+    'ḿ': 'm',
+    'ṁ': 'm',
+    'ṃ': 'm',
+    'ɱ': 'm',
+    'ɯ': 'm',
+    'ⓝ': 'n',
+    'ｎ': 'n',
+    'ǹ': 'n',
+    'ń': 'n',
+    'ñ': 'n',
+    'ṅ': 'n',
+    'ň': 'n',
+    'ṇ': 'n',
+    'ņ': 'n',
+    'ṋ': 'n',
+    'ṉ': 'n',
+    'ƞ': 'n',
+    'ɲ': 'n',
+    'ŉ': 'n',
+    'ꞑ': 'n',
+    'ꞥ': 'n',
+    'ǌ': 'nj',
+    'ⓞ': 'o',
+    'ｏ': 'o',
+    'ò': 'o',
+    'ó': 'o',
+    'ô': 'o',
+    'ồ': 'o',
+    'ố': 'o',
+    'ỗ': 'o',
+    'ổ': 'o',
+    'õ': 'o',
+    'ṍ': 'o',
+    'ȭ': 'o',
+    'ṏ': 'o',
+    'ō': 'o',
+    'ṑ': 'o',
+    'ṓ': 'o',
+    'ŏ': 'o',
+    'ȯ': 'o',
+    'ȱ': 'o',
+    'ö': 'o',
+    'ȫ': 'o',
+    'ỏ': 'o',
+    'ő': 'o',
+    'ǒ': 'o',
+    'ȍ': 'o',
+    'ȏ': 'o',
+    'ơ': 'o',
+    'ờ': 'o',
+    'ớ': 'o',
+    'ỡ': 'o',
+    'ở': 'o',
+    'ợ': 'o',
+    'ọ': 'o',
+    'ộ': 'o',
+    'ǫ': 'o',
+    'ǭ': 'o',
+    'ø': 'o',
+    'ǿ': 'o',
+    'ɔ': 'o',
+    'ꝋ': 'o',
+    'ꝍ': 'o',
+    'ɵ': 'o',
+    'ƣ': 'oi',
+    'ȣ': 'ou',
+    'ꝏ': 'oo',
+    'ⓟ': 'p',
+    'ｐ': 'p',
+    'ṕ': 'p',
+    'ṗ': 'p',
+    'ƥ': 'p',
+    'ᵽ': 'p',
+    'ꝑ': 'p',
+    'ꝓ': 'p',
+    'ꝕ': 'p',
+    'ⓠ': 'q',
+    'ｑ': 'q',
+    'ɋ': 'q',
+    'ꝗ': 'q',
+    'ꝙ': 'q',
+    'ⓡ': 'r',
+    'ｒ': 'r',
+    'ŕ': 'r',
+    'ṙ': 'r',
+    'ř': 'r',
+    'ȑ': 'r',
+    'ȓ': 'r',
+    'ṛ': 'r',
+    'ṝ': 'r',
+    'ŗ': 'r',
+    'ṟ': 'r',
+    'ɍ': 'r',
+    'ɽ': 'r',
+    'ꝛ': 'r',
+    'ꞧ': 'r',
+    'ꞃ': 'r',
+    'ⓢ': 's',
+    'ｓ': 's',
+    'ß': 's',
+    'ś': 's',
+    'ṥ': 's',
+    'ŝ': 's',
+    'ṡ': 's',
+    'š': 's',
+    'ṧ': 's',
+    'ṣ': 's',
+    'ṩ': 's',
+    'ș': 's',
+    'ş': 's',
+    'ȿ': 's',
+    'ꞩ': 's',
+    'ꞅ': 's',
+    'ẛ': 's',
+    'ⓣ': 't',
+    'ｔ': 't',
+    'ṫ': 't',
+    'ẗ': 't',
+    'ť': 't',
+    'ṭ': 't',
+    'ț': 't',
+    'ţ': 't',
+    'ṱ': 't',
+    'ṯ': 't',
+    'ŧ': 't',
+    'ƭ': 't',
+    'ʈ': 't',
+    'ⱦ': 't',
+    'ꞇ': 't',
+    'ꜩ': 'tz',
+    'ⓤ': 'u',
+    'ｕ': 'u',
+    'ù': 'u',
+    'ú': 'u',
+    'û': 'u',
+    'ũ': 'u',
+    'ṹ': 'u',
+    'ū': 'u',
+    'ṻ': 'u',
+    'ŭ': 'u',
+    'ü': 'u',
+    'ǜ': 'u',
+    'ǘ': 'u',
+    'ǖ': 'u',
+    'ǚ': 'u',
+    'ủ': 'u',
+    'ů': 'u',
+    'ű': 'u',
+    'ǔ': 'u',
+    'ȕ': 'u',
+    'ȗ': 'u',
+    'ư': 'u',
+    'ừ': 'u',
+    'ứ': 'u',
+    'ữ': 'u',
+    'ử': 'u',
+    'ự': 'u',
+    'ụ': 'u',
+    'ṳ': 'u',
+    'ų': 'u',
+    'ṷ': 'u',
+    'ṵ': 'u',
+    'ʉ': 'u',
+    'ⓥ': 'v',
+    'ｖ': 'v',
+    'ṽ': 'v',
+    'ṿ': 'v',
+    'ʋ': 'v',
+    'ꝟ': 'v',
+    'ʌ': 'v',
+    'ꝡ': 'vy',
+    'ⓦ': 'w',
+    'ｗ': 'w',
+    'ẁ': 'w',
+    'ẃ': 'w',
+    'ŵ': 'w',
+    'ẇ': 'w',
+    'ẅ': 'w',
+    'ẘ': 'w',
+    'ẉ': 'w',
+    'ⱳ': 'w',
+    'ⓧ': 'x',
+    'ｘ': 'x',
+    'ẋ': 'x',
+    'ẍ': 'x',
+    'ⓨ': 'y',
+    'ｙ': 'y',
+    'ỳ': 'y',
+    'ý': 'y',
+    'ŷ': 'y',
+    'ỹ': 'y',
+    'ȳ': 'y',
+    'ẏ': 'y',
+    'ÿ': 'y',
+    'ỷ': 'y',
+    'ẙ': 'y',
+    'ỵ': 'y',
+    'ƴ': 'y',
+    'ɏ': 'y',
+    'ỿ': 'y',
+    'ⓩ': 'z',
+    'ｚ': 'z',
+    'ź': 'z',
+    'ẑ': 'z',
+    'ż': 'z',
+    'ž': 'z',
+    'ẓ': 'z',
+    'ẕ': 'z',
+    'ƶ': 'z',
+    'ȥ': 'z',
+    'ɀ': 'z',
+    'ⱬ': 'z',
+    'ꝣ': 'z',
+    'Ά': 'Α',
+    'Έ': 'Ε',
+    'Ή': 'Η',
+    'Ί': 'Ι',
+    'Ϊ': 'Ι',
+    'Ό': 'Ο',
+    'Ύ': 'Υ',
+    'Ϋ': 'Υ',
+    'Ώ': 'Ω',
+    'ά': 'α',
+    'έ': 'ε',
+    'ή': 'η',
+    'ί': 'ι',
+    'ϊ': 'ι',
+    'ΐ': 'ι',
+    'ό': 'ο',
+    'ύ': 'υ',
+    'ϋ': 'υ',
+    'ΰ': 'υ',
+    'ω': 'ω',
+    'ς': 'σ'
+  };
+
+  // Copied from Select2
+  function stripDiacritics(text) {
+    // Used 'uni range + named function' from http://jsperf.com/diacritics/18
+    function match(a) {
+      return DIACRITICS[a] || a;
+    }
+
+    return ('' + text).replace(/[^\u0000-\u007E]/g, match);
+  }
+
+  function defaultMatcher(value, text) {
+    return stripDiacritics(value).toUpperCase().indexOf(stripDiacritics(text).toUpperCase());
+  }
+
+  function defaultTypeAheadMatcher(value, text) {
+    return stripDiacritics(value).toUpperCase().startsWith(stripDiacritics(text).toUpperCase()) ? 1 : -1;
+  }
+});
 ;define('ember-promise-tools/mixins/promise-resolver', ['exports', 'ember', 'ember-promise-tools/utils/is-promise', 'ember-promise-tools/utils/is-fulfilled', 'ember-promise-tools/utils/get-promise-content'], function (exports, _ember, _emberPromiseToolsUtilsIsPromise, _emberPromiseToolsUtilsIsFulfilled, _emberPromiseToolsUtilsGetPromiseContent) {
 
   // Code referenced from https://github.com/fivetanley/ember-promise-helpers
@@ -95013,10 +103534,14 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
     tagName: 'label',
     layout: _labeledRadioButton.default,
     attributeBindings: ['for'],
-    classNameBindings: ['checked'],
+    classNameBindings: ['_checkedClass'],
     classNames: ['ember-radio-button'],
     defaultLayout: null, // ie8 support
 
+    checkedClass: 'checked',
+    _checkedClass: Ember.computed('checked', 'checkedClass', function () {
+      return this.get('checked') ? this.get('checkedClass') : '';
+    }),
     checked: Ember.computed('groupValue', 'value', function () {
       return Ember.isEqual(this.get('groupValue'), this.get('value'));
     }).readOnly(),
@@ -95051,10 +103576,11 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
     // radioId - string
     // tabindex - number
     // ariaLabelledby - string
+    // ariaDescribedby - string
 
     defaultLayout: null, // ie8 support
 
-    attributeBindings: ['autofocus', 'checked', 'disabled', 'name', 'required', 'tabindex', 'type', 'value', 'ariaLabelledby:aria-labelledby'],
+    attributeBindings: ['autofocus', 'checked', 'disabled', 'name', 'required', 'tabindex', 'type', 'value', 'ariaLabelledby:aria-labelledby', 'ariaDescribedby:aria-describedby'],
 
     checked: Ember.computed('groupValue', 'value', function () {
       return Ember.isEqual(this.get('groupValue'), this.get('value'));
@@ -95094,6 +103620,7 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
     // radioClass - string
     // radioId - string
     // ariaLabelledby - string
+    // ariaDescribedby - string
 
     // polyfill hasBlock for ember versions < 1.13
     hasBlock: Ember.computed.bool('template').readOnly(),
@@ -95108,6 +103635,8 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
 
     // is this needed here or just on radio-button-input?
     defaultLayout: null, // ie8 support
+
+    checkedClass: 'checked',
 
     checked: Ember.computed('groupValue', 'value', function () {
       return Ember.isEqual(this.get('groupValue'), this.get('value'));
@@ -95136,7 +103665,7 @@ function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.const
   "use strict";
 
   exports.__esModule = true;
-  exports.default = Ember.HTMLBars.template({ "id": "sYSWSSiJ", "block": "{\"symbols\":[\"&default\"],\"statements\":[[4,\"if\",[[22,1]],null,{\"statements\":[[0,\"  \"],[6,\"label\"],[10,\"class\",[26,[\"ember-radio-button \",[25,\"if\",[[20,[\"checked\"]],\"checked\"],null],\" \",[18,\"joinedClassNames\"]]]],[10,\"for\",[18,\"radioId\"],null],[7],[0,\"\\n    \"],[1,[25,\"radio-button-input\",null,[[\"class\",\"id\",\"autofocus\",\"disabled\",\"name\",\"required\",\"tabindex\",\"groupValue\",\"value\",\"ariaLabelledby\",\"changed\"],[[20,[\"radioClass\"]],[20,[\"radioId\"]],[20,[\"autofocus\"]],[20,[\"disabled\"]],[20,[\"name\"]],[20,[\"required\"]],[20,[\"tabindex\"]],[20,[\"groupValue\"]],[20,[\"value\"]],[20,[\"ariaLabelledby\"]],\"changed\"]]],false],[0,\"\\n\\n    \"],[11,1],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[1,[25,\"radio-button-input\",null,[[\"class\",\"id\",\"autofocus\",\"disabled\",\"name\",\"required\",\"tabindex\",\"groupValue\",\"value\",\"ariaLabelledby\",\"changed\"],[[20,[\"radioClass\"]],[20,[\"radioId\"]],[20,[\"autofocus\"]],[20,[\"disabled\"]],[20,[\"name\"]],[20,[\"required\"]],[20,[\"tabindex\"]],[20,[\"groupValue\"]],[20,[\"value\"]],[20,[\"ariaLabelledby\"]],\"changed\"]]],false],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "ember-radio-button/templates/components/radio-button.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "ENxre6To", "block": "{\"symbols\":[\"&default\"],\"statements\":[[4,\"if\",[[22,1]],null,{\"statements\":[[0,\"  \"],[6,\"label\"],[10,\"class\",[26,[\"ember-radio-button \",[25,\"if\",[[20,[\"checked\"]],[20,[\"checkedClass\"]]],null],\" \",[18,\"joinedClassNames\"]]]],[10,\"for\",[18,\"radioId\"],null],[7],[0,\"\\n    \"],[1,[25,\"radio-button-input\",null,[[\"class\",\"id\",\"autofocus\",\"disabled\",\"name\",\"required\",\"tabindex\",\"groupValue\",\"value\",\"ariaLabelledby\",\"ariaDescribedby\",\"changed\"],[[20,[\"radioClass\"]],[20,[\"radioId\"]],[20,[\"autofocus\"]],[20,[\"disabled\"]],[20,[\"name\"]],[20,[\"required\"]],[20,[\"tabindex\"]],[20,[\"groupValue\"]],[20,[\"value\"]],[20,[\"ariaLabelledby\"]],[20,[\"ariaDescribedby\"]],\"changed\"]]],false],[0,\"\\n\\n    \"],[11,1],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[1,[25,\"radio-button-input\",null,[[\"class\",\"id\",\"autofocus\",\"disabled\",\"name\",\"required\",\"tabindex\",\"groupValue\",\"value\",\"ariaLabelledby\",\"ariaDescribedby\",\"changed\"],[[20,[\"radioClass\"]],[20,[\"radioId\"]],[20,[\"autofocus\"]],[20,[\"disabled\"]],[20,[\"name\"]],[20,[\"required\"]],[20,[\"tabindex\"]],[20,[\"groupValue\"]],[20,[\"value\"]],[20,[\"ariaLabelledby\"]],[20,[\"ariaDescribedby\"]],\"changed\"]]],false],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "ember-radio-button/templates/components/radio-button.hbs" } });
 });
 ;define('ember-require-module/index', ['exports'], function (exports) {
   'use strict';
@@ -95343,8 +103872,6 @@ define("ember-resolver/features", [], function () {
 
 
   function parseName(fullName) {
-    /*jshint validthis:true */
-
     if (fullName.parsedName === true) {
       return fullName;
     }
@@ -95399,8 +103926,6 @@ define("ember-resolver/features", [], function () {
   }
 
   function resolveOther(parsedName) {
-    /*jshint validthis:true */
-
     Ember.assert('`modulePrefix` must be defined', this.namespace.modulePrefix);
 
     var normalizedModuleName = this.findModuleName(parsedName);
@@ -95598,7 +104123,7 @@ define("ember-resolver/features", [], function () {
       }
       // workaround for dasherized partials:
       // something/something/-something => something/something/_something
-      var partializedModuleName = moduleName.replace(/\/-([^\/]*)$/, '/_$1');
+      var partializedModuleName = moduleName.replace(/\/-([^/]*)$/, '/_$1');
 
       if (this._moduleRegistry.has(partializedModuleName)) {
         Ember.deprecate('Modules should not contain underscores. ' + 'Attempted to lookup "' + moduleName + '" which ' + 'was not found. Please rename "' + partializedModuleName + '" ' + 'to "' + moduleName + '" instead.', false, { id: 'ember-resolver.underscored-modules', until: '3.0.0' });
@@ -95734,14 +104259,6 @@ define("ember-resolver/features", [], function () {
     return cache;
   }
 });
-;define('ember-string-ishtmlsafe-polyfill/index', ['exports', 'ember'], function (exports, _ember) {
-
-  function isHTMLSafePolyfill(str) {
-    return str && typeof str.toHTML === 'function';
-  }
-
-  exports['default'] = _ember['default'].String.isHTMLSafe || isHTMLSafePolyfill;
-});
 ;define('ember-stylish-buttons/components/stylish-button', ['exports', 'ember-stylish-buttons/templates/components/stylish-button'], function (exports, _stylishButton) {
    'use strict';
 
@@ -95840,6 +104357,67 @@ define("ember-resolver/features", [], function () {
 
   exports.__esModule = true;
   exports.default = Ember.HTMLBars.template({ "id": "rWtpT/XA", "block": "{\"symbols\":[\"&default\"],\"statements\":[[4,\"if\",[[22,1]],null,{\"statements\":[[0,\"  \"],[11,1],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[6,\"span\"],[7],[0,\"\\n    \"],[1,[18,\"text\"],false],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "ember-stylish-buttons/templates/components/stylish-button.hbs" } });
+});
+;define('ember-text-measurer/services/text-measurer', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Service.extend({
+    init: function init() {
+      this._super.apply(this, arguments);
+      this.canvas = document.createElement('canvas');
+      this.ctx = this.canvas.getContext('2d');
+    },
+    width: function width(string) {
+      var font = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+
+      if (font) {
+        this.ctx.font = font;
+      }
+      return this.ctx.measureText(string).width;
+    },
+    lines: function lines(string, maxWidth) {
+      var font = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+      if (font) {
+        this.ctx.font = font;
+      }
+      var paragraphs = string.split(/\n/);
+      var lines = paragraphs.length;
+      for (var i = 0; i < paragraphs.length; i++) {
+        var paragraph = paragraphs[i];
+        if (paragraph !== '') {
+          var words = paragraph.split(' ');
+          var widthSoFar = 0;
+          var j = 0;
+          for (; j < words.length - 1; j++) {
+            var _wordWidth = this.ctx.measureText(words[j] + ' ').width;
+            widthSoFar = widthSoFar + _wordWidth;
+            if (widthSoFar > maxWidth) {
+              lines++;
+              widthSoFar = _wordWidth;
+            }
+          }
+          var wordWidth = this.ctx.measureText(words[j]).width;
+          widthSoFar = widthSoFar + wordWidth;
+          if (widthSoFar > maxWidth) {
+            lines++;
+            widthSoFar = wordWidth;
+          }
+        }
+      }
+      return lines;
+    },
+    fitTextSize: function fitTextSize(string, maxWidth) {
+      var font = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : null;
+
+      var width = this.width(string, font);
+      var fontSize = this.ctx.font.match(/\d+/)[0];
+      return Math.floor(parseFloat(fontSize) * maxWidth / width);
+    }
+  });
 });
 ;define('ember-truth-helpers/helpers/and', ['exports', 'ember-truth-helpers/utils/truth-convert'], function (exports, _truthConvert) {
   'use strict';
@@ -98460,7 +107038,7 @@ function typeForRelationshipMeta(meta) {
 }
 
 function relationshipFromMeta(meta) {
-  var result = {
+  return {
     key: meta.key,
     kind: meta.kind,
     type: typeForRelationshipMeta(meta),
@@ -98469,12 +107047,6 @@ function relationshipFromMeta(meta) {
     parentType: meta.parentType,
     isRelationship: true
   };
-
-  {
-    result.parentType = meta.parentType;
-  }
-
-  return result;
 }
 
 var Map$1 = Ember.Map;
@@ -100250,6 +108822,10 @@ if (isEnabled('ds-rollback-attribute')) {
         // the computed property.
         var meta = value.meta();
 
+        /*
+          This is buggy because if the parent has never been looked up
+          via `modelFor` it will not have `modelName` set.
+         */
         meta.parentType = proto.constructor;
       }
     }
@@ -105218,23 +113794,65 @@ var _createClass$6 = function () { function defineProperties(target, props) { fo
 
 function _classCallCheck$9(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
+// TODO this is now VERY similar to the identity/internal-model map
+//  so we should probably generalize
+var TypeCache = function () {
+  function TypeCache() {
+    _classCallCheck$9(this, TypeCache);
+
+    this.types = Object.create(null);
+  }
+
+  TypeCache.prototype.get = function get(modelName, id) {
+    var types = this.types;
+
+
+    if (types[modelName] !== undefined) {
+      return types[modelName][id];
+    }
+  };
+
+  TypeCache.prototype.set = function set(modelName, id, payload) {
+    var types = this.types;
+
+    var typeMap = types[modelName];
+
+    if (typeMap === undefined) {
+      typeMap = types[modelName] = Object.create(null);
+    }
+
+    typeMap[id] = payload;
+  };
+
+  TypeCache.prototype.delete = function _delete(modelName, id) {
+    var types = this.types;
+
+
+    if (types[modelName] !== undefined) {
+      delete types[modelName][id];
+    }
+  };
+
+  return TypeCache;
+}();
+
 /**
-  Manages the payloads for both sides of a single relationship, across all model
-  instances.
+ Manages the payloads for both sides of a single relationship, across all model
+ instances.
 
-  For example, with
+ For example, with
 
-    const User = DS.Model.extend({
+ const User = DS.Model.extend({
       hobbies: DS.hasMany('hobby')
     });
 
-    const Hobby = DS.Model.extend({
+ const Hobby = DS.Model.extend({
       user: DS.belongsTo('user')
     });
 
-    let relationshipPayloads = new RelationshipPayloads('user', 'hobbies', 'hobby', 'user');
+ let relationshipPayloads = new RelationshipPayloads('user', 'hobbies', 'hobby', 'user');
 
-    let userPayload = {
+ let userPayload = {
       data: {
         id: 1,
         type: 'user',
@@ -105249,46 +113867,25 @@ function _classCallCheck$9(instance, Constructor) { if (!(instance instanceof Co
       }
     };
 
-    // here we expect the payload of the individual relationship
-    relationshipPayloads.push('user', 1, 'hobbies', userPayload.data.relationships.hobbies);
+ // here we expect the payload of the individual relationship
+ relationshipPayloads.push('user', 1, 'hobbies', userPayload.data.relationships.hobbies);
 
-    relationshipPayloads.get('user', 1, 'hobbies');
-    relationshipPayloads.get('hobby', 2, 'user');
+ relationshipPayloads.get('user', 1, 'hobbies');
+ relationshipPayloads.get('hobby', 2, 'user');
 
-  @class RelationshipPayloads
-  @private
-*/
+ @class RelationshipPayloads
+ @private
+ */
+
 var RelationshipPayloads = function () {
-  function RelationshipPayloads(store, modelName, relationshipName, relationshipMeta, inverseModelName, inverseRelationshipName, inverseRelationshipMeta) {
+  function RelationshipPayloads(relInfo) {
     _classCallCheck$9(this, RelationshipPayloads);
 
-    this._store = store;
-
-    this._lhsModelName = modelName;
-    this._lhsRelationshipName = relationshipName;
-    this._lhsRelationshipMeta = relationshipMeta;
-
-    this._rhsModelName = inverseModelName;
-    this._rhsRelationshipName = inverseRelationshipName;
-    this._rhsRelationshipMeta = inverseRelationshipMeta;
+    this._relInfo = relInfo;
 
     // a map of id -> payloads for the left hand side of the relationship.
-    this._lhsPayloads = Object.create(null);
-    if (modelName !== inverseModelName || relationshipName !== inverseRelationshipName) {
-      // The common case of a non-reflexive relationship, or a reflexive
-      // relationship whose inverse is not itself
-      this._rhsPayloads = Object.create(null);
-      this._isReflexive = false;
-    } else {
-      // Edge case when we have a reflexive relationship to itself
-      //  eg user hasMany friends inverse friends
-      //
-      //  In this case there aren't really two sides to the relationship, but
-      //  we set `_rhsPayloads = _lhsPayloads` to make things easier to reason
-      //  about
-      this._rhsPayloads = this._lhsPayloads;
-      this._isReflexive = true;
-    }
+    this.lhs_payloads = new TypeCache();
+    this.rhs_payloads = relInfo.isReflexive ? this.lhs_payloads : new TypeCache();
 
     // When we push relationship payloads, just stash them in a queue until
     // somebody actually asks for one of them.
@@ -105299,30 +113896,30 @@ var RelationshipPayloads = function () {
   }
 
   /**
-    Get the payload for the relationship of an individual record.
-     This might return the raw payload as pushed into the store, or one computed
-    from the payload of the inverse relationship.
-     @method
-  */
+   Get the payload for the relationship of an individual record.
+    This might return the raw payload as pushed into the store, or one computed
+   from the payload of the inverse relationship.
+    @method
+   */
 
 
   RelationshipPayloads.prototype.get = function get(modelName, id, relationshipName) {
     this._flushPending();
 
     if (this._isLHS(modelName, relationshipName)) {
-      return this._lhsPayloads[id];
+      return this.lhs_payloads.get(modelName, id);
     } else {
-      (true && !(this._isRHS(modelName, relationshipName)) && Ember.assert(modelName + ':' + relationshipName + ' is not either side of this relationship, ' + this._lhsModelName + ':' + this._lhsRelationshipName + '<->' + this._rhsModelName + ':' + this._rhsRelationshipName, this._isRHS(modelName, relationshipName)));
+      (true && !(this._isRHS(modelName, relationshipName)) && Ember.assert(modelName + ':' + relationshipName + ' is not either side of this relationship, ' + this._relInfo.lhs_key + '<->' + this._relInfo.rhs_key, this._isRHS(modelName, relationshipName)));
 
-      return this._rhsPayloads[id];
+      return this.rhs_payloads.get(modelName, id);
     }
   };
 
   /**
-    Push a relationship payload for an individual record.
-     This will make the payload available later for both this relationship and its inverse.
-     @method
-  */
+   Push a relationship payload for an individual record.
+    This will make the payload available later for both this relationship and its inverse.
+    @method
+   */
 
 
   RelationshipPayloads.prototype.push = function push(modelName, id, relationshipName, relationshipData) {
@@ -105330,44 +113927,64 @@ var RelationshipPayloads = function () {
   };
 
   /**
-    Unload the relationship payload for an individual record.
-     This does not unload the inverse relationship payload.
-     @method
-  */
+   Unload the relationship payload for an individual record.
+    This does not unload the inverse relationship payload.
+    @method
+   */
 
 
   RelationshipPayloads.prototype.unload = function unload(modelName, id, relationshipName) {
     this._flushPending();
 
     if (this._isLHS(modelName, relationshipName)) {
-      delete this._lhsPayloads[id];
+      delete this.lhs_payloads.delete(modelName, id);
     } else {
-      (true && !(this._isRHS(modelName, relationshipName)) && Ember.assert(modelName + ':' + relationshipName + ' is not either side of this relationship, ' + this._lhsModelName + ':' + this._lhsRelationshipName + '<->' + this._rhsModelName + ':' + this._rhsRelationshipName, this._isRHS(modelName, relationshipName)));
+      (true && !(this._isRHS(modelName, relationshipName)) && Ember.assert(modelName + ':' + relationshipName + ' is not either side of this relationship, ' + this._relInfo.lhs_baseModelName + ':' + this._relInfo.lhs_relationshipName + '<->' + this._relInfo.rhs_baseModelName + ':' + this._relInfo.rhs_relationshipName, this._isRHS(modelName, relationshipName)));
 
-      delete this._rhsPayloads[id];
+      delete this.rhs_payloads.delete(modelName, id);
     }
   };
 
   /**
-    @return {boolean} true iff `modelName` and `relationshipName` refer to the
-    left hand side of this relationship, as opposed to the right hand side.
-     @method
-  */
+   @return {boolean} true iff `modelName` and `relationshipName` refer to the
+   left hand side of this relationship, as opposed to the right hand side.
+    @method
+   */
 
 
   RelationshipPayloads.prototype._isLHS = function _isLHS(modelName, relationshipName) {
-    return modelName === this._lhsModelName && relationshipName === this._lhsRelationshipName;
+    var relInfo = this._relInfo;
+    var isSelfReferential = relInfo.isSelfReferential;
+    var isRelationship = relationshipName === relInfo.lhs_relationshipName;
+
+    if (isRelationship === true) {
+      return isSelfReferential === true || // itself
+      modelName === relInfo.lhs_baseModelName || // base or non-polymorphic
+      relInfo.lhs_modelNames.indexOf(modelName) !== -1; // polymorphic
+    }
+
+    return false;
   };
 
   /**
-    @return {boolean} true iff `modelName` and `relationshipName` refer to the
-    right hand side of this relationship, as opposed to the left hand side.
-     @method
-  */
+   @return {boolean} true iff `modelName` and `relationshipName` refer to the
+   right hand side of this relationship, as opposed to the left hand side.
+    @method
+   */
 
 
   RelationshipPayloads.prototype._isRHS = function _isRHS(modelName, relationshipName) {
-    return modelName === this._rhsModelName && relationshipName === this._rhsRelationshipName;
+    var relInfo = this._relInfo;
+    var isSelfReferential = relInfo.isSelfReferential;
+    var isRelationship = relationshipName === relInfo.rhs_relationshipName;
+
+    if (isRelationship === true) {
+      return isSelfReferential === true || // itself
+      modelName === relInfo.rhs_baseModelName || // base or non-polymorphic
+      relInfo.rhs_modelNames.indexOf(modelName) !== -1; // polymorphic
+    }
+
+    return false;
   };
 
   RelationshipPayloads.prototype._flushPending = function _flushPending() {
@@ -105388,26 +114005,28 @@ var RelationshipPayloads = function () {
           id: id,
           type: modelName
         }
+      };
 
-        // start flushing this individual payload.  The logic is the same whether
-        // it's for the left hand side of the relationship or the right hand side,
-        // except the role of primary and inverse idToPayloads is reversed
-        //
-      };var previousPayload = void 0;
-      var idToPayloads = void 0;
-      var inverseIdToPayloads = void 0;
+      // start flushing this individual payload.  The logic is the same whether
+      // it's for the left hand side of the relationship or the right hand side,
+      // except the role of primary and inverse idToPayloads is reversed
+      //
+      var previousPayload = void 0;
+      var payloadMap = void 0;
+      var inversePayloadMap = void 0;
       var inverseIsMany = void 0;
+
       if (this._isLHS(modelName, relationshipName)) {
-        previousPayload = this._lhsPayloads[id];
-        idToPayloads = this._lhsPayloads;
-        inverseIdToPayloads = this._rhsPayloads;
+        previousPayload = this.lhs_payloads.get(modelName, id);
+        payloadMap = this.lhs_payloads;
+        inversePayloadMap = this.rhs_payloads;
         inverseIsMany = this._rhsRelationshipIsMany;
       } else {
-        (true && !(this._isRHS(modelName, relationshipName)) && Ember.assert(modelName + ':' + relationshipName + ' is not either side of this relationship, ' + this._lhsModelName + ':' + this._lhsRelationshipName + '<->' + this._rhsModelName + ':' + this._rhsRelationshipName, this._isRHS(modelName, relationshipName)));
+        (true && !(this._isRHS(modelName, relationshipName)) && Ember.assert(modelName + ':' + relationshipName + ' is not either side of this relationship, ' + this._relInfo.lhs_key + '<->' + this._relInfo.rhs_key, this._isRHS(modelName, relationshipName)));
 
-        previousPayload = this._rhsPayloads[id];
-        idToPayloads = this._rhsPayloads;
-        inverseIdToPayloads = this._lhsPayloads;
+        previousPayload = this.rhs_payloads.get(modelName, id);
+        payloadMap = this.rhs_payloads;
+        inversePayloadMap = this.lhs_payloads;
         inverseIsMany = this._lhsRelationshipIsMany;
       }
 
@@ -105451,24 +114070,24 @@ var RelationshipPayloads = function () {
       // * undefined is NOT considered new information, we should keep original state
       // * anything else is considered new information, and it should win
       if (relationshipData.data !== undefined) {
-        this._removeInverse(id, previousPayload, inverseIdToPayloads);
+        this._removeInverse(id, previousPayload, inversePayloadMap);
       }
-      idToPayloads[id] = relationshipData;
-      this._populateInverse(relationshipData, inverseRelationshipData, inverseIdToPayloads, inverseIsMany);
+      payloadMap.set(modelName, id, relationshipData);
+      this._populateInverse(relationshipData, inverseRelationshipData, inversePayloadMap, inverseIsMany);
     }
   };
 
   /**
-    Populate the inverse relationship for `relationshipData`.
-     If `relationshipData` is an array (eg because the relationship is hasMany)
-    this means populate each inverse, otherwise populate only the single
-    inverse.
-     @private
-    @method
-  */
+   Populate the inverse relationship for `relationshipData`.
+    If `relationshipData` is an array (eg because the relationship is hasMany)
+   this means populate each inverse, otherwise populate only the single
+   inverse.
+    @private
+   @method
+   */
 
 
-  RelationshipPayloads.prototype._populateInverse = function _populateInverse(relationshipData, inversePayload, inverseIdToPayloads, inverseIsMany) {
+  RelationshipPayloads.prototype._populateInverse = function _populateInverse(relationshipData, inversePayload, inversePayloadMap, inverseIsMany) {
     if (!relationshipData.data) {
       // This id doesn't have an inverse, eg a belongsTo with a payload
       // { data: null }, so there's nothing to populate
@@ -105477,33 +114096,35 @@ var RelationshipPayloads = function () {
 
     if (Array.isArray(relationshipData.data)) {
       for (var i = 0; i < relationshipData.data.length; ++i) {
-        var inverseId = relationshipData.data[i].id;
-        this._addToInverse(inversePayload, inverseId, inverseIdToPayloads, inverseIsMany);
+        var resourceIdentifier = relationshipData.data[i];
+        this._addToInverse(inversePayload, resourceIdentifier, inversePayloadMap, inverseIsMany);
       }
     } else {
-      var _inverseId = relationshipData.data.id;
-      this._addToInverse(inversePayload, _inverseId, inverseIdToPayloads, inverseIsMany);
+      var _resourceIdentifier = relationshipData.data;
+      this._addToInverse(inversePayload, _resourceIdentifier, inversePayloadMap, inverseIsMany);
     }
   };
 
   /**
-    Actually add `inversePayload` to `inverseIdToPayloads`.  This is part of
-    `_populateInverse` after we've normalized the case of `relationshipData`
-    being either an array or a pojo.
-     We still have to handle the case that the *inverse* relationship payload may
-    be an array or pojo.
-     @private
-    @method
-  */
+   Actually add `inversePayload` to `inverseIdToPayloads`.  This is part of
+   `_populateInverse` after we've normalized the case of `relationshipData`
+   being either an array or a pojo.
+    We still have to handle the case that the *inverse* relationship payload may
+   be an array or pojo.
+    @private
+   @method
+   */
 
 
-  RelationshipPayloads.prototype._addToInverse = function _addToInverse(inversePayload, inverseId, inverseIdToPayloads, inverseIsMany) {
-    if (this._isReflexive && inversePayload.data.id === inverseId) {
+  RelationshipPayloads.prototype._addToInverse = function _addToInverse(inversePayload, resourceIdentifier, inversePayloadMap, inverseIsMany) {
+    var relInfo = this._relInfo;
+
+    if (relInfo.isReflexive && inversePayload.data.id === resourceIdentifier.id) {
       // eg <user:1>.friends = [{ id: 1, type: 'user' }]
       return;
     }
 
-    var existingPayload = inverseIdToPayloads[inverseId];
+    var existingPayload = inversePayloadMap.get(resourceIdentifier.type, resourceIdentifier.id);
     var existingData = existingPayload && existingPayload.data;
 
     if (existingData) {
@@ -105513,29 +114134,29 @@ var RelationshipPayloads = function () {
       if (Array.isArray(existingData)) {
         existingData.push(inversePayload.data);
       } else {
-        inverseIdToPayloads[inverseId] = inversePayload;
+        inversePayloadMap.set(resourceIdentifier.type, resourceIdentifier.id, inversePayload);
       }
     } else {
       // first time we're populating the inverse side
       //
       if (inverseIsMany) {
-        inverseIdToPayloads[inverseId] = {
+        inversePayloadMap.set(resourceIdentifier.type, resourceIdentifier.id, {
           data: [inversePayload.data]
-        };
+        });
       } else {
-        inverseIdToPayloads[inverseId] = inversePayload;
+        inversePayloadMap.set(resourceIdentifier.type, resourceIdentifier.id, inversePayload);
       }
     }
   };
 
   /**
-    Remove the relationship in `previousPayload` from its inverse(s), because
-    this relationship payload has just been updated (eg because the same
-    relationship had multiple payloads pushed before the relationship was
-    initialized).
-     @method
-  */
-  RelationshipPayloads.prototype._removeInverse = function _removeInverse(id, previousPayload, inverseIdToPayloads) {
+   Remove the relationship in `previousPayload` from its inverse(s), because
+   this relationship payload has just been updated (eg because the same
+   relationship had multiple payloads pushed before the relationship was
+   initialized).
+    @method
+   */
+  RelationshipPayloads.prototype._removeInverse = function _removeInverse(id, previousPayload, inversePayloadMap) {
     var data = previousPayload && previousPayload.data;
     if (!data) {
       // either this is the first time we've seen a payload for this id, or its
@@ -105550,23 +114171,24 @@ var RelationshipPayloads = function () {
     if (Array.isArray(data)) {
       // TODO: diff rather than removeall addall?
       for (var i = 0; i < data.length; ++i) {
-        this._removeFromInverse(id, data[i].id, inverseIdToPayloads);
+        var resourceIdentifier = data[i];
+        this._removeFromInverse(id, resourceIdentifier, inversePayloadMap);
       }
     } else {
-      this._removeFromInverse(id, data.id, inverseIdToPayloads);
+      this._removeFromInverse(id, data, inversePayloadMap);
     }
   };
 
   /**
-    Remove `id` from its inverse record with id `inverseId`.  If the inverse
-    relationship is a belongsTo, this means just setting it to null, if the
-    inverse relationship is a hasMany, then remove that id from its array of ids.
-     @method
-  */
+   Remove `id` from its inverse record with id `inverseId`.  If the inverse
+   relationship is a belongsTo, this means just setting it to null, if the
+   inverse relationship is a hasMany, then remove that id from its array of ids.
+    @method
+   */
 
 
-  RelationshipPayloads.prototype._removeFromInverse = function _removeFromInverse(id, inverseId, inversePayloads) {
-    var inversePayload = inversePayloads[inverseId];
+  RelationshipPayloads.prototype._removeFromInverse = function _removeFromInverse(id, resourceIdentifier, inversePayloads) {
+    var inversePayload = inversePayloads.get(resourceIdentifier.type, resourceIdentifier.id);
     var data = inversePayload && inversePayload.data;
 
     if (!data) {
@@ -105578,21 +114200,23 @@ var RelationshipPayloads = function () {
         return x.id !== id;
       });
     } else {
-      inversePayloads[inverseId] = {
+      inversePayloads.set(resourceIdentifier.type, resourceIdentifier.id, {
         data: null
-      };
+      });
     }
   };
 
   _createClass$6(RelationshipPayloads, [{
     key: '_lhsRelationshipIsMany',
     get: function get() {
-      return this._lhsRelationshipMeta && this._lhsRelationshipMeta.kind === 'hasMany';
+      var meta = this._relInfo.lhs_relationshipMeta;
+      return meta !== null && meta.kind === 'hasMany';
     }
   }, {
     key: '_rhsRelationshipIsMany',
     get: function get() {
-      return this._rhsRelationshipMeta && this._rhsRelationshipMeta.kind === 'hasMany';
+      var meta = this._relInfo.rhs_relationshipMeta;
+      return meta !== null && meta.kind === 'hasMany';
     }
   }]);
 
@@ -105601,7 +114225,8 @@ var RelationshipPayloads = function () {
 
 function _classCallCheck$8(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var _get$1 = Ember.get;
+var get$10 = Ember.get;
+var assert = Ember.assert;
 
 /**
   Manages relationship payloads for a given store, for uninitialized
@@ -105664,6 +114289,7 @@ var RelationshipPayloadsManager = function () {
     this._store = store;
     // cache of `RelationshipPayload`s
     this._cache = Object.create(null);
+    this._inverseLookupCache = new TypeCache();
   }
 
   /**
@@ -105684,9 +114310,7 @@ var RelationshipPayloadsManager = function () {
 
 
   RelationshipPayloadsManager.prototype.get = function get(modelName, id, relationshipName) {
-    var modelClass = this._store._modelFor(modelName);
-    var relationshipsByName = _get$1(modelClass, 'relationshipsByName');
-    var relationshipPayloads = this._getRelationshipPayloads(modelName, relationshipName, modelClass, relationshipsByName, false);
+    var relationshipPayloads = this._getRelationshipPayloads(modelName, relationshipName, false);
     return relationshipPayloads && relationshipPayloads.get(modelName, id, relationshipName);
   };
 
@@ -105719,10 +114343,8 @@ var RelationshipPayloadsManager = function () {
       return;
     }
 
-    var modelClass = this._store._modelFor(modelName);
-    var relationshipsByName = _get$1(modelClass, 'relationshipsByName');
     Object.keys(relationshipsData).forEach(function (key) {
-      var relationshipPayloads = _this._getRelationshipPayloads(modelName, key, modelClass, relationshipsByName, true);
+      var relationshipPayloads = _this._getRelationshipPayloads(modelName, key, true);
       if (relationshipPayloads) {
         relationshipPayloads.push(modelName, id, key, relationshipsData[key]);
       }
@@ -105739,9 +114361,9 @@ var RelationshipPayloadsManager = function () {
     var _this2 = this;
 
     var modelClass = this._store._modelFor(modelName);
-    var relationshipsByName = _get$1(modelClass, 'relationshipsByName');
+    var relationshipsByName = get$10(modelClass, 'relationshipsByName');
     relationshipsByName.forEach(function (_, relationshipName) {
-      var relationshipPayloads = _this2._getRelationshipPayloads(modelName, relationshipName, modelClass, relationshipsByName, false);
+      var relationshipPayloads = _this2._getRelationshipPayloads(modelName, relationshipName, false);
       if (relationshipPayloads) {
         relationshipPayloads.unload(modelName, id, relationshipName);
       }
@@ -105760,7 +114382,7 @@ var RelationshipPayloadsManager = function () {
       });
        relationshipPayloads.get('user', 'hobbies') === relationshipPayloads.get('hobby', 'user');
      The signature has a somewhat large arity to avoid extra work, such as
-      a)  string maipulation & allocation with `modelName` and
+      a)  string manipulation & allocation with `modelName` and
          `relationshipName`
       b)  repeatedly getting `relationshipsByName` via `Ember.get`
       @private
@@ -105768,17 +114390,129 @@ var RelationshipPayloadsManager = function () {
   */
 
 
-  RelationshipPayloadsManager.prototype._getRelationshipPayloads = function _getRelationshipPayloads(modelName, relationshipName, modelClass, relationshipsByName, init) {
-    if (!relationshipsByName.has(relationshipName)) {
+  RelationshipPayloadsManager.prototype._getRelationshipPayloads = function _getRelationshipPayloads(modelName, relationshipName, init) {
+    var relInfo = this.getRelationshipInfo(modelName, relationshipName);
+
+    if (relInfo === null) {
       return;
     }
 
-    var key = modelName + ':' + relationshipName;
-    if (!this._cache[key] && init) {
-      return this._initializeRelationshipPayloads(modelName, relationshipName, modelClass, relationshipsByName);
+    var cache = this._cache[relInfo.lhs_key];
+
+    if (!cache && init) {
+      return this._initializeRelationshipPayloads(relInfo);
     }
 
-    return this._cache[key];
+    return cache;
+  };
+
+  RelationshipPayloadsManager.prototype.getRelationshipInfo = function getRelationshipInfo(modelName, relationshipName) {
+    var inverseCache = this._inverseLookupCache;
+    var store = this._store;
+    var cached = inverseCache.get(modelName, relationshipName);
+
+    // CASE: We have a cached resolution (null if no relationship exists)
+    if (cached !== undefined) {
+      return cached;
+    }
+
+    var modelClass = store._modelFor(modelName);
+    var relationshipsByName = get$10(modelClass, 'relationshipsByName');
+
+    // CASE: We don't have a relationship at all
+    if (!relationshipsByName.has(relationshipName)) {
+      inverseCache.set(modelName, relationshipName, null);
+      return null;
+    }
+
+    var inverseMeta = modelClass.inverseFor(relationshipName, store);
+    var relationshipMeta = relationshipsByName.get(relationshipName);
+    var selfIsPolymorphic = relationshipMeta.options !== undefined && relationshipMeta.options.polymorphic === true;
+    var inverseBaseModelName = relationshipMeta.type;
+
+    // CASE: We have no inverse
+    if (!inverseMeta) {
+      var _info = {
+        lhs_key: modelName + ':' + relationshipName,
+        lhs_modelNames: [modelName],
+        lhs_baseModelName: modelName,
+        lhs_relationshipName: relationshipName,
+        lhs_relationshipMeta: relationshipMeta,
+        lhs_isPolymorphic: selfIsPolymorphic,
+        rhs_key: '',
+        rhs_modelNames: [],
+        rhs_baseModelName: inverseBaseModelName,
+        rhs_relationshipName: '',
+        rhs_relationshipMeta: null,
+        rhs_isPolymorphic: false,
+        hasInverse: false,
+        isSelfReferential: false, // modelName === inverseBaseModelName,
+        isReflexive: false
+      };
+
+      inverseCache.set(modelName, relationshipName, _info);
+
+      return _info;
+    }
+
+    // CASE: We do have an inverse
+
+    var inverseRelationshipName = inverseMeta.name;
+    var inverseRelationshipMeta = get$10(inverseMeta.type, 'relationshipsByName').get(inverseRelationshipName);
+    var baseModelName = inverseRelationshipMeta.type;
+    var isSelfReferential = baseModelName === inverseBaseModelName;
+
+    // TODO we want to assert this but this breaks all of our shoddily written tests
+    /*
+    if (DEBUG) {
+      let inverseDoubleCheck = inverseMeta.type.inverseFor(inverseRelationshipName, store);
+       assert(`The ${inverseBaseModelName}:${inverseRelationshipName} relationship declares 'inverse: null', but it was resolved as the inverse for ${baseModelName}:${relationshipName}.`, inverseDoubleCheck);
+    }
+    */
+
+    // CASE: We may have already discovered the inverse for the baseModelName
+    // CASE: We have already discovered the inverse
+    cached = inverseCache.get(baseModelName, relationshipName) || inverseCache.get(inverseBaseModelName, inverseRelationshipName);
+    if (cached) {
+      // TODO this assert can be removed if the above assert is enabled
+      assert('The ' + inverseBaseModelName + ':' + inverseRelationshipName + ' relationship declares \'inverse: null\', but it was resolved as the inverse for ' + baseModelName + ':' + relationshipName + '.', cached.hasInverse !== false);
+
+      var isLHS = cached.lhs_baseModelName === baseModelName;
+      var modelNames = isLHS ? cached.lhs_modelNames : cached.rhs_modelNames;
+      // make this lookup easier in the future by caching the key
+      modelNames.push(modelName);
+      inverseCache.set(modelName, relationshipName, cached);
+
+      return cached;
+    }
+
+    var info = {
+      lhs_key: baseModelName + ':' + relationshipName,
+      lhs_modelNames: [modelName],
+      lhs_baseModelName: baseModelName,
+      lhs_relationshipName: relationshipName,
+      lhs_relationshipMeta: relationshipMeta,
+      lhs_isPolymorphic: selfIsPolymorphic,
+      rhs_key: inverseBaseModelName + ':' + inverseRelationshipName,
+      rhs_modelNames: [],
+      rhs_baseModelName: inverseBaseModelName,
+      rhs_relationshipName: inverseRelationshipName,
+      rhs_relationshipMeta: inverseRelationshipMeta,
+      rhs_isPolymorphic: inverseRelationshipMeta.options !== undefined && inverseRelationshipMeta.options.polymorphic === true,
+      hasInverse: true,
+      isSelfReferential: isSelfReferential,
+      isReflexive: isSelfReferential && relationshipName === inverseRelationshipName
+    };
+
+    // Create entries for the baseModelName as well as modelName to speed up
+    //  inverse lookups
+    inverseCache.set(baseModelName, relationshipName, info);
+    inverseCache.set(modelName, relationshipName, info);
+
+    // Greedily populate the inverse
+    inverseCache.set(inverseBaseModelName, inverseRelationshipName, info);
+
+    return info;
   };
 
   /**
@@ -105788,29 +114522,19 @@ var RelationshipPayloadsManager = function () {
   */
 
 
-  RelationshipPayloadsManager.prototype._initializeRelationshipPayloads = function _initializeRelationshipPayloads(modelName, relationshipName, modelClass, relationshipsByName) {
-    var relationshipMeta = relationshipsByName.get(relationshipName);
-    var inverseMeta = modelClass.inverseFor(relationshipName, this._store);
+  RelationshipPayloadsManager.prototype._initializeRelationshipPayloads = function _initializeRelationshipPayloads(relInfo) {
+    var lhsKey = relInfo.lhs_key;
+    var rhsKey = relInfo.rhs_key;
+    var existingPayloads = this._cache[lhsKey];
 
-    var inverseModelName = void 0;
-    var inverseRelationshipName = void 0;
-    var inverseRelationshipMeta = void 0;
+    if (relInfo.hasInverse === true && relInfo.rhs_isPolymorphic === true) {
+      existingPayloads = this._cache[rhsKey];
 
-    // figure out the inverse relationship; we need two things
-    //  a) the inverse model name
-    //- b) the name of the inverse relationship
-    if (inverseMeta) {
-      inverseRelationshipName = inverseMeta.name;
-      inverseModelName = relationshipMeta.type;
-      inverseRelationshipMeta = _get$1(inverseMeta.type, 'relationshipsByName').get(inverseRelationshipName);
-    } else {
-      // relationship has no inverse
-      inverseModelName = inverseRelationshipName = '';
-      inverseRelationshipMeta = null;
+      if (existingPayloads !== undefined) {
+        this._cache[lhsKey] = existingPayloads;
+        return existingPayloads;
+      }
     }
-
-    var lhsKey = modelName + ':' + relationshipName;
-    var rhsKey = inverseModelName + ':' + inverseRelationshipName;
 
     // populate the cache for both sides of the relationship, as they both use
     // the same `RelationshipPayloads`.
@@ -105818,7 +114542,13 @@ var RelationshipPayloadsManager = function () {
     // This works out better than creating a single common key, because to
     // compute that key we would need to do work to look up the inverse
     //
-    return this._cache[lhsKey] = this._cache[rhsKey] = new RelationshipPayloads(this._store, modelName, relationshipName, relationshipMeta, inverseModelName, inverseRelationshipName, inverseRelationshipMeta);
+    var cache = this._cache[lhsKey] = new RelationshipPayloads(relInfo);
+
+    if (relInfo.hasInverse === true) {
+      this._cache[rhsKey] = cache;
+    }
+
+    return cache;
   };
 
   return RelationshipPayloadsManager;
@@ -106188,7 +114918,7 @@ var SnapshotRecordArray = function () {
 }();
 
 var computed$2 = Ember.computed;
-var get$11 = Ember.get;
+var get$12 = Ember.get;
 var set$4 = Ember.set;
 var Promise$4 = Ember.RSVP.Promise;
 
@@ -106279,7 +115009,7 @@ var RecordArray = Ember.ArrayProxy.extend(Ember.Evented, {
     @return {DS.Model} record
   */
   objectAtContent: function objectAtContent(index) {
-    var internalModel = get$11(this, 'content').objectAt(index);
+    var internalModel = get$12(this, 'content').objectAt(index);
     return internalModel && internalModel.getRecord();
   },
 
@@ -106301,7 +115031,7 @@ var RecordArray = Ember.ArrayProxy.extend(Ember.Evented, {
   update: function update() {
     var _this = this;
 
-    if (get$11(this, 'isUpdating')) {
+    if (get$12(this, 'isUpdating')) {
       return this._updatingPromise;
     }
 
@@ -106340,7 +115070,7 @@ var RecordArray = Ember.ArrayProxy.extend(Ember.Evented, {
     // pushObjects because the internalModels._recordArrays set was already
     // consulted for inclusion, so addObject and its on .contains call is not
     // required.
-    get$11(this, 'content').pushObjects(internalModels);
+    get$12(this, 'content').pushObjects(internalModels);
   },
 
 
@@ -106351,7 +115081,7 @@ var RecordArray = Ember.ArrayProxy.extend(Ember.Evented, {
     @param {InternalModel} internalModel
   */
   _removeInternalModels: function _removeInternalModels(internalModels) {
-    get$11(this, 'content').removeObjects(internalModels);
+    get$12(this, 'content').removeObjects(internalModels);
   },
 
 
@@ -106429,7 +115159,7 @@ var RecordArray = Ember.ArrayProxy.extend(Ember.Evented, {
     @private
   */
   _takeSnapshot: function _takeSnapshot() {
-    return get$11(this, 'content').map(function (internalModel) {
+    return get$12(this, 'content').map(function (internalModel) {
       return internalModel.createSnapshot();
     });
   }
@@ -106439,7 +115169,7 @@ var RecordArray = Ember.ArrayProxy.extend(Ember.Evented, {
   @module ember-data
 */
 
-var get$12 = Ember.get;
+var get$13 = Ember.get;
 
 /**
   Represents a list of records whose membership is determined by the
@@ -106492,10 +115222,10 @@ var FilteredRecordArray = RecordArray.extend({
     @private
   */
   _updateFilter: function _updateFilter() {
-    if (get$12(this, 'isDestroying') || get$12(this, 'isDestroyed')) {
+    if (get$13(this, 'isDestroying') || get$13(this, 'isDestroyed')) {
       return;
     }
-    get$12(this, 'manager').updateFilter(this, this.modelName, get$12(this, 'filterFunction'));
+    get$13(this, 'manager').updateFilter(this, this.modelName, get$13(this, 'filterFunction'));
   },
 
 
@@ -106516,7 +115246,7 @@ function cloneNull(source) {
   @module ember-data
 */
 
-var get$13 = Ember.get;
+var get$14 = Ember.get;
 
 /**
   Represents an ordered list of records whose order and membership is
@@ -106569,8 +115299,8 @@ var AdapterPopulatedRecordArray = RecordArray.extend({
     throw new Error("The result of a server query (on " + this.modelName + ") is immutable.");
   },
   _update: function _update() {
-    var store = get$13(this, 'store');
-    var query = get$13(this, 'query');
+    var store = get$14(this, 'store');
+    var query = get$14(this, 'query');
 
     return store._query(this.modelName, query, this);
   },
@@ -106609,7 +115339,7 @@ var AdapterPopulatedRecordArray = RecordArray.extend({
 
 function _classCallCheck$10(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-var get$10 = Ember.get;
+var get$11 = Ember.get;
 var set$3 = Ember.set;
 var emberRun$1 = Ember.run;
 
@@ -106719,7 +115449,7 @@ var RecordArrayManager = function () {
 
   RecordArrayManager.prototype.updateFilterRecordArray = function updateFilterRecordArray(array, modelName, internalModels) {
 
-    var filter = get$10(array, 'filterFunction');
+    var filter = get$11(array, 'filterFunction');
 
     var shouldBeInAdded = [];
     var shouldBeRemoved = [];
@@ -106755,7 +115485,7 @@ var RecordArrayManager = function () {
 
     var hasNoPotentialDeletions = Object.keys(this._pending).length === 0;
     var map = this.store._internalModelsFor(modelName);
-    var hasNoInsertionsOrRemovals = get$10(map, 'length') === get$10(array, 'length');
+    var hasNoInsertionsOrRemovals = get$11(map, 'length') === get$11(array, 'length');
 
     /*
       Ideally the recordArrayManager has knowledge of the changes to be applied to
@@ -110048,7 +118778,7 @@ function isArrayLike(obj) {
   @module ember-data
 */
 
-var get$14 = Ember.get;
+var get$15 = Ember.get;
 
 /**
   `DS.hasMany` is used to define One-To-Many and Many-To-Many
@@ -110205,14 +118935,14 @@ function hasMany(type, options) {
       var relationship = this._internalModel._relationships.get(key);
       relationship.clear();
       relationship.addInternalModels(records.map(function (record) {
-        return get$14(record, '_internalModel');
+        return get$15(record, '_internalModel');
       }));
       return relationship.getRecords();
     }
   }).meta(meta);
 }
 
-var get$15 = Ember.get;
+var get$16 = Ember.get;
 
 /**
 
@@ -110297,7 +119027,7 @@ var buildUrlMixin = Ember.Mixin.create({
   _buildURL: function _buildURL(modelName, id) {
     var path = void 0;
     var url = [];
-    var host = get$15(this, 'host');
+    var host = get$16(this, 'host');
     var prefix = this.urlPrefix();
 
     if (modelName) {
@@ -110563,8 +119293,8 @@ var buildUrlMixin = Ember.Mixin.create({
     @return {String} urlPrefix
   */
   urlPrefix: function urlPrefix(path, parentURL) {
-    var host = get$15(this, 'host');
-    var namespace = get$15(this, 'namespace');
+    var host = get$16(this, 'host');
+    var namespace = get$16(this, 'namespace');
 
     if (!host || host === '/') {
       host = '';
@@ -110680,8 +119410,8 @@ var global$1 = checkGlobal(checkElementIdShadowing(typeof global === 'object' &&
 
 var capitalize = Ember.String.capitalize;
 var underscore = Ember.String.underscore;
-var assert = Ember.assert;
-var get$16 = Ember.get;
+var assert$1 = Ember.assert;
+var get$17 = Ember.get;
 
 /*
   Extend `Ember.DataAdapter` with ED specific code.
@@ -110706,7 +119436,7 @@ var debugAdapter = Ember.DataAdapter.extend({
     }];
     var count = 0;
     var self = this;
-    get$16(typeClass, 'attributes').forEach(function (meta, name) {
+    get$17(typeClass, 'attributes').forEach(function (meta, name) {
       if (count++ > self.attributeLimit) {
         return false;
       }
@@ -110726,20 +119456,20 @@ var debugAdapter = Ember.DataAdapter.extend({
         }
       }
     }
-    assert("Cannot find model name. Please upgrade to Ember.js >= 1.13 for Ember Inspector support", !!modelName);
+    assert$1("Cannot find model name. Please upgrade to Ember.js >= 1.13 for Ember Inspector support", !!modelName);
     return this.get('store').peekAll(modelName);
   },
   getRecordColumnValues: function getRecordColumnValues(record) {
     var _this = this;
 
     var count = 0;
-    var columnValues = { id: get$16(record, 'id') };
+    var columnValues = { id: get$17(record, 'id') };
 
     record.eachAttribute(function (key) {
       if (count++ > _this.attributeLimit) {
         return false;
       }
-      columnValues[key] = get$16(record, key);
+      columnValues[key] = get$17(record, key);
     });
     return columnValues;
   },
@@ -110750,7 +119480,7 @@ var debugAdapter = Ember.DataAdapter.extend({
       return keys.push(key);
     });
     keys.forEach(function (key) {
-      return keywords.push(get$16(record, key));
+      return keywords.push(get$17(record, key));
     });
     return keywords;
   },
@@ -115835,16 +124565,26 @@ Object.defineProperty(exports, '__esModule', { value: true });
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = "2.16.3";
+  exports.default = "2.16.4";
 });
-;define('semantic-ui-ember/components/ui-accordion', ['exports', 'ember', 'semantic-ui-ember/mixins/base'], function (exports, _ember, _semanticUiEmberMixinsBase) {
-  exports['default'] = _ember['default'].Component.extend(_semanticUiEmberMixinsBase['default'], {
+;define('semantic-ui-ember/components/ui-accordion', ['exports', 'semantic-ui-ember/mixins/base'], function (exports, _base) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend(_base.default, {
     module: 'accordion',
     classNames: ['ui', 'accordion']
   });
 });
-;define('semantic-ui-ember/components/ui-checkbox', ['exports', 'ember', 'semantic-ui-ember/mixins/checkbox'], function (exports, _ember, _semanticUiEmberMixinsCheckbox) {
-  exports['default'] = _ember['default'].Component.extend(_semanticUiEmberMixinsCheckbox['default'], {
+;define('semantic-ui-ember/components/ui-checkbox', ['exports', 'semantic-ui-ember/mixins/checkbox'], function (exports, _checkbox) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend(_checkbox.default, {
     type: 'checkbox',
     ignorableAttrs: ['checked', 'label', 'disabled'],
 
@@ -115855,12 +124595,23 @@ Object.defineProperty(exports, '__esModule', { value: true });
     }
   });
 });
-;define('semantic-ui-ember/components/ui-dimmer', ['exports', 'ember', 'semantic-ui-ember/mixins/base'], function (exports, _ember, _semanticUiEmberMixinsBase) {
-  exports['default'] = _ember['default'].Component.extend(_semanticUiEmberMixinsBase['default'], {
+;define('semantic-ui-ember/components/ui-dimmer', ['exports', 'semantic-ui-ember/mixins/base'], function (exports, _base) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend(_base.default, {
     module: 'dimmer'
   });
 });
-;define('semantic-ui-ember/components/ui-dropdown', ['exports', 'ember', 'semantic-ui-ember/mixins/base', 'ember-promise-tools/mixins/promise-resolver'], function (exports, _ember, _semanticUiEmberMixinsBase, _emberPromiseToolsMixinsPromiseResolver) {
+;define('semantic-ui-ember/components/ui-dropdown', ['exports', 'semantic-ui-ember/mixins/base', 'ember-promise-tools/mixins/promise-resolver'], function (exports, _base, _promiseResolver) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
 
   var _proxyCallback = function _proxyCallback(callbackName) {
     return function (value, text, $element) {
@@ -115868,7 +124619,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
     };
   };
 
-  exports['default'] = _ember['default'].Component.extend(_semanticUiEmberMixinsBase['default'], _emberPromiseToolsMixinsPromiseResolver['default'], {
+  exports.default = Ember.Component.extend(_base.default, _promiseResolver.default, {
     module: 'dropdown',
     classNames: ['ui', 'dropdown'],
     ignorableAttrs: ['selected'],
@@ -115878,11 +124629,11 @@ Object.defineProperty(exports, '__esModule', { value: true });
       this._super.apply(this, arguments);
       this.set('objectMap', {});
     },
-
     willDestroyElement: function willDestroyElement() {
       this._super.apply(this, arguments);
       this.set('objectMap', null);
     },
+
 
     // Semantic Hooks
     willInitSemantic: function willInitSemantic(settings) {
@@ -115897,7 +124648,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
         settings.onRemove = this.get('_onRemove');
       }
     },
-
     didInitSemantic: function didInitSemantic() {
       this._super.apply(this, arguments);
       // We want to handle this outside of the standard process
@@ -115908,19 +124658,19 @@ Object.defineProperty(exports, '__esModule', { value: true });
       this.execute('clear');
       this._inspectSelected();
     },
-
     didUpdateAttrs: function didUpdateAttrs() {
       this._super.apply(this, arguments);
       this._inspectSelected();
     },
 
+
     actions: {
       mapping: function mapping(object) {
-        var guid = _ember['default'].guidFor(object);
+        var guid = Ember.guidFor(object);
         if (!this._hasOwnProperty(this.get('objectMap'), guid)) {
           this.get('objectMap')[guid] = object;
         }
-        _ember['default'].run.scheduleOnce('afterRender', this, this._inspectSelected);
+        Ember.run.scheduleOnce('afterRender', this, this._inspectSelected);
         return guid;
       }
     },
@@ -115933,11 +124683,11 @@ Object.defineProperty(exports, '__esModule', { value: true });
       if (this.get('_isSettingSelect')) {
         return;
       }
-      var returnValue = undefined;
+      var returnValue = void 0;
       if (this.execute('is multiple')) {
         var values = this.execute('get values');
         returnValue = [];
-        for (var i = 0; i < _ember['default'].get(values, 'length'); i++) {
+        for (var i = 0; i < Ember.get(values, 'length'); i++) {
           var item = this._atIndex(values, i);
           returnValue.push(this._getObjectOrValue(item));
         }
@@ -115947,6 +124697,7 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
       return this.attrs.onChange(returnValue, text, $element, this);
     },
+
     _onAdd: _proxyCallback('onAdd'),
     _onRemove: _proxyCallback('onRemove'),
 
@@ -115957,22 +124708,19 @@ Object.defineProperty(exports, '__esModule', { value: true });
       }
       return collection[index];
     },
-
     _getObjectOrValue: function _getObjectOrValue(value) {
       if (this._hasOwnProperty(this.get('objectMap'), value)) {
         return this.get('objectMap')[value];
       }
-      if (_ember['default'].isEmpty(value)) {
+      if (Ember.isEmpty(value)) {
         return null;
       }
       return value;
     },
-
     _inspectSelected: function _inspectSelected() {
       var selected = this.get('selected');
       return this.resolvePromise(selected, this._checkSelected);
     },
-
     _checkSelected: function _checkSelected(selectedValue) {
       var isMultiple = this.execute('is multiple');
       var moduleSelected = this._getCurrentSelected(isMultiple);
@@ -115983,7 +124731,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
         this.set('_isSettingSelect', false);
       }
     },
-
     _getCurrentSelected: function _getCurrentSelected(isMultiple) {
       if (isMultiple) {
         var keys = this.execute('get values');
@@ -115998,23 +124745,22 @@ Object.defineProperty(exports, '__esModule', { value: true });
       var key = this.execute('get value');
       return this._getObjectOrValue(key);
     },
-
     _setCurrentSelected: function _setCurrentSelected(selectedValue, moduleSelected, isMultiple) {
-      if (_ember['default'].isBlank(selectedValue)) {
-        if (!_ember['default'].isBlank(moduleSelected)) {
+      if (Ember.isBlank(selectedValue)) {
+        if (!Ember.isBlank(moduleSelected)) {
           this.execute('clear');
         }
         return;
       }
 
-      if (_ember['default'].isArray(selectedValue)) {
+      if (Ember.isArray(selectedValue)) {
         var keys = [];
         if (!isMultiple) {
-          _ember['default'].Logger.error("Selected is an array of values, but the dropdown doesn't have the class 'multiple'");
+          Ember.Logger.error("Selected is an array of values, but the dropdown doesn't have the class 'multiple'");
           return;
         }
 
-        for (var i = 0; i < _ember['default'].get(selectedValue, 'length'); i++) {
+        for (var i = 0; i < Ember.get(selectedValue, 'length'); i++) {
           var item = this._atIndex(selectedValue, i);
           keys.push(this._getObjectKeyByValue(item));
         }
@@ -116025,7 +124771,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
       var key = this._getObjectKeyByValue(selectedValue);
       return this.execute('set selected', key);
     },
-
     _areSelectedEqual: function _areSelectedEqual(selectedValue, moduleValue, isMultiple) {
       if (isMultiple) {
         // If selectedValue passed in is an array, we are assuming that its the collection getting updated and that
@@ -116033,22 +124778,22 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
         // If both are in a blank state of some kind, they are equal.
         // i.e. selected could be null and moduleValue could be an empty array
-        if (_ember['default'].isBlank(selectedValue) && _ember['default'].isBlank(moduleValue)) {
+        if (Ember.isBlank(selectedValue) && Ember.isBlank(moduleValue)) {
           return true;
         }
 
-        if (_ember['default'].isArray(selectedValue)) {
-          if (_ember['default'].get(selectedValue, 'length') !== _ember['default'].get(moduleValue, 'length')) {
+        if (Ember.isArray(selectedValue)) {
+          if (Ember.get(selectedValue, 'length') !== Ember.get(moduleValue, 'length')) {
             return false;
           }
 
           // Loop through the collections and see if they are equal
-          for (var i = 0; i < _ember['default'].get(selectedValue, 'length'); i++) {
+          for (var i = 0; i < Ember.get(selectedValue, 'length'); i++) {
             var value = this._atIndex(selectedValue, i);
             var equal = false;
-            for (var j = 0; j < _ember['default'].get(moduleValue, 'length'); j++) {
-              var _module2 = this._atIndex(moduleValue, j);
-              if (this.areAttrValuesEqual('selected', value, _module2)) {
+            for (var j = 0; j < Ember.get(moduleValue, 'length'); j++) {
+              var module = this._atIndex(moduleValue, j);
+              if (this.areAttrValuesEqual('selected', value, module)) {
                 equal = true;
                 break;
               }
@@ -116062,9 +124807,9 @@ Object.defineProperty(exports, '__esModule', { value: true });
         }
         // otherwise, just try to see one of the values in the module equals the attr value
         // The use case is the selected value is a single value to start, then the module value is an array
-        else if (_ember['default'].isArray(moduleValue)) {
-            for (var i = 0; i < _ember['default'].get(moduleValue, 'length'); i++) {
-              var item = this._atIndex(moduleValue, i);
+        else if (Ember.isArray(moduleValue)) {
+            for (var _i = 0; _i < Ember.get(moduleValue, 'length'); _i++) {
+              var item = this._atIndex(moduleValue, _i);
               if (this.areAttrValuesEqual('selected', selectedValue, item)) {
                 return true; // We found a match, just looking for one
               }
@@ -116074,7 +124819,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
       }
       return this.areAttrValuesEqual('selected', selectedValue, moduleValue);
     },
-
     _getObjectKeyByValue: function _getObjectKeyByValue(value) {
       // Since semantic is always binding to strings, we must return a string
       // Either through the object mapping or directly stringed value
@@ -116089,19 +124833,28 @@ Object.defineProperty(exports, '__esModule', { value: true });
       }
       return value.toString();
     }
-
   });
 });
-;define('semantic-ui-ember/components/ui-embed', ['exports', 'ember', 'semantic-ui-ember/mixins/base'], function (exports, _ember, _semanticUiEmberMixinsBase) {
-  exports['default'] = _ember['default'].Component.extend(_semanticUiEmberMixinsBase['default'], {
+;define('semantic-ui-ember/components/ui-embed', ['exports', 'semantic-ui-ember/mixins/base'], function (exports, _base) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend(_base.default, {
     module: 'embed',
     classNames: ['ui', 'embed'],
     attributeBindings: ['data-icon', 'data-id', 'data-placeholder', 'data-source', 'data-url'],
     ignorableAttrs: ['data-icon', 'data-id', 'data-placeholder', 'data-source', 'data-url']
   });
 });
-;define('semantic-ui-ember/components/ui-modal', ['exports', 'ember', 'semantic-ui-ember/mixins/base'], function (exports, _ember, _semanticUiEmberMixinsBase) {
-  exports['default'] = _ember['default'].Component.extend(_semanticUiEmberMixinsBase['default'], {
+;define('semantic-ui-ember/components/ui-modal', ['exports', 'semantic-ui-ember/mixins/base'], function (exports, _base) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend(_base.default, {
     module: 'modal',
     classNames: ['ui', 'modal'],
 
@@ -116116,14 +124869,24 @@ Object.defineProperty(exports, '__esModule', { value: true });
     }
   });
 });
-;define('semantic-ui-ember/components/ui-nag', ['exports', 'ember', 'semantic-ui-ember/mixins/base'], function (exports, _ember, _semanticUiEmberMixinsBase) {
-  exports['default'] = _ember['default'].Component.extend(_semanticUiEmberMixinsBase['default'], {
+;define('semantic-ui-ember/components/ui-nag', ['exports', 'semantic-ui-ember/mixins/base'], function (exports, _base) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend(_base.default, {
     module: 'nag',
     classNames: ['ui', 'nag']
   });
 });
-;define('semantic-ui-ember/components/ui-popup', ['exports', 'ember', 'semantic-ui-ember/mixins/base'], function (exports, _ember, _semanticUiEmberMixinsBase) {
-  exports['default'] = _ember['default'].Component.extend(_semanticUiEmberMixinsBase['default'], {
+;define('semantic-ui-ember/components/ui-popup', ['exports', 'semantic-ui-ember/mixins/base'], function (exports, _base) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend(_base.default, {
     module: 'popup',
 
     didInitSemantic: function didInitSemantic() {
@@ -116137,17 +124900,16 @@ Object.defineProperty(exports, '__esModule', { value: true });
       }
       this.get('_settableAttrs').removeObject('position');
     },
-
     setSemanticAttr: function setSemanticAttr(attrName, attrValue) {
       if (attrName === 'content' || attrName === 'title' || attrName === 'html') {
         var value = this._unwrapHTMLSafe(attrValue);
         var response = this.execute('setting', attrName, value);
         if (this.execute('is visible')) {
-          var html = undefined;
+          var html = void 0;
           if (attrName === 'html') {
             html = value;
           } else {
-            var text = undefined;
+            var text = void 0;
             if (attrName === 'content') {
               text = {
                 title: this.get('title'),
@@ -116170,15 +124932,25 @@ Object.defineProperty(exports, '__esModule', { value: true });
     }
   });
 });
-;define('semantic-ui-ember/components/ui-progress', ['exports', 'ember', 'semantic-ui-ember/mixins/base'], function (exports, _ember, _semanticUiEmberMixinsBase) {
-  exports['default'] = _ember['default'].Component.extend(_semanticUiEmberMixinsBase['default'], {
+;define('semantic-ui-ember/components/ui-progress', ['exports', 'semantic-ui-ember/mixins/base'], function (exports, _base) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend(_base.default, {
     module: 'progress',
     classNames: ['ui', 'progress'],
     ignorableAttrs: ['progress']
   });
 });
-;define('semantic-ui-ember/components/ui-radio', ['exports', 'ember', 'semantic-ui-ember/mixins/checkbox', 'ember-promise-tools/utils/is-promise', 'ember-promise-tools/utils/is-fulfilled', 'ember-promise-tools/utils/get-promise-content', 'ember-promise-tools/mixins/promise-resolver'], function (exports, _ember, _semanticUiEmberMixinsCheckbox, _emberPromiseToolsUtilsIsPromise, _emberPromiseToolsUtilsIsFulfilled, _emberPromiseToolsUtilsGetPromiseContent, _emberPromiseToolsMixinsPromiseResolver) {
-  exports['default'] = _ember['default'].Component.extend(_semanticUiEmberMixinsCheckbox['default'], _emberPromiseToolsMixinsPromiseResolver['default'], {
+;define('semantic-ui-ember/components/ui-radio', ['exports', 'semantic-ui-ember/mixins/checkbox', 'ember-promise-tools/utils/is-promise', 'ember-promise-tools/utils/is-fulfilled', 'ember-promise-tools/utils/get-promise-content', 'ember-promise-tools/mixins/promise-resolver'], function (exports, _checkbox, _isPromise, _isFulfilled, _getPromiseContent, _promiseResolver) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend(_checkbox.default, _promiseResolver.default, {
     type: 'radio',
     classNames: ['radio'],
     ignorableAttrs: ['checked', 'label', 'disabled', 'value', 'current'],
@@ -116186,58 +124958,55 @@ Object.defineProperty(exports, '__esModule', { value: true });
     init: function init() {
       this._super.apply(this, arguments);
 
-      if (_ember['default'].isBlank(this.get('name'))) {
+      if (Ember.isBlank(this.get('name'))) {
         this.set('name', 'default');
-        _ember['default'].Logger.warn("The required component parameter of 'name' was not passed into the ui-radio component");
+        Ember.Logger.warn("The required component parameter of 'name' was not passed into the ui-radio component");
       }
     },
+
 
     // Internal wrapper for onchange, to pass through checked
     _onChange: function _onChange() {
       var value = this.get('value');
       return this.attrs.onChange(value, this);
     },
-
     didInitSemantic: function didInitSemantic() {
       this._super.apply(this, arguments);
       this._inspectValueAndCurrent();
     },
-
     didUpdateAttrs: function didUpdateAttrs() {
       this._super.apply(this, arguments);
       this._inspectValueAndCurrent();
     },
-
     _inspectValueAndCurrent: function _inspectValueAndCurrent() {
       var value = this.get('value');
       var current = this.get('current');
       // If either are a promise, we need to make sure both are resolved
       // Or wait for them to resolve
-      if ((0, _emberPromiseToolsUtilsIsPromise['default'])(value) || (0, _emberPromiseToolsUtilsIsPromise['default'])(current)) {
+      if ((0, _isPromise.default)(value) || (0, _isPromise.default)(current)) {
 
         // This code is probably overkill, but i wanted to ensure that
         // if the promises are resolved we render as soon as possible instead of waiting
         // for the hash to resolve each time
-        if ((0, _emberPromiseToolsUtilsIsPromise['default'])(value)) {
-          if (!(0, _emberPromiseToolsUtilsIsFulfilled['default'])(value)) {
-            return this.resolvePromise(_ember['default'].RSVP.hash({ value: value, current: current }), this._checkValueAndCurrent);
+        if ((0, _isPromise.default)(value)) {
+          if (!(0, _isFulfilled.default)(value)) {
+            return this.resolvePromise(Ember.RSVP.hash({ value: value, current: current }), this._checkValueAndCurrent);
           } else {
-            value = (0, _emberPromiseToolsUtilsGetPromiseContent['default'])(value);
+            value = (0, _getPromiseContent.default)(value);
           }
         }
 
-        if ((0, _emberPromiseToolsUtilsIsPromise['default'])(current)) {
-          if (!(0, _emberPromiseToolsUtilsIsFulfilled['default'])(current)) {
-            return this.resolvePromise(_ember['default'].RSVP.hash({ value: value, current: current }), this._checkValueAndCurrent);
+        if ((0, _isPromise.default)(current)) {
+          if (!(0, _isFulfilled.default)(current)) {
+            return this.resolvePromise(Ember.RSVP.hash({ value: value, current: current }), this._checkValueAndCurrent);
           } else {
-            current = (0, _emberPromiseToolsUtilsGetPromiseContent['default'])(current);
+            current = (0, _getPromiseContent.default)(current);
           }
         }
       }
       // If we didn't return, the promises are either fulfilled or not promises
       this._checkValueAndCurrent({ value: value, current: current });
     },
-
     _checkValueAndCurrent: function _checkValueAndCurrent(hash) {
       var isChecked = this.execute('is checked');
       if (this.areAttrValuesEqual('checked', hash.value, hash.current)) {
@@ -116254,8 +125023,13 @@ Object.defineProperty(exports, '__esModule', { value: true });
     }
   });
 });
-;define('semantic-ui-ember/components/ui-rating', ['exports', 'ember', 'semantic-ui-ember/mixins/base'], function (exports, _ember, _semanticUiEmberMixinsBase) {
-  exports['default'] = _ember['default'].Component.extend(_semanticUiEmberMixinsBase['default'], {
+;define('semantic-ui-ember/components/ui-rating', ['exports', 'semantic-ui-ember/mixins/base'], function (exports, _base) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend(_base.default, {
     module: 'rating',
     classNames: ['ui', 'rating'],
     ignorableAttrs: ['rating'],
@@ -116268,39 +125042,100 @@ Object.defineProperty(exports, '__esModule', { value: true });
     }
   });
 });
-;define('semantic-ui-ember/components/ui-search', ['exports', 'ember', 'semantic-ui-ember/mixins/base'], function (exports, _ember, _semanticUiEmberMixinsBase) {
-  exports['default'] = _ember['default'].Component.extend(_semanticUiEmberMixinsBase['default'], {
+;define('semantic-ui-ember/components/ui-search', ['exports', 'semantic-ui-ember/mixins/base'], function (exports, _base) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend(_base.default, {
     module: 'search',
     classNames: ['ui', 'search']
   });
 });
-;define('semantic-ui-ember/components/ui-shape', ['exports', 'ember', 'semantic-ui-ember/mixins/base'], function (exports, _ember, _semanticUiEmberMixinsBase) {
-  exports['default'] = _ember['default'].Component.extend(_semanticUiEmberMixinsBase['default'], {
+;define('semantic-ui-ember/components/ui-shape', ['exports', 'semantic-ui-ember/mixins/base'], function (exports, _base) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend(_base.default, {
     module: 'shape',
     classNames: ['ui', 'shape']
   });
 });
-;define('semantic-ui-ember/components/ui-sidebar', ['exports', 'ember', 'semantic-ui-ember/mixins/base'], function (exports, _ember, _semanticUiEmberMixinsBase) {
-  exports['default'] = _ember['default'].Component.extend(_semanticUiEmberMixinsBase['default'], {
+;define('semantic-ui-ember/components/ui-sidebar', ['exports', 'semantic-ui-ember/mixins/base'], function (exports, _base) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend(_base.default, {
     module: 'sidebar',
     classNames: ['ui', 'sidebar']
   });
 });
-;define('semantic-ui-ember/components/ui-sticky', ['exports', 'ember', 'semantic-ui-ember/mixins/base'], function (exports, _ember, _semanticUiEmberMixinsBase) {
-  exports['default'] = _ember['default'].Component.extend(_semanticUiEmberMixinsBase['default'], {
+;define('semantic-ui-ember/components/ui-sticky', ['exports', 'semantic-ui-ember/mixins/base'], function (exports, _base) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend(_base.default, {
     module: 'sticky',
     classNames: ['ui', 'sticky']
   });
 });
-;define('semantic-ui-ember/helpers/map-value', ['exports', 'ember', 'ember-promise-tools/mixins/promise-resolver'], function (exports, _ember, _emberPromiseToolsMixinsPromiseResolver) {
-  var _slicedToArray = (function () { function sliceIterator(arr, i) { var _arr = []; var _n = true; var _d = false; var _e = undefined; try { for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) { _arr.push(_s.value); if (i && _arr.length === i) break; } } catch (err) { _d = true; _e = err; } finally { try { if (!_n && _i['return']) _i['return'](); } finally { if (_d) throw _e; } } return _arr; } return function (arr, i) { if (Array.isArray(arr)) { return arr; } else if (Symbol.iterator in Object(arr)) { return sliceIterator(arr, i); } else { throw new TypeError('Invalid attempt to destructure non-iterable instance'); } }; })();
+;define('semantic-ui-ember/helpers/map-value', ['exports', 'ember-promise-tools/mixins/promise-resolver'], function (exports, _promiseResolver) {
+  'use strict';
 
-  exports['default'] = _ember['default'].Helper.extend(_emberPromiseToolsMixinsPromiseResolver['default'], {
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  var _slicedToArray = function () {
+    function sliceIterator(arr, i) {
+      var _arr = [];
+      var _n = true;
+      var _d = false;
+      var _e = undefined;
+
+      try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);
+
+          if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;
+        _e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"]) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }
+
+      return _arr;
+    }
+
+    return function (arr, i) {
+      if (Array.isArray(arr)) {
+        return arr;
+      } else if (Symbol.iterator in Object(arr)) {
+        return sliceIterator(arr, i);
+      } else {
+        throw new TypeError("Invalid attempt to destructure non-iterable instance");
+      }
+    };
+  }();
+
+  exports.default = Ember.Helper.extend(_promiseResolver.default, {
     compute: function compute(_ref) {
-      var _ref2 = _slicedToArray(_ref, 2);
-
-      var action = _ref2[0];
-      var maybePromise = _ref2[1];
+      var _ref2 = _slicedToArray(_ref, 2),
+          action = _ref2[0],
+          maybePromise = _ref2[1];
 
       return this.resolvePromise(maybePromise, function (value) {
         return action(value);
@@ -116311,13 +125146,24 @@ Object.defineProperty(exports, '__esModule', { value: true });
     }
   });
 });
-;define('semantic-ui-ember/mixins/base', ['exports', 'ember', 'semantic-ui-ember/semantic', 'ember-string-ishtmlsafe-polyfill'], function (exports, _ember, _semanticUiEmberSemantic, _emberStringIshtmlsafePolyfill) {
+;define('semantic-ui-ember/mixins/base', ['exports', 'semantic-ui-ember/semantic'], function (exports, _semantic) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  };
 
   var EMBER_ATTRS = ['class', 'classNameBindings', 'classNames', 'tagName'];
   var HTML_ATTRS = ['id', 'name', 'readonly', 'autofocus', 'tabindex', 'title'];
   var CUSTOM_ATTRS = ['onElement'];
 
-  _semanticUiEmberSemantic['default'].BaseMixin = _ember['default'].Mixin.create({
+  _semantic.default.BaseMixin = Ember.Mixin.create({
     /// Internal Variables
     _initialized: false,
     _bindableAttrs: null,
@@ -116326,26 +125172,24 @@ Object.defineProperty(exports, '__esModule', { value: true });
 
     attributeBindings: ['autofocus', 'tabindex', 'title'],
 
-    /// EMBER HOOKS
     init: function init() {
       this._super.apply(this, arguments);
 
-      if (_ember['default'].isBlank(this.getSemanticModuleName())) {
-        return _ember['default'].Logger.error('A module was not declared on semantic extended type');
+      if (Ember.isBlank(this.getSemanticModuleName())) {
+        return Ember.Logger.error('A module was not declared on semantic extended type');
       }
       this.set('_initialized', false);
-      this.set('_bindableAttrs', _ember['default'].A());
-      this.set('_settableAttrs', _ember['default'].A());
+      this.set('_bindableAttrs', Ember.A());
+      this.set('_settableAttrs', Ember.A());
       this.set('_ignorableAttrs', this.getSemanticIgnorableAttrs());
     },
-
     didInsertElement: function didInsertElement() {
       this._super.apply(this, arguments);
       this.initSemanticModule();
 
       // Get the modules settable and gettable properties.
-      var settableProperties = _ember['default'].A(Object.keys(this.execute('internal', 'set')));
-      var gettableProperties = _ember['default'].A(Object.keys(this.execute('internal', 'get')));
+      var settableProperties = Ember.A(Object.keys(this.execute('internal', 'set')));
+      var gettableProperties = Ember.A(Object.keys(this.execute('internal', 'get')));
 
       for (var key in this.get('attrs')) {
         // If it has a settable and gettable attribute, then its bindable
@@ -116359,12 +125203,10 @@ Object.defineProperty(exports, '__esModule', { value: true });
       this.didInitSemantic();
       this.set('_initialized', true);
     },
-
     willDestroyElement: function willDestroyElement() {
       this._super.apply(this, arguments);
       this.execute('destroy');
     },
-
     didUpdateAttrs: function didUpdateAttrs() {
       this._super.apply(this, arguments);
       for (var i = 0; i < this.get('_bindableAttrs').length; i++) {
@@ -116375,89 +125217,88 @@ Object.defineProperty(exports, '__esModule', { value: true });
           this.setSemanticAttr(bindableAttr, attrValue);
         }
       }
-      for (var i = 0; i < this.get('_settableAttrs').length; i++) {
-        var settableAttr = this.get('_settableAttrs')[i];
-        var attrValue = this._getAttrValue(settableAttr);
-        this.setSemanticAttr(settableAttr, attrValue);
+      for (var _i = 0; _i < this.get('_settableAttrs').length; _i++) {
+        var settableAttr = this.get('_settableAttrs')[_i];
+        var _attrValue = this._getAttrValue(settableAttr);
+        this.setSemanticAttr(settableAttr, _attrValue);
       }
     },
-
-    /// Semantic Hooks
     getSemanticIgnorableAttrs: function getSemanticIgnorableAttrs() {
       var ignorableAttrs = [];
-      if (_ember['default'].isPresent(this.get('ignorableAttrs'))) {
+      if (Ember.isPresent(this.get('ignorableAttrs'))) {
         ignorableAttrs = ignorableAttrs.concat(this.get('ignorableAttrs'));
       }
       ignorableAttrs = ignorableAttrs.concat(EMBER_ATTRS);
       ignorableAttrs = ignorableAttrs.concat(HTML_ATTRS);
       ignorableAttrs = ignorableAttrs.concat(CUSTOM_ATTRS);
-      return _ember['default'].A(ignorableAttrs);
+      return Ember.A(ignorableAttrs);
     },
-
     getSemanticScope: function getSemanticScope() {
-      if (_ember['default'].isPresent(this.get('onElement'))) {
+      if (Ember.isPresent(this.get('onElement'))) {
         return this.$(this.get('onElement'));
       }
       return this.$();
     },
-
     getSemanticModuleName: function getSemanticModuleName() {
       return this.get('module');
     },
-
     getSemanticModule: function getSemanticModule() {
+      if (this._isFastBoot()) {
+        return;
+      }
       var selector = this.getSemanticScope();
       if (selector != null) {
-        var _module2 = selector[this.getSemanticModuleName()];
-        if (typeof _module2 === 'function') {
-          return _module2;
+        var module = selector[this.getSemanticModuleName()];
+        if (typeof module === 'function') {
+          return module;
         }
       }
       return null;
     },
-
     getSemanticModuleGlobal: function getSemanticModuleGlobal() {
+      if (this._isFastBoot()) {
+        return;
+      }
       var moduleName = this.getSemanticModuleName();
-      return window.$.fn[moduleName];
+      return Ember.$.fn[moduleName];
     },
-
-    willInitSemantic: function willInitSemantic(settings) {// jshint ignore:line
+    willInitSemantic: function willInitSemantic(settings) {// eslint-disable-line no-unused-vars
       // Use this method to modify the settings object on inherited components, before module initialization
     },
-
     initSemanticModule: function initSemanticModule() {
+      if (this._isFastBoot()) {
+        return;
+      }
       var module = this.getSemanticModule();
       if (module) {
         module.call(this.getSemanticScope(), this._settings());
       } else {
-        _ember['default'].Logger.error('The Semantic UI module ' + this.getSemanticModuleName() + ' was not found and did not initialize');
+        Ember.Logger.error('The Semantic UI module ' + this.getSemanticModuleName() + ' was not found and did not initialize');
       }
     },
-
     didInitSemantic: function didInitSemantic() {
       // Use this method after the module is initialized to do post initialized changes
     },
-
     getSemanticAttr: function getSemanticAttr(attrName) {
       return this.execute('get ' + attrName);
     },
-
     setSemanticAttr: function setSemanticAttr(attrName, attrValue) {
       return this.execute('set ' + attrName, this._unwrapHTMLSafe(attrValue));
     },
-
     areAttrValuesEqual: function areAttrValuesEqual(attrName, attrValue, moduleValue) {
-      return attrValue === moduleValue || this._stringCompareIfPossible(attrValue) === this._stringCompareIfPossible(moduleValue) || _ember['default'].isEqual(attrValue, moduleValue);
+      return attrValue === moduleValue || this._stringCompareIfPossible(attrValue) === this._stringCompareIfPossible(moduleValue) || Ember.isEqual(attrValue, moduleValue);
     },
-
-    // Semantic Helper Methods
     execute: function execute() {
+      if (this._isFastBoot()) {
+        return;
+      }
       var module = this.getSemanticModule();
       if (module) {
         return module.apply(this.getSemanticScope(), arguments);
       }
-      _ember['default'].Logger.warn("The execute method was called, but the Semantic-UI module didn't exist.");
+      Ember.Logger.warn("The execute method was called, but the Semantic-UI module didn't exist.");
     },
+
 
     actions: {
       execute: function execute() {
@@ -116465,47 +125306,45 @@ Object.defineProperty(exports, '__esModule', { value: true });
       }
     },
 
-    // Private Methods
     _getAttrValue: function _getAttrValue(name) {
       var value = this.get('attrs.' + name);
 
-      if (_ember['default'].isBlank(value)) {
+      if (Ember.isBlank(value)) {
         return value;
       }
 
       // if its a mutable object, get the actual value
-      if (typeof value === 'object') {
-        var objectKeys = _ember['default'].A(Object.keys(value));
+      if ((typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object') {
+        var objectKeys = Ember.A(Object.keys(value));
         if (objectKeys.any(function (objectkey) {
           return objectkey.indexOf('MUTABLE_CELL') >= 0;
         })) {
-          value = _ember['default'].get(value, 'value');
+          value = Ember.get(value, 'value');
         }
       }
 
       return value;
     },
-
     _settings: function _settings() {
       var moduleName = this.getSemanticModuleName();
 
       var moduleGlobal = this.getSemanticModuleGlobal();
       if (!moduleGlobal) {
-        _ember['default'].Logger.error('Unable to find jQuery Semantic UI module: ' + moduleName);
+        Ember.Logger.error('Unable to find jQuery Semantic UI module: ' + moduleName);
         return;
       }
 
       var custom = {
-        debug: _semanticUiEmberSemantic['default'].UI_DEBUG,
-        performance: _semanticUiEmberSemantic['default'].UI_PERFORMANCE,
-        verbose: _semanticUiEmberSemantic['default'].UI_VERBOSE
+        debug: _semantic.default.UI_DEBUG,
+        performance: _semantic.default.UI_PERFORMANCE,
+        verbose: _semantic.default.UI_VERBOSE
       };
 
       for (var key in this.get('attrs')) {
         var value = this._getAttrValue(key);
 
         if (!this._hasOwnProperty(moduleGlobal.settings, key)) {
-          if (!this.get('_ignorableAttrs').includes(key) && !this.get('_ignorableAttrs').includes(_ember['default'].String.camelize(key))) {
+          if (!this.get('_ignorableAttrs').includes(key) && !this.get('_ignorableAttrs').includes(Ember.String.camelize(key))) {
             // TODO: Add better ember keys here
             // Ember.Logger.debug(`You passed in the property '${key}', but a setting doesn't exist on the Semantic UI module: ${moduleName}`);
           }
@@ -116521,21 +125360,20 @@ Object.defineProperty(exports, '__esModule', { value: true });
       this.willInitSemantic(custom);
 
       // Late bind any functions over to use the right scope
-      for (var key in custom) {
-        var value = custom[key];
-        if (typeof value === 'function') {
-          custom[key] = _ember['default'].run.bind(this, this._updateFunctionWithParameters(key, value));
+      for (var _key in custom) {
+        var _value = custom[_key];
+        if (typeof _value === 'function') {
+          custom[_key] = Ember.run.bind(this, this._updateFunctionWithParameters(_key, _value));
         }
-        if (typeof value === 'object') {
-          if ((0, _emberStringIshtmlsafePolyfill['default'])(value)) {
-            custom[key] = this._unwrapHTMLSafe(value);
+        if ((typeof _value === 'undefined' ? 'undefined' : _typeof(_value)) === 'object') {
+          if (Ember.String.isHTMLSafe(_value)) {
+            custom[_key] = this._unwrapHTMLSafe(_value);
           }
         }
       }
 
       return custom;
     },
-
     _updateFunctionWithParameters: function _updateFunctionWithParameters(key, fn) {
       return function () {
         var args = [].splice.call(arguments, 0);
@@ -116547,14 +125385,13 @@ Object.defineProperty(exports, '__esModule', { value: true });
         }
       };
     },
-
     _stringCompareIfPossible: function _stringCompareIfPossible(value) {
       // If its undefined or null, compare on null
       if (value == null) {
         return null;
       }
       // We should only compare string values on primitive types
-      switch (typeof value) {
+      switch (typeof value === 'undefined' ? 'undefined' : _typeof(value)) {
         case "string":
           return value;
         case "boolean":
@@ -116567,21 +125404,18 @@ Object.defineProperty(exports, '__esModule', { value: true });
           return value;
       }
     },
-
     _setAttrBindable: function _setAttrBindable(attrName) {
       if (this.get('_settableAttrs').includes(attrName)) {
         this.get('_settableAttrs').removeObject(attrName);
         this.get('_bindableAttrs').addObject(attrName);
       }
     },
-
     _unwrapHTMLSafe: function _unwrapHTMLSafe(value) {
-      if ((0, _emberStringIshtmlsafePolyfill['default'])(value)) {
+      if (Ember.String.isHTMLSafe(value)) {
         return value.toString();
       }
       return value;
     },
-
     _hasOwnProperty: function _hasOwnProperty(object, property) {
       if (object) {
         if (object.hasOwnProperty && typeof object.hasOwnProperty === "function") {
@@ -116592,21 +125426,37 @@ Object.defineProperty(exports, '__esModule', { value: true });
       }
 
       return false;
+    },
+    _isFastBoot: function _isFastBoot() {
+      var owner = Ember.getOwner(this);
+      var fastboot = owner.lookup('service:fastboot');
+      return fastboot && fastboot.get('isFastBoot');
     }
   });
 
-  exports['default'] = _semanticUiEmberSemantic['default'].BaseMixin;
+  exports.default = _semantic.default.BaseMixin;
 });
-;define('semantic-ui-ember/mixins/checkbox', ['exports', 'ember', 'semantic-ui-ember/mixins/base'], function (exports, _ember, _semanticUiEmberMixinsBase) {
+;define('semantic-ui-ember/mixins/checkbox', ['exports', 'semantic-ui-ember/mixins/base'], function (exports, _base) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
 
   /*
    * Checkbox Component Mixin
    */
-  var CheckboxMixin = _ember['default'].Mixin.create(_semanticUiEmberMixinsBase['default'], {
+  var CheckboxMixin = Ember.Mixin.create(_base.default, {
     module: 'checkbox',
     classNames: ['ui', 'checkbox'],
 
     willInitSemantic: function willInitSemantic(settings) {
+      var owner = Ember.getOwner(this);
+      var fastboot = owner.lookup('service:fastboot');
+      if (fastboot && fastboot.get('isFastBoot')) {
+        return;
+      }
       this._super.apply(this, arguments);
       if (settings.onChange) {
         // Checkbox and radio both have an implementation for this
@@ -116616,7 +125466,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
         this.$().toggleClass('read-only', this.get('readonly'));
       }
     },
-
     didInitSemantic: function didInitSemantic() {
       this._super.apply(this, arguments);
       // We need to fake that its bindable for checked and disabled
@@ -116637,7 +125486,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
         this.setSemanticAttr('enabled', this.get('enabled'));
       }
     },
-
     getSemanticAttr: function getSemanticAttr(attrName) {
       if (attrName === 'checked') {
         return this.execute('is checked');
@@ -116650,7 +125498,6 @@ Object.defineProperty(exports, '__esModule', { value: true });
       }
       return this._super.apply(this, arguments);
     },
-
     setSemanticAttr: function setSemanticAttr(attrName, attrValue) {
       // Handle checked
       if (attrName === 'checked') {
@@ -116683,17 +125530,23 @@ Object.defineProperty(exports, '__esModule', { value: true });
     }
   });
 
-  exports['default'] = CheckboxMixin;
+  exports.default = CheckboxMixin;
 });
-;define('semantic-ui-ember/semantic', ['exports', 'ember'], function (exports, _ember) {
+;define('semantic-ui-ember/semantic', ['exports'], function (exports) {
+  'use strict';
 
-  var Semantic = _ember['default'].Namespace.create({
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+
+  var Semantic = Ember.Namespace.create({
     UI_DEBUG: false,
     UI_PERFORMANCE: false,
     UI_VERBOSE: false
   });
 
-  exports['default'] = Semantic;
+  exports.default = Semantic;
 });
 ;define('ui-slider/components/range-slider', ['exports', 'ember', 'ui-slider/templates/components/ui-slider', 'ui-slider/components/ui-slider'], function (exports, _ember, _uiSliderTemplatesComponentsUiSlider, _uiSliderComponentsUiSlider) {
   exports['default'] = _uiSliderComponentsUiSlider['default'].extend({
@@ -117124,4 +125977,3 @@ Object.defineProperty(exports, '__esModule', { value: true });
 });
 ;
 //# sourceMappingURL=vendor.map
-});
