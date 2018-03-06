@@ -20,23 +20,6 @@
       </select>
     </p>
 
-
-
-
-    <div class="icon">
-      <label class="cd-label">Reason</label>
-      {{input class="star" type="text" value = Reason}}
-    </div>
-    <div class="icon">
-      <label class="cd-label">Other</label>
-      {{input  class="user" type="text" value = Other}}
-    </div>
-
-    <div class="icon">
-      <label class="cd-label">Date</label>
-      <input class="date" type="date" value={{selectedDate}}  onchange={{action 'assignDate' value="target.value"}}>
-    </div>
-
     <div>
       <div class="cd-button">
         <input type="submit" value="Submit">
@@ -82,11 +65,15 @@
           <div class="top-info"><span>{{date}}</span></div>
 
           <ul>
-            <li class="single-event" data-start="09:30" data-end="10:30" data-content="event-abs-circuit" data-event="event-1">
-              <a href="#0">
-                <em class="event-name">Abs Circuit</em>
-              </a>
-            </li>
+            {{#each blocks as |b|}}
+              {{#if (compare date b.date)}}
+              <li class="single-event" data-start={{b.datastart}} data-end={{b.dataend}} data-content="Open" data-event={{b.dataevent}}>
+                <a href= '#0'{{action 'openModal' b}}>
+                  <em class="event-name">Open</em>
+                </a>
+              </li>
+              {{/if}}
+           {{/each}}
           </ul>
         </li>
       {{/each}}
@@ -119,3 +106,38 @@
   </button>
 
 {{/if}}
+
+{{#ui-modal name= modalName class= modalName}}
+  <form class="cd-form floating-labels" {{action "saveappointment" on="submit"}}>
+    <br><br>
+    <fieldset>
+      <legend>Book Appointment</legend>
+      <label class="cd-label"> Physiotherapist</label>
+      <p>{{phyidget.familyName}} {{phyidget.givenName}}</p>
+
+
+      <div class="icon">
+        <label class="cd-label">Reason</label>
+        {{input class="star" type="text" value = Reason}}
+      </div>
+      <div class="icon">
+        <label class="cd-label">Other</label>
+        {{input  class="user" type="text" value = Other}}
+      </div>
+
+      <div class="icon">
+        <label class="cd-label">Date</label>
+        <p>{{selectedappointment.fulldate}}</p>
+      </div>
+
+      <div>
+        <div class="cd-button">
+          <input type="submit" value="Submit">
+        </div>
+
+        <button class="ui fluid negative button" >Cancel</button>
+      </div>
+    </fieldset>
+
+  </form>
+{{/ui-modal}}

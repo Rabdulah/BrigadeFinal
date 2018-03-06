@@ -175,7 +175,7 @@ Main Components
 
 @media only screen and (min-width: 550px) {
   .cd-schedule .events .single-event {
-    width: 40%;
+    width: 20%;
   }
 }
 
@@ -185,7 +185,7 @@ Main Components
     width: 100%;
   }
   .cd-schedule .events .events-group {
-    width: 14%;
+    width: 14.2857142857%;
     float: left;
     border: 1px solid #EAEAEA;
     /* reset style */
@@ -299,7 +299,7 @@ Main Components
 .cd-schedule .single-event[data-event="event-1"],
 .cd-schedule [data-event="event-1"] .header-bg {
   /* this is used to set a background color for the event and the modal window */
-  background: #577F92;
+  background: #FF0000;
 }
 
 .cd-schedule .single-event[data-event="event-1"]:hover {
@@ -308,16 +308,16 @@ Main Components
 
 .cd-schedule .single-event[data-event="event-2"],
 .cd-schedule [data-event="event-2"] .header-bg {
-  background: #443453;
+  background: #FF4500;
 }
 
 .cd-schedule .single-event[data-event="event-2"]:hover {
-  background: #513e63;
+  background: #FFA500;
 }
 
 .cd-schedule .single-event[data-event="event-3"],
 .cd-schedule [data-event="event-3"] .header-bg {
-  background: #A2B9B2;
+  background: #4169E1;
 }
 
 .cd-schedule .single-event[data-event="event-3"]:hover {

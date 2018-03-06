@@ -7,8 +7,19 @@ export default Component.extend({
   DS: inject('store'),
   routing: inject('-routing'),
   selectedphysio : null,
+  physios: null,
   appointments_filter: null,
   isEditing: false,
+  event : "event-1",
+
+  availablespot: [],
+
+
+
+  dragFinishText: false,
+  dragStartedText: false,
+  dragEndedText: false,
+  myObject:{id:1, name:'objectName'},
 
 
   weekdate: [],
@@ -26,30 +37,23 @@ export default Component.extend({
       result.setDate(d.getDate()+i);
       this.get('weekdate')[i+1] = result.toDateString();
     }
+    this.functionA();
   },
 
   getphysio: computed(function(){
     return this.get('DS').findAll('physiotherapist');
   }),
-
-  // selectedphysio: computed(function () {
-  //   return this.get('selectedphysio').then(function (physio){
-  //     physio.get('appointments').filter(function(item){
-  //       let schedule  = item.get('date');
-  //       let cur_time = new Date();
-  //       console.log(cur_time);
-  //       return schedule > cur_time;
-  //     });
-  //   });
-  //
-  // }),
-
   didRender() {
-    $(document).ready(function ($) {
+    this.functionA();
+  },
+  functionA() {
       var transitionEnd = 'webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend';
       var transitionsSupported = ($('.csstransitions').length > 0);
+
+
       //if browser does not support transitions - use a different event to trigger them
-      if (!transitionsSupported) transitionEnd = 'noTransition';
+      if (!transitionsSupported)
+        transitionEnd = 'noTransition';
 
       //should add a loding while the events are organized
 
@@ -67,14 +71,6 @@ export default Component.extend({
         this.singleEvents = this.eventsGroup.find('.single-event');
         this.eventSlotHeight = this.eventsGroup.eq(0).children('.top-info').outerHeight();
 
-        this.modal = this.element.find('.event-modal');
-        this.modalHeader = this.modal.find('.header');
-        this.modalHeaderBg = this.modal.find('.header-bg');
-        this.modalBody = this.modal.find('.body');
-        this.modalBodyBg = this.modal.find('.body-bg');
-        this.modalMaxWidth = 800;
-        this.modalMaxHeight = 480;
-
         this.animating = false;
 
         this.initSchedule();
@@ -82,7 +78,7 @@ export default Component.extend({
 
       SchedulePlan.prototype.initSchedule = function () {
         this.scheduleReset();
-        this.initEvents();
+        //this.initEvents();
       };
 
       SchedulePlan.prototype.scheduleReset = function () {
@@ -92,46 +88,29 @@ export default Component.extend({
           this.eventSlotHeight = this.eventsGroup.eq(0).children('.top-info').outerHeight();
           this.element.addClass('js-full');
           this.placeEvents();
-          this.element.hasClass('modal-is-open') && this.checkEventModal();
-        } else if (mq == 'mobile' && this.element.hasClass('js-full')) {
+          // this.element.hasClass('modal-is-open') && this.checkEventModal();
+        }
+        else if (mq == 'mobile' && this.element.hasClass('js-full')) {
           //in this case you are on a mobile version (first load or resize from desktop)
           this.element.removeClass('js-full loading');
           this.eventsGroup.children('ul').add(this.singleEvents).removeAttr('style');
           this.eventsWrapper.children('.grid-line').remove();
-          this.element.hasClass('modal-is-open') && this.checkEventModal();
-        } else if (mq == 'desktop' && this.element.hasClass('modal-is-open')) {
-          //on a mobile version with modal open - need to resize/move modal window
-          this.checkEventModal('desktop');
-          this.element.removeClass('loading');
-        } else {
+        }
+
+        else {
           this.element.removeClass('loading');
         }
       };
 
-      SchedulePlan.prototype.initEvents = function () {
-        var self = this;
-
-        this.singleEvents.each(function () {
-          //create the .event-date element for each event
-          var durationLabel = '<span class="event-date">' + $(this).data('start') + ' - ' + $(this).data('end') + '</span>';
-          $(this).children('a').prepend($(durationLabel));
-
-          //detect click on the event and open the modal
-          // $(this).on('click', 'a', function (event) {
-          //   event.preventDefault();
-          //   if (!self.animating) self.openModal($(this));
-          // });
-        });
-
-        //close modal window
-        // this.modal.on('click', '.close', function (event) {
-        //   event.preventDefault();
-        //   if (!self.animating) self.closeModal(self.eventsGroup.find('.selected-event'));
-        // });
-        // this.element.on('click', '.cover-layer', function (event) {
-        //   if (!self.animating && self.element.hasClass('modal-is-open')) self.closeModal(self.eventsGroup.find('.selected-event'));
-        // });
-      };
+      // SchedulePlan.prototype.initEvents = function () {
+      //   var self = this;
+      //     this.singleEvents.each(function () {
+      //       var durationLabel = '<span class="event-date">' + $(this).data('start') + ' - ' + $(this).data('end') + '</span>';
+      //       $(this).children('a').prepend($(durationLabel));
+      //     });
+      //
+      //
+      // };
 
       SchedulePlan.prototype.placeEvents = function () {
         var self = this;
@@ -152,228 +131,11 @@ export default Component.extend({
         this.element.removeClass('loading');
       };
 
-      // SchedulePlan.prototype.openModal = function (event) {
-      //   var self = this;
-      //   var mq = self.mq();
-      //   this.animating = true;
-      //
-      //   //update event name and time
-      //   this.modalHeader.find('.event-name').text(event.find('.event-name').text());
-      //   this.modalHeader.find('.event-date').text(event.find('.event-date').text());
-      //   this.modal.attr('data-event', event.parent().attr('data-event'));
-      //
-      //   //update event content
-      //   this.modalBody.find('.event-info').load(event.parent().attr('data-content') + '.html .event-info > *', function (data) {
-      //     //once the event content has been loaded
-      //     self.element.addClass('content-loaded');
-      //   });
-      //
-      //   this.element.addClass('modal-is-open');
-      //
-      //   setTimeout(function () {
-      //     //fixes a flash when an event is selected - desktop version only
-      //     event.parent('li').addClass('selected-event');
-      //   }, 10);
-      //
-      //   if (mq == 'mobile') {
-      //     self.modal.one(transitionEnd, function () {
-      //       self.modal.off(transitionEnd);
-      //       self.animating = false;
-      //     });
-      //   } else {
-      //     var eventTop = event.offset().top - $(window).scrollTop(),
-      //       eventLeft = event.offset().left,
-      //       eventHeight = event.innerHeight(),
-      //       eventWidth = event.innerWidth();
-      //
-      //     var windowWidth = $(window).width(),
-      //       windowHeight = $(window).height();
-      //
-      //     var modalWidth = (windowWidth * .8 > self.modalMaxWidth) ? self.modalMaxWidth : windowWidth * .8,
-      //       modalHeight = (windowHeight * .8 > self.modalMaxHeight) ? self.modalMaxHeight : windowHeight * .8;
-      //
-      //     var modalTranslateX = parseInt((windowWidth - modalWidth) / 2 - eventLeft),
-      //       modalTranslateY = parseInt((windowHeight - modalHeight) / 2 - eventTop);
-      //
-      //     var HeaderBgScaleY = modalHeight / eventHeight,
-      //       BodyBgScaleX = (modalWidth - eventWidth);
-      //
-      //     //change modal height/width and translate it
-      //     self.modal.css({
-      //       top: eventTop + 'px',
-      //       left: eventLeft + 'px',
-      //       height: modalHeight + 'px',
-      //       width: modalWidth + 'px',
-      //     });
-      //     transformElement(self.modal, 'translateY(' + modalTranslateY + 'px) translateX(' + modalTranslateX + 'px)');
-      //
-      //     //set modalHeader width
-      //     self.modalHeader.css({
-      //       width: eventWidth + 'px',
-      //     });
-      //     //set modalBody left margin
-      //     self.modalBody.css({
-      //       marginLeft: eventWidth + 'px',
-      //     });
-      //
-      //     //change modalBodyBg height/width ans scale it
-      //     self.modalBodyBg.css({
-      //       height: eventHeight + 'px',
-      //       width: '1px',
-      //     });
-      //     transformElement(self.modalBodyBg, 'scaleY(' + HeaderBgScaleY + ') scaleX(' + BodyBgScaleX + ')');
-      //
-      //     //change modal modalHeaderBg height/width and scale it
-      //     self.modalHeaderBg.css({
-      //       height: eventHeight + 'px',
-      //       width: eventWidth + 'px',
-      //     });
-      //     transformElement(self.modalHeaderBg, 'scaleY(' + HeaderBgScaleY + ')');
-      //
-      //     self.modalHeaderBg.one(transitionEnd, function () {
-      //       //wait for the  end of the modalHeaderBg transformation and show the modal content
-      //       self.modalHeaderBg.off(transitionEnd);
-      //       self.animating = false;
-      //       self.element.addClass('animation-completed');
-      //     });
-      //   }
-      //
-      //   //if browser do not support transitions -> no need to wait for the end of it
-      //   if (!transitionsSupported) self.modal.add(self.modalHeaderBg).trigger(transitionEnd);
-      // };
-      //
-      // SchedulePlan.prototype.closeModal = function (event) {
-      //   var self = this;
-      //   var mq = self.mq();
-      //
-      //   this.animating = true;
-      //
-      //   if (mq == 'mobile') {
-      //     this.element.removeClass('modal-is-open');
-      //     this.modal.one(transitionEnd, function () {
-      //       self.modal.off(transitionEnd);
-      //       self.animating = false;
-      //       self.element.removeClass('content-loaded');
-      //       event.removeClass('selected-event');
-      //     });
-      //   } else {
-      //     var eventTop = event.offset().top - $(window).scrollTop(),
-      //       eventLeft = event.offset().left,
-      //       eventHeight = event.innerHeight(),
-      //       eventWidth = event.innerWidth();
-      //
-      //     var modalTop = Number(self.modal.css('top').replace('px', '')),
-      //       modalLeft = Number(self.modal.css('left').replace('px', ''));
-      //
-      //     var modalTranslateX = eventLeft - modalLeft,
-      //       modalTranslateY = eventTop - modalTop;
-      //
-      //     self.element.removeClass('animation-completed modal-is-open');
-      //
-      //     //change modal width/height and translate it
-      //     this.modal.css({
-      //       width: eventWidth + 'px',
-      //       height: eventHeight + 'px'
-      //     });
-      //     transformElement(self.modal, 'translateX(' + modalTranslateX + 'px) translateY(' + modalTranslateY + 'px)');
-      //
-      //     //scale down modalBodyBg element
-      //     transformElement(self.modalBodyBg, 'scaleX(0) scaleY(1)');
-      //     //scale down modalHeaderBg element
-      //     transformElement(self.modalHeaderBg, 'scaleY(1)');
-      //
-      //     this.modalHeaderBg.one(transitionEnd, function () {
-      //       //wait for the  end of the modalHeaderBg transformation and reset modal style
-      //       self.modalHeaderBg.off(transitionEnd);
-      //       self.modal.addClass('no-transition');
-      //       setTimeout(function () {
-      //         self.modal.add(self.modalHeader).add(self.modalBody).add(self.modalHeaderBg).add(self.modalBodyBg).attr('style', '');
-      //       }, 10);
-      //       setTimeout(function () {
-      //         self.modal.removeClass('no-transition');
-      //       }, 20);
-      //
-      //       self.animating = false;
-      //       self.element.removeClass('content-loaded');
-      //       event.removeClass('selected-event');
-      //     });
-      //   }
-      //
-      //   //browser do not support transitions -> no need to wait for the end of it
-      //   if (!transitionsSupported) self.modal.add(self.modalHeaderBg).trigger(transitionEnd);
-      // }
-
       SchedulePlan.prototype.mq = function () {
         //get MQ value ('desktop' or 'mobile')
         var self = this;
         return window.getComputedStyle(this.element.get(0), '::before').getPropertyValue('content').replace(/["']/g, '');
       };
-      //
-      // SchedulePlan.prototype.checkEventModal = function (device) {
-      //   this.animating = true;
-      //   var self = this;
-      //   var mq = this.mq();
-      //
-      //   if (mq == 'mobile') {
-      //     //reset modal style on mobile
-      //     self.modal.add(self.modalHeader).add(self.modalHeaderBg).add(self.modalBody).add(self.modalBodyBg).attr('style', '');
-      //     self.modal.removeClass('no-transition');
-      //     self.animating = false;
-      //   } else if (mq == 'desktop' && self.element.hasClass('modal-is-open')) {
-      //     self.modal.addClass('no-transition');
-      //     self.element.addClass('animation-completed');
-      //     var event = self.eventsGroup.find('.selected-event');
-      //
-      //     var eventTop = event.offset().top - $(window).scrollTop(),
-      //       eventLeft = event.offset().left,
-      //       eventHeight = event.innerHeight(),
-      //       eventWidth = event.innerWidth();
-      //
-      //     var windowWidth = $(window).width(),
-      //       windowHeight = $(window).height();
-      //
-      //     var modalWidth = (windowWidth * .8 > self.modalMaxWidth) ? self.modalMaxWidth : windowWidth * .8,
-      //       modalHeight = (windowHeight * .8 > self.modalMaxHeight) ? self.modalMaxHeight : windowHeight * .8;
-      //
-      //     var HeaderBgScaleY = modalHeight / eventHeight,
-      //       BodyBgScaleX = (modalWidth - eventWidth);
-      //
-      //     setTimeout(function () {
-      //       self.modal.css({
-      //         width: modalWidth + 'px',
-      //         height: modalHeight + 'px',
-      //         top: (windowHeight / 2 - modalHeight / 2) + 'px',
-      //         left: (windowWidth / 2 - modalWidth / 2) + 'px',
-      //       });
-      //       transformElement(self.modal, 'translateY(0) translateX(0)');
-      //       //change modal modalBodyBg height/width
-      //       self.modalBodyBg.css({
-      //         height: modalHeight + 'px',
-      //         width: '1px',
-      //       });
-      //       transformElement(self.modalBodyBg, 'scaleX(' + BodyBgScaleX + ')');
-      //       //set modalHeader width
-      //       self.modalHeader.css({
-      //         width: eventWidth + 'px',
-      //       });
-      //       //set modalBody left margin
-      //       self.modalBody.css({
-      //         marginLeft: eventWidth + 'px',
-      //       });
-      //       //change modal modalHeaderBg height/width and scale it
-      //       self.modalHeaderBg.css({
-      //         height: eventHeight + 'px',
-      //         width: eventWidth + 'px',
-      //       });
-      //       transformElement(self.modalHeaderBg, 'scaleY(' + HeaderBgScaleY + ')');
-      //     }, 10);
-      //
-      //     setTimeout(function () {
-      //       self.modal.removeClass('no-transition');
-      //       self.animating = false;
-      //     }, 20);
-      //   }
-      // };
 
       var schedules = $('.cd-schedule');
       var objSchedulesPlan = [],
@@ -425,7 +187,6 @@ export default Component.extend({
           'transform': value
         });
       }
-    })
   },
 
 
@@ -435,6 +196,7 @@ export default Component.extend({
     },
 
     updateValue(physio){
+      this.set('physios', physio);
       this.set('selectedphysio', this.get('DS').peekRecord('physiotherapist', physio));
       //get associated physiotherapist schedule
       let container = this.get('selectedphysio').get('appointments').filter(function(item){
@@ -472,6 +234,7 @@ export default Component.extend({
         newcont[counter++] = result.toDateString();
       });
       this.get('weekdate').replace(0,7,newcont);
+
     },
     next() {
       let newcont =[];
@@ -482,6 +245,49 @@ export default Component.extend({
         newcont[counter++] = result.toDateString();
       });
       this.get('weekdate').replace(0,7,newcont);
+
+    },
+
+    setslot(slot, date){
+      let d = new Date(date);
+      switch (slot){
+        case 1:
+          d.setHours(9,30);
+          break;
+        case 2:
+          d.setHours(12,0);
+          break;
+        case 3:
+          d.setHours(13,30);
+          break;
+        case 4:
+          d.setHours(15,0);
+          break;
+      }
+      let booking = this.get('DS').createRecord('appointment', {
+        date: d.toISOString(),
+      });
+      this.set('event', "event-3");
+
+      this.get('availablespot').push(booking);
+    },
+
+    save(){
+      let self = this;
+      let physio = self.get('physios');
+
+      console.log(physio);
+      this.get('DS').find('physiotherapist',physio).then(function (a) {
+        self.get('availablespot').forEach(function (e) {
+          e.save().then(()=>{
+            a.get('appointments').pushObject(e);
+            a.save();
+          });
+
+        });
+
+      });
+
     },
   },
 

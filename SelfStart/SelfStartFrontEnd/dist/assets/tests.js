@@ -77,7 +77,12 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/book-appointment.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/book-appointment.js should pass ESLint\n\n36:11 - \'transitionEnd\' is assigned a value but never used. (no-unused-vars)\n99:13 - \'self\' is assigned a value but never used. (no-unused-vars)\n295:13 - \'self\' is assigned a value but never used. (no-unused-vars)\n406:16 - \'transformElement\' is defined but never used. (no-unused-vars)\n470:7 - Unexpected console statement. (no-console)\n481:11 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/book-appointment.js should pass ESLint\n\n61:11 - \'transitionEnd\' is assigned a value but never used. (no-unused-vars)\n124:13 - \'self\' is assigned a value but never used. (no-unused-vars)\n320:13 - \'self\' is assigned a value but never used. (no-unused-vars)\n431:16 - \'transformElement\' is defined but never used. (no-unused-vars)\n447:7 - Unexpected console statement. (no-console)\n450:11 - \'client\' is assigned a value but never used. (no-unused-vars)\n453:7 - Unexpected console statement. (no-console)\n557:7 - Unexpected console statement. (no-console)\n568:11 - Unexpected console statement. (no-console)\n611:7 - Unexpected console statement. (no-console)\n622:7 - Unexpected console statement. (no-console)\n625:7 - Unexpected console statement. (no-console)');
+  });
+
+  QUnit.test('components/confirm-booking.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/confirm-booking.js should pass ESLint\n\n26:41 - \'qid\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/delete-country.js', function (assert) {
@@ -212,7 +217,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/view-schedule.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/view-schedule.js should pass ESLint\n\n49:11 - \'transitionEnd\' is assigned a value but never used. (no-unused-vars)\n112:13 - \'self\' is assigned a value but never used. (no-unused-vars)\n308:13 - \'self\' is assigned a value but never used. (no-unused-vars)\n419:16 - \'transformElement\' is defined but never used. (no-unused-vars)\n451:7 - Unexpected console statement. (no-console)\n456:9 - Unexpected console statement. (no-console)\n457:9 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/view-schedule.js should pass ESLint\n\n50:11 - \'transitionEnd\' is assigned a value but never used. (no-unused-vars)\n136:13 - \'self\' is assigned a value but never used. (no-unused-vars)\n181:16 - \'transformElement\' is defined but never used. (no-unused-vars)\n213:7 - Unexpected console statement. (no-console)\n218:9 - Unexpected console statement. (no-console)\n219:9 - Unexpected console statement. (no-console)\n279:7 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/welcome-page.js', function (assert) {
@@ -228,6 +233,16 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('controllers/rehabplans.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'controllers/rehabplans.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('helpers/compare.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'helpers/compare.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('helpers/indexpicker.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'helpers/indexpicker.js should pass ESLint\n\n');
   });
 
   QUnit.test('initializers/responsive.js', function (assert) {
@@ -435,6 +450,56 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'utils/file-object.js should pass ESLint\n\n');
   });
 });
+define('self-start-front-end/tests/helpers/data-transfer', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+
+  var c = Ember.Object.extend({
+    getData: function getData() {
+      return this.get('payload');
+    },
+
+    setData: function setData(dataType, payload) {
+      this.set("data", { dataType: dataType, payload: payload });
+    }
+  });
+
+  c.reopenClass({
+    makeMockEvent: function makeMockEvent(payload) {
+      var transfer = this.create({ payload: payload });
+      var res = { dataTransfer: transfer };
+      res.originalEvent = res;
+      res.originalEvent.preventDefault = function () {
+        console.log('prevent default');
+      };
+      res.originalEvent.stopPropagation = function () {
+        console.log('stop propagation');
+      };
+      return res;
+    },
+
+    createDomEvent: function createDomEvent(type) {
+      var event = document.createEvent("CustomEvent");
+      event.initCustomEvent(type, true, true, null);
+      event.dataTransfer = {
+        data: {},
+        setData: function setData(type, val) {
+          this.data[type] = val;
+        },
+        getData: function getData(type) {
+          return this.data[type];
+        }
+      };
+      return event;
+    }
+  });
+
+  exports.default = c;
+});
 define('self-start-front-end/tests/helpers/destroy-app', ['exports'], function (exports) {
   'use strict';
 
@@ -444,6 +509,397 @@ define('self-start-front-end/tests/helpers/destroy-app', ['exports'], function (
   exports.default = destroyApp;
   function destroyApp(application) {
     Ember.run(application, 'destroy');
+  }
+});
+define('self-start-front-end/tests/helpers/drag-drop', ['exports', 'ember-native-dom-helpers', 'self-start-front-end/tests/helpers/mock-event'], function (exports, _emberNativeDomHelpers, _mockEvent) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.drag = undefined;
+
+  var _slicedToArray = function () {
+    function sliceIterator(arr, i) {
+      var _arr = [];
+      var _n = true;
+      var _d = false;
+      var _e = undefined;
+
+      try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);
+
+          if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;
+        _e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"]) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }
+
+      return _arr;
+    }
+
+    return function (arr, i) {
+      if (Array.isArray(arr)) {
+        return arr;
+      } else if (Symbol.iterator in Object(arr)) {
+        return sliceIterator(arr, i);
+      } else {
+        throw new TypeError("Invalid attempt to destructure non-iterable instance");
+      }
+    };
+  }();
+
+  function _asyncToGenerator(fn) {
+    return function () {
+      var gen = fn.apply(this, arguments);
+      return new Promise(function (resolve, reject) {
+        function step(key, arg) {
+          try {
+            var info = gen[key](arg);
+            var value = info.value;
+          } catch (error) {
+            reject(error);
+            return;
+          }
+
+          if (info.done) {
+            resolve(value);
+          } else {
+            return Promise.resolve(value).then(function (value) {
+              step("next", value);
+            }, function (err) {
+              step("throw", err);
+            });
+          }
+        }
+
+        return step("next");
+      });
+    };
+  }
+
+  var dragOver = function () {
+    var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(dropSelector, moves) {
+      var _this = this;
+
+      return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              moves = moves || [[{ clientX: 1, clientY: 1 }, dropSelector]];
+              return _context2.abrupt('return', moves.forEach(function () {
+                var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(_ref2) {
+                  var _ref4 = _slicedToArray(_ref2, 2),
+                      position = _ref4[0],
+                      selector = _ref4[1];
+
+                  var event;
+                  return regeneratorRuntime.wrap(function _callee$(_context) {
+                    while (1) {
+                      switch (_context.prev = _context.next) {
+                        case 0:
+                          event = new _mockEvent.default(position);
+                          _context.next = 3;
+                          return (0, _emberNativeDomHelpers.triggerEvent)(selector || dropSelector, 'dragover', event);
+
+                        case 3:
+                        case 'end':
+                          return _context.stop();
+                      }
+                    }
+                  }, _callee, _this);
+                }));
+
+                return function (_x3) {
+                  return _ref3.apply(this, arguments);
+                };
+              }()));
+
+            case 2:
+            case 'end':
+              return _context2.stop();
+          }
+        }
+      }, _callee2, this);
+    }));
+
+    return function dragOver(_x, _x2) {
+      return _ref.apply(this, arguments);
+    };
+  }();
+
+  var drop = function () {
+    var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(dragSelector, dragEvent, options) {
+      var dropSelector, dropEndOptions, dragOverMoves, dropElement, event;
+      return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              dropSelector = options.drop, dropEndOptions = options.dropEndOptions, dragOverMoves = options.dragOverMoves;
+              _context3.next = 3;
+              return (0, _emberNativeDomHelpers.find)(dropSelector);
+
+            case 3:
+              dropElement = _context3.sent;
+
+              if (dropElement) {
+                _context3.next = 6;
+                break;
+              }
+
+              throw 'There are no drop targets by the given selector: \'' + dropSelector + '\'';
+
+            case 6:
+              _context3.next = 8;
+              return dragOver(dropSelector, dragOverMoves);
+
+            case 8:
+              if (!options.beforeDrop) {
+                _context3.next = 11;
+                break;
+              }
+
+              _context3.next = 11;
+              return options.beforeDrop.call();
+
+            case 11:
+              event = new _mockEvent.default().useDataTransferData(dragEvent);
+              _context3.next = 14;
+              return (0, _emberNativeDomHelpers.triggerEvent)(dropSelector, 'drop', event);
+
+            case 14:
+              _context3.next = 16;
+              return (0, _emberNativeDomHelpers.triggerEvent)(dragSelector, 'dragend', dropEndOptions);
+
+            case 16:
+              return _context3.abrupt('return', _context3.sent);
+
+            case 17:
+            case 'end':
+              return _context3.stop();
+          }
+        }
+      }, _callee3, this);
+    }));
+
+    return function drop(_x4, _x5, _x6) {
+      return _ref5.apply(this, arguments);
+    };
+  }();
+
+  var drag = exports.drag = function () {
+    var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(dragSelector) {
+      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+      var dragEvent;
+      return regeneratorRuntime.wrap(function _callee4$(_context4) {
+        while (1) {
+          switch (_context4.prev = _context4.next) {
+            case 0:
+              dragEvent = new _mockEvent.default(options.dragStartOptions);
+              _context4.next = 3;
+              return (0, _emberNativeDomHelpers.triggerEvent)(dragSelector, 'mouseover');
+
+            case 3:
+              _context4.next = 5;
+              return (0, _emberNativeDomHelpers.triggerEvent)(dragSelector, 'dragstart', dragEvent);
+
+            case 5:
+              if (!options.afterDrag) {
+                _context4.next = 8;
+                break;
+              }
+
+              _context4.next = 8;
+              return options.afterDrag.call();
+
+            case 8:
+              if (!options.drop) {
+                _context4.next = 11;
+                break;
+              }
+
+              _context4.next = 11;
+              return drop(dragSelector, dragEvent, options);
+
+            case 11:
+            case 'end':
+              return _context4.stop();
+          }
+        }
+      }, _callee4, this);
+    }));
+
+    return function drag(_x8) {
+      return _ref6.apply(this, arguments);
+    };
+  }();
+});
+define('self-start-front-end/tests/helpers/ember-drag-drop', ['exports', 'self-start-front-end/tests/helpers/data-transfer'], function (exports, _dataTransfer) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.drag = drag;
+
+
+  function drop($dragHandle, dropCssPath, dragEvent) {
+    var $dropTarget = Ember.$(dropCssPath);
+
+    if ($dropTarget.length === 0) {
+      throw 'There are no drop targets by the given selector: \'' + dropCssPath + '\'';
+    }
+
+    Ember.run(function () {
+      triggerEvent($dropTarget, 'dragover', _dataTransfer.default.makeMockEvent());
+    });
+
+    Ember.run(function () {
+      triggerEvent($dropTarget, 'drop', _dataTransfer.default.makeMockEvent(dragEvent.dataTransfer.get('data.payload')));
+    });
+
+    Ember.run(function () {
+      triggerEvent($dragHandle, 'dragend', _dataTransfer.default.makeMockEvent());
+    });
+  } /* global triggerEvent , andThen */
+  function drag(cssPath) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    var dragEvent = _dataTransfer.default.makeMockEvent();
+    var $dragHandle = Ember.$(cssPath);
+
+    Ember.run(function () {
+      triggerEvent($dragHandle, 'mouseover');
+    });
+
+    Ember.run(function () {
+      triggerEvent($dragHandle, 'dragstart', dragEvent);
+    });
+
+    andThen(function () {
+      if (options.beforeDrop) {
+        options.beforeDrop.call();
+      }
+    });
+
+    andThen(function () {
+      if (options.drop) {
+        drop($dragHandle, options.drop, dragEvent);
+      }
+    });
+  }
+});
+define('self-start-front-end/tests/helpers/mock-event', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.createDomEvent = createDomEvent;
+
+  function _classCallCheck(instance, Constructor) {
+    if (!(instance instanceof Constructor)) {
+      throw new TypeError("Cannot call a class as a function");
+    }
+  }
+
+  var _createClass = function () {
+    function defineProperties(target, props) {
+      for (var i = 0; i < props.length; i++) {
+        var descriptor = props[i];
+        descriptor.enumerable = descriptor.enumerable || false;
+        descriptor.configurable = true;
+        if ("value" in descriptor) descriptor.writable = true;
+        Object.defineProperty(target, descriptor.key, descriptor);
+      }
+    }
+
+    return function (Constructor, protoProps, staticProps) {
+      if (protoProps) defineProperties(Constructor.prototype, protoProps);
+      if (staticProps) defineProperties(Constructor, staticProps);
+      return Constructor;
+    };
+  }();
+
+  var DataTransfer = function () {
+    function DataTransfer() {
+      _classCallCheck(this, DataTransfer);
+
+      this.data = {};
+    }
+
+    _createClass(DataTransfer, [{
+      key: 'setData',
+      value: function setData(type, value) {
+        this.data[type] = value;
+        return this;
+      }
+    }, {
+      key: 'getData',
+      value: function getData() {
+        var type = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : "Text";
+
+        return this.data[type];
+      }
+    }, {
+      key: 'setDragImage',
+      value: function setDragImage() {}
+    }]);
+
+    return DataTransfer;
+  }();
+
+  var MockEvent = function () {
+    function MockEvent() {
+      var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+
+      _classCallCheck(this, MockEvent);
+
+      this.dataTransfer = new DataTransfer();
+      this.dataTransfer.setData('Text', options.dataTransferData);
+      this.originalEvent = this;
+      this.setProperties(options);
+    }
+
+    _createClass(MockEvent, [{
+      key: 'useDataTransferData',
+      value: function useDataTransferData(otherEvent) {
+        this.dataTransfer.setData('Text', otherEvent.dataTransfer.getData());
+        return this;
+      }
+    }, {
+      key: 'setProperties',
+      value: function setProperties(props) {
+        for (var prop in props) {
+          this[prop] = props[prop];
+        }
+        return this;
+      }
+    }, {
+      key: 'preventDefault',
+      value: function preventDefault() {}
+    }, {
+      key: 'stopPropagation',
+      value: function stopPropagation() {}
+    }]);
+
+    return MockEvent;
+  }();
+
+  exports.default = MockEvent;
+  function createDomEvent(type) {
+    var event = document.createEvent("CustomEvent");
+    event.initCustomEvent(type, true, true, null);
+    event.dataTransfer = new DataTransfer();
+    return event;
   }
 });
 define('self-start-front-end/tests/helpers/module-for-acceptance', ['exports', 'qunit', 'self-start-front-end/tests/helpers/start-app', 'self-start-front-end/tests/helpers/destroy-app'], function (exports, _qunit, _startApp, _destroyApp) {
@@ -883,6 +1339,35 @@ define('self-start-front-end/tests/integration/components/book-appointment-test'
     this.render(Ember.HTMLBars.template({
       "id": "I23GB3If",
       "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"book-appointment\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/confirm-booking-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('confirm-booking', 'Integration | Component | confirm booking', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "v5Lyyv2I",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"confirm-booking\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "yo05rwU1",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"confirm-booking\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
       "meta": {}
     }));
 
@@ -1701,6 +2186,46 @@ define('self-start-front-end/tests/integration/components/welcome-page-test', ['
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/helpers/compare-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('compare', 'helper:compare', {
+    integration: true
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it renders', function (assert) {
+    this.set('inputValue', '1234');
+
+    this.render(Ember.HTMLBars.template({
+      "id": "Q+uXofJN",
+      "block": "{\"symbols\":[],\"statements\":[[1,[25,\"compare\",[[20,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '1234');
+  });
+});
+define('self-start-front-end/tests/integration/helpers/indexpicker-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('indexpicker', 'helper:indexpicker', {
+    integration: true
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it renders', function (assert) {
+    this.set('inputValue', '1234');
+
+    this.render(Ember.HTMLBars.template({
+      "id": "6Xoked9E",
+      "block": "{\"symbols\":[],\"statements\":[[1,[25,\"indexpicker\",[[20,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '1234');
+  });
+});
 define('self-start-front-end/tests/test-helper', ['self-start-front-end/tests/helpers/resolver', 'ember-qunit', 'ember-cli-qunit', 'self-start-front-end/tests/helpers/responsive'], function (_resolver, _emberQunit, _emberCliQunit) {
   'use strict';
 
@@ -1790,6 +2315,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('integration/components/book-appointment-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/book-appointment-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/confirm-booking-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/confirm-booking-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/delete-country-test.js', function (assert) {
@@ -1930,6 +2460,16 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('integration/components/welcome-page-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/welcome-page-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/helpers/compare-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/helpers/compare-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/helpers/indexpicker-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/helpers/indexpicker-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('test-helper.js', function (assert) {

@@ -35,6 +35,7 @@
     "ember-cli-uglify": "^2.0.0",
     "ember-cp-validations": "^3.5.1",
     "ember-data": "~2.16.2",
+    "ember-drag-drop": "^0.4.7",
     "ember-export-application-global": "^2.0.0",
     "ember-light-table": "^1.12.2",
     "ember-load-initializers": "^1.0.0",

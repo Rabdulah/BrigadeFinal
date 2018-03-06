@@ -2,13 +2,36 @@ import Component from '@ember/component';
 import { inject } from '@ember/service';
 import { computed } from '@ember/object';
 import $ from 'jquery';
+import Ember from "ember";
 
 export default Component.extend({
   DS: inject('store'),
   routing: inject('-routing'),
   isEditing: false,
 
+  modalName: Ember.computed(function(){
+    return 'Manage-form' + this.get('ID');
+  }),
+  phyidget: null,
+  selectedappointment: null,
+
+  physioPicked : false,
+  appointmentsN: [],
   weekdate: [],
+  block: {
+    fulldate: null,
+    date: null,
+    datastart: null,
+    dataend: null,
+    dataevent: "event-3",
+    appointmentid: null,
+  },
+  blocks: [],
+
+  dragFinishText: false,
+  dragStartedText: false,
+  dragEndedText: false,
+  myObject:{id:1, name:'objectName'},
 
 
   init: function() {
@@ -25,11 +48,13 @@ export default Component.extend({
       result.setDate(d.getDate()+i);
       this.get('weekdate')[i+1] = result.toDateString();
     }
+
   },
 
   getphysio: computed(function(){
     return this.get('DS').findAll('physiotherapist');
   }),
+
 
   didRender() {
     $(document).ready(function ($) {
@@ -380,13 +405,13 @@ export default Component.extend({
         }
       });
 
-      $(window).keyup(function (event) {
-        if (event.keyCode == 27) {
-          objSchedulesPlan.forEach(function (element) {
-            element.closeModal(element.eventsGroup.find('.selected-event'));
-          });
-        }
-      });
+      // $(window).keyup(function (event) {
+      //   if (event.keyCode == 27) {
+      //     objSchedulesPlan.forEach(function (element) {
+      //       element.closeModal(element.eventsGroup.find('.selected-event'));
+      //     });
+      //   }
+      // });
 
       function checkResize() {
         objSchedulesPlan.forEach(function (element) {
@@ -418,8 +443,34 @@ export default Component.extend({
 
   actions: {
 
-    bookAppointment(){
+    saveappointment(){
+      console.log("saving form");
+      let self = this;
+      //temp client until we get token
+      let client = '5a80e1663ddc7324643209cd';
+      //let client = '5a88738e1f0fdc2b94498e81';
+      let physio = self.get('selectphysio');
+      console.log(physio);
+      // let booking = this.get('DS').findRecord('appointment',this.get('appointmentid').
+      self.set('isEditing', false);
+    },
+    openModal: function (obj) {
+      this.set('selectedappointment',obj);
+      Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+        closeable: false,
+        detachable: false,
+        onDeny: () => {
+          return true;
+        },
+        onApprove: () => {
+          return true;
+        }
+      })
+        .modal('show');
 
+    },
+
+    bookAppointment(){
       this.set('isEditing', true);
     },
 
@@ -429,8 +480,44 @@ export default Component.extend({
       this.set('selectedDate', '');
       this.set('isEditing', false);
     },
+
+
     updateValue(physio){
+
+      let self = this;
       this.set('selectphysio', physio);
+
+      this.get('DS').findRecord('physiotherapist',physio).then(function (phy) {
+        self.set('phyidget', phy);
+        phy.get('appointments').forEach(function (e) {
+          self.get('appointmentsN').pushObject(e);
+        });
+
+        self.get('appointmentsN').forEach(function (e) {
+          let containeddate = e.get('date');
+          let container = new self.get('block');
+          let min90 = new Date(containeddate);
+          container.fulldate = min90;
+          container.date= min90.toDateString();
+          container.datastart = min90.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+          min90.setMinutes(min90.getMinutes() + 90);
+          container.dataend=  min90.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
+          if (!(e.get('patient').get('id') == null)){
+            container.dataevent = "event-1";
+          }
+          else {
+            container.dataevent = "event-3";
+          }
+          container.appointmentid =  e.get('id');
+          self.get('blocks').pushObject(container);
+        });
+      });
+
+
+
+
+      this.set('physioPicked', true);
+
     },
     assignDate (date){
       this.set('selectedDate', date);
@@ -464,8 +551,8 @@ export default Component.extend({
     save: function () {
       let self = this;
       //temp client until we get token
-      //let client = '5a80e1663ddc7324643209cd';
-      let client = '5a88738e1f0fdc2b94498e81';
+      let client = '5a80e1663ddc7324643209cd';
+      //let client = '5a88738e1f0fdc2b94498e81';
       let physio = self.get('selectphysio');
       console.log(physio);
       let booking = this.get('DS').createRecord('appointment', {
@@ -517,6 +604,25 @@ export default Component.extend({
       //   this.set('selectedDate', '');
       //   //this.get('routing').transitionTo('patients');
       // });
+    },
+
+    dragResult: function(obj,ops) {
+      this.set('dragFinishText', ops.target.resultText);
+      console.log('Content of draggable-object :',obj);
+    },
+    dragStart: function() {
+      this.set('dragEndedText', false);
+      this.set('dragStartedText','Drag Has Started');
+    },
+    dragEnd: function() {
+      this.set('dragStartedText', false);
+      this.set('dragEndedText','Drag Has Ended');
+    },
+    draggingOverTarget: function() {
+      console.log('Over target');
+    },
+    leftDragTarget: function() {
+      console.log('Off target');
     }
 
   },

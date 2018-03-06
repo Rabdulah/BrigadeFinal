@@ -24,9 +24,9 @@
       {{/each}}
     </fieldset>
   </form>
-
-
-  <div class="cd-schedule">
+  <button class="ui fluid negative button" {{action "prev"}}>previous</button>
+  <button class="ui fluid negative button" {{action "next"}}>next</button>
+  <div class="cd-schedule loading">
     <div class="timeline">
       <ul>
         <li><span>09:00</span></li>
@@ -52,22 +52,39 @@
     </div>
     <div class="events">
       <ul>
-
         {{#each weekdate as |date|}}
           <li class="events-group">
             <div class="top-info"><span>{{date}}</span></div>
-
             <ul>
-              <li class="single-event" data-start="09:30" data-end="10:30" data-content="event-abs-circuit" data-event="event-1">
+              <li class="single-event" data-start="09:00" data-end="10:30" data-content="Open" data-event='{{event}}' {{action 'setslot' 1 date}}>
                 <a href="#0">
-                  <em class="event-name">Abs Circuit</em>
+                  <span class="event-date">  9  -  10:30</span>
+                  <em class="event-name">slot1</em>
                 </a>
               </li>
+              <li class="single-event" value='1' data-start="10:30" data-end="12:00" data-content="Open" data-event='{{event}}' {{action 'setslot' 2 date}}>
+                <a href="#0">
+                  <span class="event-date">  10:30  -  12:00</span>
+                  <em class="event-name">slot2</em>
+                </a>
+              </li>
+              <li class="single-event" data-start="12:00" data-end="13:30" data-content="Open" data-event={{event}} {{action 'setslot' 3 date}}>
+                <a href="#0">
+                  <span class="event-date">  12:00  -  13:30</span>
+                  <em class="event-name">Slot3</em>
+                </a>
+              </li>
+              <li class="single-event" data-start="13:30" data-end="15:00" data-content="Open" data-event={{event}} {{action 'setslot' 4 date}}>
+
+                <a href="#0">
+                  <span class="event-date">  13:30  -  15:00</span>
+                  <em class="event-name">Slot4</em>
+                </a>
+              </li>
+
             </ul>
           </li>
         {{/each}}
-
-
       </ul>
     </div>
 
@@ -89,6 +106,10 @@
       <a href="#0" class="close">Close</a>
     </div>
   </div>
+
+  <button class="ui button" {{action 'save'}}>
+    Save
+  </button>
 {{else}}
   <button class="ui button" {{action 'viewschedule'}}>
     View schedule (physio)

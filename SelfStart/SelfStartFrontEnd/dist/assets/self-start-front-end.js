@@ -866,7 +866,29 @@ define('self-start-front-end/components/book-appointment', ['exports'], function
     routing: Ember.inject.service('-routing'),
     isEditing: false,
 
+    modalName: Ember.computed(function () {
+      return 'Manage-form' + this.get('ID');
+    }),
+    phyidget: null,
+    selectedappointment: null,
+
+    physioPicked: false,
+    appointmentsN: [],
     weekdate: [],
+    block: {
+      fulldate: null,
+      date: null,
+      datastart: null,
+      dataend: null,
+      dataevent: "event-3",
+      appointmentid: null
+    },
+    blocks: [],
+
+    dragFinishText: false,
+    dragStartedText: false,
+    dragEndedText: false,
+    myObject: { id: 1, name: 'objectName' },
 
     init: function init() {
       this._super();
@@ -1237,13 +1259,13 @@ define('self-start-front-end/components/book-appointment', ['exports'], function
           }
         });
 
-        $(window).keyup(function (event) {
-          if (event.keyCode == 27) {
-            objSchedulesPlan.forEach(function (element) {
-              element.closeModal(element.eventsGroup.find('.selected-event'));
-            });
-          }
-        });
+        // $(window).keyup(function (event) {
+        //   if (event.keyCode == 27) {
+        //     objSchedulesPlan.forEach(function (element) {
+        //       element.closeModal(element.eventsGroup.find('.selected-event'));
+        //     });
+        //   }
+        // });
 
         function checkResize() {
           objSchedulesPlan.forEach(function (element) {
@@ -1274,8 +1296,33 @@ define('self-start-front-end/components/book-appointment', ['exports'], function
 
 
     actions: {
-      bookAppointment: function bookAppointment() {
+      saveappointment: function saveappointment() {
+        console.log("saving form");
+        var self = this;
+        //temp client until we get token
+        var client = '5a80e1663ddc7324643209cd';
+        //let client = '5a88738e1f0fdc2b94498e81';
+        var physio = self.get('selectphysio');
+        console.log(physio);
+        // let booking = this.get('DS').findRecord('appointment',this.get('appointmentid').
+        self.set('isEditing', false);
+      },
 
+      openModal: function openModal(obj) {
+        this.set('selectedappointment', obj);
+        Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+          closeable: false,
+          detachable: false,
+          onDeny: function onDeny() {
+            return true;
+          },
+          onApprove: function onApprove() {
+            return true;
+          }
+        }).modal('show');
+      },
+
+      bookAppointment: function bookAppointment() {
         this.set('isEditing', true);
       },
       cancelbookingappointment: function cancelbookingappointment() {
@@ -1285,7 +1332,36 @@ define('self-start-front-end/components/book-appointment', ['exports'], function
         this.set('isEditing', false);
       },
       updateValue: function updateValue(physio) {
+
+        var self = this;
         this.set('selectphysio', physio);
+
+        this.get('DS').findRecord('physiotherapist', physio).then(function (phy) {
+          self.set('phyidget', phy);
+          phy.get('appointments').forEach(function (e) {
+            self.get('appointmentsN').pushObject(e);
+          });
+
+          self.get('appointmentsN').forEach(function (e) {
+            var containeddate = e.get('date');
+            var container = new self.get('block');
+            var min90 = new Date(containeddate);
+            container.fulldate = min90;
+            container.date = min90.toDateString();
+            container.datastart = min90.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            min90.setMinutes(min90.getMinutes() + 90);
+            container.dataend = min90.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+            if (!(e.get('patient').get('id') == null)) {
+              container.dataevent = "event-1";
+            } else {
+              container.dataevent = "event-3";
+            }
+            container.appointmentid = e.get('id');
+            self.get('blocks').pushObject(container);
+          });
+        });
+
+        this.set('physioPicked', true);
       },
       assignDate: function assignDate(date) {
         this.set('selectedDate', date);
@@ -1318,8 +1394,8 @@ define('self-start-front-end/components/book-appointment', ['exports'], function
       save: function save() {
         var self = this;
         //temp client until we get token
-        //let client = '5a80e1663ddc7324643209cd';
-        var client = '5a88738e1f0fdc2b94498e81';
+        var client = '5a80e1663ddc7324643209cd';
+        //let client = '5a88738e1f0fdc2b94498e81';
         var physio = self.get('selectphysio');
         console.log(physio);
         var booking = this.get('DS').createRecord('appointment', {
@@ -1369,10 +1445,90 @@ define('self-start-front-end/components/book-appointment', ['exports'], function
         //   this.set('selectedDate', '');
         //   //this.get('routing').transitionTo('patients');
         // });
+      },
+
+      dragResult: function dragResult(obj, ops) {
+        this.set('dragFinishText', ops.target.resultText);
+        console.log('Content of draggable-object :', obj);
+      },
+      dragStart: function dragStart() {
+        this.set('dragEndedText', false);
+        this.set('dragStartedText', 'Drag Has Started');
+      },
+      dragEnd: function dragEnd() {
+        this.set('dragStartedText', false);
+        this.set('dragEndedText', 'Drag Has Ended');
+      },
+      draggingOverTarget: function draggingOverTarget() {
+        console.log('Over target');
+      },
+      leftDragTarget: function leftDragTarget() {
+        console.log('Off target');
       }
 
     }
 
+  });
+});
+define('self-start-front-end/components/confirm-booking', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    init: function init() {
+      this._super();
+      //let a = this.get('DS').find('form', this.get('ID'));
+      //console.log(a.get('name'));
+    },
+
+    DS: Ember.inject.service('store'),
+
+    modalName: Ember.computed(function () {
+      return 'confirm-booking' + this.get('ID');
+    }),
+
+    edit: false,
+
+    questionsModel: Ember.computed(function () {
+      return this.get('DS').findAll('question');
+    }),
+
+    actions: {
+      addQuestion: function addQuestion(thisQuestion, thisForm, qid) {
+        thisForm.get('questions').pushObject(thisQuestion);
+        thisQuestion.get('forms').pushObject(thisForm);
+
+        this.get('DS').findRecord('form', this.get('ID')).then(function (rec) {
+          rec.save().then(function () {});
+        });
+
+        this.get('DS').findRecord('question', this.get('qid')).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      manageForm: function manageForm() {
+        this.set('edit', true);
+      },
+      done: function done() {
+        this.set('edit', false);
+      },
+
+
+      openModal: function openModal() {
+        Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+          closeable: false,
+          detachable: false,
+          onDeny: function onDeny() {
+            return true;
+          },
+          onApprove: function onApprove() {
+            return true;
+          }
+        }).modal('show');
+      }
+    }
   });
 });
 define('self-start-front-end/components/delete-country', ['exports'], function (exports) {
@@ -1673,6 +1829,22 @@ define('self-start-front-end/components/delete-status', ['exports'], function (e
       }
     }
   });
+});
+define('self-start-front-end/components/draggable-object-target', ['exports', 'ember-drag-drop/components/draggable-object-target'], function (exports, _draggableObjectTarget) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _draggableObjectTarget.default;
+});
+define('self-start-front-end/components/draggable-object', ['exports', 'ember-drag-drop/components/draggable-object'], function (exports, _draggableObject) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _draggableObject.default;
 });
 define('self-start-front-end/components/edit-country', ['exports'], function (exports) {
   'use strict';
@@ -2550,6 +2722,14 @@ define('self-start-front-end/components/nav-bar', ['exports'], function (exports
     }
   });
 });
+define('self-start-front-end/components/object-bin', ['exports', 'ember-drag-drop/components/object-bin'], function (exports, _objectBin) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _objectBin.default;
+});
 define('self-start-front-end/components/parse-question', ['exports'], function (exports) {
     'use strict';
 
@@ -2763,6 +2943,14 @@ define('self-start-front-end/components/simple-example', ['exports'], function (
       }
     }
   });
+});
+define('self-start-front-end/components/sortable-objects', ['exports', 'ember-drag-drop/components/sortable-objects'], function (exports, _sortableObjects) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _sortableObjects.default;
 });
 define('self-start-front-end/components/stylish-button', ['exports', 'ember-stylish-buttons/components/stylish-button', 'self-start-front-end/config/environment'], function (exports, _stylishButton, _environment) {
   'use strict';
@@ -3155,8 +3343,17 @@ define('self-start-front-end/components/view-schedule', ['exports'], function (e
     DS: Ember.inject.service('store'),
     routing: Ember.inject.service('-routing'),
     selectedphysio: null,
+    physios: null,
     appointments_filter: null,
     isEditing: false,
+    event: "event-1",
+
+    availablespot: [],
+
+    dragFinishText: false,
+    dragStartedText: false,
+    dragEndedText: false,
+    myObject: { id: 1, name: 'objectName' },
 
     weekdate: [],
     init: function init() {
@@ -3173,406 +3370,151 @@ define('self-start-front-end/components/view-schedule', ['exports'], function (e
         _result.setDate(d.getDate() + _i);
         this.get('weekdate')[_i + 1] = _result.toDateString();
       }
+      this.functionA();
     },
 
     getphysio: Ember.computed(function () {
       return this.get('DS').findAll('physiotherapist');
     }),
-
-    // selectedphysio: computed(function () {
-    //   return this.get('selectedphysio').then(function (physio){
-    //     physio.get('appointments').filter(function(item){
-    //       let schedule  = item.get('date');
-    //       let cur_time = new Date();
-    //       console.log(cur_time);
-    //       return schedule > cur_time;
-    //     });
-    //   });
-    //
-    // }),
-
     didRender: function didRender() {
-      Ember.$(document).ready(function ($) {
-        var transitionEnd = 'webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend';
-        var transitionsSupported = $('.csstransitions').length > 0;
-        //if browser does not support transitions - use a different event to trigger them
-        if (!transitionsSupported) transitionEnd = 'noTransition';
+      this.functionA();
+    },
+    functionA: function functionA() {
+      var transitionEnd = 'webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend';
+      var transitionsSupported = Ember.$('.csstransitions').length > 0;
 
-        //should add a loding while the events are organized
+      //if browser does not support transitions - use a different event to trigger them
+      if (!transitionsSupported) transitionEnd = 'noTransition';
 
-        function SchedulePlan(element) {
-          this.element = element;
-          this.timeline = this.element.find('.timeline');
-          this.timelineItems = this.timeline.find('li');
-          this.timelineItemsNumber = this.timelineItems.length;
-          this.timelineStart = getScheduleTimestamp(this.timelineItems.eq(0).text());
-          //need to store delta (in our case half hour) timestamp
-          this.timelineUnitDuration = getScheduleTimestamp(this.timelineItems.eq(1).text()) - getScheduleTimestamp(this.timelineItems.eq(0).text());
+      //should add a loding while the events are organized
 
-          this.eventsWrapper = this.element.find('.events');
-          this.eventsGroup = this.eventsWrapper.find('.events-group');
-          this.singleEvents = this.eventsGroup.find('.single-event');
+      function SchedulePlan(element) {
+        this.element = element;
+        this.timeline = this.element.find('.timeline');
+        this.timelineItems = this.timeline.find('li');
+        this.timelineItemsNumber = this.timelineItems.length;
+        this.timelineStart = getScheduleTimestamp(this.timelineItems.eq(0).text());
+        //need to store delta (in our case half hour) timestamp
+        this.timelineUnitDuration = getScheduleTimestamp(this.timelineItems.eq(1).text()) - getScheduleTimestamp(this.timelineItems.eq(0).text());
+
+        this.eventsWrapper = this.element.find('.events');
+        this.eventsGroup = this.eventsWrapper.find('.events-group');
+        this.singleEvents = this.eventsGroup.find('.single-event');
+        this.eventSlotHeight = this.eventsGroup.eq(0).children('.top-info').outerHeight();
+
+        this.animating = false;
+
+        this.initSchedule();
+      }
+
+      SchedulePlan.prototype.initSchedule = function () {
+        this.scheduleReset();
+        //this.initEvents();
+      };
+
+      SchedulePlan.prototype.scheduleReset = function () {
+        var mq = this.mq();
+        if (mq == 'desktop' && !this.element.hasClass('js-full')) {
+          //in this case you are on a desktop version (first load or resize from mobile)
           this.eventSlotHeight = this.eventsGroup.eq(0).children('.top-info').outerHeight();
-
-          this.modal = this.element.find('.event-modal');
-          this.modalHeader = this.modal.find('.header');
-          this.modalHeaderBg = this.modal.find('.header-bg');
-          this.modalBody = this.modal.find('.body');
-          this.modalBodyBg = this.modal.find('.body-bg');
-          this.modalMaxWidth = 800;
-          this.modalMaxHeight = 480;
-
-          this.animating = false;
-
-          this.initSchedule();
-        }
-
-        SchedulePlan.prototype.initSchedule = function () {
-          this.scheduleReset();
-          this.initEvents();
-        };
-
-        SchedulePlan.prototype.scheduleReset = function () {
-          var mq = this.mq();
-          if (mq == 'desktop' && !this.element.hasClass('js-full')) {
-            //in this case you are on a desktop version (first load or resize from mobile)
-            this.eventSlotHeight = this.eventsGroup.eq(0).children('.top-info').outerHeight();
-            this.element.addClass('js-full');
-            this.placeEvents();
-            this.element.hasClass('modal-is-open') && this.checkEventModal();
-          } else if (mq == 'mobile' && this.element.hasClass('js-full')) {
-            //in this case you are on a mobile version (first load or resize from desktop)
-            this.element.removeClass('js-full loading');
-            this.eventsGroup.children('ul').add(this.singleEvents).removeAttr('style');
-            this.eventsWrapper.children('.grid-line').remove();
-            this.element.hasClass('modal-is-open') && this.checkEventModal();
-          } else if (mq == 'desktop' && this.element.hasClass('modal-is-open')) {
-            //on a mobile version with modal open - need to resize/move modal window
-            this.checkEventModal('desktop');
-            this.element.removeClass('loading');
-          } else {
-            this.element.removeClass('loading');
-          }
-        };
-
-        SchedulePlan.prototype.initEvents = function () {
-          var self = this;
-
-          this.singleEvents.each(function () {
-            //create the .event-date element for each event
-            var durationLabel = '<span class="event-date">' + $(this).data('start') + ' - ' + $(this).data('end') + '</span>';
-            $(this).children('a').prepend($(durationLabel));
-
-            //detect click on the event and open the modal
-            // $(this).on('click', 'a', function (event) {
-            //   event.preventDefault();
-            //   if (!self.animating) self.openModal($(this));
-            // });
-          });
-
-          //close modal window
-          // this.modal.on('click', '.close', function (event) {
-          //   event.preventDefault();
-          //   if (!self.animating) self.closeModal(self.eventsGroup.find('.selected-event'));
-          // });
-          // this.element.on('click', '.cover-layer', function (event) {
-          //   if (!self.animating && self.element.hasClass('modal-is-open')) self.closeModal(self.eventsGroup.find('.selected-event'));
-          // });
-        };
-
-        SchedulePlan.prototype.placeEvents = function () {
-          var self = this;
-          this.singleEvents.each(function () {
-            //place each event in the grid -> need to set top position and height
-            var start = getScheduleTimestamp($(this).attr('data-start')),
-                duration = getScheduleTimestamp($(this).attr('data-end')) - start;
-
-            var eventTop = self.eventSlotHeight * (start - self.timelineStart) / self.timelineUnitDuration,
-                eventHeight = self.eventSlotHeight * duration / self.timelineUnitDuration;
-
-            $(this).css({
-              top: eventTop - 1 + 'px',
-              height: eventHeight + 1 + 'px'
-            });
-          });
-
+          this.element.addClass('js-full');
+          this.placeEvents();
+          // this.element.hasClass('modal-is-open') && this.checkEventModal();
+        } else if (mq == 'mobile' && this.element.hasClass('js-full')) {
+          //in this case you are on a mobile version (first load or resize from desktop)
+          this.element.removeClass('js-full loading');
+          this.eventsGroup.children('ul').add(this.singleEvents).removeAttr('style');
+          this.eventsWrapper.children('.grid-line').remove();
+        } else {
           this.element.removeClass('loading');
-        };
-
-        // SchedulePlan.prototype.openModal = function (event) {
-        //   var self = this;
-        //   var mq = self.mq();
-        //   this.animating = true;
-        //
-        //   //update event name and time
-        //   this.modalHeader.find('.event-name').text(event.find('.event-name').text());
-        //   this.modalHeader.find('.event-date').text(event.find('.event-date').text());
-        //   this.modal.attr('data-event', event.parent().attr('data-event'));
-        //
-        //   //update event content
-        //   this.modalBody.find('.event-info').load(event.parent().attr('data-content') + '.html .event-info > *', function (data) {
-        //     //once the event content has been loaded
-        //     self.element.addClass('content-loaded');
-        //   });
-        //
-        //   this.element.addClass('modal-is-open');
-        //
-        //   setTimeout(function () {
-        //     //fixes a flash when an event is selected - desktop version only
-        //     event.parent('li').addClass('selected-event');
-        //   }, 10);
-        //
-        //   if (mq == 'mobile') {
-        //     self.modal.one(transitionEnd, function () {
-        //       self.modal.off(transitionEnd);
-        //       self.animating = false;
-        //     });
-        //   } else {
-        //     var eventTop = event.offset().top - $(window).scrollTop(),
-        //       eventLeft = event.offset().left,
-        //       eventHeight = event.innerHeight(),
-        //       eventWidth = event.innerWidth();
-        //
-        //     var windowWidth = $(window).width(),
-        //       windowHeight = $(window).height();
-        //
-        //     var modalWidth = (windowWidth * .8 > self.modalMaxWidth) ? self.modalMaxWidth : windowWidth * .8,
-        //       modalHeight = (windowHeight * .8 > self.modalMaxHeight) ? self.modalMaxHeight : windowHeight * .8;
-        //
-        //     var modalTranslateX = parseInt((windowWidth - modalWidth) / 2 - eventLeft),
-        //       modalTranslateY = parseInt((windowHeight - modalHeight) / 2 - eventTop);
-        //
-        //     var HeaderBgScaleY = modalHeight / eventHeight,
-        //       BodyBgScaleX = (modalWidth - eventWidth);
-        //
-        //     //change modal height/width and translate it
-        //     self.modal.css({
-        //       top: eventTop + 'px',
-        //       left: eventLeft + 'px',
-        //       height: modalHeight + 'px',
-        //       width: modalWidth + 'px',
-        //     });
-        //     transformElement(self.modal, 'translateY(' + modalTranslateY + 'px) translateX(' + modalTranslateX + 'px)');
-        //
-        //     //set modalHeader width
-        //     self.modalHeader.css({
-        //       width: eventWidth + 'px',
-        //     });
-        //     //set modalBody left margin
-        //     self.modalBody.css({
-        //       marginLeft: eventWidth + 'px',
-        //     });
-        //
-        //     //change modalBodyBg height/width ans scale it
-        //     self.modalBodyBg.css({
-        //       height: eventHeight + 'px',
-        //       width: '1px',
-        //     });
-        //     transformElement(self.modalBodyBg, 'scaleY(' + HeaderBgScaleY + ') scaleX(' + BodyBgScaleX + ')');
-        //
-        //     //change modal modalHeaderBg height/width and scale it
-        //     self.modalHeaderBg.css({
-        //       height: eventHeight + 'px',
-        //       width: eventWidth + 'px',
-        //     });
-        //     transformElement(self.modalHeaderBg, 'scaleY(' + HeaderBgScaleY + ')');
-        //
-        //     self.modalHeaderBg.one(transitionEnd, function () {
-        //       //wait for the  end of the modalHeaderBg transformation and show the modal content
-        //       self.modalHeaderBg.off(transitionEnd);
-        //       self.animating = false;
-        //       self.element.addClass('animation-completed');
-        //     });
-        //   }
-        //
-        //   //if browser do not support transitions -> no need to wait for the end of it
-        //   if (!transitionsSupported) self.modal.add(self.modalHeaderBg).trigger(transitionEnd);
-        // };
-        //
-        // SchedulePlan.prototype.closeModal = function (event) {
-        //   var self = this;
-        //   var mq = self.mq();
-        //
-        //   this.animating = true;
-        //
-        //   if (mq == 'mobile') {
-        //     this.element.removeClass('modal-is-open');
-        //     this.modal.one(transitionEnd, function () {
-        //       self.modal.off(transitionEnd);
-        //       self.animating = false;
-        //       self.element.removeClass('content-loaded');
-        //       event.removeClass('selected-event');
-        //     });
-        //   } else {
-        //     var eventTop = event.offset().top - $(window).scrollTop(),
-        //       eventLeft = event.offset().left,
-        //       eventHeight = event.innerHeight(),
-        //       eventWidth = event.innerWidth();
-        //
-        //     var modalTop = Number(self.modal.css('top').replace('px', '')),
-        //       modalLeft = Number(self.modal.css('left').replace('px', ''));
-        //
-        //     var modalTranslateX = eventLeft - modalLeft,
-        //       modalTranslateY = eventTop - modalTop;
-        //
-        //     self.element.removeClass('animation-completed modal-is-open');
-        //
-        //     //change modal width/height and translate it
-        //     this.modal.css({
-        //       width: eventWidth + 'px',
-        //       height: eventHeight + 'px'
-        //     });
-        //     transformElement(self.modal, 'translateX(' + modalTranslateX + 'px) translateY(' + modalTranslateY + 'px)');
-        //
-        //     //scale down modalBodyBg element
-        //     transformElement(self.modalBodyBg, 'scaleX(0) scaleY(1)');
-        //     //scale down modalHeaderBg element
-        //     transformElement(self.modalHeaderBg, 'scaleY(1)');
-        //
-        //     this.modalHeaderBg.one(transitionEnd, function () {
-        //       //wait for the  end of the modalHeaderBg transformation and reset modal style
-        //       self.modalHeaderBg.off(transitionEnd);
-        //       self.modal.addClass('no-transition');
-        //       setTimeout(function () {
-        //         self.modal.add(self.modalHeader).add(self.modalBody).add(self.modalHeaderBg).add(self.modalBodyBg).attr('style', '');
-        //       }, 10);
-        //       setTimeout(function () {
-        //         self.modal.removeClass('no-transition');
-        //       }, 20);
-        //
-        //       self.animating = false;
-        //       self.element.removeClass('content-loaded');
-        //       event.removeClass('selected-event');
-        //     });
-        //   }
-        //
-        //   //browser do not support transitions -> no need to wait for the end of it
-        //   if (!transitionsSupported) self.modal.add(self.modalHeaderBg).trigger(transitionEnd);
-        // }
-
-        SchedulePlan.prototype.mq = function () {
-          //get MQ value ('desktop' or 'mobile')
-          var self = this;
-          return window.getComputedStyle(this.element.get(0), '::before').getPropertyValue('content').replace(/["']/g, '');
-        };
-        //
-        // SchedulePlan.prototype.checkEventModal = function (device) {
-        //   this.animating = true;
-        //   var self = this;
-        //   var mq = this.mq();
-        //
-        //   if (mq == 'mobile') {
-        //     //reset modal style on mobile
-        //     self.modal.add(self.modalHeader).add(self.modalHeaderBg).add(self.modalBody).add(self.modalBodyBg).attr('style', '');
-        //     self.modal.removeClass('no-transition');
-        //     self.animating = false;
-        //   } else if (mq == 'desktop' && self.element.hasClass('modal-is-open')) {
-        //     self.modal.addClass('no-transition');
-        //     self.element.addClass('animation-completed');
-        //     var event = self.eventsGroup.find('.selected-event');
-        //
-        //     var eventTop = event.offset().top - $(window).scrollTop(),
-        //       eventLeft = event.offset().left,
-        //       eventHeight = event.innerHeight(),
-        //       eventWidth = event.innerWidth();
-        //
-        //     var windowWidth = $(window).width(),
-        //       windowHeight = $(window).height();
-        //
-        //     var modalWidth = (windowWidth * .8 > self.modalMaxWidth) ? self.modalMaxWidth : windowWidth * .8,
-        //       modalHeight = (windowHeight * .8 > self.modalMaxHeight) ? self.modalMaxHeight : windowHeight * .8;
-        //
-        //     var HeaderBgScaleY = modalHeight / eventHeight,
-        //       BodyBgScaleX = (modalWidth - eventWidth);
-        //
-        //     setTimeout(function () {
-        //       self.modal.css({
-        //         width: modalWidth + 'px',
-        //         height: modalHeight + 'px',
-        //         top: (windowHeight / 2 - modalHeight / 2) + 'px',
-        //         left: (windowWidth / 2 - modalWidth / 2) + 'px',
-        //       });
-        //       transformElement(self.modal, 'translateY(0) translateX(0)');
-        //       //change modal modalBodyBg height/width
-        //       self.modalBodyBg.css({
-        //         height: modalHeight + 'px',
-        //         width: '1px',
-        //       });
-        //       transformElement(self.modalBodyBg, 'scaleX(' + BodyBgScaleX + ')');
-        //       //set modalHeader width
-        //       self.modalHeader.css({
-        //         width: eventWidth + 'px',
-        //       });
-        //       //set modalBody left margin
-        //       self.modalBody.css({
-        //         marginLeft: eventWidth + 'px',
-        //       });
-        //       //change modal modalHeaderBg height/width and scale it
-        //       self.modalHeaderBg.css({
-        //         height: eventHeight + 'px',
-        //         width: eventWidth + 'px',
-        //       });
-        //       transformElement(self.modalHeaderBg, 'scaleY(' + HeaderBgScaleY + ')');
-        //     }, 10);
-        //
-        //     setTimeout(function () {
-        //       self.modal.removeClass('no-transition');
-        //       self.animating = false;
-        //     }, 20);
-        //   }
-        // };
-
-        var schedules = $('.cd-schedule');
-        var objSchedulesPlan = [],
-            windowResize = false;
-
-        if (schedules.length > 0) {
-          schedules.each(function () {
-            //create SchedulePlan objects
-            objSchedulesPlan.push(new SchedulePlan($(this)));
-          });
         }
+      };
 
-        $(window).on('resize', function () {
-          if (!windowResize) {
-            windowResize = true;
-            !window.requestAnimationFrame ? setTimeout(checkResize) : window.requestAnimationFrame(checkResize);
-          }
-        });
+      // SchedulePlan.prototype.initEvents = function () {
+      //   var self = this;
+      //     this.singleEvents.each(function () {
+      //       var durationLabel = '<span class="event-date">' + $(this).data('start') + ' - ' + $(this).data('end') + '</span>';
+      //       $(this).children('a').prepend($(durationLabel));
+      //     });
+      //
+      //
+      // };
 
-        $(window).keyup(function (event) {
-          if (event.keyCode == 27) {
-            objSchedulesPlan.forEach(function (element) {
-              element.closeModal(element.eventsGroup.find('.selected-event'));
-            });
-          }
-        });
+      SchedulePlan.prototype.placeEvents = function () {
+        var self = this;
+        this.singleEvents.each(function () {
+          //place each event in the grid -> need to set top position and height
+          var start = getScheduleTimestamp(Ember.$(this).attr('data-start')),
+              duration = getScheduleTimestamp(Ember.$(this).attr('data-end')) - start;
 
-        function checkResize() {
-          objSchedulesPlan.forEach(function (element) {
-            element.scheduleReset();
+          var eventTop = self.eventSlotHeight * (start - self.timelineStart) / self.timelineUnitDuration,
+              eventHeight = self.eventSlotHeight * duration / self.timelineUnitDuration;
+
+          Ember.$(this).css({
+            top: eventTop - 1 + 'px',
+            height: eventHeight + 1 + 'px'
           });
+        });
+
+        this.element.removeClass('loading');
+      };
+
+      SchedulePlan.prototype.mq = function () {
+        //get MQ value ('desktop' or 'mobile')
+        var self = this;
+        return window.getComputedStyle(this.element.get(0), '::before').getPropertyValue('content').replace(/["']/g, '');
+      };
+
+      var schedules = Ember.$('.cd-schedule');
+      var objSchedulesPlan = [],
           windowResize = false;
-        }
 
-        function getScheduleTimestamp(time) {
-          //accepts hh:mm format - convert hh:mm to timestamp
-          time = time.replace(/ /g, '');
-          var timeArray = time.split(':');
-          var timeStamp = parseInt(timeArray[0]) * 60 + parseInt(timeArray[1]);
-          return timeStamp;
-        }
+      if (schedules.length > 0) {
+        schedules.each(function () {
+          //create SchedulePlan objects
+          objSchedulesPlan.push(new SchedulePlan(Ember.$(this)));
+        });
+      }
 
-        function transformElement(element, value) {
-          element.css({
-            '-moz-transform': value,
-            '-webkit-transform': value,
-            '-ms-transform': value,
-            '-o-transform': value,
-            'transform': value
+      Ember.$(window).on('resize', function () {
+        if (!windowResize) {
+          windowResize = true;
+          !window.requestAnimationFrame ? setTimeout(checkResize) : window.requestAnimationFrame(checkResize);
+        }
+      });
+
+      Ember.$(window).keyup(function (event) {
+        if (event.keyCode == 27) {
+          objSchedulesPlan.forEach(function (element) {
+            element.closeModal(element.eventsGroup.find('.selected-event'));
           });
         }
       });
+
+      function checkResize() {
+        objSchedulesPlan.forEach(function (element) {
+          element.scheduleReset();
+        });
+        windowResize = false;
+      }
+
+      function getScheduleTimestamp(time) {
+        //accepts hh:mm format - convert hh:mm to timestamp
+        time = time.replace(/ /g, '');
+        var timeArray = time.split(':');
+        var timeStamp = parseInt(timeArray[0]) * 60 + parseInt(timeArray[1]);
+        return timeStamp;
+      }
+
+      function transformElement(element, value) {
+        element.css({
+          '-moz-transform': value,
+          '-webkit-transform': value,
+          '-ms-transform': value,
+          '-o-transform': value,
+          'transform': value
+        });
+      }
     },
 
 
@@ -3581,6 +3523,7 @@ define('self-start-front-end/components/view-schedule', ['exports'], function (e
         this.set('isEditing', true);
       },
       updateValue: function updateValue(physio) {
+        this.set('physios', physio);
         this.set('selectedphysio', this.get('DS').peekRecord('physiotherapist', physio));
         //get associated physiotherapist schedule
         var container = this.get('selectedphysio').get('appointments').filter(function (item) {
@@ -3624,6 +3567,43 @@ define('self-start-front-end/components/view-schedule', ['exports'], function (e
           newcont[counter++] = result.toDateString();
         });
         this.get('weekdate').replace(0, 7, newcont);
+      },
+      setslot: function setslot(slot, date) {
+        var d = new Date(date);
+        switch (slot) {
+          case 1:
+            d.setHours(9, 30);
+            break;
+          case 2:
+            d.setHours(12, 0);
+            break;
+          case 3:
+            d.setHours(13, 30);
+            break;
+          case 4:
+            d.setHours(15, 0);
+            break;
+        }
+        var booking = this.get('DS').createRecord('appointment', {
+          date: d.toISOString()
+        });
+        this.set('event', "event-3");
+
+        this.get('availablespot').push(booking);
+      },
+      save: function save() {
+        var self = this;
+        var physio = self.get('physios');
+
+        console.log(physio);
+        this.get('DS').find('physiotherapist', physio).then(function (a) {
+          self.get('availablespot').forEach(function (e) {
+            e.save().then(function () {
+              a.get('appointments').pushObject(e);
+              a.save();
+            });
+          });
+        });
       }
     }
 
@@ -3862,6 +3842,62 @@ define('self-start-front-end/helpers/compact', ['exports', 'ember-composable-hel
       return _compact.compact;
     }
   });
+});
+define('self-start-front-end/helpers/compare', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.compare = compare;
+
+  var _slicedToArray = function () {
+    function sliceIterator(arr, i) {
+      var _arr = [];
+      var _n = true;
+      var _d = false;
+      var _e = undefined;
+
+      try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);
+
+          if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;
+        _e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"]) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }
+
+      return _arr;
+    }
+
+    return function (arr, i) {
+      if (Array.isArray(arr)) {
+        return arr;
+      } else if (Symbol.iterator in Object(arr)) {
+        return sliceIterator(arr, i);
+      } else {
+        throw new TypeError("Invalid attempt to destructure non-iterable instance");
+      }
+    };
+  }();
+
+  function compare(_ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+        a = _ref2[0],
+        b = _ref2[1];
+
+    return a === b;
+  }
+
+  exports.default = Ember.Helper.helper(compare);
 });
 define('self-start-front-end/helpers/compute', ['exports', 'ember-composable-helpers/helpers/compute'], function (exports, _compute) {
   'use strict';
@@ -4204,6 +4240,19 @@ define('self-start-front-end/helpers/inc', ['exports', 'ember-composable-helpers
       return _inc.inc;
     }
   });
+});
+define('self-start-front-end/helpers/indexpicker', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.indexpicker = indexpicker;
+  function indexpicker(params /*, hash*/) {
+    return parseInt(params) + 1;
+  }
+
+  exports.default = Ember.Helper.helper(indexpicker);
 });
 define('self-start-front-end/helpers/intersect', ['exports', 'ember-composable-helpers/helpers/intersect'], function (exports, _intersect) {
   'use strict';
@@ -5246,6 +5295,22 @@ define('self-start-front-end/initializers/container-debug-adapter', ['exports', 
     }
   };
 });
+define("self-start-front-end/initializers/coordinator-setup", ["exports", "self-start-front-end/models/coordinator"], function (exports, _coordinator) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = {
+    name: "setup coordinator",
+
+    initialize: function initialize() {
+      var app = arguments[1] || arguments[0];
+      app.register("drag:coordinator", _coordinator.default);
+      app.inject("component", "coordinator", "drag:coordinator");
+    }
+  };
+});
 define('self-start-front-end/initializers/data-adapter', ['exports'], function (exports) {
   'use strict';
 
@@ -5494,6 +5559,40 @@ define('self-start-front-end/models/city', ['exports', 'ember-data'], function (
     provinces: _emberData.default.belongsTo('province', { async: true }) //1 to 1
   });
 });
+define('self-start-front-end/models/coordinator', ['exports', 'self-start-front-end/models/obj-hash'], function (exports, _objHash) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Object.extend(Ember.Evented, {
+    objectMap: Ember.computed(function () {
+      return _objHash.default.create();
+    }),
+
+    getObject: function getObject(id, ops) {
+      ops = ops || {};
+      var payload = this.get('objectMap').getObj(id);
+
+      if (payload.ops.source) {
+        payload.ops.source.sendAction('action', payload.obj);
+      }
+
+      if (payload.ops.target) {
+        payload.ops.target.sendAction('action', payload.obj);
+      }
+
+      this.trigger("objectMoved", { obj: payload.obj, source: payload.ops.source, target: ops.target });
+
+      return payload.obj;
+    },
+
+    setObject: function setObject(obj, ops) {
+      ops = ops || {};
+      return this.get('objectMap').add({ obj: obj, ops: ops });
+    }
+  });
+});
 define('self-start-front-end/models/country', ['exports', 'ember-data'], function (exports, _emberData) {
   'use strict';
 
@@ -5576,6 +5675,53 @@ define('self-start-front-end/models/marital-status', ['exports', 'ember-data'], 
     // status
 
     name: _emberData.default.attr()
+  });
+});
+define('self-start-front-end/models/obj-hash', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Object.extend({
+    contentLength: 0,
+    length: Ember.computed.alias('contentLength'),
+
+    init: function init() {
+      this._super();
+      this.content = {};
+    },
+
+    add: function add(obj) {
+      var id = this.generateId();
+      this.get('content')[id] = obj;
+      this.incrementProperty("contentLength");
+      return id;
+    },
+
+    getObj: function getObj(key) {
+      var res = this.get('content')[key];
+      if (!res) {
+        throw "no obj for key " + key;
+      }
+      return res;
+    },
+
+    generateId: function generateId() {
+      var num = Math.random() * 1000000000000.0;
+      num = parseInt(num);
+      num = "" + num;
+      return num;
+    },
+
+    keys: function keys() {
+      var res = [];
+      for (var key in this.get('content')) {
+        res.push(key);
+      }
+      return Ember.A(res);
+    }
+
   });
 });
 define('self-start-front-end/models/patient', ['exports', 'ember-data'], function (exports, _emberData) {
@@ -5978,6 +6124,14 @@ define('self-start-front-end/services/ajax', ['exports', 'ember-ajax/services/aj
     }
   });
 });
+define('self-start-front-end/services/drag-coordinator', ['exports', 'ember-drag-drop/services/drag-coordinator'], function (exports, _dragCoordinator) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _dragCoordinator.default;
+});
 define('self-start-front-end/services/media', ['exports', 'ember-responsive/media'], function (exports, _media) {
   'use strict';
 
@@ -6204,7 +6358,15 @@ define("self-start-front-end/templates/components/book-appointment", ["exports"]
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "IsT6s9uE", "block": "{\"symbols\":[\"date\",\"phsio\"],\"statements\":[[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[6,\"link\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/schedule-style.css\"]]],[7],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"isEditing\"]]],null,{\"statements\":[[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"fieldset\"],[7],[0,\"\\n    \"],[6,\"legend\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n\\n\\n    \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n    \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n      \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectphysio\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateValue\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n        \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"getphysio\"]]],null,{\"statements\":[[0,\"          \"],[6,\"option\"],[10,\"value\",[19,2,[\"id\"]],null],[7],[0,\"\\n            \"],[1,[19,2,[\"givenName\"]],false],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Reason\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"star\",\"text\",[20,[\"Reason\"]]]]],false],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Other\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"user\",\"text\",[20,[\"Other\"]]]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Date\"],[8],[0,\"\\n      \"],[6,\"input\"],[9,\"class\",\"date\"],[9,\"type\",\"date\"],[10,\"value\",[18,\"selectedDate\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"assignDate\"],[[\"value\"],[\"target.value\"]]],null],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"cd-button\"],[7],[0,\"\\n        \"],[6,\"input\"],[9,\"type\",\"submit\"],[9,\"value\",\"Submit\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"cancelbookingappointment\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"prev\"]],[7],[0,\"previous\"],[8],[0,\"\\n\"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"next\"]],[7],[0,\"next\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"cd-schedule\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"timeline\"],[7],[0,\"\\n    \"],[6,\"ul\"],[7],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"09:00\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"09:30\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"10:00\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"10:30\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"11:00\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"11:30\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"12:00\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"12:30\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"13:00\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"13:30\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"14:00\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"14:30\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"15:00\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"15:30\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"16:00\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"16:30\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"17:00\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"17:30\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"18:00\"],[8],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"events\"],[7],[0,\"\\n    \"],[6,\"ul\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"weekdate\"]]],null,{\"statements\":[[0,\"        \"],[6,\"li\"],[9,\"class\",\"events-group\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"top-info\"],[7],[6,\"span\"],[7],[1,[19,1,[]],false],[8],[8],[0,\"\\n\\n          \"],[6,\"ul\"],[7],[0,\"\\n            \"],[6,\"li\"],[9,\"class\",\"single-event\"],[9,\"data-start\",\"09:30\"],[9,\"data-end\",\"10:30\"],[9,\"data-content\",\"event-abs-circuit\"],[9,\"data-event\",\"event-1\"],[7],[0,\"\\n              \"],[6,\"a\"],[9,\"href\",\"#0\"],[7],[0,\"\\n                \"],[6,\"em\"],[9,\"class\",\"event-name\"],[7],[0,\"Abs Circuit\"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"event-modal\"],[7],[0,\"\\n    \"],[6,\"header\"],[9,\"class\",\"header\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"event-date\"],[7],[8],[0,\"\\n        \"],[6,\"h3\"],[9,\"class\",\"event-name\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"header-bg\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"body\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"event-info\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"body-bg\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"a\"],[9,\"href\",\"#0\"],[9,\"class\",\"close\"],[7],[0,\"Close\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[6,\"button\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"bookAppointment\"]],[7],[0,\"\\n    Book appointment\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/book-appointment.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "QXl5Iian", "block": "{\"symbols\":[\"date\",\"b\",\"phsio\"],\"statements\":[[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[6,\"link\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/schedule-style.css\"]]],[7],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"isEditing\"]]],null,{\"statements\":[[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"fieldset\"],[7],[0,\"\\n    \"],[6,\"legend\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n\\n\\n    \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n    \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n      \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectphysio\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateValue\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n        \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"getphysio\"]]],null,{\"statements\":[[0,\"          \"],[6,\"option\"],[10,\"value\",[19,3,[\"id\"]],null],[7],[0,\"\\n            \"],[1,[19,3,[\"givenName\"]],false],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"cd-button\"],[7],[0,\"\\n        \"],[6,\"input\"],[9,\"type\",\"submit\"],[9,\"value\",\"Submit\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"cancelbookingappointment\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"prev\"]],[7],[0,\"previous\"],[8],[0,\"\\n\"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"next\"]],[7],[0,\"next\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"cd-schedule\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"timeline\"],[7],[0,\"\\n    \"],[6,\"ul\"],[7],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"09:00\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"09:30\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"10:00\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"10:30\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"11:00\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"11:30\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"12:00\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"12:30\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"13:00\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"13:30\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"14:00\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"14:30\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"15:00\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"15:30\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"16:00\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"16:30\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"17:00\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"17:30\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"18:00\"],[8],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"events\"],[7],[0,\"\\n    \"],[6,\"ul\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"weekdate\"]]],null,{\"statements\":[[0,\"        \"],[6,\"li\"],[9,\"class\",\"events-group\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"top-info\"],[7],[6,\"span\"],[7],[1,[19,1,[]],false],[8],[8],[0,\"\\n\\n          \"],[6,\"ul\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"blocks\"]]],null,{\"statements\":[[4,\"if\",[[25,\"compare\",[[19,1,[]],[19,2,[\"date\"]]],null]],null,{\"statements\":[[0,\"              \"],[6,\"li\"],[9,\"class\",\"single-event\"],[10,\"data-start\",[19,2,[\"datastart\"]],null],[10,\"data-end\",[19,2,[\"dataend\"]],null],[9,\"data-content\",\"Open\"],[10,\"data-event\",[19,2,[\"dataevent\"]],null],[7],[0,\"\\n                \"],[6,\"a\"],[9,\"href\",\"#0\"],[3,\"action\",[[19,0,[]],\"openModal\",[19,2,[]]]],[7],[0,\"\\n                  \"],[6,\"em\"],[9,\"class\",\"event-name\"],[7],[0,\"Open\"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[2]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"event-modal\"],[7],[0,\"\\n    \"],[6,\"header\"],[9,\"class\",\"header\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"event-date\"],[7],[8],[0,\"\\n        \"],[6,\"h3\"],[9,\"class\",\"event-name\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"header-bg\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"body\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"event-info\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"body-bg\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"a\"],[9,\"href\",\"#0\"],[9,\"class\",\"close\"],[7],[0,\"Close\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[6,\"button\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"bookAppointment\"]],[7],[0,\"\\n    Book appointment\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]}],[0,\"\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"saveappointment\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"fieldset\"],[7],[0,\"\\n      \"],[6,\"legend\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\" Physiotherapist\"],[8],[0,\"\\n      \"],[6,\"p\"],[7],[1,[20,[\"phyidget\",\"familyName\"]],false],[0,\" \"],[1,[20,[\"phyidget\",\"givenName\"]],false],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Reason\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"star\",\"text\",[20,[\"Reason\"]]]]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Other\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"user\",\"text\",[20,[\"Other\"]]]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Date\"],[8],[0,\"\\n        \"],[6,\"p\"],[7],[1,[20,[\"selectedappointment\",\"fulldate\"]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"cd-button\"],[7],[0,\"\\n          \"],[6,\"input\"],[9,\"type\",\"submit\"],[9,\"value\",\"Submit\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[7],[0,\"Cancel\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/book-appointment.hbs" } });
+});
+define("self-start-front-end/templates/components/confirm-booking", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "8ddAd+Jn", "block": "{\"symbols\":[],\"statements\":[[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"fieldset\"],[7],[0,\"\\n    \"],[6,\"legend\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n    \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n    \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Reason\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"star\",\"text\",[20,[\"Reason\"]]]]],false],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Other\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"user\",\"text\",[20,[\"Other\"]]]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Date\"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"cd-button\"],[7],[0,\"\\n        \"],[6,\"input\"],[9,\"type\",\"submit\"],[9,\"value\",\"Submit\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"cancelbookingappointment\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/confirm-booking.hbs" } });
 });
 define("self-start-front-end/templates/components/delete-country", ["exports"], function (exports) {
   "use strict";
@@ -6269,6 +6431,22 @@ define("self-start-front-end/templates/components/delete-status", ["exports"], f
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "jCwNEmuY", "block": "{\"symbols\":[],\"statements\":[[6,\"p\"],[9,\"style\",\"cursor: pointer;\"],[9,\"title\",\"Delete\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[6,\"i\"],[9,\"class\",\"red remove icon\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Please Confirm ...\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you need to delete this element?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"float:left; width: 50%; cursor: pointer; background: #fc7169; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/delete-status.hbs" } });
+});
+define("self-start-front-end/templates/components/draggable-object-target", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "ojpyI/OM", "block": "{\"symbols\":[\"&default\"],\"statements\":[[4,\"if\",[[20,[\"enableClicking\"]]],null,{\"statements\":[[0,\"  \"],[6,\"a\"],[9,\"href\",\"#\"],[3,\"action\",[[19,0,[]],\"acceptForDrop\"]],[7],[0,\"\\n    \"],[11,1],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[11,1],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/draggable-object-target.hbs" } });
+});
+define("self-start-front-end/templates/components/draggable-object", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "+rQudvjt", "block": "{\"symbols\":[\"&default\"],\"statements\":[[4,\"if\",[[20,[\"enableClicking\"]]],null,{\"statements\":[[0,\"  \"],[6,\"a\"],[9,\"href\",\"#\"],[3,\"action\",[[19,0,[]],\"selectForDrag\"]],[7],[0,\"\\n    \"],[11,1],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[11,1],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/draggable-object.hbs" } });
 });
 define("self-start-front-end/templates/components/edit-country", ["exports"], function (exports) {
   "use strict";
@@ -6358,6 +6536,14 @@ define("self-start-front-end/templates/components/nav-bar", ["exports"], functio
   });
   exports.default = Ember.HTMLBars.template({ "id": "f8vOieuN", "block": "{\"symbols\":[\"&default\"],\"statements\":[[0,\"\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/home-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\\n\"],[6,\"header\"],[9,\"class\",\"cd-header\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"id\",\"cd-logo\"],[7],[6,\"a\"],[7],[4,\"link-to\",[\"home\"],null,{\"statements\":[[0,\"Home\"]],\"parameters\":[]},null],[8],[8],[0,\"\\n\\n  \"],[6,\"nav\"],[9,\"class\",\"cd-main-nav\"],[7],[0,\"\\n    \"],[6,\"ul\"],[7],[0,\"\\n      \"],[2,\" inser more links here \"],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"a\"],[9,\"href\",\"#0\"],[7],[0,\"About\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"a\"],[9,\"href\",\"#0\"],[7],[0,\"How it Works\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"a\"],[9,\"href\",\"#0\"],[7],[0,\"Services\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"a\"],[9,\"href\",\"#0\"],[7],[0,\"Assessment\"],[8],[8],[0,\"\\n      \"],[6,\"li\"],[7],[6,\"a\"],[9,\"href\",\"#0\"],[7],[0,\"Blog\"],[8],[8],[0,\"\\n      \"],[6,\"a\"],[9,\"href\",\"#0\"],[7],[0,\"Contact\"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\" \"],[2,\" cd-main-nav \"],[0,\"\\n\"],[8],[0,\"\\n\"],[11,1],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/nav-bar.hbs" } });
 });
+define("self-start-front-end/templates/components/object-bin", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "5bZjN9Ry", "block": "{\"symbols\":[\"obj\",\"&default\"],\"statements\":[[4,\"draggable-object-target\",null,[[\"action\"],[\"handleObjectDropped\"]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"object-bin-title\"],[7],[1,[18,\"name\"],false],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[4,\"draggable-object\",null,[[\"action\",\"content\"],[\"handleObjectDragged\",[19,1,[]]]],{\"statements\":[[0,\"      \"],[11,2,[[19,1,[]]]],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[1]},null]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/object-bin.hbs" } });
+});
 define("self-start-front-end/templates/components/parse-question", ["exports"], function (exports) {
   "use strict";
 
@@ -6405,6 +6591,14 @@ define("self-start-front-end/templates/components/simple-example", ["exports"], 
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "Iev+6fac", "block": "{\"symbols\":[\"image\"],\"statements\":[[4,\"if\",[[20,[\"ImageIsAdding\"]]],null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[1,[25,\"upload-file\",null,[[\"model\",\"maximumFileSize\",\"multiple\",\"flag\"],[\"image\",6,true,[20,[\"ImageIsAdding\"]]]]],false],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[9,\"class\",\"ui items\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui small image\"],[7],[0,\"\\n          \"],[6,\"img\"],[10,\"src\",[26,[[19,1,[\"imageData\"]]]]],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[1,[19,1,[\"name\"]],false],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"meta\"],[7],[0,\"\\n            \"],[6,\"span\"],[7],[0,\"Size: \"],[1,[19,1,[\"size\"]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n            \"],[6,\"span\"],[7],[0,\"Type: \"],[1,[19,1,[\"type\"]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"extra\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui icon red basic button\"],[3,\"action\",[[19,0,[]],\"deleteImage\",[19,1,[]]]],[7],[0,\"\\n              \"],[6,\"i\"],[9,\"class\",\"remove icon\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[3,\"action\",[[19,0,[]],\"addNewImage\"]],[7],[0,\"\\n    Add New Image\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]}],[0,\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/simple-example.hbs" } });
+});
+define("self-start-front-end/templates/components/sortable-objects", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "ichA3L0A", "block": "{\"symbols\":[\"&default\"],\"statements\":[[11,1]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/sortable-objects.hbs" } });
 });
 define("self-start-front-end/templates/components/ui-accordion", ["exports"], function (exports) {
   "use strict";
@@ -6548,7 +6742,7 @@ define("self-start-front-end/templates/components/view-schedule", ["exports"], f
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "ap5n8Rj9", "block": "{\"symbols\":[\"date\",\"appo\",\"phsio\"],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"isEditing\"]]],null,{\"statements\":[[0,\"  \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"fieldset\"],[7],[0,\"\\n      \"],[6,\"legend\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n\\n\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n      \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n        \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectphysio\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateValue\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n          \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"getphysio\"]]],null,{\"statements\":[[0,\"            \"],[6,\"option\"],[10,\"value\",[19,3,[\"id\"]],null],[7],[0,\"\\n              \"],[1,[19,3,[\"givenName\"]],false],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"appointments_filter\"]]],null,{\"statements\":[[0,\"        \"],[6,\"p\"],[7],[1,[19,2,[\"date\"]],false],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"cd-schedule\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"timeline\"],[7],[0,\"\\n      \"],[6,\"ul\"],[7],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"09:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"09:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"10:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"10:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"11:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"11:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"12:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"12:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"13:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"13:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"14:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"14:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"15:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"15:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"16:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"16:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"17:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"17:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"18:00\"],[8],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"events\"],[7],[0,\"\\n      \"],[6,\"ul\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"weekdate\"]]],null,{\"statements\":[[0,\"          \"],[6,\"li\"],[9,\"class\",\"events-group\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"top-info\"],[7],[6,\"span\"],[7],[1,[19,1,[]],false],[8],[8],[0,\"\\n\\n            \"],[6,\"ul\"],[7],[0,\"\\n              \"],[6,\"li\"],[9,\"class\",\"single-event\"],[9,\"data-start\",\"09:30\"],[9,\"data-end\",\"10:30\"],[9,\"data-content\",\"event-abs-circuit\"],[9,\"data-event\",\"event-1\"],[7],[0,\"\\n                \"],[6,\"a\"],[9,\"href\",\"#0\"],[7],[0,\"\\n                  \"],[6,\"em\"],[9,\"class\",\"event-name\"],[7],[0,\"Abs Circuit\"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"event-modal\"],[7],[0,\"\\n      \"],[6,\"header\"],[9,\"class\",\"header\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"event-date\"],[7],[8],[0,\"\\n          \"],[6,\"h3\"],[9,\"class\",\"event-name\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"header-bg\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"body\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"event-info\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"body-bg\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"a\"],[9,\"href\",\"#0\"],[9,\"class\",\"close\"],[7],[0,\"Close\"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[6,\"button\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"viewschedule\"]],[7],[0,\"\\n    View schedule (physio)\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/view-schedule.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "xYtLS18w", "block": "{\"symbols\":[\"date\",\"appo\",\"phsio\"],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"isEditing\"]]],null,{\"statements\":[[0,\"  \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"fieldset\"],[7],[0,\"\\n      \"],[6,\"legend\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n\\n\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n      \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n        \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectphysio\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateValue\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n          \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"getphysio\"]]],null,{\"statements\":[[0,\"            \"],[6,\"option\"],[10,\"value\",[19,3,[\"id\"]],null],[7],[0,\"\\n              \"],[1,[19,3,[\"givenName\"]],false],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"appointments_filter\"]]],null,{\"statements\":[[0,\"        \"],[6,\"p\"],[7],[1,[19,2,[\"date\"]],false],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"prev\"]],[7],[0,\"previous\"],[8],[0,\"\\n  \"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"next\"]],[7],[0,\"next\"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"cd-schedule loading\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"timeline\"],[7],[0,\"\\n      \"],[6,\"ul\"],[7],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"09:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"09:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"10:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"10:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"11:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"11:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"12:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"12:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"13:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"13:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"14:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"14:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"15:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"15:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"16:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"16:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"17:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"17:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"18:00\"],[8],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"events\"],[7],[0,\"\\n      \"],[6,\"ul\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"weekdate\"]]],null,{\"statements\":[[0,\"          \"],[6,\"li\"],[9,\"class\",\"events-group\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"top-info\"],[7],[6,\"span\"],[7],[1,[19,1,[]],false],[8],[8],[0,\"\\n            \"],[6,\"ul\"],[7],[0,\"\\n              \"],[6,\"li\"],[9,\"class\",\"single-event\"],[9,\"data-start\",\"09:00\"],[9,\"data-end\",\"10:30\"],[9,\"data-content\",\"Open\"],[10,\"data-event\",[26,[[18,\"event\"]]]],[3,\"action\",[[19,0,[]],\"setslot\",1,[19,1,[]]]],[7],[0,\"\\n                \"],[6,\"a\"],[9,\"href\",\"#0\"],[7],[0,\"\\n                  \"],[6,\"span\"],[9,\"class\",\"event-date\"],[7],[0,\"  9  -  10:30\"],[8],[0,\"\\n                  \"],[6,\"em\"],[9,\"class\",\"event-name\"],[7],[0,\"slot1\"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"li\"],[9,\"class\",\"single-event\"],[9,\"value\",\"1\"],[9,\"data-start\",\"10:30\"],[9,\"data-end\",\"12:00\"],[9,\"data-content\",\"Open\"],[10,\"data-event\",[26,[[18,\"event\"]]]],[3,\"action\",[[19,0,[]],\"setslot\",2,[19,1,[]]]],[7],[0,\"\\n                \"],[6,\"a\"],[9,\"href\",\"#0\"],[7],[0,\"\\n                  \"],[6,\"span\"],[9,\"class\",\"event-date\"],[7],[0,\"  10:30  -  12:00\"],[8],[0,\"\\n                  \"],[6,\"em\"],[9,\"class\",\"event-name\"],[7],[0,\"slot2\"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"li\"],[9,\"class\",\"single-event\"],[9,\"data-start\",\"12:00\"],[9,\"data-end\",\"13:30\"],[9,\"data-content\",\"Open\"],[10,\"data-event\",[18,\"event\"],null],[3,\"action\",[[19,0,[]],\"setslot\",3,[19,1,[]]]],[7],[0,\"\\n                \"],[6,\"a\"],[9,\"href\",\"#0\"],[7],[0,\"\\n                  \"],[6,\"span\"],[9,\"class\",\"event-date\"],[7],[0,\"  12:00  -  13:30\"],[8],[0,\"\\n                  \"],[6,\"em\"],[9,\"class\",\"event-name\"],[7],[0,\"Slot3\"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"li\"],[9,\"class\",\"single-event\"],[9,\"data-start\",\"13:30\"],[9,\"data-end\",\"15:00\"],[9,\"data-content\",\"Open\"],[10,\"data-event\",[18,\"event\"],null],[3,\"action\",[[19,0,[]],\"setslot\",4,[19,1,[]]]],[7],[0,\"\\n\\n                \"],[6,\"a\"],[9,\"href\",\"#0\"],[7],[0,\"\\n                  \"],[6,\"span\"],[9,\"class\",\"event-date\"],[7],[0,\"  13:30  -  15:00\"],[8],[0,\"\\n                  \"],[6,\"em\"],[9,\"class\",\"event-name\"],[7],[0,\"Slot4\"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"event-modal\"],[7],[0,\"\\n      \"],[6,\"header\"],[9,\"class\",\"header\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"event-date\"],[7],[8],[0,\"\\n          \"],[6,\"h3\"],[9,\"class\",\"event-name\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"header-bg\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"body\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"event-info\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"body-bg\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"a\"],[9,\"href\",\"#0\"],[9,\"class\",\"close\"],[7],[0,\"Close\"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"button\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"save\"]],[7],[0,\"\\n    Save\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[6,\"button\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"viewschedule\"]],[7],[0,\"\\n    View schedule (physio)\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/view-schedule.hbs" } });
 });
 define("self-start-front-end/templates/components/welcome-page", ["exports"], function (exports) {
   "use strict";
@@ -7093,6 +7287,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+9441e7d8"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+864d611e"});
 }
 //# sourceMappingURL=self-start-front-end.map
