@@ -33,14 +33,14 @@ router.route('/')
 
     })
     .get( function (request, response) {
-        let { limit, offset, sort, dir } = request.query;
+        let {limit, offset, sort, dir, queryPath, regex} = request.query;
         if(!limit) {
             Patients.Model.find(function (error, patients) {
                 if (error) response.send(error);
                 response.json({patient: patients});
             });
         }
-        else{
+        else {
             //  let users = schema.users.all().models;
             //  let users = Users.Model;
 
@@ -49,27 +49,29 @@ router.route('/')
             dir = dir || 'asc';
             sort = sort || 'id';
 
-            var query   = {};
+            let query = {};
+            if (regex !== '')
+                query[queryPath] = new RegExp(regex, "i");
+
             var sortOrder = sort;
             if (sortOrder) {
                 if (dir !== 'asc') {
-                    sortOrder = '-'+sort;
+                    sortOrder = '-' + sort;
                 }
             }
+
             let options = {
-                sort:      sortOrder ,
-                lean:     true,
-                offset:   offset,
-                limit:    limit
+                sort: sortOrder,
+                lean: true,
+                offset: offset,
+                limit: limit
             };
 
-            Patients.Model.paginate(query, options, function(error, patients) {
+            Patients.Model.paginate(query, options, function (error, patients) {
                 if (error) response.send(error);
                 response.json({patient: patients.docs});
             });
-
         }
-
     });
 
 // router.route('/Authenticate')
