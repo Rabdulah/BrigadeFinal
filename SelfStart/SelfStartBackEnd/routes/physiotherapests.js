@@ -58,9 +58,9 @@ router.route('/:physiotherapest_id')
         })
         
         .delete(function (request, response) {
-            Physiotherapest.Model.findByIdAndRemove(request.params.recommendations_id, function (error, deleted) {
+            Physiotherapest.Model.findByIdAndRemove(request.params.physiotherapest_id, function (error, deleted) {
                 if (!error) {
-                    response.json({recommendation: deleted});
+                    response.json({physiotherapest: deleted});
                 }
             });
         });
