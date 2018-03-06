@@ -16,7 +16,12 @@ Router.map(function() {
   this.route('new-patient');
   this.route('appointment');
   this.route('patient-file');
-  this.route('admin', function() {});
+  this.route('admin');
+  this.route('exercises');
+  this.route('images');
+  this.route('register');
+  this.route('dashboard');
+  this.route('message');
 });
 
 export default Router;

@@ -6,6 +6,8 @@ export default Component.extend({
   DS: inject('store'),
 
   actions: {
+
+
     openModal: function ()  {
       this.set('name', null);
 

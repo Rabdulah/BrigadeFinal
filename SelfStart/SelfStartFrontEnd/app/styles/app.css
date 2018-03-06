@@ -2,6 +2,10 @@
   /*width: 1400px;*/
 /*}*/
 
+.ui.divider {
+  margin: 0.8rem 0rem !important;
+}
+
 #login {
   background: #efd469;
   color: darkslategrey !important;
