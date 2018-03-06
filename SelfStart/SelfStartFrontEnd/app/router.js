@@ -31,7 +31,7 @@ Router.map(function() {
   this.route('new-exercise');
   this.route('physiotherapists');
   this.route('new-physiotherapist');
-  //this.route('update-physiotherapist');
+  this.route('update-physiotherapist',{ path: 'physiotherapist/:physiotherapest_id'});
 });
 
 export default Router;

@@ -15,12 +15,12 @@
           <li>{{physiotherapest.givenName}} {{physiotherapest.familyName}}
             <p style="float: right;">{{delete-physiotherapist ID=physiotherapest.id}}</p>
 
-
             <p style="float: right; padding-right: 2%; cursor: pointer;" title="Edit">
-              {{edit-physiotherapist ID=physiotherapest.id}}
-                
-           
+              {{#link-to 'update-physiotherapist' physiotherapest.id}}
+                <i class="grey write icon"></i>
+              {{/link-to}}
             </p>
+
 
           </li>
 
