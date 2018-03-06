@@ -5,7 +5,8 @@ var formsSchema = mongoose.Schema({
     description: String,
     author: {type: mongoose.Schema.ObjectId, ref: 'Administrators'},
     questions: [{type: mongoose.Schema.ObjectId, ref: 'Questions'}],
-    assessmentTest: [{type: mongoose.Schema.ObjectId, ref: 'AssessmentTests'}]
+    assessmentTest: [{type: mongoose.Schema.ObjectId, ref: 'AssessmentTests'}],
+    answer: [{type: mongoose.Schema.ObjectId, ref: 'Answers'}]
 });
 
 var Forms = mongoose.model('form', formsSchema);

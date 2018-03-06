@@ -27,7 +27,7 @@ actions: {
       });
     });
 
-    this.get('DS').findRecord('question', this.get('qid')).then((rec) => {
+    this.get('DS').findRecord('question', qid).then((rec) => {
       rec.save().then(()=>{
       });
     });

@@ -89110,6 +89110,1572 @@ $.fn.visibility.settings = {
 
 })( jQuery, window, document );
 
+;/*! =======================================================
+                      VERSION  6.0.17              
+========================================================= */
+"use strict";
+
+function _typeof(obj) { return obj && typeof Symbol !== "undefined" && obj.constructor === Symbol ? "symbol" : typeof obj; }
+
+/*! =========================================================
+ * bootstrap-slider.js
+ *
+ * Maintainers:
+ *		Kyle Kemp
+ *			- Twitter: @seiyria
+ *			- Github:  seiyria
+ *		Rohit Kalkur
+ *			- Twitter: @Rovolutionary
+ *			- Github:  rovolution
+ *
+ * =========================================================
+ *
+ * Licensed under the Apache License, Version 2.0 (the "License");
+ * you may not use this file except in compliance with the License.
+ * You may obtain a copy of the License at
+ *
+ * http://www.apache.org/licenses/LICENSE-2.0
+ *
+ * Unless required by applicable law or agreed to in writing, software
+ * distributed under the License is distributed on an "AS IS" BASIS,
+ * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+ * See the License for the specific language governing permissions and
+ * limitations under the License.
+ * ========================================================= */
+
+/**
+ * Bridget makes jQuery widgets
+ * v1.0.1
+ * MIT license
+ */
+
+(function (factory) {
+	if (typeof define === "function" && define.amd) {
+		define(["jquery"], factory);
+	} else if ((typeof module === "undefined" ? "undefined" : _typeof(module)) === "object" && module.exports) {
+		var jQuery;
+		try {
+			jQuery = require("jquery");
+		} catch (err) {
+			jQuery = null;
+		}
+		module.exports = factory(jQuery);
+	} else if (window) {
+		window.Slider = factory(window.jQuery);
+	}
+})(function ($) {
+	// Reference to Slider constructor
+	var Slider;
+
+	(function ($) {
+
+		'use strict';
+
+		// -------------------------- utils -------------------------- //
+
+		var slice = Array.prototype.slice;
+
+		function noop() {}
+
+		// -------------------------- definition -------------------------- //
+
+		function defineBridget($) {
+
+			// bail if no jQuery
+			if (!$) {
+				return;
+			}
+
+			// -------------------------- addOptionMethod -------------------------- //
+
+			/**
+    * adds option method -> $().plugin('option', {...})
+    * @param {Function} PluginClass - constructor class
+    */
+			function addOptionMethod(PluginClass) {
+				// don't overwrite original option method
+				if (PluginClass.prototype.option) {
+					return;
+				}
+
+				// option setter
+				PluginClass.prototype.option = function (opts) {
+					// bail out if not an object
+					if (!$.isPlainObject(opts)) {
+						return;
+					}
+					this.options = $.extend(true, this.options, opts);
+				};
+			}
+
+			// -------------------------- plugin bridge -------------------------- //
+
+			// helper function for logging errors
+			// $.error breaks jQuery chaining
+			var logError = typeof console === 'undefined' ? noop : function (message) {
+				console.error(message);
+			};
+
+			/**
+    * jQuery plugin bridge, access methods like $elem.plugin('method')
+    * @param {String} namespace - plugin name
+    * @param {Function} PluginClass - constructor class
+    */
+			function bridge(namespace, PluginClass) {
+				// add to jQuery fn namespace
+				$.fn[namespace] = function (options) {
+					if (typeof options === 'string') {
+						// call plugin method when first argument is a string
+						// get arguments for method
+						var args = slice.call(arguments, 1);
+
+						for (var i = 0, len = this.length; i < len; i++) {
+							var elem = this[i];
+							var instance = $.data(elem, namespace);
+							if (!instance) {
+								logError("cannot call methods on " + namespace + " prior to initialization; " + "attempted to call '" + options + "'");
+								continue;
+							}
+							if (!$.isFunction(instance[options]) || options.charAt(0) === '_') {
+								logError("no such method '" + options + "' for " + namespace + " instance");
+								continue;
+							}
+
+							// trigger method with arguments
+							var returnValue = instance[options].apply(instance, args);
+
+							// break look and return first value if provided
+							if (returnValue !== undefined && returnValue !== instance) {
+								return returnValue;
+							}
+						}
+						// return this if no return value
+						return this;
+					} else {
+						var objects = this.map(function () {
+							var instance = $.data(this, namespace);
+							if (instance) {
+								// apply options & init
+								instance.option(options);
+								instance._init();
+							} else {
+								// initialize new instance
+								instance = new PluginClass(this, options);
+								$.data(this, namespace, instance);
+							}
+							return $(this);
+						});
+
+						if (!objects || objects.length > 1) {
+							return objects;
+						} else {
+							return objects[0];
+						}
+					}
+				};
+			}
+
+			// -------------------------- bridget -------------------------- //
+
+			/**
+    * converts a Prototypical class into a proper jQuery plugin
+    *   the class must have a ._init method
+    * @param {String} namespace - plugin name, used in $().pluginName
+    * @param {Function} PluginClass - constructor class
+    */
+			$.bridget = function (namespace, PluginClass) {
+				addOptionMethod(PluginClass);
+				bridge(namespace, PluginClass);
+			};
+
+			return $.bridget;
+		}
+
+		// get jquery from browser global
+		defineBridget($);
+	})($);
+
+	/*************************************************
+ 			BOOTSTRAP-SLIDER SOURCE CODE
+ 	**************************************************/
+
+	(function ($) {
+
+		var ErrorMsgs = {
+			formatInvalidInputErrorMsg: function formatInvalidInputErrorMsg(input) {
+				return "Invalid input value '" + input + "' passed in";
+			},
+			callingContextNotSliderInstance: "Calling context element does not have instance of Slider bound to it. Check your code to make sure the JQuery object returned from the call to the slider() initializer is calling the method"
+		};
+
+		var SliderScale = {
+			linear: {
+				toValue: function toValue(percentage) {
+					var rawValue = percentage / 100 * (this.options.max - this.options.min);
+					var shouldAdjustWithBase = true;
+					if (this.options.ticks_positions.length > 0) {
+						var minv,
+						    maxv,
+						    minp,
+						    maxp = 0;
+						for (var i = 1; i < this.options.ticks_positions.length; i++) {
+							if (percentage <= this.options.ticks_positions[i]) {
+								minv = this.options.ticks[i - 1];
+								minp = this.options.ticks_positions[i - 1];
+								maxv = this.options.ticks[i];
+								maxp = this.options.ticks_positions[i];
+
+								break;
+							}
+						}
+						var partialPercentage = (percentage - minp) / (maxp - minp);
+						rawValue = minv + partialPercentage * (maxv - minv);
+						shouldAdjustWithBase = false;
+					}
+
+					var adjustment = shouldAdjustWithBase ? this.options.min : 0;
+					var value = adjustment + Math.round(rawValue / this.options.step) * this.options.step;
+					if (value < this.options.min) {
+						return this.options.min;
+					} else if (value > this.options.max) {
+						return this.options.max;
+					} else {
+						return value;
+					}
+				},
+				toPercentage: function toPercentage(value) {
+					if (this.options.max === this.options.min) {
+						return 0;
+					}
+
+					if (this.options.ticks_positions.length > 0) {
+						var minv,
+						    maxv,
+						    minp,
+						    maxp = 0;
+						for (var i = 0; i < this.options.ticks.length; i++) {
+							if (value <= this.options.ticks[i]) {
+								minv = i > 0 ? this.options.ticks[i - 1] : 0;
+								minp = i > 0 ? this.options.ticks_positions[i - 1] : 0;
+								maxv = this.options.ticks[i];
+								maxp = this.options.ticks_positions[i];
+
+								break;
+							}
+						}
+						if (i > 0) {
+							var partialPercentage = (value - minv) / (maxv - minv);
+							return minp + partialPercentage * (maxp - minp);
+						}
+					}
+
+					return 100 * (value - this.options.min) / (this.options.max - this.options.min);
+				}
+			},
+
+			logarithmic: {
+				/* Based on http://stackoverflow.com/questions/846221/logarithmic-slider */
+				toValue: function toValue(percentage) {
+					var min = this.options.min === 0 ? 0 : Math.log(this.options.min);
+					var max = Math.log(this.options.max);
+					var value = Math.exp(min + (max - min) * percentage / 100);
+					value = this.options.min + Math.round((value - this.options.min) / this.options.step) * this.options.step;
+					/* Rounding to the nearest step could exceed the min or
+      * max, so clip to those values. */
+					if (value < this.options.min) {
+						return this.options.min;
+					} else if (value > this.options.max) {
+						return this.options.max;
+					} else {
+						return value;
+					}
+				},
+				toPercentage: function toPercentage(value) {
+					if (this.options.max === this.options.min) {
+						return 0;
+					} else {
+						var max = Math.log(this.options.max);
+						var min = this.options.min === 0 ? 0 : Math.log(this.options.min);
+						var v = value === 0 ? 0 : Math.log(value);
+						return 100 * (v - min) / (max - min);
+					}
+				}
+			}
+		};
+
+		/*************************************************
+  						CONSTRUCTOR
+  	**************************************************/
+		Slider = function (element, options) {
+			createNewSlider.call(this, element, options);
+			return this;
+		};
+
+		function createNewSlider(element, options) {
+
+			/*
+   	The internal state object is used to store data about the current 'state' of slider.
+   		This includes values such as the `value`, `enabled`, etc...
+   */
+			this._state = {
+				value: null,
+				enabled: null,
+				offset: null,
+				size: null,
+				percentage: null,
+				inDrag: false,
+				over: false
+			};
+
+			if (typeof element === "string") {
+				this.element = document.querySelector(element);
+			} else if (element instanceof HTMLElement) {
+				this.element = element;
+			}
+
+			/*************************************************
+   					Process Options
+   	**************************************************/
+			options = options ? options : {};
+			var optionTypes = Object.keys(this.defaultOptions);
+
+			for (var i = 0; i < optionTypes.length; i++) {
+				var optName = optionTypes[i];
+
+				// First check if an option was passed in via the constructor
+				var val = options[optName];
+				// If no data attrib, then check data atrributes
+				val = typeof val !== 'undefined' ? val : getDataAttrib(this.element, optName);
+				// Finally, if nothing was specified, use the defaults
+				val = val !== null ? val : this.defaultOptions[optName];
+
+				// Set all options on the instance of the Slider
+				if (!this.options) {
+					this.options = {};
+				}
+				this.options[optName] = val;
+			}
+
+			/*
+   	Validate `tooltip_position` against 'orientation`
+   	- if `tooltip_position` is incompatible with orientation, swith it to a default compatible with specified `orientation`
+   		-- default for "vertical" -> "right"
+   		-- default for "horizontal" -> "left"
+   */
+			if (this.options.orientation === "vertical" && (this.options.tooltip_position === "top" || this.options.tooltip_position === "bottom")) {
+
+				this.options.tooltip_position = "right";
+			} else if (this.options.orientation === "horizontal" && (this.options.tooltip_position === "left" || this.options.tooltip_position === "right")) {
+
+				this.options.tooltip_position = "top";
+			}
+
+			function getDataAttrib(element, optName) {
+				var dataName = "data-slider-" + optName.replace(/_/g, '-');
+				var dataValString = element.getAttribute(dataName);
+
+				try {
+					return JSON.parse(dataValString);
+				} catch (err) {
+					return dataValString;
+				}
+			}
+
+			/*************************************************
+   					Create Markup
+   	**************************************************/
+
+			var origWidth = this.element.style.width;
+			var updateSlider = false;
+			var parent = this.element.parentNode;
+			var sliderTrackSelection;
+			var sliderTrackLow, sliderTrackHigh;
+			var sliderMinHandle;
+			var sliderMaxHandle;
+
+			if (this.sliderElem) {
+				updateSlider = true;
+			} else {
+				/* Create elements needed for slider */
+				this.sliderElem = document.createElement("div");
+				this.sliderElem.className = "slider";
+
+				/* Create slider track elements */
+				var sliderTrack = document.createElement("div");
+				sliderTrack.className = "slider-track";
+
+				sliderTrackLow = document.createElement("div");
+				sliderTrackLow.className = "slider-track-low";
+
+				sliderTrackSelection = document.createElement("div");
+				sliderTrackSelection.className = "slider-selection";
+
+				sliderTrackHigh = document.createElement("div");
+				sliderTrackHigh.className = "slider-track-high";
+
+				sliderMinHandle = document.createElement("div");
+				sliderMinHandle.className = "slider-handle min-slider-handle";
+				sliderMinHandle.setAttribute('role', 'slider');
+				sliderMinHandle.setAttribute('aria-valuemin', this.options.min);
+				sliderMinHandle.setAttribute('aria-valuemax', this.options.max);
+
+				sliderMaxHandle = document.createElement("div");
+				sliderMaxHandle.className = "slider-handle max-slider-handle";
+				sliderMaxHandle.setAttribute('role', 'slider');
+				sliderMaxHandle.setAttribute('aria-valuemin', this.options.min);
+				sliderMaxHandle.setAttribute('aria-valuemax', this.options.max);
+
+				sliderTrack.appendChild(sliderTrackLow);
+				sliderTrack.appendChild(sliderTrackSelection);
+				sliderTrack.appendChild(sliderTrackHigh);
+
+				/* Add aria-labelledby to handle's */
+				var isLabelledbyArray = Array.isArray(this.options.labelledby);
+				if (isLabelledbyArray && this.options.labelledby[0]) {
+					sliderMinHandle.setAttribute('aria-labelledby', this.options.labelledby[0]);
+				}
+				if (isLabelledbyArray && this.options.labelledby[1]) {
+					sliderMaxHandle.setAttribute('aria-labelledby', this.options.labelledby[1]);
+				}
+				if (!isLabelledbyArray && this.options.labelledby) {
+					sliderMinHandle.setAttribute('aria-labelledby', this.options.labelledby);
+					sliderMaxHandle.setAttribute('aria-labelledby', this.options.labelledby);
+				}
+
+				/* Create ticks */
+				this.ticks = [];
+				if (Array.isArray(this.options.ticks) && this.options.ticks.length > 0) {
+					for (i = 0; i < this.options.ticks.length; i++) {
+						var tick = document.createElement('div');
+						tick.className = 'slider-tick';
+
+						this.ticks.push(tick);
+						sliderTrack.appendChild(tick);
+					}
+
+					sliderTrackSelection.className += " tick-slider-selection";
+				}
+
+				sliderTrack.appendChild(sliderMinHandle);
+				sliderTrack.appendChild(sliderMaxHandle);
+
+				this.tickLabels = [];
+				if (Array.isArray(this.options.ticks_labels) && this.options.ticks_labels.length > 0) {
+					this.tickLabelContainer = document.createElement('div');
+					this.tickLabelContainer.className = 'slider-tick-label-container';
+
+					for (i = 0; i < this.options.ticks_labels.length; i++) {
+						var label = document.createElement('div');
+						var noTickPositionsSpecified = this.options.ticks_positions.length === 0;
+						var tickLabelsIndex = this.options.reversed && noTickPositionsSpecified ? this.options.ticks_labels.length - (i + 1) : i;
+						label.className = 'slider-tick-label';
+						label.innerHTML = this.options.ticks_labels[tickLabelsIndex];
+
+						this.tickLabels.push(label);
+						this.tickLabelContainer.appendChild(label);
+					}
+				}
+
+				var createAndAppendTooltipSubElements = function createAndAppendTooltipSubElements(tooltipElem) {
+					var arrow = document.createElement("div");
+					arrow.className = "tooltip-arrow";
+
+					var inner = document.createElement("div");
+					inner.className = "tooltip-inner";
+
+					tooltipElem.appendChild(arrow);
+					tooltipElem.appendChild(inner);
+				};
+
+				/* Create tooltip elements */
+				var sliderTooltip = document.createElement("div");
+				sliderTooltip.className = "tooltip tooltip-main";
+				sliderTooltip.setAttribute('role', 'presentation');
+				createAndAppendTooltipSubElements(sliderTooltip);
+
+				var sliderTooltipMin = document.createElement("div");
+				sliderTooltipMin.className = "tooltip tooltip-min";
+				sliderTooltipMin.setAttribute('role', 'presentation');
+				createAndAppendTooltipSubElements(sliderTooltipMin);
+
+				var sliderTooltipMax = document.createElement("div");
+				sliderTooltipMax.className = "tooltip tooltip-max";
+				sliderTooltipMax.setAttribute('role', 'presentation');
+				createAndAppendTooltipSubElements(sliderTooltipMax);
+
+				/* Append components to sliderElem */
+				this.sliderElem.appendChild(sliderTrack);
+				this.sliderElem.appendChild(sliderTooltip);
+				this.sliderElem.appendChild(sliderTooltipMin);
+				this.sliderElem.appendChild(sliderTooltipMax);
+
+				if (this.tickLabelContainer) {
+					this.sliderElem.appendChild(this.tickLabelContainer);
+				}
+
+				/* Append slider element to parent container, right before the original <input> element */
+				parent.insertBefore(this.sliderElem, this.element);
+
+				/* Hide original <input> element */
+				this.element.style.display = "none";
+			}
+			/* If JQuery exists, cache JQ references */
+			if ($) {
+				this.$element = $(this.element);
+				this.$sliderElem = $(this.sliderElem);
+			}
+
+			/*************************************************
+   						Setup
+   	**************************************************/
+			this.eventToCallbackMap = {};
+			this.sliderElem.id = this.options.id;
+
+			this.touchCapable = 'ontouchstart' in window || window.DocumentTouch && document instanceof window.DocumentTouch;
+
+			this.tooltip = this.sliderElem.querySelector('.tooltip-main');
+			this.tooltipInner = this.tooltip.querySelector('.tooltip-inner');
+
+			this.tooltip_min = this.sliderElem.querySelector('.tooltip-min');
+			this.tooltipInner_min = this.tooltip_min.querySelector('.tooltip-inner');
+
+			this.tooltip_max = this.sliderElem.querySelector('.tooltip-max');
+			this.tooltipInner_max = this.tooltip_max.querySelector('.tooltip-inner');
+
+			if (SliderScale[this.options.scale]) {
+				this.options.scale = SliderScale[this.options.scale];
+			}
+
+			if (updateSlider === true) {
+				// Reset classes
+				this._removeClass(this.sliderElem, 'slider-horizontal');
+				this._removeClass(this.sliderElem, 'slider-vertical');
+				this._removeClass(this.tooltip, 'hide');
+				this._removeClass(this.tooltip_min, 'hide');
+				this._removeClass(this.tooltip_max, 'hide');
+
+				// Undo existing inline styles for track
+				["left", "top", "width", "height"].forEach(function (prop) {
+					this._removeProperty(this.trackLow, prop);
+					this._removeProperty(this.trackSelection, prop);
+					this._removeProperty(this.trackHigh, prop);
+				}, this);
+
+				// Undo inline styles on handles
+				[this.handle1, this.handle2].forEach(function (handle) {
+					this._removeProperty(handle, 'left');
+					this._removeProperty(handle, 'top');
+				}, this);
+
+				// Undo inline styles and classes on tooltips
+				[this.tooltip, this.tooltip_min, this.tooltip_max].forEach(function (tooltip) {
+					this._removeProperty(tooltip, 'left');
+					this._removeProperty(tooltip, 'top');
+					this._removeProperty(tooltip, 'margin-left');
+					this._removeProperty(tooltip, 'margin-top');
+
+					this._removeClass(tooltip, 'right');
+					this._removeClass(tooltip, 'top');
+				}, this);
+			}
+
+			if (this.options.orientation === 'vertical') {
+				this._addClass(this.sliderElem, 'slider-vertical');
+				this.stylePos = 'top';
+				this.mousePos = 'pageY';
+				this.sizePos = 'offsetHeight';
+			} else {
+				this._addClass(this.sliderElem, 'slider-horizontal');
+				this.sliderElem.style.width = origWidth;
+				this.options.orientation = 'horizontal';
+				this.stylePos = 'left';
+				this.mousePos = 'pageX';
+				this.sizePos = 'offsetWidth';
+			}
+			this._setTooltipPosition();
+			/* In case ticks are specified, overwrite the min and max bounds */
+			if (Array.isArray(this.options.ticks) && this.options.ticks.length > 0) {
+				this.options.max = Math.max.apply(Math, this.options.ticks);
+				this.options.min = Math.min.apply(Math, this.options.ticks);
+			}
+
+			if (Array.isArray(this.options.value)) {
+				this.options.range = true;
+				this._state.value = this.options.value;
+			} else if (this.options.range) {
+				// User wants a range, but value is not an array
+				this._state.value = [this.options.value, this.options.max];
+			} else {
+				this._state.value = this.options.value;
+			}
+
+			this.trackLow = sliderTrackLow || this.trackLow;
+			this.trackSelection = sliderTrackSelection || this.trackSelection;
+			this.trackHigh = sliderTrackHigh || this.trackHigh;
+
+			if (this.options.selection === 'none') {
+				this._addClass(this.trackLow, 'hide');
+				this._addClass(this.trackSelection, 'hide');
+				this._addClass(this.trackHigh, 'hide');
+			}
+
+			this.handle1 = sliderMinHandle || this.handle1;
+			this.handle2 = sliderMaxHandle || this.handle2;
+
+			if (updateSlider === true) {
+				// Reset classes
+				this._removeClass(this.handle1, 'round triangle');
+				this._removeClass(this.handle2, 'round triangle hide');
+
+				for (i = 0; i < this.ticks.length; i++) {
+					this._removeClass(this.ticks[i], 'round triangle hide');
+				}
+			}
+
+			var availableHandleModifiers = ['round', 'triangle', 'custom'];
+			var isValidHandleType = availableHandleModifiers.indexOf(this.options.handle) !== -1;
+			if (isValidHandleType) {
+				this._addClass(this.handle1, this.options.handle);
+				this._addClass(this.handle2, this.options.handle);
+
+				for (i = 0; i < this.ticks.length; i++) {
+					this._addClass(this.ticks[i], this.options.handle);
+				}
+			}
+
+			this._state.offset = this._offset(this.sliderElem);
+			this._state.size = this.sliderElem[this.sizePos];
+			this.setValue(this._state.value);
+
+			/******************************************
+   				Bind Event Listeners
+   	******************************************/
+
+			// Bind keyboard handlers
+			this.handle1Keydown = this._keydown.bind(this, 0);
+			this.handle1.addEventListener("keydown", this.handle1Keydown, false);
+
+			this.handle2Keydown = this._keydown.bind(this, 1);
+			this.handle2.addEventListener("keydown", this.handle2Keydown, false);
+
+			this.mousedown = this._mousedown.bind(this);
+			if (this.touchCapable) {
+				// Bind touch handlers
+				this.sliderElem.addEventListener("touchstart", this.mousedown, false);
+			}
+			this.sliderElem.addEventListener("mousedown", this.mousedown, false);
+
+			// Bind window handlers
+			this.resize = this._resize.bind(this);
+			window.addEventListener("resize", this.resize, false);
+
+			// Bind tooltip-related handlers
+			if (this.options.tooltip === 'hide') {
+				this._addClass(this.tooltip, 'hide');
+				this._addClass(this.tooltip_min, 'hide');
+				this._addClass(this.tooltip_max, 'hide');
+			} else if (this.options.tooltip === 'always') {
+				this._showTooltip();
+				this._alwaysShowTooltip = true;
+			} else {
+				this.showTooltip = this._showTooltip.bind(this);
+				this.hideTooltip = this._hideTooltip.bind(this);
+
+				this.sliderElem.addEventListener("mouseenter", this.showTooltip, false);
+				this.sliderElem.addEventListener("mouseleave", this.hideTooltip, false);
+
+				this.handle1.addEventListener("focus", this.showTooltip, false);
+				this.handle1.addEventListener("blur", this.hideTooltip, false);
+
+				this.handle2.addEventListener("focus", this.showTooltip, false);
+				this.handle2.addEventListener("blur", this.hideTooltip, false);
+			}
+
+			if (this.options.enabled) {
+				this.enable();
+			} else {
+				this.disable();
+			}
+		}
+
+		/*************************************************
+  				INSTANCE PROPERTIES/METHODS
+  	- Any methods bound to the prototype are considered
+  part of the plugin's `public` interface
+  	**************************************************/
+		Slider.prototype = {
+			_init: function _init() {}, // NOTE: Must exist to support bridget
+
+			constructor: Slider,
+
+			defaultOptions: {
+				id: "",
+				min: 0,
+				max: 10,
+				step: 1,
+				precision: 0,
+				orientation: 'horizontal',
+				value: 5,
+				range: false,
+				selection: 'before',
+				tooltip: 'show',
+				tooltip_split: false,
+				handle: 'round',
+				reversed: false,
+				enabled: true,
+				formatter: function formatter(val) {
+					if (Array.isArray(val)) {
+						return val[0] + " : " + val[1];
+					} else {
+						return val;
+					}
+				},
+				natural_arrow_keys: false,
+				ticks: [],
+				ticks_positions: [],
+				ticks_labels: [],
+				ticks_snap_bounds: 0,
+				scale: 'linear',
+				focus: false,
+				tooltip_position: null,
+				labelledby: null
+			},
+
+			getElement: function getElement() {
+				return this.sliderElem;
+			},
+
+			getValue: function getValue() {
+				if (this.options.range) {
+					return this._state.value;
+				} else {
+					return this._state.value[0];
+				}
+			},
+
+			setValue: function setValue(val, triggerSlideEvent, triggerChangeEvent) {
+				if (!val) {
+					val = 0;
+				}
+				var oldValue = this.getValue();
+				this._state.value = this._validateInputValue(val);
+				var applyPrecision = this._applyPrecision.bind(this);
+
+				if (this.options.range) {
+					this._state.value[0] = applyPrecision(this._state.value[0]);
+					this._state.value[1] = applyPrecision(this._state.value[1]);
+
+					this._state.value[0] = Math.max(this.options.min, Math.min(this.options.max, this._state.value[0]));
+					this._state.value[1] = Math.max(this.options.min, Math.min(this.options.max, this._state.value[1]));
+				} else {
+					this._state.value = applyPrecision(this._state.value);
+					this._state.value = [Math.max(this.options.min, Math.min(this.options.max, this._state.value))];
+					this._addClass(this.handle2, 'hide');
+					if (this.options.selection === 'after') {
+						this._state.value[1] = this.options.max;
+					} else {
+						this._state.value[1] = this.options.min;
+					}
+				}
+
+				if (this.options.max > this.options.min) {
+					this._state.percentage = [this._toPercentage(this._state.value[0]), this._toPercentage(this._state.value[1]), this.options.step * 100 / (this.options.max - this.options.min)];
+				} else {
+					this._state.percentage = [0, 0, 100];
+				}
+
+				this._layout();
+				var newValue = this.options.range ? this._state.value : this._state.value[0];
+
+				this._setDataVal(newValue);
+				if (triggerSlideEvent === true) {
+					this._trigger('slide', newValue);
+				}
+				if (oldValue !== newValue && triggerChangeEvent === true) {
+					this._trigger('change', {
+						oldValue: oldValue,
+						newValue: newValue
+					});
+				}
+
+				return this;
+			},
+
+			destroy: function destroy() {
+				// Remove event handlers on slider elements
+				this._removeSliderEventHandlers();
+
+				// Remove the slider from the DOM
+				this.sliderElem.parentNode.removeChild(this.sliderElem);
+				/* Show original <input> element */
+				this.element.style.display = "";
+
+				// Clear out custom event bindings
+				this._cleanUpEventCallbacksMap();
+
+				// Remove data values
+				this.element.removeAttribute("data");
+
+				// Remove JQuery handlers/data
+				if ($) {
+					this._unbindJQueryEventHandlers();
+					this.$element.removeData('slider');
+				}
+			},
+
+			disable: function disable() {
+				this._state.enabled = false;
+				this.handle1.removeAttribute("tabindex");
+				this.handle2.removeAttribute("tabindex");
+				this._addClass(this.sliderElem, 'slider-disabled');
+				this._trigger('slideDisabled');
+
+				return this;
+			},
+
+			enable: function enable() {
+				this._state.enabled = true;
+				this.handle1.setAttribute("tabindex", 0);
+				this.handle2.setAttribute("tabindex", 0);
+				this._removeClass(this.sliderElem, 'slider-disabled');
+				this._trigger('slideEnabled');
+
+				return this;
+			},
+
+			toggle: function toggle() {
+				if (this._state.enabled) {
+					this.disable();
+				} else {
+					this.enable();
+				}
+				return this;
+			},
+
+			isEnabled: function isEnabled() {
+				return this._state.enabled;
+			},
+
+			on: function on(evt, callback) {
+				this._bindNonQueryEventHandler(evt, callback);
+				return this;
+			},
+
+			off: function off(evt, callback) {
+				if ($) {
+					this.$element.off(evt, callback);
+					this.$sliderElem.off(evt, callback);
+				} else {
+					this._unbindNonQueryEventHandler(evt, callback);
+				}
+			},
+
+			getAttribute: function getAttribute(attribute) {
+				if (attribute) {
+					return this.options[attribute];
+				} else {
+					return this.options;
+				}
+			},
+
+			setAttribute: function setAttribute(attribute, value) {
+				this.options[attribute] = value;
+				return this;
+			},
+
+			refresh: function refresh() {
+				this._removeSliderEventHandlers();
+				createNewSlider.call(this, this.element, this.options);
+				if ($) {
+					// Bind new instance of slider to the element
+					$.data(this.element, 'slider', this);
+				}
+				return this;
+			},
+
+			relayout: function relayout() {
+				this._layout();
+				return this;
+			},
+
+			/******************************+
+   				HELPERS
+   	- Any method that is not part of the public interface.
+   - Place it underneath this comment block and write its signature like so:
+   	  					_fnName : function() {...}
+   	********************************/
+			_removeSliderEventHandlers: function _removeSliderEventHandlers() {
+				// Remove keydown event listeners
+				this.handle1.removeEventListener("keydown", this.handle1Keydown, false);
+				this.handle2.removeEventListener("keydown", this.handle2Keydown, false);
+
+				if (this.showTooltip) {
+					this.handle1.removeEventListener("focus", this.showTooltip, false);
+					this.handle2.removeEventListener("focus", this.showTooltip, false);
+				}
+				if (this.hideTooltip) {
+					this.handle1.removeEventListener("blur", this.hideTooltip, false);
+					this.handle2.removeEventListener("blur", this.hideTooltip, false);
+				}
+
+				// Remove event listeners from sliderElem
+				if (this.showTooltip) {
+					this.sliderElem.removeEventListener("mouseenter", this.showTooltip, false);
+				}
+				if (this.hideTooltip) {
+					this.sliderElem.removeEventListener("mouseleave", this.hideTooltip, false);
+				}
+				this.sliderElem.removeEventListener("touchstart", this.mousedown, false);
+				this.sliderElem.removeEventListener("mousedown", this.mousedown, false);
+
+				// Remove window event listener
+				window.removeEventListener("resize", this.resize, false);
+			},
+			_bindNonQueryEventHandler: function _bindNonQueryEventHandler(evt, callback) {
+				if (this.eventToCallbackMap[evt] === undefined) {
+					this.eventToCallbackMap[evt] = [];
+				}
+				this.eventToCallbackMap[evt].push(callback);
+			},
+			_unbindNonQueryEventHandler: function _unbindNonQueryEventHandler(evt, callback) {
+				var callbacks = this.eventToCallbackMap[evt];
+				if (callbacks !== undefined) {
+					for (var i = 0; i < callbacks.length; i++) {
+						if (callbacks[i] === callback) {
+							callbacks.splice(i, 1);
+							break;
+						}
+					}
+				}
+			},
+			_cleanUpEventCallbacksMap: function _cleanUpEventCallbacksMap() {
+				var eventNames = Object.keys(this.eventToCallbackMap);
+				for (var i = 0; i < eventNames.length; i++) {
+					var eventName = eventNames[i];
+					this.eventToCallbackMap[eventName] = null;
+				}
+			},
+			_showTooltip: function _showTooltip() {
+				if (this.options.tooltip_split === false) {
+					this._addClass(this.tooltip, 'in');
+					this.tooltip_min.style.display = 'none';
+					this.tooltip_max.style.display = 'none';
+				} else {
+					this._addClass(this.tooltip_min, 'in');
+					this._addClass(this.tooltip_max, 'in');
+					this.tooltip.style.display = 'none';
+				}
+				this._state.over = true;
+			},
+			_hideTooltip: function _hideTooltip() {
+				if (this._state.inDrag === false && this.alwaysShowTooltip !== true) {
+					this._removeClass(this.tooltip, 'in');
+					this._removeClass(this.tooltip_min, 'in');
+					this._removeClass(this.tooltip_max, 'in');
+				}
+				this._state.over = false;
+			},
+			_layout: function _layout() {
+				var positionPercentages;
+
+				if (this.options.reversed) {
+					positionPercentages = [100 - this._state.percentage[0], this.options.range ? 100 - this._state.percentage[1] : this._state.percentage[1]];
+				} else {
+					positionPercentages = [this._state.percentage[0], this._state.percentage[1]];
+				}
+
+				this.handle1.style[this.stylePos] = positionPercentages[0] + '%';
+				this.handle1.setAttribute('aria-valuenow', this._state.value[0]);
+
+				this.handle2.style[this.stylePos] = positionPercentages[1] + '%';
+				this.handle2.setAttribute('aria-valuenow', this._state.value[1]);
+
+				/* Position ticks and labels */
+				if (Array.isArray(this.options.ticks) && this.options.ticks.length > 0) {
+
+					var styleSize = this.options.orientation === 'vertical' ? 'height' : 'width';
+					var styleMargin = this.options.orientation === 'vertical' ? 'marginTop' : 'marginLeft';
+					var labelSize = this._state.size / (this.options.ticks.length - 1);
+
+					if (this.tickLabelContainer) {
+						var extraMargin = 0;
+						if (this.options.ticks_positions.length === 0) {
+							if (this.options.orientation !== 'vertical') {
+								this.tickLabelContainer.style[styleMargin] = -labelSize / 2 + 'px';
+							}
+
+							extraMargin = this.tickLabelContainer.offsetHeight;
+						} else {
+							/* Chidren are position absolute, calculate height by finding the max offsetHeight of a child */
+							for (i = 0; i < this.tickLabelContainer.childNodes.length; i++) {
+								if (this.tickLabelContainer.childNodes[i].offsetHeight > extraMargin) {
+									extraMargin = this.tickLabelContainer.childNodes[i].offsetHeight;
+								}
+							}
+						}
+						if (this.options.orientation === 'horizontal') {
+							this.sliderElem.style.marginBottom = extraMargin + 'px';
+						}
+					}
+					for (var i = 0; i < this.options.ticks.length; i++) {
+
+						var percentage = this.options.ticks_positions[i] || this._toPercentage(this.options.ticks[i]);
+
+						if (this.options.reversed) {
+							percentage = 100 - percentage;
+						}
+
+						this.ticks[i].style[this.stylePos] = percentage + '%';
+
+						/* Set class labels to denote whether ticks are in the selection */
+						this._removeClass(this.ticks[i], 'in-selection');
+						if (!this.options.range) {
+							if (this.options.selection === 'after' && percentage >= positionPercentages[0]) {
+								this._addClass(this.ticks[i], 'in-selection');
+							} else if (this.options.selection === 'before' && percentage <= positionPercentages[0]) {
+								this._addClass(this.ticks[i], 'in-selection');
+							}
+						} else if (percentage >= positionPercentages[0] && percentage <= positionPercentages[1]) {
+							this._addClass(this.ticks[i], 'in-selection');
+						}
+
+						if (this.tickLabels[i]) {
+							this.tickLabels[i].style[styleSize] = labelSize + 'px';
+
+							if (this.options.orientation !== 'vertical' && this.options.ticks_positions[i] !== undefined) {
+								this.tickLabels[i].style.position = 'absolute';
+								this.tickLabels[i].style[this.stylePos] = percentage + '%';
+								this.tickLabels[i].style[styleMargin] = -labelSize / 2 + 'px';
+							} else if (this.options.orientation === 'vertical') {
+								this.tickLabels[i].style['marginLeft'] = this.sliderElem.offsetWidth + 'px';
+								this.tickLabelContainer.style['marginTop'] = this.sliderElem.offsetWidth / 2 * -1 + 'px';
+							}
+						}
+					}
+				}
+
+				var formattedTooltipVal;
+
+				if (this.options.range) {
+					formattedTooltipVal = this.options.formatter(this._state.value);
+					this._setText(this.tooltipInner, formattedTooltipVal);
+					this.tooltip.style[this.stylePos] = (positionPercentages[1] + positionPercentages[0]) / 2 + '%';
+
+					if (this.options.orientation === 'vertical') {
+						this._css(this.tooltip, 'margin-top', -this.tooltip.offsetHeight / 2 + 'px');
+					} else {
+						this._css(this.tooltip, 'margin-left', -this.tooltip.offsetWidth / 2 + 'px');
+					}
+
+					if (this.options.orientation === 'vertical') {
+						this._css(this.tooltip, 'margin-top', -this.tooltip.offsetHeight / 2 + 'px');
+					} else {
+						this._css(this.tooltip, 'margin-left', -this.tooltip.offsetWidth / 2 + 'px');
+					}
+
+					var innerTooltipMinText = this.options.formatter(this._state.value[0]);
+					this._setText(this.tooltipInner_min, innerTooltipMinText);
+
+					var innerTooltipMaxText = this.options.formatter(this._state.value[1]);
+					this._setText(this.tooltipInner_max, innerTooltipMaxText);
+
+					this.tooltip_min.style[this.stylePos] = positionPercentages[0] + '%';
+
+					if (this.options.orientation === 'vertical') {
+						this._css(this.tooltip_min, 'margin-top', -this.tooltip_min.offsetHeight / 2 + 'px');
+					} else {
+						this._css(this.tooltip_min, 'margin-left', -this.tooltip_min.offsetWidth / 2 + 'px');
+					}
+
+					this.tooltip_max.style[this.stylePos] = positionPercentages[1] + '%';
+
+					if (this.options.orientation === 'vertical') {
+						this._css(this.tooltip_max, 'margin-top', -this.tooltip_max.offsetHeight / 2 + 'px');
+					} else {
+						this._css(this.tooltip_max, 'margin-left', -this.tooltip_max.offsetWidth / 2 + 'px');
+					}
+				} else {
+					formattedTooltipVal = this.options.formatter(this._state.value[0]);
+					this._setText(this.tooltipInner, formattedTooltipVal);
+
+					this.tooltip.style[this.stylePos] = positionPercentages[0] + '%';
+					if (this.options.orientation === 'vertical') {
+						this._css(this.tooltip, 'margin-top', -this.tooltip.offsetHeight / 2 + 'px');
+					} else {
+						this._css(this.tooltip, 'margin-left', -this.tooltip.offsetWidth / 2 + 'px');
+					}
+				}
+
+				if (this.options.orientation === 'vertical') {
+					this.trackLow.style.top = '0';
+					this.trackLow.style.height = Math.min(positionPercentages[0], positionPercentages[1]) + '%';
+
+					this.trackSelection.style.top = Math.min(positionPercentages[0], positionPercentages[1]) + '%';
+					this.trackSelection.style.height = Math.abs(positionPercentages[0] - positionPercentages[1]) + '%';
+
+					this.trackHigh.style.bottom = '0';
+					this.trackHigh.style.height = 100 - Math.min(positionPercentages[0], positionPercentages[1]) - Math.abs(positionPercentages[0] - positionPercentages[1]) + '%';
+				} else {
+					this.trackLow.style.left = '0';
+					this.trackLow.style.width = Math.min(positionPercentages[0], positionPercentages[1]) + '%';
+
+					this.trackSelection.style.left = Math.min(positionPercentages[0], positionPercentages[1]) + '%';
+					this.trackSelection.style.width = Math.abs(positionPercentages[0] - positionPercentages[1]) + '%';
+
+					this.trackHigh.style.right = '0';
+					this.trackHigh.style.width = 100 - Math.min(positionPercentages[0], positionPercentages[1]) - Math.abs(positionPercentages[0] - positionPercentages[1]) + '%';
+
+					var offset_min = this.tooltip_min.getBoundingClientRect();
+					var offset_max = this.tooltip_max.getBoundingClientRect();
+
+					if (this.options.tooltip_position === 'bottom') {
+						if (offset_min.right > offset_max.left) {
+							this._removeClass(this.tooltip_max, 'bottom');
+							this._addClass(this.tooltip_max, 'top');
+							this.tooltip_max.style.top = '';
+							this.tooltip_max.style.bottom = 22 + 'px';
+						} else {
+							this._removeClass(this.tooltip_max, 'top');
+							this._addClass(this.tooltip_max, 'bottom');
+							this.tooltip_max.style.top = this.tooltip_min.style.top;
+							this.tooltip_max.style.bottom = '';
+						}
+					} else {
+						if (offset_min.right > offset_max.left) {
+							this._removeClass(this.tooltip_max, 'top');
+							this._addClass(this.tooltip_max, 'bottom');
+							this.tooltip_max.style.top = 18 + 'px';
+						} else {
+							this._removeClass(this.tooltip_max, 'bottom');
+							this._addClass(this.tooltip_max, 'top');
+							this.tooltip_max.style.top = this.tooltip_min.style.top;
+						}
+					}
+				}
+			},
+			_resize: function _resize(ev) {
+				/*jshint unused:false*/
+				this._state.offset = this._offset(this.sliderElem);
+				this._state.size = this.sliderElem[this.sizePos];
+				this._layout();
+			},
+			_removeProperty: function _removeProperty(element, prop) {
+				if (element.style.removeProperty) {
+					element.style.removeProperty(prop);
+				} else {
+					element.style.removeAttribute(prop);
+				}
+			},
+			_mousedown: function _mousedown(ev) {
+				if (!this._state.enabled) {
+					return false;
+				}
+
+				this._state.offset = this._offset(this.sliderElem);
+				this._state.size = this.sliderElem[this.sizePos];
+
+				var percentage = this._getPercentage(ev);
+
+				if (this.options.range) {
+					var diff1 = Math.abs(this._state.percentage[0] - percentage);
+					var diff2 = Math.abs(this._state.percentage[1] - percentage);
+					this._state.dragged = diff1 < diff2 ? 0 : 1;
+				} else {
+					this._state.dragged = 0;
+				}
+
+				this._state.percentage[this._state.dragged] = percentage;
+				this._layout();
+
+				if (this.touchCapable) {
+					document.removeEventListener("touchmove", this.mousemove, false);
+					document.removeEventListener("touchend", this.mouseup, false);
+				}
+
+				if (this.mousemove) {
+					document.removeEventListener("mousemove", this.mousemove, false);
+				}
+				if (this.mouseup) {
+					document.removeEventListener("mouseup", this.mouseup, false);
+				}
+
+				this.mousemove = this._mousemove.bind(this);
+				this.mouseup = this._mouseup.bind(this);
+
+				if (this.touchCapable) {
+					// Touch: Bind touch events:
+					document.addEventListener("touchmove", this.mousemove, false);
+					document.addEventListener("touchend", this.mouseup, false);
+				}
+				// Bind mouse events:
+				document.addEventListener("mousemove", this.mousemove, false);
+				document.addEventListener("mouseup", this.mouseup, false);
+
+				this._state.inDrag = true;
+				var newValue = this._calculateValue();
+
+				this._trigger('slideStart', newValue);
+
+				this._setDataVal(newValue);
+				this.setValue(newValue, false, true);
+
+				this._pauseEvent(ev);
+
+				if (this.options.focus) {
+					this._triggerFocusOnHandle(this._state.dragged);
+				}
+
+				return true;
+			},
+			_triggerFocusOnHandle: function _triggerFocusOnHandle(handleIdx) {
+				if (handleIdx === 0) {
+					this.handle1.focus();
+				}
+				if (handleIdx === 1) {
+					this.handle2.focus();
+				}
+			},
+			_keydown: function _keydown(handleIdx, ev) {
+				if (!this._state.enabled) {
+					return false;
+				}
+
+				var dir;
+				switch (ev.keyCode) {
+					case 37: // left
+					case 40:
+						// down
+						dir = -1;
+						break;
+					case 39: // right
+					case 38:
+						// up
+						dir = 1;
+						break;
+				}
+				if (!dir) {
+					return;
+				}
+
+				// use natural arrow keys instead of from min to max
+				if (this.options.natural_arrow_keys) {
+					var ifVerticalAndNotReversed = this.options.orientation === 'vertical' && !this.options.reversed;
+					var ifHorizontalAndReversed = this.options.orientation === 'horizontal' && this.options.reversed;
+
+					if (ifVerticalAndNotReversed || ifHorizontalAndReversed) {
+						dir = -dir;
+					}
+				}
+
+				var val = this._state.value[handleIdx] + dir * this.options.step;
+				if (this.options.range) {
+					val = [!handleIdx ? val : this._state.value[0], handleIdx ? val : this._state.value[1]];
+				}
+
+				this._trigger('slideStart', val);
+				this._setDataVal(val);
+				this.setValue(val, true, true);
+
+				this._setDataVal(val);
+				this._trigger('slideStop', val);
+				this._layout();
+
+				this._pauseEvent(ev);
+
+				return false;
+			},
+			_pauseEvent: function _pauseEvent(ev) {
+				if (ev.stopPropagation) {
+					ev.stopPropagation();
+				}
+				if (ev.preventDefault) {
+					ev.preventDefault();
+				}
+				ev.cancelBubble = true;
+				ev.returnValue = false;
+			},
+			_mousemove: function _mousemove(ev) {
+				if (!this._state.enabled) {
+					return false;
+				}
+
+				var percentage = this._getPercentage(ev);
+				this._adjustPercentageForRangeSliders(percentage);
+				this._state.percentage[this._state.dragged] = percentage;
+				this._layout();
+
+				var val = this._calculateValue(true);
+				this.setValue(val, true, true);
+
+				return false;
+			},
+			_adjustPercentageForRangeSliders: function _adjustPercentageForRangeSliders(percentage) {
+				if (this.options.range) {
+					var precision = this._getNumDigitsAfterDecimalPlace(percentage);
+					precision = precision ? precision - 1 : 0;
+					var percentageWithAdjustedPrecision = this._applyToFixedAndParseFloat(percentage, precision);
+					if (this._state.dragged === 0 && this._applyToFixedAndParseFloat(this._state.percentage[1], precision) < percentageWithAdjustedPrecision) {
+						this._state.percentage[0] = this._state.percentage[1];
+						this._state.dragged = 1;
+					} else if (this._state.dragged === 1 && this._applyToFixedAndParseFloat(this._state.percentage[0], precision) > percentageWithAdjustedPrecision) {
+						this._state.percentage[1] = this._state.percentage[0];
+						this._state.dragged = 0;
+					}
+				}
+			},
+			_mouseup: function _mouseup() {
+				if (!this._state.enabled) {
+					return false;
+				}
+				if (this.touchCapable) {
+					// Touch: Unbind touch event handlers:
+					document.removeEventListener("touchmove", this.mousemove, false);
+					document.removeEventListener("touchend", this.mouseup, false);
+				}
+				// Unbind mouse event handlers:
+				document.removeEventListener("mousemove", this.mousemove, false);
+				document.removeEventListener("mouseup", this.mouseup, false);
+
+				this._state.inDrag = false;
+				if (this._state.over === false) {
+					this._hideTooltip();
+				}
+				var val = this._calculateValue(true);
+
+				this._layout();
+				this._setDataVal(val);
+				this._trigger('slideStop', val);
+
+				return false;
+			},
+			_calculateValue: function _calculateValue(snapToClosestTick) {
+				var val;
+				if (this.options.range) {
+					val = [this.options.min, this.options.max];
+					if (this._state.percentage[0] !== 0) {
+						val[0] = this._toValue(this._state.percentage[0]);
+						val[0] = this._applyPrecision(val[0]);
+					}
+					if (this._state.percentage[1] !== 100) {
+						val[1] = this._toValue(this._state.percentage[1]);
+						val[1] = this._applyPrecision(val[1]);
+					}
+				} else {
+					val = this._toValue(this._state.percentage[0]);
+					val = parseFloat(val);
+					val = this._applyPrecision(val);
+				}
+
+				if (snapToClosestTick) {
+					var min = [val, Infinity];
+					for (var i = 0; i < this.options.ticks.length; i++) {
+						var diff = Math.abs(this.options.ticks[i] - val);
+						if (diff <= min[1]) {
+							min = [this.options.ticks[i], diff];
+						}
+					}
+					if (min[1] <= this.options.ticks_snap_bounds) {
+						return min[0];
+					}
+				}
+
+				return val;
+			},
+			_applyPrecision: function _applyPrecision(val) {
+				var precision = this.options.precision || this._getNumDigitsAfterDecimalPlace(this.options.step);
+				return this._applyToFixedAndParseFloat(val, precision);
+			},
+			_getNumDigitsAfterDecimalPlace: function _getNumDigitsAfterDecimalPlace(num) {
+				var match = ('' + num).match(/(?:\.(\d+))?(?:[eE]([+-]?\d+))?$/);
+				if (!match) {
+					return 0;
+				}
+				return Math.max(0, (match[1] ? match[1].length : 0) - (match[2] ? +match[2] : 0));
+			},
+			_applyToFixedAndParseFloat: function _applyToFixedAndParseFloat(num, toFixedInput) {
+				var truncatedNum = num.toFixed(toFixedInput);
+				return parseFloat(truncatedNum);
+			},
+			/*
+   	Credits to Mike Samuel for the following method!
+   	Source: http://stackoverflow.com/questions/10454518/javascript-how-to-retrieve-the-number-of-decimals-of-a-string-number
+   */
+			_getPercentage: function _getPercentage(ev) {
+				if (this.touchCapable && (ev.type === 'touchstart' || ev.type === 'touchmove')) {
+					ev = ev.touches[0];
+				}
+
+				var eventPosition = ev[this.mousePos];
+				var sliderOffset = this._state.offset[this.stylePos];
+				var distanceToSlide = eventPosition - sliderOffset;
+				// Calculate what percent of the length the slider handle has slid
+				var percentage = distanceToSlide / this._state.size * 100;
+				percentage = Math.round(percentage / this._state.percentage[2]) * this._state.percentage[2];
+				if (this.options.reversed) {
+					percentage = 100 - percentage;
+				}
+
+				// Make sure the percent is within the bounds of the slider.
+				// 0% corresponds to the 'min' value of the slide
+				// 100% corresponds to the 'max' value of the slide
+				return Math.max(0, Math.min(100, percentage));
+			},
+			_validateInputValue: function _validateInputValue(val) {
+				if (typeof val === 'number') {
+					return val;
+				} else if (Array.isArray(val)) {
+					this._validateArray(val);
+					return val;
+				} else {
+					throw new Error(ErrorMsgs.formatInvalidInputErrorMsg(val));
+				}
+			},
+			_validateArray: function _validateArray(val) {
+				for (var i = 0; i < val.length; i++) {
+					var input = val[i];
+					if (typeof input !== 'number') {
+						throw new Error(ErrorMsgs.formatInvalidInputErrorMsg(input));
+					}
+				}
+			},
+			_setDataVal: function _setDataVal(val) {
+				this.element.setAttribute('data-value', val);
+				this.element.setAttribute('value', val);
+				this.element.value = val;
+			},
+			_trigger: function _trigger(evt, val) {
+				val = val || val === 0 ? val : undefined;
+
+				var callbackFnArray = this.eventToCallbackMap[evt];
+				if (callbackFnArray && callbackFnArray.length) {
+					for (var i = 0; i < callbackFnArray.length; i++) {
+						var callbackFn = callbackFnArray[i];
+						callbackFn(val);
+					}
+				}
+
+				/* If JQuery exists, trigger JQuery events */
+				if ($) {
+					this._triggerJQueryEvent(evt, val);
+				}
+			},
+			_triggerJQueryEvent: function _triggerJQueryEvent(evt, val) {
+				var eventData = {
+					type: evt,
+					value: val
+				};
+				this.$element.trigger(eventData);
+				this.$sliderElem.trigger(eventData);
+			},
+			_unbindJQueryEventHandlers: function _unbindJQueryEventHandlers() {
+				this.$element.off();
+				this.$sliderElem.off();
+			},
+			_setText: function _setText(element, text) {
+				if (typeof element.textContent !== "undefined") {
+					element.textContent = text;
+				} else if (typeof element.innerText !== "undefined") {
+					element.innerText = text;
+				}
+			},
+			_removeClass: function _removeClass(element, classString) {
+				var classes = classString.split(" ");
+				var newClasses = element.className;
+
+				for (var i = 0; i < classes.length; i++) {
+					var classTag = classes[i];
+					var regex = new RegExp("(?:\\s|^)" + classTag + "(?:\\s|$)");
+					newClasses = newClasses.replace(regex, " ");
+				}
+
+				element.className = newClasses.trim();
+			},
+			_addClass: function _addClass(element, classString) {
+				var classes = classString.split(" ");
+				var newClasses = element.className;
+
+				for (var i = 0; i < classes.length; i++) {
+					var classTag = classes[i];
+					var regex = new RegExp("(?:\\s|^)" + classTag + "(?:\\s|$)");
+					var ifClassExists = regex.test(newClasses);
+
+					if (!ifClassExists) {
+						newClasses += " " + classTag;
+					}
+				}
+
+				element.className = newClasses.trim();
+			},
+			_offsetLeft: function _offsetLeft(obj) {
+				return obj.getBoundingClientRect().left;
+			},
+			_offsetTop: function _offsetTop(obj) {
+				var offsetTop = obj.offsetTop;
+				while ((obj = obj.offsetParent) && !isNaN(obj.offsetTop)) {
+					offsetTop += obj.offsetTop;
+					if (obj.tagName !== 'BODY') {
+						offsetTop -= obj.scrollTop;
+					}
+				}
+				return offsetTop;
+			},
+			_offset: function _offset(obj) {
+				return {
+					left: this._offsetLeft(obj),
+					top: this._offsetTop(obj)
+				};
+			},
+			_css: function _css(elementRef, styleName, value) {
+				if ($) {
+					$.style(elementRef, styleName, value);
+				} else {
+					var style = styleName.replace(/^-ms-/, "ms-").replace(/-([\da-z])/gi, function (all, letter) {
+						return letter.toUpperCase();
+					});
+					elementRef.style[style] = value;
+				}
+			},
+			_toValue: function _toValue(percentage) {
+				return this.options.scale.toValue.apply(this, [percentage]);
+			},
+			_toPercentage: function _toPercentage(value) {
+				return this.options.scale.toPercentage.apply(this, [value]);
+			},
+			_setTooltipPosition: function _setTooltipPosition() {
+				var tooltips = [this.tooltip, this.tooltip_min, this.tooltip_max];
+				if (this.options.orientation === 'vertical') {
+					var tooltipPos = this.options.tooltip_position || 'right';
+					var oppositeSide = tooltipPos === 'left' ? 'right' : 'left';
+					tooltips.forEach((function (tooltip) {
+						this._addClass(tooltip, tooltipPos);
+						tooltip.style[oppositeSide] = '100%';
+					}).bind(this));
+				} else if (this.options.tooltip_position === 'bottom') {
+					tooltips.forEach((function (tooltip) {
+						this._addClass(tooltip, 'bottom');
+						tooltip.style.top = 22 + 'px';
+					}).bind(this));
+				} else {
+					tooltips.forEach((function (tooltip) {
+						this._addClass(tooltip, 'top');
+						tooltip.style.top = -this.tooltip.outerHeight - 14 + 'px';
+					}).bind(this));
+				}
+			}
+		};
+
+		/*********************************
+  		Attach to global namespace
+  	*********************************/
+		if ($) {
+			var namespace = $.fn.slider ? 'bootstrapSlider' : 'slider';
+			$.bridget(namespace, Slider);
+		}
+	})($);
+
+	return Slider;
+});
+
 ;define('ember-ajax/-private/promise', ['exports'], function (exports) {
   'use strict';
 
@@ -89437,1362 +91003,6 @@ $.fn.visibility.settings = {
    */
   function AjaxError(payload) {
     var message = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : 'Ajax operation failed';
-
-    EmberError.call(this, message);
-
-    this.payload = payload;
-  }
-
-  AjaxError.prototype = Object.create(EmberError.prototype);
-
-  /**
-   * @class InvalidError
-   * @public
-   * @extends AjaxError
-   */
-  function InvalidError(payload) {
-    AjaxError.call(this, payload, 'Request was rejected because it was invalid');
-  }
-
-  InvalidError.prototype = Object.create(AjaxError.prototype);
-
-  /**
-   * @class UnauthorizedError
-   * @public
-   * @extends AjaxError
-   */
-  function UnauthorizedError(payload) {
-    AjaxError.call(this, payload, 'Ajax authorization failed');
-  }
-
-  UnauthorizedError.prototype = Object.create(AjaxError.prototype);
-
-  /**
-   * @class ForbiddenError
-   * @public
-   * @extends AjaxError
-   */
-  function ForbiddenError(payload) {
-    AjaxError.call(this, payload, 'Request was rejected because user is not permitted to perform this operation.');
-  }
-
-  ForbiddenError.prototype = Object.create(AjaxError.prototype);
-
-  /**
-   * @class BadRequestError
-   * @public
-   * @extends AjaxError
-   */
-  function BadRequestError(payload) {
-    AjaxError.call(this, payload, 'Request was formatted incorrectly.');
-  }
-
-  BadRequestError.prototype = Object.create(AjaxError.prototype);
-
-  /**
-   * @class NotFoundError
-   * @public
-   * @extends AjaxError
-   */
-  function NotFoundError(payload) {
-    AjaxError.call(this, payload, 'Resource was not found.');
-  }
-
-  NotFoundError.prototype = Object.create(AjaxError.prototype);
-
-  /**
-   * @class TimeoutError
-   * @public
-   * @extends AjaxError
-   */
-  function TimeoutError() {
-    AjaxError.call(this, null, 'The ajax operation timed out');
-  }
-
-  TimeoutError.prototype = Object.create(AjaxError.prototype);
-
-  /**
-   * @class AbortError
-   * @public
-   * @extends AjaxError
-   */
-  function AbortError() {
-    AjaxError.call(this, null, 'The ajax operation was aborted');
-  }
-
-  AbortError.prototype = Object.create(AjaxError.prototype);
-
-  /**
-   * @class ConflictError
-   * @public
-   * @extends AjaxError
-   */
-  function ConflictError(payload) {
-    AjaxError.call(this, payload, 'The ajax operation failed due to a conflict');
-  }
-
-  ConflictError.prototype = Object.create(AjaxError.prototype);
-
-  /**
-   * @class ServerError
-   * @public
-   * @extends AjaxError
-   */
-  function ServerError(payload) {
-    AjaxError.call(this, payload, 'Request was rejected due to server error');
-  }
-
-  ServerError.prototype = Object.create(AjaxError.prototype);
-
-  /**
-   * Checks if the given error is or inherits from AjaxError
-   *
-   * @method isAjaxError
-   * @public
-   * @param  {Error} error
-   * @return {Boolean}
-   */
-  function isAjaxError(error) {
-    return error instanceof AjaxError;
-  }
-
-  /**
-   * Checks if the given status code or AjaxError object represents an
-   * unauthorized request error
-   *
-   * @method isUnauthorizedError
-   * @public
-   * @param  {Number | AjaxError} error
-   * @return {Boolean}
-   */
-  function isUnauthorizedError(error) {
-    if (isAjaxError(error)) {
-      return error instanceof UnauthorizedError;
-    } else {
-      return error === 401;
-    }
-  }
-
-  /**
-   * Checks if the given status code or AjaxError object represents a forbidden
-   * request error
-   *
-   * @method isForbiddenError
-   * @public
-   * @param  {Number | AjaxError} error
-   * @return {Boolean}
-   */
-  function isForbiddenError(error) {
-    if (isAjaxError(error)) {
-      return error instanceof ForbiddenError;
-    } else {
-      return error === 403;
-    }
-  }
-
-  /**
-   * Checks if the given status code or AjaxError object represents an invalid
-   * request error
-   *
-   * @method isInvalidError
-   * @public
-   * @param  {Number | AjaxError} error
-   * @return {Boolean}
-   */
-  function isInvalidError(error) {
-    if (isAjaxError(error)) {
-      return error instanceof InvalidError;
-    } else {
-      return error === 422;
-    }
-  }
-
-  /**
-   * Checks if the given status code or AjaxError object represents a bad request
-   * error
-   *
-   * @method isBadRequestError
-   * @public
-   * @param  {Number | AjaxError} error
-   * @return {Boolean}
-   */
-  function isBadRequestError(error) {
-    if (isAjaxError(error)) {
-      return error instanceof BadRequestError;
-    } else {
-      return error === 400;
-    }
-  }
-
-  /**
-   * Checks if the given status code or AjaxError object represents a
-   * "not found" error
-   *
-   * @method isNotFoundError
-   * @public
-   * @param  {Number | AjaxError} error
-   * @return {Boolean}
-   */
-  function isNotFoundError(error) {
-    if (isAjaxError(error)) {
-      return error instanceof NotFoundError;
-    } else {
-      return error === 404;
-    }
-  }
-
-  /**
-   * Checks if the given status code or AjaxError object represents a
-   * "timeout" error
-   *
-   * @method isTimeoutError
-   * @public
-   * @param  {AjaxError} error
-   * @return {Boolean}
-   */
-  function isTimeoutError(error) {
-    return error instanceof TimeoutError;
-  }
-
-  /**
-   * Checks if the given status code or AjaxError object represents an
-   * "abort" error
-   *
-   * @method isAbortError
-   * @public
-   * @param  {AjaxError} error
-   * @return {Boolean}
-   */
-  function isAbortError(error) {
-    if (isAjaxError(error)) {
-      return error instanceof AbortError;
-    } else {
-      return error === 0;
-    }
-  }
-
-  /**
-   * Checks if the given status code or AjaxError object represents a
-   * conflict error
-   *
-   * @method isConflictError
-   * @public
-   * @param  {Number | AjaxError} error
-   * @return {Boolean}
-   */
-  function isConflictError(error) {
-    if (isAjaxError(error)) {
-      return error instanceof ConflictError;
-    } else {
-      return error === 409;
-    }
-  }
-
-  /**
-   * Checks if the given status code or AjaxError object represents a server error
-   *
-   * @method isServerError
-   * @public
-   * @param  {Number | AjaxError} error
-   * @return {Boolean}
-   */
-  function isServerError(error) {
-    if (isAjaxError(error)) {
-      return error instanceof ServerError;
-    } else {
-      return error >= 500 && error < 600;
-    }
-  }
-
-  /**
-   * Checks if the given status code represents a successful request
-   *
-   * @method isSuccess
-   * @public
-   * @param  {Number} status
-   * @return {Boolean}
-   */
-  function isSuccess(status) {
-    var s = parseInt(status, 10);
-
-    return s >= 200 && s < 300 || s === 304;
-  }
-});
-;define('ember-ajax/index', ['exports', 'ember-ajax/request'], function (exports, _request) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _request.default;
-    }
-  });
-});
-;define('ember-ajax/mixins/ajax-request', ['exports', 'ember-ajax/errors', 'ember-ajax/utils/ajax', 'ember-ajax/-private/utils/parse-response-headers', 'ember-ajax/-private/utils/get-header', 'ember-ajax/-private/utils/url-helpers', 'ember-ajax/-private/utils/is-string', 'ember-ajax/-private/promise'], function (exports, _errors, _ajax, _parseResponseHeaders, _getHeader, _urlHelpers, _isString, _promise) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-
-  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-    return typeof obj;
-  } : function (obj) {
-    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-  };
-
-  var A = Ember.A,
-      EmberError = Ember.Error,
-      Logger = Ember.Logger,
-      Mixin = Ember.Mixin,
-      Test = Ember.Test,
-      get = Ember.get,
-      isEmpty = Ember.isEmpty,
-      merge = Ember.merge,
-      run = Ember.run,
-      runInDebug = Ember.runInDebug,
-      testing = Ember.testing,
-      warn = Ember.warn;
-
-  var JSONContentType = /^application\/(?:vnd\.api\+)?json/i;
-
-  function isJSONContentType(header) {
-    if (!(0, _isString.default)(header)) {
-      return false;
-    }
-    return !!header.match(JSONContentType);
-  }
-
-  function isJSONStringifyable(method, _ref) {
-    var contentType = _ref.contentType,
-        data = _ref.data,
-        headers = _ref.headers;
-
-    if (method === 'GET') {
-      return false;
-    }
-
-    if (!isJSONContentType(contentType) && !isJSONContentType((0, _getHeader.default)(headers, 'Content-Type'))) {
-      return false;
-    }
-
-    if ((typeof data === 'undefined' ? 'undefined' : _typeof(data)) !== 'object') {
-      return false;
-    }
-
-    return true;
-  }
-
-  function startsWithSlash(string) {
-    return string.charAt(0) === '/';
-  }
-
-  function endsWithSlash(string) {
-    return string.charAt(string.length - 1) === '/';
-  }
-
-  function removeLeadingSlash(string) {
-    return string.substring(1);
-  }
-
-  function stripSlashes(path) {
-    // make sure path starts with `/`
-    if (startsWithSlash(path)) {
-      path = removeLeadingSlash(path);
-    }
-
-    // remove end `/`
-    if (endsWithSlash(path)) {
-      path = path.slice(0, -1);
-    }
-    return path;
-  }
-
-  var pendingRequestCount = 0;
-  if (testing) {
-    Test.registerWaiter(function () {
-      return pendingRequestCount === 0;
-    });
-  }
-
-  /**
-   * AjaxRequest Mixin
-   *
-   * @public
-   * @mixin
-   */
-  exports.default = Mixin.create({
-
-    /**
-     * The default value for the request `contentType`
-     *
-     * For now, defaults to the same value that jQuery would assign.  In the
-     * future, the default value will be for JSON requests.
-     * @property {string} contentType
-     * @public
-     * @default
-     */
-    contentType: 'application/x-www-form-urlencoded; charset=UTF-8',
-
-    /**
-     * Headers to include on the request
-     *
-     * Some APIs require HTTP headers, e.g. to provide an API key. Arbitrary
-     * headers can be set as key/value pairs on the `RESTAdapter`'s `headers`
-     * object and Ember Data will send them along with each ajax request.
-     *
-     * ```javascript
-     * // app/services/ajax.js
-     * import AjaxService from 'ember-ajax/services/ajax';
-     *
-     * export default AjaxService.extend({
-     *   headers: {
-     *     'API_KEY': 'secret key',
-     *     'ANOTHER_HEADER': 'Some header value'
-     *   }
-     * });
-     * ```
-     *
-     * `headers` can also be used as a computed property to support dynamic
-     * headers.
-     *
-     * ```javascript
-     * // app/services/ajax.js
-     * import Ember from 'ember';
-     * import AjaxService from 'ember-ajax/services/ajax';
-     *
-     * const {
-     *   computed,
-     *   get,
-     *   inject: { service }
-     * } = Ember;
-     *
-     * export default AjaxService.extend({
-     *   session: service(),
-     *   headers: computed('session.authToken', function() {
-     *     return {
-     *       'API_KEY': get(this, 'session.authToken'),
-     *       'ANOTHER_HEADER': 'Some header value'
-     *     };
-     *   })
-     * });
-     * ```
-     *
-     * In some cases, your dynamic headers may require data from some object
-     * outside of Ember's observer system (for example `document.cookie`). You
-     * can use the `volatile` function to set the property into a non-cached mode
-     * causing the headers to be recomputed with every request.
-     *
-     * ```javascript
-     * // app/services/ajax.js
-     * import Ember from 'ember';
-     * import AjaxService from 'ember-ajax/services/ajax';
-     *
-     * const {
-     *   computed,
-     *   get,
-     *   inject: { service }
-     * } = Ember;
-     *
-     * export default AjaxService.extend({
-     *   session: service(),
-     *   headers: computed('session.authToken', function() {
-     *     return {
-     *       'API_KEY': get(document.cookie.match(/apiKey\=([^;]*)/), '1'),
-     *       'ANOTHER_HEADER': 'Some header value'
-     *     };
-     *   }).volatile()
-     * });
-     * ```
-     *
-     * @property {Object} headers
-     * @public
-     * @default
-     */
-    headers: {},
-
-    /**
-     * Make an AJAX request, ignoring the raw XHR object and dealing only with
-     * the response
-     *
-     * @method request
-     * @public
-     * @param {string} url The url to make a request to
-     * @param {Object} options The options for the request
-     * @return {Promise} The result of the request
-     */
-    request: function request(url, options) {
-      var hash = this.options(url, options);
-      var internalPromise = this._makeRequest(hash);
-
-      var ajaxPromise = new _promise.default(function (resolve, reject) {
-        internalPromise.then(function (_ref2) {
-          var response = _ref2.response;
-
-          resolve(response);
-        }).catch(function (_ref3) {
-          var response = _ref3.response;
-
-          reject(response);
-        });
-      }, 'ember-ajax: ' + hash.type + ' ' + hash.url + ' response');
-
-      ajaxPromise.xhr = internalPromise.xhr;
-
-      return ajaxPromise;
-    },
-
-
-    /**
-     * Make an AJAX request, returning the raw XHR object along with the response
-     *
-     * @method raw
-     * @public
-     * @param {string} url The url to make a request to
-     * @param {Object} options The options for the request
-     * @return {Promise} The result of the request
-     */
-    raw: function raw(url, options) {
-      var hash = this.options(url, options);
-      return this._makeRequest(hash);
-    },
-
-
-    /**
-     * Shared method to actually make an AJAX request
-     *
-     * @method _makeRequest
-     * @private
-     * @param {Object} hash The options for the request
-     * @param {string} hash.url The URL to make the request to
-     * @return {Promise} The result of the request
-     */
-    _makeRequest: function _makeRequest(hash) {
-      var _this = this;
-
-      var method = hash.method || hash.type || 'GET';
-      var requestData = { method: method, type: method, url: hash.url };
-
-      if (isJSONStringifyable(method, hash)) {
-        hash.data = JSON.stringify(hash.data);
-      }
-
-      pendingRequestCount = pendingRequestCount + 1;
-
-      var jqXHR = (0, _ajax.default)(hash);
-
-      var promise = new _promise.default(function (resolve, reject) {
-        jqXHR.done(function (payload, textStatus, jqXHR) {
-          var response = _this.handleResponse(jqXHR.status, (0, _parseResponseHeaders.default)(jqXHR.getAllResponseHeaders()), payload, requestData);
-
-          if ((0, _errors.isAjaxError)(response)) {
-            run.join(null, reject, { payload: payload, textStatus: textStatus, jqXHR: jqXHR, response: response });
-          } else {
-            run.join(null, resolve, { payload: payload, textStatus: textStatus, jqXHR: jqXHR, response: response });
-          }
-        }).fail(function (jqXHR, textStatus, errorThrown) {
-          runInDebug(function () {
-            var message = 'The server returned an empty string for ' + requestData.type + ' ' + requestData.url + ', which cannot be parsed into a valid JSON. Return either null or {}.';
-            var validJSONString = !(textStatus === 'parsererror' && jqXHR.responseText === '');
-
-            warn(message, validJSONString, {
-              id: 'ds.adapter.returned-empty-string-as-JSON'
-            });
-          });
-
-          var payload = _this.parseErrorResponse(jqXHR.responseText) || errorThrown;
-          var response = void 0;
-
-          if (errorThrown instanceof Error) {
-            response = errorThrown;
-          } else if (textStatus === 'timeout') {
-            response = new _errors.TimeoutError();
-          } else if (textStatus === 'abort') {
-            response = new _errors.AbortError();
-          } else {
-            response = _this.handleResponse(jqXHR.status, (0, _parseResponseHeaders.default)(jqXHR.getAllResponseHeaders()), payload, requestData);
-          }
-
-          run.join(null, reject, { payload: payload, textStatus: textStatus, jqXHR: jqXHR, errorThrown: errorThrown, response: response });
-        }).always(function () {
-          pendingRequestCount = pendingRequestCount - 1;
-        });
-      }, 'ember-ajax: ' + hash.type + ' ' + hash.url);
-
-      promise.xhr = jqXHR;
-
-      return promise;
-    },
-
-
-    /**
-     * calls `request()` but forces `options.type` to `POST`
-     *
-     * @method post
-     * @public
-     * @param {string} url The url to make a request to
-     * @param {Object} options The options for the request
-     * @return {Promise} The result of the request
-     */
-    post: function post(url, options) {
-      return this.request(url, this._addTypeToOptionsFor(options, 'POST'));
-    },
-
-
-    /**
-     * calls `request()` but forces `options.type` to `PUT`
-     *
-     * @method put
-     * @public
-     * @param {string} url The url to make a request to
-     * @param {Object} options The options for the request
-     * @return {Promise} The result of the request
-     */
-    put: function put(url, options) {
-      return this.request(url, this._addTypeToOptionsFor(options, 'PUT'));
-    },
-
-
-    /**
-     * calls `request()` but forces `options.type` to `PATCH`
-     *
-     * @method patch
-     * @public
-     * @param {string} url The url to make a request to
-     * @param {Object} options The options for the request
-     * @return {Promise} The result of the request
-     */
-    patch: function patch(url, options) {
-      return this.request(url, this._addTypeToOptionsFor(options, 'PATCH'));
-    },
-
-
-    /**
-     * calls `request()` but forces `options.type` to `DELETE`
-     *
-     * @method del
-     * @public
-     * @param {string} url The url to make a request to
-     * @param {Object} options The options for the request
-     * @return {Promise} The result of the request
-     */
-    del: function del(url, options) {
-      return this.request(url, this._addTypeToOptionsFor(options, 'DELETE'));
-    },
-
-
-    /**
-     * calls `request()` but forces `options.type` to `DELETE`
-     *
-     * Alias for `del()`
-     *
-     * @method delete
-     * @public
-     * @param {string} url The url to make a request to
-     * @param {Object} options The options for the request
-     * @return {Promise} The result of the request
-     */
-    delete: function _delete() {
-      return this.del.apply(this, arguments);
-    },
-
-
-    /**
-     * Wrap the `.get` method so that we issue a warning if
-     *
-     * Since `.get` is both an AJAX pattern _and_ an Ember pattern, we want to try
-     * to warn users when they try using `.get` to make a request
-     *
-     * @method get
-     * @public
-     */
-    get: function get(url) {
-      if (arguments.length > 1 || url.indexOf('/') !== -1) {
-        throw new EmberError('It seems you tried to use `.get` to make a request! Use the `.request` method instead.');
-      }
-      return this._super.apply(this, arguments);
-    },
-
-
-    /**
-     * Manipulates the options hash to include the HTTP method on the type key
-     *
-     * @method _addTypeToOptionsFor
-     * @private
-     * @param {Object} options The original request options
-     * @param {string} method The method to enforce
-     * @return {Object} The new options, with the method set
-     */
-    _addTypeToOptionsFor: function _addTypeToOptionsFor(options, method) {
-      options = options || {};
-      options.type = method;
-      return options;
-    },
-
-
-    /**
-     * Get the full "headers" hash, combining the service-defined headers with
-     * the ones provided for the request
-     *
-     * @method _getFullHeadersHash
-     * @private
-     * @param {Object} headers
-     * @return {Object}
-     */
-    _getFullHeadersHash: function _getFullHeadersHash(headers) {
-      var classHeaders = get(this, 'headers');
-      var _headers = merge({}, classHeaders);
-      return merge(_headers, headers);
-    },
-
-
-    /**
-     * @method options
-     * @private
-     * @param {string} url
-     * @param {Object} options
-     * @return {Object}
-     */
-    options: function options(url) {
-      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-      options = merge({}, options);
-      options.url = this._buildURL(url, options);
-      options.type = options.type || 'GET';
-      options.dataType = options.dataType || 'json';
-      options.contentType = isEmpty(options.contentType) ? get(this, 'contentType') : options.contentType;
-
-      if (this._shouldSendHeaders(options)) {
-        options.headers = this._getFullHeadersHash(options.headers);
-      } else {
-        options.headers = options.headers || {};
-      }
-
-      return options;
-    },
-
-
-    /**
-     * Build a URL for a request
-     *
-     * If the provided `url` is deemed to be a complete URL, it will be returned
-     * directly.  If it is not complete, then the segment provided will be combined
-     * with the `host` and `namespace` options of the request class to create the
-     * full URL.
-     *
-     * @private
-     * @param {string} url the url, or url segment, to request
-     * @param {Object} [options={}] the options for the request being made
-     * @param {string} [options.host] the host to use for this request
-     * @returns {string} the URL to make a request to
-     */
-    _buildURL: function _buildURL(url) {
-      var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-      if ((0, _urlHelpers.isFullURL)(url)) {
-        return url;
-      }
-
-      var urlParts = [];
-
-      var host = options.host || get(this, 'host');
-      if (host) {
-        host = stripSlashes(host);
-      }
-      urlParts.push(host);
-
-      var namespace = options.namespace || get(this, 'namespace');
-      if (namespace) {
-        namespace = stripSlashes(namespace);
-        urlParts.push(namespace);
-      }
-
-      // If the URL has already been constructed (presumably, by Ember Data), then we should just leave it alone
-      var hasNamespaceRegex = new RegExp('^(/)?' + namespace);
-      if (hasNamespaceRegex.test(url)) {
-        return url;
-      }
-
-      // *Only* remove a leading slash -- we need to maintain a trailing slash for
-      // APIs that differentiate between it being and not being present
-      if (startsWithSlash(url)) {
-        url = removeLeadingSlash(url);
-      }
-      urlParts.push(url);
-
-      return urlParts.join('/');
-    },
-
-
-    /**
-     * Takes an ajax response, and returns the json payload or an error.
-     *
-     * By default this hook just returns the json payload passed to it.
-     * You might want to override it in two cases:
-     *
-     * 1. Your API might return useful results in the response headers.
-     *    Response headers are passed in as the second argument.
-     *
-     * 2. Your API might return errors as successful responses with status code
-     *    200 and an Errors text or object.
-     *
-     * @method handleResponse
-     * @private
-     * @param  {Number} status
-     * @param  {Object} headers
-     * @param  {Object} payload
-     * @param  {Object} requestData the original request information
-     * @return {Object | AjaxError} response
-     */
-    handleResponse: function handleResponse(status, headers, payload, requestData) {
-      var error = void 0;
-
-      if (this.isSuccess(status, headers, payload)) {
-        return payload;
-      }
-
-      // Allow overriding of error payload
-      payload = this.normalizeErrorResponse(status, headers, payload);
-
-      if (this.isUnauthorizedError(status, headers, payload)) {
-        error = new _errors.UnauthorizedError(payload);
-      } else if (this.isForbiddenError(status, headers, payload)) {
-        error = new _errors.ForbiddenError(payload);
-      } else if (this.isInvalidError(status, headers, payload)) {
-        error = new _errors.InvalidError(payload);
-      } else if (this.isBadRequestError(status, headers, payload)) {
-        error = new _errors.BadRequestError(payload);
-      } else if (this.isNotFoundError(status, headers, payload)) {
-        error = new _errors.NotFoundError(payload);
-      } else if (this.isAbortError(status, headers, payload)) {
-        error = new _errors.AbortError(payload);
-      } else if (this.isConflictError(status, headers, payload)) {
-        error = new _errors.ConflictError(payload);
-      } else if (this.isServerError(status, headers, payload)) {
-        error = new _errors.ServerError(payload);
-      } else {
-        var detailedMessage = this.generateDetailedMessage(status, headers, payload, requestData);
-
-        error = new _errors.AjaxError(payload, detailedMessage);
-      }
-
-      return error;
-    },
-
-
-    /**
-     * Match the host to a provided array of strings or regexes that can match to a host
-     *
-     * @method matchHosts
-     * @private
-     * @param {string} host the host you are sending too
-     * @param {RegExp | string} matcher a string or regex that you can match the host to.
-     * @returns {Boolean} if the host passed the matcher
-     */
-    _matchHosts: function _matchHosts(host, matcher) {
-      if (matcher.constructor === RegExp) {
-        return matcher.test(host);
-      } else if (typeof matcher === 'string') {
-        return matcher === host;
-      } else {
-        Logger.warn('trustedHosts only handles strings or regexes.', matcher, 'is neither.');
-        return false;
-      }
-    },
-
-
-    /**
-     * Determine whether the headers should be added for this request
-     *
-     * This hook is used to help prevent sending headers to every host, regardless
-     * of the destination, since this could be a security issue if authentication
-     * tokens are accidentally leaked to third parties.
-     *
-     * To avoid that problem, subclasses should utilize the `headers` computed
-     * property to prevent authentication from being sent to third parties, or
-     * implement this hook for more fine-grain control over when headers are sent.
-     *
-     * By default, the headers are sent if the host of the request matches the
-     * `host` property designated on the class.
-     *
-     * @method _shouldSendHeaders
-     * @private
-     * @property {Object} hash request options hash
-     * @returns {Boolean} whether or not headers should be sent
-     */
-    _shouldSendHeaders: function _shouldSendHeaders(_ref4) {
-      var _this2 = this;
-
-      var url = _ref4.url,
-          host = _ref4.host;
-
-      url = url || '';
-      host = host || get(this, 'host') || '';
-
-      var trustedHosts = get(this, 'trustedHosts') || A();
-
-      var _parseURL = (0, _urlHelpers.parseURL)(url),
-          hostname = _parseURL.hostname;
-
-      // Add headers on relative URLs
-
-
-      if (!(0, _urlHelpers.isFullURL)(url)) {
-        return true;
-      } else if (trustedHosts.find(function (matcher) {
-        return _this2._matchHosts(hostname, matcher);
-      })) {
-        return true;
-      }
-
-      // Add headers on matching host
-      return (0, _urlHelpers.haveSameHost)(url, host);
-    },
-
-
-    /**
-     * Generates a detailed ("friendly") error message, with plenty
-     * of information for debugging (good luck!)
-     *
-     * @method generateDetailedMessage
-     * @private
-     * @param  {Number} status
-     * @param  {Object} headers
-     * @param  {Object} payload
-     * @param  {Object} requestData the original request information
-     * @return {Object} request information
-     */
-    generateDetailedMessage: function generateDetailedMessage(status, headers, payload, requestData) {
-      var shortenedPayload = void 0;
-      var payloadContentType = (0, _getHeader.default)(headers, 'Content-Type') || 'Empty Content-Type';
-
-      if (payloadContentType.toLowerCase() === 'text/html' && payload.length > 250) {
-        shortenedPayload = '[Omitted Lengthy HTML]';
-      } else {
-        shortenedPayload = JSON.stringify(payload);
-      }
-
-      var requestDescription = requestData.type + ' ' + requestData.url;
-      var payloadDescription = 'Payload (' + payloadContentType + ')';
-
-      return ['Ember AJAX Request ' + requestDescription + ' returned a ' + status, payloadDescription, shortenedPayload].join('\n');
-    },
-
-
-    /**
-     * Default `handleResponse` implementation uses this hook to decide if the
-     * response is a an authorized error.
-     *
-     * @method isUnauthorizedError
-     * @private
-     * @param {Number} status
-     * @param {Object} headers
-     * @param {Object} payload
-     * @return {Boolean}
-     */
-    isUnauthorizedError: function isUnauthorizedError(status) {
-      return (0, _errors.isUnauthorizedError)(status);
-    },
-
-
-    /**
-     * Default `handleResponse` implementation uses this hook to decide if the
-     * response is a forbidden error.
-     *
-     * @method isForbiddenError
-     * @private
-     * @param {Number} status
-     * @param {Object} headers
-     * @param {Object} payload
-     * @return {Boolean}
-     */
-    isForbiddenError: function isForbiddenError(status) {
-      return (0, _errors.isForbiddenError)(status);
-    },
-
-
-    /**
-     * Default `handleResponse` implementation uses this hook to decide if the
-     * response is a an invalid error.
-     *
-     * @method isInvalidError
-     * @private
-     * @param {Number} status
-     * @param {Object} headers
-     * @param {Object} payload
-     * @return {Boolean}
-     */
-    isInvalidError: function isInvalidError(status) {
-      return (0, _errors.isInvalidError)(status);
-    },
-
-
-    /**
-     * Default `handleResponse` implementation uses this hook to decide if the
-     * response is a bad request error.
-     *
-     * @method isBadRequestError
-     * @private
-     * @param {Number} status
-     * @param {Object} headers
-     * @param {Object} payload
-     * @return {Boolean}
-     */
-    isBadRequestError: function isBadRequestError(status) {
-      return (0, _errors.isBadRequestError)(status);
-    },
-
-
-    /**
-     * Default `handleResponse` implementation uses this hook to decide if the
-     * response is a "not found" error.
-     *
-     * @method isNotFoundError
-     * @private
-     * @param {Number} status
-     * @param {Object} headers
-     * @param {Object} payload
-     * @return {Boolean}
-     */
-    isNotFoundError: function isNotFoundError(status) {
-      return (0, _errors.isNotFoundError)(status);
-    },
-
-
-    /**
-     * Default `handleResponse` implementation uses this hook to decide if the
-     * response is an "abort" error.
-     *
-     * @method isAbortError
-     * @private
-     * @param {Number} status
-     * @param {Object} headers
-     * @param {Object} payload
-     * @return {Boolean}
-     */
-    isAbortError: function isAbortError(status) {
-      return (0, _errors.isAbortError)(status);
-    },
-
-
-    /**
-     * Default `handleResponse` implementation uses this hook to decide if the
-     * response is a "conflict" error.
-     *
-     * @method isConflictError
-     * @private
-     * @param {Number} status
-     * @param {Object} headers
-     * @param {Object} payload
-     * @return {Boolean}
-     */
-    isConflictError: function isConflictError(status) {
-      return (0, _errors.isConflictError)(status);
-    },
-
-
-    /**
-     * Default `handleResponse` implementation uses this hook to decide if the
-     * response is a server error.
-     *
-     * @method isServerError
-     * @private
-     * @param {Number} status
-     * @param {Object} headers
-     * @param {Object} payload
-     * @return {Boolean}
-     */
-    isServerError: function isServerError(status) {
-      return (0, _errors.isServerError)(status);
-    },
-
-
-    /**
-     * Default `handleResponse` implementation uses this hook to decide if the
-     * response is a success.
-     *
-     * @method isSuccess
-     * @private
-     * @param {Number} status
-     * @param {Object} headers
-     * @param {Object} payload
-     * @return {Boolean}
-     */
-    isSuccess: function isSuccess(status) {
-      return (0, _errors.isSuccess)(status);
-    },
-
-
-    /**
-     * @method parseErrorResponse
-     * @private
-     * @param {string} responseText
-     * @return {Object}
-     */
-    parseErrorResponse: function parseErrorResponse(responseText) {
-      try {
-        return JSON.parse(responseText);
-      } catch (e) {
-        return responseText;
-      }
-    },
-
-
-    /**
-     * Can be overwritten to allow re-formatting of error messages
-     *
-     * @method normalizeErrorResponse
-     * @private
-     * @param  {Number} status
-     * @param  {Object} headers
-     * @param  {Object} payload
-     * @return {*} error response
-     */
-    normalizeErrorResponse: function normalizeErrorResponse(status, headers, payload) {
-      return payload;
-    }
-  });
-});
-;define('ember-ajax/mixins/ajax-support', ['exports'], function (exports) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  var Mixin = Ember.Mixin,
-      service = Ember.inject.service,
-      alias = Ember.computed.alias;
-  exports.default = Mixin.create({
-
-    /**
-     * The AJAX service to send requests through
-     *
-     * @property {AjaxService} ajaxService
-     * @public
-     */
-    ajaxService: service('ajax'),
-
-    /**
-     * @property {string} host
-     * @public
-     */
-    host: alias('ajaxService.host'),
-
-    /**
-     * @property {string} namespace
-     * @public
-     */
-    namespace: alias('ajaxService.namespace'),
-
-    /**
-     * @property {object} headers
-     * @public
-     */
-    headers: alias('ajaxService.headers'),
-
-    ajax: function ajax(url) {
-      var augmentedOptions = this.ajaxOptions.apply(this, arguments);
-
-      return this.get('ajaxService').request(url, augmentedOptions);
-    }
-  });
-});
-;define('ember-ajax/mixins/legacy/normalize-error-response', ['exports', 'ember-ajax/-private/utils/is-string'], function (exports, _isString) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-
-  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
-    return typeof obj;
-  } : function (obj) {
-    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-  };
-
-  var Mixin = Ember.Mixin,
-      isArray = Ember.isArray,
-      isNone = Ember.isNone,
-      merge = Ember.merge;
-
-
-  function isObject(object) {
-    return (typeof object === 'undefined' ? 'undefined' : _typeof(object)) === 'object';
-  }
-
-  exports.default = Mixin.create({
-    /**
-     * Normalize the error from the server into the same format
-     *
-     * The format we normalize to is based on the JSON API specification.  The
-     * return value should be an array of objects that match the format they
-     * describe. More details about the object format can be found
-     * [here](http://jsonapi.org/format/#error-objects)
-     *
-     * The basics of the format are as follows:
-     *
-     * ```javascript
-     * [
-     *   {
-     *     status: 'The status code for the error',
-     *     title: 'The human-readable title of the error'
-     *     detail: 'The human-readable details of the error'
-     *   }
-     * ]
-     * ```
-     *
-     * In cases where the server returns an array, then there should be one item
-     * in the array for each of the payload.  If your server returns a JSON API
-     * formatted payload already, it will just be returned directly.
-     *
-     * If your server returns something other than a JSON API format, it's
-     * suggested that you override this method to convert your own errors into the
-     * one described above.
-     *
-     * @method normalizeErrorResponse
-     * @private
-     * @param  {Number} status
-     * @param  {Object} headers
-     * @param  {Object} payload
-     * @return {Array} An array of JSON API-formatted error objects
-     */
-    normalizeErrorResponse: function normalizeErrorResponse(status, headers, payload) {
-      payload = isNone(payload) ? {} : payload;
-
-      if (isArray(payload.errors)) {
-        return payload.errors.map(function (error) {
-          if (isObject(error)) {
-            var ret = merge({}, error);
-            ret.status = '' + error.status;
-            return ret;
-          } else {
-            return {
-              status: '' + status,
-              title: error
-            };
-          }
-        });
-      } else if (isArray(payload)) {
-        return payload.map(function (error) {
-          if (isObject(error)) {
-            return {
-              status: '' + status,
-              title: error.title || 'The backend responded with an error',
-              detail: error
-            };
-          } else {
-            return {
-              status: '' + status,
-              title: '' + error
-            };
-          }
-        });
-      } else if ((0, _isString.default)(payload)) {
-        return [{
-          status: '' + status,
-          title: payload
-        }];
-      } else {
-        return [{
-          status: '' + status,
-          title: payload.title || 'The backend responded with an error',
-          detail: payload
-        }];
-      }
-    }
-  });
-});
-;define('ember-ajax/raw', ['exports', 'ember-ajax/ajax-request'], function (exports, _ajaxRequest) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = raw;
-
-
-  /**
-   * Same as `request` except it resolves an object with
-   *
-   *   {response, textStatus, jqXHR}
-   *
-   * Useful if you need access to the jqXHR object for headers, etc.
-   *
-   * @public
-   */
-  function raw() {
-    var ajax = new _ajaxRequest.default();
-    return ajax.raw.apply(ajax, arguments);
-  }
-});
-;define('ember-ajax/request', ['exports', 'ember-ajax/ajax-request'], function (exports, _ajaxRequest) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = request;
-
-
-  /**
-   * Helper function that allows you to use the default `ember-ajax` to make
-   * requests without using the service.
-   *
-   * Note: Unlike `ic-ajax`'s `request` helper function, this will *not* return a
-   * jqXHR object in the error handler.  If you need jqXHR, you can use the `raw`
-   * function instead.
-   *
-   * @public
-   */
-  function request() {
-    var ajax = new _ajaxRequest.default();
-    return ajax.request.apply(ajax, arguments);
-  }
-});
-;define('ember-ajax/services/ajax', ['exports', 'ember-ajax/mixins/ajax-request'], function (exports, _ajaxRequest) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  var Service = Ember.Service;
-  exports.default = Service.extend(_ajaxRequest.default);
-});
-;define('ember-ajax/utils/ajax', ['exports', 'ember-ajax/-private/utils/is-fastboot'], function (exports, _isFastboot) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  var $ = Ember.$;
-  exports.default = _isFastboot.default ? najax : $.ajax;
-});
-;define('ember-cli-app-version/initializer-factory', ['exports'], function (exports) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = initializerFactory;
-  var classify = Ember.String.classify,
-      libraries = Ember.libraries;
-  function initializerFactory(name, version) {
-    var registered = false;
-
-    return function () {
-      if (!registered && name && version) {
-        var appName = classify(name);
-        libraries.register(appName, version);
-        registered = true;
-      }
-    };
-  }
-});
-;define("ember-cli-app-version/utils/regexp", ["exports"], function (exports) {
-  "use strict";
 
   Object.defineProperty(exports, "__esModule", {
     value: true
@@ -91624,6 +91834,8 @@ $.fn.visibility.settings = {
 
     return result;
   }
+
+  exports.default = Ember.Helper.helper(notEqualHelper);
 });
 ;define('ember-cp-validations/utils/assign', ['exports'], function (exports) {
   'use strict';
@@ -91979,6 +92191,10 @@ $.fn.visibility.settings = {
 
   var Promise = RSVP.Promise;
 
+  /**
+   *  @class Exclusion
+   *  @module Validators
+   */
 
   /**
    * ## Running Manual Validations
@@ -116478,6 +116694,433 @@ Object.defineProperty(exports, '__esModule', { value: true });
   });
 
   exports['default'] = Semantic;
+});
+;define('ui-slider/components/range-slider', ['exports', 'ember', 'ui-slider/templates/components/ui-slider', 'ui-slider/components/ui-slider'], function (exports, _ember, _uiSliderTemplatesComponentsUiSlider, _uiSliderComponentsUiSlider) {
+  exports['default'] = _uiSliderComponentsUiSlider['default'].extend({
+    layout: _uiSliderTemplatesComponentsUiSlider['default'],
+    value: [2, 9],
+    range: true
+  });
+});
+;define('ui-slider/components/ui-slider', ['exports', 'ember', 'ui-slider/templates/components/ui-slider'], function (exports, _ember, _uiSliderTemplatesComponentsUiSlider) {
+  function _toConsumableArray(arr) { if (Array.isArray(arr)) { for (var i = 0, arr2 = Array(arr.length); i < arr.length; i++) arr2[i] = arr[i]; return arr2; } else { return Array.from(arr); } }
+
+  var keys = Object.keys;
+  var create = Object.create;
+  // jshint ignore:line
+  var computed = _ember['default'].computed;
+  var observer = _ember['default'].observer;
+  var $ = _ember['default'].$;
+  var A = _ember['default'].A;
+  var run = _ember['default'].run;
+  var on = _ember['default'].on;
+  var typeOf = _ember['default'].typeOf;
+  var debug = _ember['default'].debug;
+  var defineProperty = _ember['default'].defineProperty;
+  var get = _ember['default'].get;
+  var set = _ember['default'].set;
+  var inject = _ember['default'].inject;
+  var isEmpty = _ember['default'].isEmpty;
+  // jshint ignore:line
+  var snake = function snake(thingy) {
+    return thingy ? _ember['default'].String.underscore(thingy) : thingy;
+  };
+
+  var numericApiSurface = ['min', 'max', 'step', 'precision', 'ticksSnapBounds'];
+  var booleanApiSurface = ['range', 'tooltipSplit', 'ticksTooltip', 'reversed', 'enabled', 'naturalArrowKeys', 'focus'];
+  var stringApiSurface = ['selection', 'tooltip', 'tooltipSeparator', 'tooltipPosition', 'selection', 'handle', 'scale', 'orientation'];
+  var arrayApiSurface = ['ticks', 'ticksPositions', 'ticksLabels'];
+  var functionalApiSurface = ['formatter'];
+  var apiSurface = [].concat(numericApiSurface, booleanApiSurface, stringApiSurface, arrayApiSurface, functionalApiSurface);
+  var assign = function assign() {
+    var target = {};
+
+    for (var i = 0; i < arguments.length; i++) {
+      var source = arguments[i];
+
+      for (var key in source) {
+        if (source.hasOwnProperty(key)) {
+          target[key] = source[key];
+        }
+      }
+    }
+
+    return target;
+  };
+  var MINALIMAL_VALUE = 'min_value_exceeded';
+  var MAXIMAL_VALUE = 'max_value_exceeded';
+
+  exports['default'] = _ember['default'].Component.extend({
+    layout: _uiSliderTemplatesComponentsUiSlider['default'],
+    classNames: ['ui-slider'],
+    classNameBindings: ['isSliding:sliding', '_mood', '_section', 'range:range:singular', 'fill:fill:fit'],
+    // API Surface (defaults)
+    min: 1,
+    max: 10,
+    step: 1,
+    precision: 0,
+    fill: true,
+    orientation: 'horizontal',
+    range: false,
+    selection: 'before', // values are 'before', 'after', or 'none' and indicate placement
+    tooltip: 'show', // show, hide, or always
+    tooltipSeparator: ':', // used in ranges
+    tooltipPosition: 'top',
+    tooltipSplit: false, // if false only one tooltip for ranges, if true then tooltips for both
+    ticksTooltip: false,
+    handle: 'round', // values are round, square, triangle, or custom
+    reversed: false,
+    enabled: _ember['default'].computed("disabled", {
+      get: function get() {
+        return !this.get("disabled");
+      },
+      set: function set(key, value) {
+        return value;
+      }
+    }),
+    naturalArrowKeys: false,
+    scale: 'linear',
+    focus: false,
+    ticks: [],
+    ticksPositions: [],
+    ticksLabels: [],
+    ticksSnapBounds: 0,
+    // VALUE
+    keepInRange: true,
+    immediateResponse: false,
+    _immediateResponse: on('init', observer('immediateResponse', function () {
+      var _this = this;
+
+      var immediateResponse = this.get('immediateResponse');
+      var self = this;
+      if (immediateResponse) {
+        _ember['default'].run.schedule('afterRender', function () {
+          _this._slider.on('slide', function (evt) {
+            _ember['default'].run.debounce(function () {
+              self.set('value', evt.value);
+            }, 30);
+          });
+        });
+      } else {
+        if (this._slider) {
+          this._slider.off('slide');
+        }
+      }
+    })),
+    sections: null,
+    _oldSection: null,
+    _section: computed('value', 'sections', function () {
+      var _getProperties = this.getProperties('_oldSection');
+
+      var _oldSection = _getProperties._oldSection;
+
+      var newSection = this.sectionCalculator();
+
+      if (newSection && newSection !== _oldSection) {
+        this.sendAction('action', 'section-change', {
+          context: this,
+          section: newSection,
+          oldSection: _oldSection
+        });
+        this.set('_oldSection', newSection);
+      }
+
+      return newSection ? 'section-' + newSection : null;
+    }),
+    sectionCalculator: function sectionCalculator() {
+      var _getProperties2 = this.getProperties('sections', 'min', 'max', 'value');
+
+      var sections = _getProperties2.sections;
+      var min = _getProperties2.min;
+      var max = _getProperties2.max;
+      var value = _getProperties2.value;
+
+      if (!sections || new A(['null', 'undefined']).includes(value)) {
+        return null;
+      }
+      var section = 1;
+      if (typeOf(sections) === 'array') {
+        sections.map(function (item, index) {
+          if (item > min && item < max && value > item) {
+            section = index + 2;
+          }
+        });
+      } else {
+        var width = max - min + 1;
+        var sectionWidth = width / Number(sections);
+        section = Math.floor((value - min) / sectionWidth) + 1;
+      }
+
+      return section;
+    },
+    _value: observer('value', 'min', 'max', 'step', function () {
+      this._valueObserver();
+    }),
+    mood: null,
+    _mood: computed('mood', function () {
+      var mood = this.get('mood');
+      return mood ? 'mood-' + mood : null;
+    }),
+    _valueObserver: function _valueObserver() {
+      var _this2 = this;
+
+      run.next(function () {
+        var _getProperties3 = _this2.getProperties('value', 'min', 'max', 'range');
+
+        var value = _getProperties3.value;
+        var min = _getProperties3.min;
+        var max = _getProperties3.max;
+        var range = _getProperties3.range;
+
+        var controlValue = _this2._slider.slider('getValue');
+
+        if (JSON.stringify(value) !== JSON.stringify(controlValue)) {
+          // regardless of whether range or not process as an array
+          value = typeOf(value) === 'array' ? value : [value];
+          value = value.map(function (v) {
+            v = v < min ? _this2.handleMinimalValue() : v;
+            v = v > max ? _this2.handleMaximalValue() : v;
+
+            return v;
+          });
+          // now convert back to scalar if appropriate
+          value = range ? value : value[0];
+          _this2.setValue(value);
+
+          _this2.sendAction('action', 'value-sync', {
+            context: _this2,
+            value: value,
+            message: 'A new value -- ' + value + ' -- was received by container and pushed into slider UI'
+          });
+        }
+      });
+    },
+
+    handleMinimalValue: function handleMinimalValue() {
+      var _this3 = this;
+
+      var _getProperties4 = this.getProperties('min', 'value', 'keepInRange');
+
+      var min = _getProperties4.min;
+      var value = _getProperties4.value;
+      var keepInRange = _getProperties4.keepInRange;
+
+      this.sendAction('error', MINALIMAL_VALUE, {
+        message: 'The minimum value [' + min + '] was exceeded: ' + value,
+        context: this
+      });
+      if (keepInRange) {
+        run.next(function () {
+          _this3.set('value', min);
+          _this3.sendAction('action', 'range-correction', {
+            context: _this3,
+            message: 'The value was less than the minimum so resetting value to minimum [' + min + ']',
+            value: min,
+            oldValue: value
+          });
+        });
+      }
+
+      return min;
+    },
+    handleMaximalValue: function handleMaximalValue() {
+      var _this4 = this;
+
+      var _getProperties5 = this.getProperties('max', 'value', 'keepInRange');
+
+      var max = _getProperties5.max;
+      var value = _getProperties5.value;
+      var keepInRange = _getProperties5.keepInRange;
+
+      this.sendAction('error', MAXIMAL_VALUE, {
+        message: 'The maximum value [' + max + '] was exceeded: ' + value,
+        context: this
+      });
+      if (keepInRange) {
+        run.next(function () {
+          _this4.set('value', max);
+          _this4.sendAction('action', 'range-correction', {
+            context: _this4,
+            message: 'The value was less than the minimum so resetting value to minimum [' + max + ']',
+            value: max,
+            oldValue: value
+          });
+        });
+      }
+
+      return max;
+    },
+
+    // Functions
+    disabled: false,
+    _disabled: observer('disabled', function () {
+      var _this5 = this;
+
+      var disabled = this.get('disabled');
+      run.next(function () {
+        if (disabled) {
+          _this5._slider.slider('disable');
+          _this5.sendAction('action', 'slide-disabled', {
+            context: _this5,
+            value: _this5.get('value')
+          });
+        } else {
+          _this5._slider.slider('enable');
+          _this5.sendAction('action', 'slide-enabled', {
+            context: _this5,
+            value: _this5.get('value')
+          });
+        }
+      });
+    }),
+    // Configuration Changes
+    _configObserver: observer.apply(undefined, _toConsumableArray(apiSurface).concat([function () {
+      this.updateConfig();
+    }])),
+    updateConfig: function updateConfig() {
+      var _this6 = this;
+
+      var changedConfig = apiSurface.filter(function (item) {
+        return _this6[item] !== _this6._benchmark[item];
+      });
+      changedConfig.map(function (item) {
+        _this6._slider.slider('setAttribute', snake(item), get(_this6, item));
+        _this6.sendAction('action', 'set-attribute', { context: _this6, property: item, value: get(_this6, item) });
+      });
+      this._benchmarkConfig();
+      this._slider.slider('refresh');
+      this.setValue(this.get('value'));
+    },
+    _benchmarkConfig: function _benchmarkConfig() {
+      this._benchmark = this.getProperties(apiSurface);
+    },
+    getConfiguration: function getConfiguration() {
+      var _this7 = this;
+
+      var options = {};
+      numericApiSurface.map(function (item) {
+        options[snake(item)] = Number(_this7.get(item));
+        return item;
+      });
+      booleanApiSurface.map(function (item) {
+        options[snake(item)] = Boolean(_this7.get(item));
+        return item;
+      });
+      arrayApiSurface.map(function (item) {
+        var data = _this7.get(item);
+        if (typeOf(data) === 'string') {
+          data = data.split(',');
+          data = data.map(function (d) {
+            return isNaN(Number(d)) ? d : Number(d);
+          });
+        }
+        if (data) {
+          options[snake(item)] = data;
+        }
+        return item;
+      });
+      stringApiSurface.map(function (item) {
+        options[snake(item)] = _this7.get(item);
+        return item;
+      });
+      functionalApiSurface.map(function (item) {
+        options[snake(item)] = _this7.get(item);
+      });
+
+      return options;
+    },
+    initializeJqueryComponent: function initializeJqueryComponent() {
+      var elementId = this.get('elementId');
+      var options = this.getConfiguration();
+      var value = this.get('value');
+      if (typeOf(value) === 'string') {
+        value = isNaN(Number(value)) ? options.min : Number(value);
+      }
+
+      options = assign(options, { value: value });
+      this._slider = this.$('#slider-value-' + elementId).slider(options);
+    },
+    addEventListeners: function addEventListeners() {
+      var self = this;
+      self._slider.on('slideStart', function (evt) {
+        self.set('isSliding', true);
+        evt.preventDefault();
+        run.next(function () {
+          self.sendAction('action', 'slideStart', { context: self, value: evt.value, evt: evt });
+        });
+      });
+      self._slider.on('slideStop', function (evt) {
+        self.set('isSliding', false);
+        evt.preventDefault();
+        self.sendAction('action', 'slideStop', { context: self, value: evt.value, evt: evt });
+        self.sendAction('changed', evt.value, { context: self, evt: evt, oldValue: self.get('value') });
+        self.set('value', evt.value);
+      });
+    },
+    destroyJqueryComponent: function destroyJqueryComponent() {
+      this._slider.slider('destroy');
+    },
+    setDefaultValue: function setDefaultValue() {
+      var _getProperties6 = this.getProperties('defaultValue', 'value');
+
+      var defaultValue = _getProperties6.defaultValue;
+      var value = _getProperties6.value;
+
+      if (new A(['null', 'undefined']).includes(typeOf(value))) {
+        defaultValue = typeOf(defaultValue) === 'string' && defaultValue.split(',').length > 1 ? defaultValue.split(',') : defaultValue;
+        this.set('value', defaultValue);
+      }
+    },
+    ensureValueSynced: function ensureValueSynced() {
+      var _getProperties7 = this.getProperties('value');
+
+      var value = _getProperties7.value;
+
+      if (!value) {
+        this.set('value', this.getValue());
+      }
+    },
+    getValue: function getValue() {
+      return this._slider.slider('getValue');
+    },
+    setValue: function setValue(value) {
+      this._slider.slider('setValue', value);
+    },
+
+    // LIFECYCLE HOOKS
+    init: function init() {
+      var _this8 = this;
+
+      this._super.apply(this, arguments);
+      if (!this.get('elementId')) {
+        this.set('elementId', 'ember-' + Math.random().toString(36).substr(2, 9));
+      }
+
+      run.schedule('afterRender', function () {
+        _this8.initializeJqueryComponent();
+        _this8.addEventListeners();
+        _this8.setDefaultValue();
+        _this8.ensureValueSynced(); // if no default value and value set then we need to get value from the control
+        _this8._benchmarkConfig();
+      });
+    },
+    willDestroyElement: function willDestroyElement() {
+      this._super.apply(this, arguments);
+      this.destroyJqueryComponent();
+    }
+  });
+});
+;define("ui-slider/templates/components/range-slider", ["exports"], function (exports) {
+  "use strict";
+
+  exports.__esModule = true;
+  exports.default = Ember.HTMLBars.template({ "id": "aR1rC1rj", "block": "{\"symbols\":[\"&default\"],\"statements\":[[11,1],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "ui-slider/templates/components/range-slider.hbs" } });
+});
+;define("ui-slider/templates/components/ui-slider", ["exports"], function (exports) {
+  "use strict";
+
+  exports.__esModule = true;
+  exports.default = Ember.HTMLBars.template({ "id": "tqWEr8mR", "block": "{\"symbols\":[],\"statements\":[[6,\"input\"],[9,\"type\",\"text\"],[10,\"id\",[26,[\"slider-value-\",[18,\"elementId\"]]]],[9,\"class\",\"slider-value\"],[7],[8]],\"hasEval\":false}", "meta": { "moduleName": "ui-slider/templates/components/ui-slider.hbs" } });
 });
 ;
 //# sourceMappingURL=vendor.map

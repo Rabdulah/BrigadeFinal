@@ -32,6 +32,7 @@ Router.map(function() {
   this.route('physiotherapists');
   this.route('new-physiotherapist');
   this.route('update-physiotherapist',{ path: 'physiotherapist/:physiotherapest_id'});
+  this.route('formDisplay');
 });
 
 export default Router;

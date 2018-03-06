@@ -5,10 +5,26 @@
     <div class="ui grid">
       <div class="fourteen wide column">
         <li>  {{oneQuestion.questionText}}</li>
-      <div class="two wide column right aligned">
-        <button {{action 'removeQuestion' oneQuestion thisForm oneQuestion.id thisForm.id}}>Remove</button>
-      </div>
+        <div class="two wide column right aligned">
+          <button {{action 'removeQuestion' oneQuestion thisForm oneQuestion.id thisForm.id}}>Remove</button>
+              <div >
+      <h4>Order</h4>
+      <p class="cd-select icon">
+        <select class="world" onchange={{action 'orderChange' oneQuestion thisForm thisForm.id}}>
+          {{#each questions as |q index|}}
+           
+              <option value = {{index}} selected={{is-equal oneQuestion q}}>
+              {{index-plus-one index}}
+            </option>
+          {{/each}}
+        </select>
+      </p>
+    </div>
+        </div>
       </div>
     </div>
   {{/each}}
+     <div class="two wide column right aligned">
+          <button {{action 'save' thisForm thisForm.id}}>Save</button>
+     </div >
 </div>

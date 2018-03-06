@@ -31,24 +31,27 @@
     "ember-cli-shims": "^1.1.0",
     "ember-cli-sri": "^2.1.0",
     "ember-cli-uglify": "^2.0.0",
+    "ember-cp-validations": "^3.5.1",
     "ember-data": "~2.16.2",
     "ember-export-application-global": "^2.0.0",
     "ember-load-initializers": "^1.0.0",
+    "ember-power-select": "^2.0.0-beta.3",
     "ember-radio-button": "^1.2.1",
     "ember-resolver": "^4.0.0",
     "ember-source": "~2.16.0",
     "ember-stylish-buttons": "0.0.17",
-    "ember-cp-validations": "^3.5.1",
     "ember-truth-helpers": "^2.0.0",
     "ember-welcome-page": "^3.0.0",
     "eslint-plugin-ember": "^5.0.0",
     "loader.js": "^4.2.3",
-    "semantic-ui-ember": "^2.0.1"
+    "semantic-ui-ember": "^2.0.1",
+    "ui-ember-slider": "^0.5.0"
   },
   "engines": {
     "node": "^4.5 || 6.* || >= 7.*"
   },
   "dependencies": {
-    "snapsvg": "^0.5.1"
+    "snapsvg": "^0.5.1",
+    "ui-slider": "^2.0.0-5"
   }
 }

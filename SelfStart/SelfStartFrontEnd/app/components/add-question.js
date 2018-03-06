@@ -155,7 +155,11 @@ export default Component.extend({
             questionText: question,
             type: qtype,
             optionNumber: this.oNumber,
-            optionString: optStr
+            optionString: optStr,
+            mc: this.multipleChoice,
+            tf: this.trueFalse,
+            ra: this.rating,
+            sa: this.shortAns
         });
   
         newQuestion.save().then(function() {

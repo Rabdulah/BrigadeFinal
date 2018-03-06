@@ -6,7 +6,12 @@ var questionsSchema = mongoose.Schema({
     optionNumber: Number,
     optionString: String,
     type: String,
-    form: [{type: mongoose.Schema.ObjectId, ref: 'Forms'}],
+    mc: Boolean,
+    sa: Boolean,
+    tf: Boolean,
+    ra: Boolean,
+    answer: [{type: mongoose.Schema.ObjectId, ref: 'Answers'}],
+    form: [{type: mongoose.Schema.ObjectId, ref: 'Forms'}]
 });
 
 var Questions = mongoose.model('question', questionsSchema);

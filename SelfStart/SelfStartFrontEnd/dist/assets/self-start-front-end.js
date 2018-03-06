@@ -660,7 +660,11 @@ define('self-start-front-end/components/add-question', ['exports'], function (ex
           questionText: question,
           type: qtype,
           optionNumber: this.oNumber,
-          optionString: optStr
+          optionString: optStr,
+          mc: this.multipleChoice,
+          tf: this.trueFalse,
+          ra: this.rating,
+          sa: this.shortAns
         });
 
         newQuestion.save().then(function () {
@@ -1190,6 +1194,51 @@ define('self-start-front-end/components/delete-status', ['exports'], function (e
       }
     }
   });
+});
+define('self-start-front-end/components/display-questions', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Component.extend({
+        DS: Ember.inject.service('store'),
+        questionNumber: 54,
+
+        formModel: Ember.computed(function () {
+            return this.get('DS').find('form', this.get('id'));
+        }),
+
+        actions: {
+            Submit: function Submit() {
+
+                var question = this.get('aa');
+                console.log(question);
+
+                // let arr = [];
+                // let form = this.get('DS').find('form', this.get('id')).then((frm) =>{
+                //     frm.get('questions').forEach(function(element) {
+                //         arr.pushObject(element.get('questionText'));
+                //     });
+                // });
+                // console.log(arr);
+                // arr.forEach(function(q) {
+                //     console.log("dvsd");
+                // });
+                //  console.log(arr.objectAt(1));
+
+                // let answer = this.get('DS').createRecord('answer', {
+                //      answer: "d",
+                // patient:this.get(''),
+                // question: element,
+                //  form: frm,
+                //    });
+
+                //  answer.save().then(() =>{});
+            }
+        }
+
+    });
 });
 define('self-start-front-end/components/edit-country', ['exports'], function (exports) {
   'use strict';
@@ -1803,7 +1852,7 @@ define('self-start-front-end/components/manage-form', ['exports'], function (exp
           rec.save().then(function () {});
         });
 
-        this.get('DS').findRecord('question', this.get('qid')).then(function (rec) {
+        this.get('DS').findRecord('question', qid).then(function (rec) {
           rec.save().then(function () {});
         });
       },
@@ -2006,6 +2055,19 @@ define('self-start-front-end/components/radio-button', ['exports', 'ember-radio-
     }
   });
 });
+define('self-start-front-end/components/range-slider', ['exports', 'ui-slider/components/range-slider'], function (exports, _rangeSlider) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _rangeSlider.default;
+    }
+  });
+});
 define('self-start-front-end/components/show-form-questions', ['exports'], function (exports) {
     'use strict';
 
@@ -2013,18 +2075,75 @@ define('self-start-front-end/components/show-form-questions', ['exports'], funct
         value: true
     });
     exports.default = Ember.Component.extend({
+        DS: Ember.inject.service('store'),
+        initialized: false,
+        order: [],
+        arr: [],
         actions: {
             removeQuestion: function removeQuestion(q, f, qid, fid) {
                 f.get('questions').removeObject(q);
                 q.get('forms').removeObject(f);
 
-                this.get('DS').findRecord('form', this.get('fid')).then(function (rec) {
+                console.log(fid);
+                this.get('DS').findRecord('form', fid).then(function (rec) {
                     rec.save().then(function () {});
                 });
 
-                this.get('DS').findRecord('question', this.get('qid')).then(function (rec) {
+                this.get('DS').findRecord('question', qid).then(function (rec) {
                     rec.save().then(function () {});
                 });
+            },
+            orderChange: function orderChange(q, f, fid) {
+                var thisForm = this;
+                if (!this.initialized) {
+                    for (var x = 0; x < f.get('questions').get('length'); x++) {
+                        this.order[x] = x + 1;
+                    }
+                    this.set('initialized', true);
+                }
+                console.log(this.order);
+                var value = this.$('option:selected').val();
+                var indexb = f.get('questions').indexOf(q);
+                var option = this.$('option:selected');
+                console.log(value);
+                console.log(option);
+
+                var temp = this.order[value];
+                this.order[value] = this.order[indexb];
+                this.order[indexb] = temp;
+
+                console.log(this.order);
+
+                // f.get('questions').forEach(function(q) {
+                //     arr.pushObject(q);
+                // });
+                //     let tmp = arr.objectAt(indexb);
+                //    // f.get('questions').removeAt(indexb);
+                //    // f.get('questions').insertAt(value, tmp);  
+                //     arr.replace(indexb, 1,arr.objectAt(value));  
+                //     arr.replace(value, 1,tmp);  
+                //     console.log(arr);
+                // this.get('DS').findRecord('form', fid).then((rec) => {
+                //     rec.save().then(()=>{
+                //     });
+                // });
+
+                // window.location.reload();
+            },
+            save: function save(f, fid) {
+                for (var x = 0; x < this.order.length; x++) {
+                    this.arr[x] = f.get('questions').objectAt(this.order[x] - 1);
+                }
+                console.log(this.arr);
+
+                f.get('questions').clear();
+                for (var x = 0; x < this.order.length; x++) {
+                    f.get('questions').pushObject(this.arr[x]);
+                }
+                this.get('DS').findRecord('form', fid).then(function (rec) {
+                    rec.save().then(function () {});
+                });
+                window.location.reload();
             }
         }
     });
@@ -2249,6 +2368,19 @@ define('self-start-front-end/components/ui-sidebar', ['exports', 'semantic-ui-em
     }
   });
 });
+define('self-start-front-end/components/ui-slider', ['exports', 'ui-slider/components/ui-slider'], function (exports, _uiSlider) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _uiSlider.default;
+    }
+  });
+});
 define('self-start-front-end/components/ui-sticky', ['exports', 'semantic-ui-ember/components/ui-sticky'], function (exports, _uiSticky) {
   'use strict';
 
@@ -2418,6 +2550,17 @@ define('self-start-front-end/components/welcome-page', ['exports'], function (ex
       });
     }
   });
+});
+define('self-start-front-end/controllers/form-display', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Controller.extend({
+        queryParams: ['id'],
+        id: null
+    });
 });
 define('self-start-front-end/controllers/questions', ['exports'], function (exports) {
     'use strict';
@@ -2910,6 +3053,19 @@ define('self-start-front-end/mixins/promise-resolver', ['exports', 'ember-promis
     }
   });
 });
+define('self-start-front-end/models/answer', ['exports', 'ember-data'], function (exports, _emberData) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = _emberData.default.Model.extend({
+        question: _emberData.default.belongsTo('question', { async: true }),
+        patient: _emberData.default.belongsTo('patient', { async: true }),
+        form: _emberData.default.belongsTo('form', { async: true }),
+        answer: _emberData.default.attr()
+    });
+});
 define('self-start-front-end/models/assesment-test', ['exports', 'ember-data'], function (exports, _emberData) {
   'use strict';
 
@@ -2973,6 +3129,7 @@ define('self-start-front-end/models/form', ['exports', 'ember-data'], function (
         name: _emberData.default.attr(),
         description: _emberData.default.attr(),
         author: _emberData.default.attr(),
+        answers: _emberData.default.hasMany('answer'),
         questions: _emberData.default.hasMany('question')
     });
 });
@@ -3037,8 +3194,8 @@ define('self-start-front-end/models/patient', ['exports', 'ember-data'], functio
     maritalStatus: _emberData.default.attr(),
     gender: _emberData.default.attr(),
     phoneNumber: _emberData.default.attr(),
-    postalCode: _emberData.default.attr()
-
+    postalCode: _emberData.default.attr(),
+    answers: _emberData.default.hasMany('answer')
   });
 });
 define('self-start-front-end/models/physiotherapest', ['exports', 'ember-data'], function (exports, _emberData) {
@@ -3096,6 +3253,11 @@ define('self-start-front-end/models/question', ['exports', 'ember-data'], functi
     type: _emberData.default.attr(),
     optionNumber: _emberData.default.attr('number'),
     optionString: _emberData.default.attr(),
+    mc: _emberData.default.attr('boolean'),
+    sa: _emberData.default.attr('boolean'),
+    tf: _emberData.default.attr('boolean'),
+    ra: _emberData.default.attr('boolean'),
+    answers: _emberData.default.hasMany('answer'),
     forms: _emberData.default.hasMany('form')
   });
 });
@@ -3163,6 +3325,7 @@ define('self-start-front-end/router', ['exports', 'self-start-front-end/config/e
     this.route('physiotherapists');
     this.route('new-physiotherapist');
     this.route('update-physiotherapist', { path: 'physiotherapist/:physiotherapest_id' });
+    this.route('formDisplay');
   });
 
   exports.default = Router;
@@ -3206,6 +3369,21 @@ define('self-start-front-end/routes/exercise', ['exports'], function (exports) {
       return this.store.findAll('exercise');
     }
   });
+});
+define('self-start-front-end/routes/form-display', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Route.extend({
+        model: function model() {
+            return Ember.RSVP.hash({
+                form: this.store.findAll('form'),
+                question: this.store.findAll('question')
+            });
+        }
+    });
 });
 define('self-start-front-end/routes/forms', ['exports'], function (exports) {
     'use strict';
@@ -3561,6 +3739,14 @@ define("self-start-front-end/templates/components/delete-status", ["exports"], f
   });
   exports.default = Ember.HTMLBars.template({ "id": "jCwNEmuY", "block": "{\"symbols\":[],\"statements\":[[6,\"p\"],[9,\"style\",\"cursor: pointer;\"],[9,\"title\",\"Delete\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[6,\"i\"],[9,\"class\",\"red remove icon\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Please Confirm ...\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you need to delete this element?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"float:left; width: 50%; cursor: pointer; background: #fc7169; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/delete-status.hbs" } });
 });
+define("self-start-front-end/templates/components/display-questions", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "NGZTFNTU", "block": "{\"symbols\":[\"q\"],\"statements\":[[6,\"script\"],[9,\"type\",\"text/javascript\"],[7],[0,\"$(document).ready(function(){$(\\\".rating\\\").rating();});\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\"],[6,\"ol\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"formModel\",\"questions\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"if\",[[19,1,[\"sa\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui input focus\"],[7],[0,\"\\n            \"],[6,\"li\"],[7],[1,[25,\"input\",null,[[\"type\",\"value\"],[\"text\",[20,[\"the\"]]]]],false],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[19,1,[\"ra\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n         \"],[6,\"li\"],[7],[6,\"div\"],[9,\"class\",\"ui large heart rating\"],[9,\"data-max-rating\",\"10\"],[7],[8],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[19,1,[\"tf\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n     \"],[6,\"li\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"inline fields\"],[7],[0,\"\\n           \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"tf\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[0,\"True\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n               \"],[6,\"input\"],[9,\"name\",\"tf\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n               \"],[6,\"label\"],[7],[0,\"False\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"  \\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[19,1,[\"mc\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"grouped fields\"],[7],[0,\"\\n          \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],0],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],1],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],2],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"],[4,\"if\",[[25,\"number-of-mc\",[[19,1,[\"optionNumber\"]],3],null]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],3],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"number-of-mc\",[[19,1,[\"optionNumber\"]],4],null]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],4],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"number-of-mc\",[[19,1,[\"optionNumber\"]],5],null]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],5],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[1]},null],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"button\"],[3,\"action\",[[19,0,[]],\"Submit\"]],[7],[0,\"Submit\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/display-questions.hbs" } });
+});
 define("self-start-front-end/templates/components/edit-country", ["exports"], function (exports) {
   "use strict";
 
@@ -3824,6 +4010,14 @@ define("self-start-front-end/templates/exercise", ["exports"], function (exports
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "aVRtzoKj", "block": "{\"symbols\":[\"Exercise\"],\"statements\":[[6,\"link\"],[9,\"href\",\"http://fonts.googleapis.com/css?family=Ubuntu:400,700\"],[9,\"rel\",\"stylesheet\"],[9,\"type\",\"text/css\"],[7],[8],[0,\"\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/table-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"section\"],[9,\"id\",\"cd-section\"],[7],[0,\"\\n  \"],[6,\"section\"],[9,\"id\",\"cd-table\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cd-table-container\"],[7],[0,\"\\n      \"],[6,\"ul\"],[7],[0,\"\\n        \"],[6,\"li\"],[9,\"style\",\"text-align: center; font-size: 1.2rem; text-transform: uppercase;\\n                          font-weight: bold; color: white; background-color: #f58b4c;\"],[7],[0,\"Exercises\"],[8],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"\\n          \"],[6,\"li\"],[7],[0,\"\\n            \"],[1,[19,1,[\"name\"]],false],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"float: right;  padding-top: .5%;\"],[7],[1,[25,\"delete-exercises\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[8],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"float: right; padding-right: 2%;  padding-top: .5%;\"],[7],[1,[25,\"edit-exercises\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[8],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"float: right; padding-right: 30%; \"],[7],[1,[19,1,[\"description\"]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\" \"],[2,\" cd-table \"],[0,\"\\n\"],[8],[0,\"\\n\\n\\n\"],[6,\"div\"],[9,\"id\",\"add\"],[9,\"class\",\"container\"],[7],[0,\"\\n\"],[4,\"link-to\",[\"new-exercise\"],null,{\"statements\":[[0,\"    \"],[6,\"a\"],[9,\"id\",\"add\"],[9,\"class\",\"round-button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"plus icon\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/exercise.hbs" } });
+});
+define("self-start-front-end/templates/form-display", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "XzW9AC1k", "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[1,[25,\"display-questions\",null,[[\"id\"],[[20,[\"id\"]]]]],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/form-display.hbs" } });
 });
 define("self-start-front-end/templates/forms", ["exports"], function (exports) {
   "use strict";
