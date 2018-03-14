@@ -11,9 +11,10 @@ router.route('/')
         });
     })
     .get( function (request, response) {
-        Exercise.Model.find(function (error, Exercise) {
+        Exercise.Model.find(function (error, exercises) {
             if (error) response.send(error);
-            response.json({exercise: Exercise});
+            response.json({exercise: exercises});
+
         });
     });
 

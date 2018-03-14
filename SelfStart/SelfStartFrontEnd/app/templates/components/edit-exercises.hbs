@@ -1,5 +1,7 @@
+
 <button class = "ui mini circular icon green button" {{action 'openModal'}} title="Edit">
   <i class=" pencil icon"> </i>
+
 </button>
 
 {{#ui-modal name=modalName class=modalName}}
@@ -88,26 +90,32 @@
 
       <div class="field">
         <label>Frequency</label>
+
         <div class="ui left icon action input">
           <i class="hourglass half icon"></i>
           {{input type ="text" value=Frequency placeholder="Frequency"}}
         </div>
+
       </div>
 
       <div class="field">
         <label>Duration</label>
+
         <div class="ui left icon action input">
           <i class="calendar icon"></i>
           {{input type ="text" value=Duration placeholder="Duration"}}
         </div>
+
       </div>
 
       <div class="field">
         <label>Target Date</label>
+
         <div class="ui left icon action input">
           <i class="add to calendar icon"></i>
           {{input type ="text" value=TargetDate placeholder="Target Date"}}
         </div>
+
       </div>
 
       <div class="field">
@@ -116,6 +124,7 @@
       </div>
 
       <div class = "field">
+
         {{#each secQueue as |image| }}
           <div class="ui items">
             <div class="item">

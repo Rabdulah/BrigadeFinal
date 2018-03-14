@@ -67,9 +67,11 @@ export default Component.extend({
     ]);
   },
 
+
   obj: [],
 
   actionStep: [],
+
 
   actions: {
     selectFile: function (data) {
@@ -108,6 +110,7 @@ export default Component.extend({
       this.set('flag', false);
     },
 
+
     addActionStep(){
       let newActStep = this.get('ActionSteps');
       this.get('actionStep').pushObject(newActStep);
@@ -121,6 +124,7 @@ export default Component.extend({
     },
 
     cancel() {
+
       this.set('isEditing', false);
       // this.get('DS').find('exercise' , this.tempExercise.get("ID")).then((exercise)=>{
       //     exercise.destroyRecord().then(() =>{
@@ -128,10 +132,12 @@ export default Component.extend({
       // });
       // this.tempExercise.destroyRecord();
       // this.get('DS').destroyRecord('exercise', this.tempExercise.get('id'));
+
     },
 
     addExercise (){
       this.set('isEditing', true);
+
       // this.exerciseData = this.get('DS').createRecord('exercise', {
       //     name:this.get('Name'),
       //     description:this.get('Description'),
@@ -201,6 +207,7 @@ export default Component.extend({
 
       // console.log("This is save image");
       // console.log(saveImage);
+
       let exercise = this.get('DS').createRecord('exercise', {
         name:this.get('Name'),
         description:this.get('Description'),
@@ -211,6 +218,7 @@ export default Component.extend({
         frequency:this.get('Frequency'),
         duration:this.get('Duration'),
         multimediaURL:this.get('MMURL'),
+
         targetDate:this.get('TargetDate'),
         images: []
       });
@@ -251,7 +259,6 @@ export default Component.extend({
       });
 
       this.get('queue').clear();
-
       this.set('Name', "");
       this.set('Description', "");
       this.set('Objective', "");
@@ -266,9 +273,11 @@ export default Component.extend({
       this.set("obj", []);
       this.set('isEditing', false);
 
+
       window.location.reload();
       // windows.location.reload();
     },
+
 
   }
 });

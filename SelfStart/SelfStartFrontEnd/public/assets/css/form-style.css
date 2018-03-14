@@ -432,6 +432,25 @@ Custom icons
   background: url('/assets/images/form/multiple-11.svg') no-repeat 12px 8px, url('/assets/images/form/cd-required.svg') no-repeat top right;
 }
 
+.cd-form .star {
+  background: url('/assets/images/form//favourite-31.svg') no-repeat 16px 16px;
+}
+.cd-form [required].star {
+  background: url('/assets/images/form/favourite-31.svg') no-repeat 16px 16px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+}
+.cd-form .award {
+  background: url('/assets/images/form/award-48.svg') no-repeat 16px 16px;
+}
+.cd-form [required].award {
+  background: url('/assets/images/form/award-48.svg') no-repeat 16px 16px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+}
+.cd-form .video {
+  background: url('/assets/images/form/video-66.svg') no-repeat 16px 16px;
+}
+.cd-form [required].video {
+  background: url('/assets/images/form/video-66.svg') no-repeat 16px 16px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+}
+
 
 /* --------------------------------
 

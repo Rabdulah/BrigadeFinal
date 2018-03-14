@@ -3,24 +3,14 @@ var bcrypt=require('bcrypt');
 
 var physiotherapestsSchema = mongoose.Schema({
     ID: String,
-    familyName: {
-        type: String,
-        required: true
-    },
-    givenName: {
-        type: String,
-        required: true
-    },
-    email: {
-        type: String,
-        required: true
-    },
-    dateHired: {
-        type: Date,
-        required: true
-    },
+    familyName: String,
+    givenName: String,
+    email: String,
+    dateHired: Date,
     dateFired: Date,
     treatment: [{type: mongoose.Schema.ObjectId, ref: 'Treatments'}],
+    appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],
+
     account: {
         userAccountName: String,
         encryptedPassword: String,

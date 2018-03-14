@@ -1,0 +1,29 @@
+
+<button class="ui button" {{action 'openModal'}}>
+Manage Form Questions
+</button>
+
+{{#ui-modal name= modalName class= modalName}}
+        <div class='content'>
+          <div class='ui form'>
+           <h2> {{fName}} </h2>
+           <div class="ui grid">
+                {{#each questionsModel as |question|}}   
+                        <div class="four wide column">
+                         <label>{{question.questionText}}</label>
+                        </div>
+
+                        <div class="four wide column">
+                         <button {{action "addQuestion" question form question.id}}> Add </button>
+                        </div>
+                {{/each}}
+           </div>
+           <br><br>
+         </div>
+        </div>
+        <div class="actions">
+         <div class="ui positive right labeled icon button">
+         Done
+         </div>
+        </div>
+{{/ui-modal}}

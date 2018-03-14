@@ -148,13 +148,16 @@
   justify-content: center;
 }
 #example .masthead.bg1 .container {
-  padding: 13rem 0em;
+  height: 55vh;
+  min-height: 600px;
+  padding: 20rem 0em;
 }
 #example .masthead.bg2 .container {
   padding: 5rem 0em;
 }
 #example .masthead.bg3 .container {
-  padding: 16rem 0em;
+  min-height: 600px;
+  padding: 25rem 0em;
 }
 #example .masthead.bg4 .container {
   padding: 6rem 0em;
@@ -181,6 +184,7 @@
   background-color: #FFFFFF;
   border-bottom: 1px solid #DDDDDD;
   box-shadow: 0px 2px 3px rgba(0, 0, 0, 0.04);
+
 }
 
 #example.index .masthead.segment .typed-cursor {
@@ -370,15 +374,14 @@
   z-index: 900;
   left: 0%;
   padding: 2em 0em;
-  width: 100vw;
+  width: 100%;
   box-shadow: 0px 0px 0px 0px transparent;
   border-bottom: 1px solid transparent;
   transition:
     padding 0.5s ease,
     background 0.5s ease,
     box-shadow 0.5s ease,
-    border 0.5s ease
-;
+    border 0.5s ease;
 }
 #example.index .following.bar > .menu .item {
   transition: all 0.5s ease;
@@ -731,10 +734,12 @@
 }
 
 
+
 @media only screen and (max-width : 1040px) {
   #example.index .following.bar .network.menu .view-ui {
     margin-right: 0.5em;
   }
+
 }
 
 

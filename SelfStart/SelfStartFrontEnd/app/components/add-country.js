@@ -7,7 +7,6 @@ export default Component.extend({
 
   actions: {
 
-
     openModal: function ()  {
       this.set('name', null);
 
@@ -19,7 +18,6 @@ export default Component.extend({
         },
 
         onApprove: () => {
-
           let newCountry = this.get('DS').createRecord('country', {
             name: this.get('name'),
           });
@@ -27,9 +25,11 @@ export default Component.extend({
             return true;
           });
         }
+
       }).modal('show')
     },
   }
 
 });
+
 

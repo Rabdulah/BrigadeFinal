@@ -20,6 +20,7 @@ var patientProfilesSchema = mongoose.Schema(
         apartment: Number,
         streetNumber: Number,
         streetName: String,
+        answer: [{type: mongoose.Schema.ObjectId, ref: 'Answers'}],
         postalCode: String,
         account: {
                     userAccountName: String,
@@ -30,6 +31,7 @@ var patientProfilesSchema = mongoose.Schema(
                         default: "0"
                     }
                 },
+
         // payments: [{
         //             dayTimestamp: Date,
         //             amount: Number,

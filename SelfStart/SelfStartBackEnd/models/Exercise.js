@@ -11,7 +11,9 @@ var exercisesSchema = mongoose.Schema({
     duration: Number,
     multimediaURL: String,
     targetDate: Date,
+
     images: [{type: mongoose.Schema.ObjectId, ref: 'Images'}],
+
     rehabilitationPlan: {type: mongoose.Schema.ObjectId, ref: 'RehabilitationPlans'},
 });
 var ExercisesSchema = mongoose.model('exercise', exercisesSchema);

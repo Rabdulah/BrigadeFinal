@@ -2,6 +2,7 @@
 
 // BASE SETUP
 // =============================================================================
+// test
 
 // call the packages we need
 var mongoose = require('mongoose');
@@ -63,6 +64,7 @@ var administrators = require('./routes/administrators');
 var physiotherapests = require('./routes/physiotherapests');
 var treatments = require('./routes/treatments');
 var genders = require('./routes/genders');
+
 
 // REGISTER OUR ROUTES -------------------------------
 app.use('/images', photos);

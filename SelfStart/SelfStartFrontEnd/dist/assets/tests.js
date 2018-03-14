@@ -27,7 +27,17 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/add-exercises.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/add-exercises.js should pass ESLint\n\n83:11 - Unexpected console statement. (no-console)\n218:7 - Unexpected console statement. (no-console)\n227:13 - \'saveImage\' is assigned a value but never used. (no-unused-vars)\n228:9 - Unexpected console statement. (no-console)\n229:9 - Unexpected console statement. (no-console)\n230:9 - Unexpected console statement. (no-console)\n232:11 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/add-exercises.js should pass ESLint\n\n85:11 - Unexpected console statement. (no-console)\n226:7 - Unexpected console statement. (no-console)\n235:13 - \'saveImage\' is assigned a value but never used. (no-unused-vars)\n236:9 - Unexpected console statement. (no-console)\n237:9 - Unexpected console statement. (no-console)\n238:9 - Unexpected console statement. (no-console)\n240:11 - Unexpected console statement. (no-console)');
+  });
+
+  QUnit.test('components/add-form-question.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/add-form-question.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/add-form.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/add-form.js should pass ESLint\n\n22:17 - \'form\' is assigned a value but never used. (no-unused-vars)\n27:13 - Unexpected console statement. (no-console)\n36:13 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/add-gender.js', function (assert) {
@@ -40,9 +50,24 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'components/add-patient.js should pass ESLint\n\n');
   });
 
+  QUnit.test('components/add-physiotherapist.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/add-physiotherapist.js should pass ESLint\n\n');
+  });
+
   QUnit.test('components/add-province.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/add-province.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/add-question.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/add-question.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/add-rehabplan.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/add-rehabplan.js should pass ESLint\n\n');
   });
 
   QUnit.test('components/admin-nav.js', function (assert) {
@@ -60,9 +85,19 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'components/back-to-top.js should pass ESLint\n\n');
   });
 
+  QUnit.test('components/book-appointment.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/book-appointment.js should pass ESLint\n\n4:16 - \'Ember\' is not defined. (no-undef)\n11:40 - \'Ember\' is not defined. (no-undef)\n17:40 - \'Ember\' is not defined. (no-undef)\n23:40 - \'Ember\' is not defined. (no-undef)\n32:42 - \'Ember\' is not defined. (no-undef)\n38:7 - Unexpected console statement. (no-console)\n45:9 - Unexpected console statement. (no-console)\n51:7 - Unexpected console statement. (no-console)');
+  });
+
   QUnit.test('components/config-selection.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/config-selection.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/confirm-booking.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/confirm-booking.js should pass ESLint\n\n26:41 - \'qid\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/delete-country.js', function (assert) {
@@ -75,6 +110,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'components/delete-exercises.js should pass ESLint\n\n');
   });
 
+  QUnit.test('components/delete-form.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/delete-form.js should pass ESLint\n\n');
+  });
+
   QUnit.test('components/delete-gender.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/delete-gender.js should pass ESLint\n\n');
@@ -85,9 +125,29 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'components/delete-patient.js should pass ESLint\n\n');
   });
 
-  QUnit.test('components/delete-province.js', function (assert) {
+  QUnit.test('components/delete-physiotherapist.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'components/delete-province.js should pass ESLint\n\n');
+    assert.ok(true, 'components/delete-physiotherapist.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/delete-question.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/delete-question.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/delete-rehabplan.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/delete-rehabplan.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/delete-status.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/delete-status.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/display-questions.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/display-questions.js should pass ESLint\n\n4:9 - \'Ember\' is not defined. (no-undef)\n8:16 - \'Ember\' is not defined. (no-undef)\n16:13 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/edit-country.js', function (assert) {
@@ -97,7 +157,12 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/edit-exercises.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/edit-exercises.js should pass ESLint\n\n106:11 - Unexpected console statement. (no-console)\n114:7 - Unexpected console statement. (no-console)\n115:7 - Unexpected console statement. (no-console)\n116:7 - Unexpected console statement. (no-console)\n146:7 - Unexpected console statement. (no-console)\n167:13 - Unexpected console statement. (no-console)\n176:13 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/edit-exercises.js should pass ESLint\n\n110:11 - Unexpected console statement. (no-console)\n118:7 - Unexpected console statement. (no-console)\n119:7 - Unexpected console statement. (no-console)\n120:7 - Unexpected console statement. (no-console)\n150:7 - Unexpected console statement. (no-console)\n174:13 - Unexpected console statement. (no-console)\n183:13 - Unexpected console statement. (no-console)');
+  });
+
+  QUnit.test('components/edit-form.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/edit-form.js should pass ESLint\n\n4:9 - \'Ember\' is not defined. (no-undef)\n6:12 - \'Ember\' is not defined. (no-undef)\n7:19 - \'Ember\' is not defined. (no-undef)\n9:16 - \'Ember\' is not defined. (no-undef)\n17:9 - \'Ember\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/edit-gender.js', function (assert) {
@@ -110,14 +175,44 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'components/edit-patient.js should pass ESLint\n\n');
   });
 
+  QUnit.test('components/edit-physiotherapist.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/edit-physiotherapist.js should pass ESLint\n\n105:11 - \'physiotherapist\' is assigned a value but never used. (no-unused-vars)\n116:9 - \'rec\' is not defined. (no-undef)');
+  });
+
+  QUnit.test('components/edit-rehabplan.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/edit-rehabplan.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/edit-status.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/edit-status.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/manage-form.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/manage-form.js should pass ESLint\n\n');
+  });
+
   QUnit.test('components/manage-patients.js', function (assert) {
     assert.expect(1);
     assert.ok(false, 'components/manage-patients.js should pass ESLint\n\n74:5 - Unexpected console statement. (no-console)');
   });
 
+  QUnit.test('components/modify-question.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/modify-question.js should pass ESLint\n\n');
+  });
+
   QUnit.test('components/nav-bar.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/nav-bar.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n11:9 - \'Ember\' is not defined. (no-undef)\n30:7 - Unexpected console statement. (no-console)\n132:11 - Unexpected console statement. (no-console)\n134:13 - Unexpected console statement. (no-console)\n143:13 - Unexpected console statement. (no-console)\n153:13 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/nav-bar.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n12:9 - \'Ember\' is not defined. (no-undef)\n32:7 - Unexpected console statement. (no-console)\n122:11 - Unexpected console statement. (no-console)\n124:13 - Unexpected console statement. (no-console)\n133:13 - Unexpected console statement. (no-console)\n143:13 - Unexpected console statement. (no-console)');
+  });
+
+  QUnit.test('components/parse-question.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/parse-question.js should pass ESLint\n\n');
   });
 
   QUnit.test('components/register-user.js', function (assert) {
@@ -125,9 +220,24 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(false, 'components/register-user.js should pass ESLint\n\n38:30 - Unnecessary escape character: \\[. (no-useless-escape)\n38:55 - Unnecessary escape character: \\[. (no-useless-escape)\n40:11 - Unexpected console statement. (no-console)\n66:9 - Unexpected console statement. (no-console)\n91:9 - Unexpected console statement. (no-console)\n114:9 - Unexpected console statement. (no-console)');
   });
 
+  QUnit.test('components/show-form-questions.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/show-form-questions.js should pass ESLint\n\n15:13 - Unexpected console statement. (no-console)\n27:26 - \'fid\' is defined but never used. (no-unused-vars)\n28:17 - \'thisForm\' is assigned a value but never used. (no-unused-vars)\n35:13 - Unexpected console statement. (no-console)\n39:13 - Unexpected console statement. (no-console)\n40:13 - Unexpected console statement. (no-console)\n46:13 - Unexpected console statement. (no-console)\n69:13 - Unexpected console statement. (no-console)\n72:21 - \'x\' is already defined. (no-redeclare)');
+  });
+
   QUnit.test('components/show-patient.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/show-patient.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/simple-example.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/simple-example.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/upload-file.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/upload-file.js should pass ESLint\n\n94:7 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/user-info.js', function (assert) {
@@ -140,9 +250,24 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(false, 'components/user-login.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n10:9 - \'Ember\' is not defined. (no-undef)\n14:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n34:7 - Unexpected console statement. (no-console)\n50:11 - Unexpected console statement. (no-console)\n52:13 - Unexpected console statement. (no-console)\n61:13 - Unexpected console statement. (no-console)\n71:13 - Unexpected console statement. (no-console)');
   });
 
+  QUnit.test('components/view-appointment.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/view-appointment.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/view-schedule.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/view-schedule.js should pass ESLint\n\n50:9 - \'transitionEnd\' is assigned a value but never used. (no-unused-vars)\n136:11 - \'self\' is assigned a value but never used. (no-unused-vars)\n181:14 - \'transformElement\' is defined but never used. (no-unused-vars)\n213:7 - Unexpected console statement. (no-console)\n218:9 - Unexpected console statement. (no-console)\n219:9 - Unexpected console statement. (no-console)\n279:7 - Unexpected console statement. (no-console)');
+  });
+
   QUnit.test('components/welcome-page.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/welcome-page.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('controllers/form-display.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'controllers/form-display.js should pass ESLint\n\n');
   });
 
   QUnit.test('controllers/new-patient.js', function (assert) {
@@ -150,14 +275,79 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'controllers/new-patient.js should pass ESLint\n\n');
   });
 
+  QUnit.test('controllers/questions.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'controllers/questions.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('controllers/rehabplans.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'controllers/rehabplans.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('helpers/compare.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'helpers/compare.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('helpers/index-plus-one.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'helpers/index-plus-one.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('helpers/indexpicker.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'helpers/indexpicker.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('helpers/input-identification.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'helpers/input-identification.js should pass ESLint\n\n8:3 - Unexpected console statement. (no-console)');
+  });
+
+  QUnit.test('helpers/is-equal.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'helpers/is-equal.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('helpers/mc-display.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'helpers/mc-display.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('helpers/number-of-mc.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'helpers/number-of-mc.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('initializers/doc.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'initializers/doc.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('initializers/home.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'initializers/home.js should pass ESLint\n\n');
+  });
+
   QUnit.test('initializers/responsive.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'initializers/responsive.js should pass ESLint\n\n');
   });
 
+  QUnit.test('models/answer.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'models/answer.js should pass ESLint\n\n');
+  });
+
   QUnit.test('models/appointment.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'models/appointment.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('models/assesment-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'models/assesment-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('models/city.js', function (assert) {
@@ -173,6 +363,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('models/exercise.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'models/exercise.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('models/form.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'models/form.js should pass ESLint\n\n');
   });
 
   QUnit.test('models/gender.js', function (assert) {
@@ -195,9 +390,29 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'models/patient.js should pass ESLint\n\n');
   });
 
+  QUnit.test('models/physiotherapest.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'models/physiotherapest.js should pass ESLint\n\n');
+  });
+
   QUnit.test('models/province.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'models/province.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('models/question-order.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'models/question-order.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('models/question.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'models/question.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('models/rehabilitationplan.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'models/rehabilitationplan.js should pass ESLint\n\n');
   });
 
   QUnit.test('resolver.js', function (assert) {
@@ -230,9 +445,24 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'routes/dashboard.js should pass ESLint\n\n');
   });
 
+  QUnit.test('routes/exercise.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/exercise.js should pass ESLint\n\n');
+  });
+
   QUnit.test('routes/exercises.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'routes/exercises.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('routes/form-display.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/form-display.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('routes/forms.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/forms.js should pass ESLint\n\n');
   });
 
   QUnit.test('routes/home.js', function (assert) {
@@ -255,9 +485,19 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'routes/message.js should pass ESLint\n\n');
   });
 
+  QUnit.test('routes/new-exercise.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/new-exercise.js should pass ESLint\n\n');
+  });
+
   QUnit.test('routes/new-patient.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'routes/new-patient.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('routes/new-rehabplans.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/new-rehabplans.js should pass ESLint\n\n');
   });
 
   QUnit.test('routes/patient-file.js', function (assert) {
@@ -270,14 +510,29 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'routes/patients.js should pass ESLint\n\n');
   });
 
+  QUnit.test('routes/physiotherapists.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/physiotherapists.js should pass ESLint\n\n');
+  });
+
   QUnit.test('routes/province.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'routes/province.js should pass ESLint\n\n');
   });
 
+  QUnit.test('routes/questions.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/questions.js should pass ESLint\n\n');
+  });
+
   QUnit.test('routes/register.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'routes/register.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('routes/rehabplans.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/rehabplans.js should pass ESLint\n\n');
   });
 
   QUnit.test('routes/update-patient.js', function (assert) {
@@ -293,6 +548,16 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('serializers/patient.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'serializers/patient.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('services/doc.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'services/doc.js should pass ESLint\n\n16:7 - \'$document\' is assigned a value but never used. (no-unused-vars)\n17:7 - \'$sortableTables\' is assigned a value but never used. (no-unused-vars)\n23:7 - \'$ui\' is assigned a value but never used. (no-unused-vars)\n26:7 - \'$hideMenu\' is assigned a value but never used. (no-unused-vars)\n27:7 - \'$search\' is assigned a value but never used. (no-unused-vars)\n29:7 - \'$demo\' is assigned a value but never used. (no-unused-vars)\n66:7 - \'$sidebarButton\' is assigned a value but never used. (no-unused-vars)\n143:13 - \'$modal\' is assigned a value but never used. (no-unused-vars)\n155:37 - \'shortcuts\' is not defined. (no-undef)\n156:26 - \'shortcuts\' is not defined. (no-undef)\n193:39 - \'calculations\' is defined but never used. (no-unused-vars)\n228:13 - \'$activeSection\' is assigned a value but never used. (no-unused-vars)\n272:51 - \'$choice\' is defined but never used. (no-unused-vars)\n315:31 - \'event\' is defined but never used. (no-unused-vars)\n387:11 - \'$rail\' is assigned a value but never used. (no-unused-vars)\n401:15 - \'$anchor\' is assigned a value but never used. (no-unused-vars)\n419:21 - \'$anchor\' is assigned a value but never used. (no-unused-vars)\n518:11 - Unexpected console statement. (no-console)\n527:25 - Unexpected constant condition. (no-constant-condition)\n559:23 - Unexpected console statement. (no-console)\n580:13 - \'states\' is assigned a value but never used. (no-unused-vars)\n584:13 - \'html\' is assigned a value but never used. (no-unused-vars)\n624:45 - \'variation\' is defined but never used. (no-unused-vars)\n628:45 - \'variation\' is defined but never used. (no-unused-vars)\n785:15 - \'Clipboard\' is not defined. (no-undef)\n859:11 - Unexpected console statement. (no-console)\n962:41 - Unnecessary escape character: \\". (no-useless-escape)\n987:32 - Unnecessary escape character: \\". (no-useless-escape)\n987:38 - Unnecessary escape character: \\". (no-useless-escape)\n1029:11 - \'codeSample\' is already defined. (no-redeclare)\n1031:11 - \'existingCode\' is assigned a value but never used. (no-unused-vars)\n1032:11 - \'evaluatedCode\' is assigned a value but never used. (no-unused-vars)\n1036:11 - \'demo\' is assigned a value but never used. (no-unused-vars)\n1049:11 - \'padding\' is assigned a value but never used. (no-unused-vars)\n1054:11 - \'styledCode\' is defined but never used. (no-unused-vars)\n1055:11 - \'$example\' is defined but never used. (no-unused-vars)\n1056:11 - \'$label\' is defined but never used. (no-unused-vars)\n1057:11 - \'codeHeight\' is defined but never used. (no-unused-vars)\n1059:13 - \'entityMap\' is assigned a value but never used. (no-unused-vars)\n1224:5 - \'semantic\' is not defined. (no-undef)');
+  });
+
+  QUnit.test('services/home.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'services/home.js should pass ESLint\n\n8:5 - \'semantic\' is not defined. (no-undef)\n13:7 - \'$ui\' is assigned a value but never used. (no-unused-vars)\n14:7 - \'$phrase\' is assigned a value but never used. (no-unused-vars)\n15:7 - \'$download\' is assigned a value but never used. (no-unused-vars)\n16:7 - \'$library\' is assigned a value but never used. (no-unused-vars)\n17:7 - \'$cursor\' is assigned a value but never used. (no-unused-vars)\n18:7 - \'$version\' is assigned a value but never used. (no-unused-vars)\n101:11 - Unexpected console statement. (no-console)\n116:25 - Unexpected constant condition. (no-constant-condition)\n129:13 - Unexpected console statement. (no-console)\n138:13 - Unexpected console statement. (no-console)\n166:31 - \'semantic\' is not defined. (no-undef)\n171:25 - \'semantic\' is not defined. (no-undef)\n177:40 - \'text\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('transitions.js', function (assert) {
@@ -315,6 +580,50 @@ define('self-start-front-end/tests/helpers/destroy-app', ['exports'], function (
   function destroyApp(application) {
     Ember.run(application, 'destroy');
   }
+});
+define('self-start-front-end/tests/helpers/ember-power-select', ['exports', 'ember-power-select/test-support/helpers'], function (exports, _helpers) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.selectChoose = exports.touchTrigger = exports.nativeTouch = exports.clickTrigger = exports.typeInSearch = exports.triggerKeydown = exports.nativeMouseUp = exports.nativeMouseDown = exports.findContains = undefined;
+  exports.default = deprecatedRegisterHelpers;
+
+
+  function deprecateHelper(fn, name) {
+    return function () {
+      (true && !(false) && Ember.deprecate('DEPRECATED `import { ' + name + ' } from \'../../tests/helpers/ember-power-select\';` is deprecated. Please, replace it with `import { ' + name + ' } from \'ember-power-select/test-support/helpers\';`', false, { until: '1.11.0', id: 'ember-power-select-test-support-' + name }));
+
+      return fn.apply(undefined, arguments);
+    };
+  }
+
+  var findContains = deprecateHelper(_helpers.findContains, 'findContains');
+  var nativeMouseDown = deprecateHelper(_helpers.nativeMouseDown, 'nativeMouseDown');
+  var nativeMouseUp = deprecateHelper(_helpers.nativeMouseUp, 'nativeMouseUp');
+  var triggerKeydown = deprecateHelper(_helpers.triggerKeydown, 'triggerKeydown');
+  var typeInSearch = deprecateHelper(_helpers.typeInSearch, 'typeInSearch');
+  var clickTrigger = deprecateHelper(_helpers.clickTrigger, 'clickTrigger');
+  var nativeTouch = deprecateHelper(_helpers.nativeTouch, 'nativeTouch');
+  var touchTrigger = deprecateHelper(_helpers.touchTrigger, 'touchTrigger');
+  var selectChoose = deprecateHelper(_helpers.selectChoose, 'selectChoose');
+
+  function deprecatedRegisterHelpers() {
+    (true && !(false) && Ember.deprecate("DEPRECATED `import registerPowerSelectHelpers from '../../tests/helpers/ember-power-select';` is deprecated. Please, replace it with `import registerPowerSelectHelpers from 'ember-power-select/test-support/helpers';`", false, { until: '1.11.0', id: 'ember-power-select-test-support-register-helpers' }));
+
+    return (0, _helpers.default)();
+  }
+
+  exports.findContains = findContains;
+  exports.nativeMouseDown = nativeMouseDown;
+  exports.nativeMouseUp = nativeMouseUp;
+  exports.triggerKeydown = triggerKeydown;
+  exports.typeInSearch = typeInSearch;
+  exports.clickTrigger = clickTrigger;
+  exports.nativeTouch = nativeTouch;
+  exports.touchTrigger = touchTrigger;
+  exports.selectChoose = selectChoose;
 });
 define('self-start-front-end/tests/helpers/module-for-acceptance', ['exports', 'qunit', 'self-start-front-end/tests/helpers/start-app', 'self-start-front-end/tests/helpers/destroy-app'], function (exports, _qunit, _startApp, _destroyApp) {
   'use strict';
@@ -469,10 +778,10 @@ define('self-start-front-end/tests/integration/components/add-country-test', ['e
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
-define('self-start-front-end/tests/integration/components/add-exercises-test', ['ember-qunit'], function (_emberQunit) {
+define('self-start-front-end/tests/integration/components/add-form-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
-  (0, _emberQunit.moduleForComponent)('add-exercises', 'Integration | Component | add exercises', {
+  (0, _emberQunit.moduleForComponent)('add-form', 'Integration | Component | add form', {
     integration: true
   });
 
@@ -481,8 +790,8 @@ define('self-start-front-end/tests/integration/components/add-exercises-test', [
     // Handle any actions with this.on('myAction', function(val) { ... });
 
     this.render(Ember.HTMLBars.template({
-      "id": "VI552qOF",
-      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"add-exercises\"],false]],\"hasEval\":false}",
+      "id": "Ihn44m4a",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"add-form\"],false]],\"hasEval\":false}",
       "meta": {}
     }));
 
@@ -490,8 +799,8 @@ define('self-start-front-end/tests/integration/components/add-exercises-test', [
 
     // Template block usage:
     this.render(Ember.HTMLBars.template({
-      "id": "OgMjPmWR",
-      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"add-exercises\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "id": "Olta0t7i",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"add-form\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
       "meta": {}
     }));
 
@@ -556,10 +865,10 @@ define('self-start-front-end/tests/integration/components/add-patient-test', ['e
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
-define('self-start-front-end/tests/integration/components/add-province-test', ['ember-qunit'], function (_emberQunit) {
+define('self-start-front-end/tests/integration/components/add-physiotherapist-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
-  (0, _emberQunit.moduleForComponent)('add-province', 'Integration | Component | add province', {
+  (0, _emberQunit.moduleForComponent)('add-physiotherapist', 'Integration | Component | add physiotherapist', {
     integration: true
   });
 
@@ -568,8 +877,8 @@ define('self-start-front-end/tests/integration/components/add-province-test', ['
     // Handle any actions with this.on('myAction', function(val) { ... });
 
     this.render(Ember.HTMLBars.template({
-      "id": "IGketj3e",
-      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"add-province\"],false]],\"hasEval\":false}",
+      "id": "2L0VfaJ6",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"add-physiotherapist\"],false]],\"hasEval\":false}",
       "meta": {}
     }));
 
@@ -577,8 +886,66 @@ define('self-start-front-end/tests/integration/components/add-province-test', ['
 
     // Template block usage:
     this.render(Ember.HTMLBars.template({
-      "id": "L0oHGqY3",
-      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"add-province\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "id": "oceeKh4W",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"add-physiotherapist\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/add-question-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('add-question', 'Integration | Component | add question', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "8Uqx/0cN",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"add-question\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "7U/Xnr2f",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"add-question\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/add-rehabplan-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('add-rehabplan', 'Integration | Component | add rehabplan', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "1Xzau0nh",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"add-rehabplan\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "W12jr0QV",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"add-rehabplan\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
       "meta": {}
     }));
 
@@ -672,6 +1039,35 @@ define('self-start-front-end/tests/integration/components/back-to-top-test', ['e
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/book-appointment-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('book-appointment', 'Integration | Component | book appointment', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "NdIYnWMu",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"book-appointment\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "I23GB3If",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"book-appointment\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/config-selection-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -695,6 +1091,35 @@ define('self-start-front-end/tests/integration/components/config-selection-test'
     this.render(Ember.HTMLBars.template({
       "id": "OpO0q+BO",
       "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"config-selection\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/confirm-booking-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('confirm-booking', 'Integration | Component | confirm booking', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "v5Lyyv2I",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"confirm-booking\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "yo05rwU1",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"confirm-booking\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
       "meta": {}
     }));
 
@@ -759,6 +1184,35 @@ define('self-start-front-end/tests/integration/components/delete-exercises-test'
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/delete-form-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('delete-form', 'Integration | Component | delete form', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "6v4kecE7",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"delete-form\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "qpHS4c0j",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"delete-form\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/delete-gender-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -817,10 +1271,10 @@ define('self-start-front-end/tests/integration/components/delete-patient-test', 
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
-define('self-start-front-end/tests/integration/components/delete-province-test', ['ember-qunit'], function (_emberQunit) {
+define('self-start-front-end/tests/integration/components/delete-physiotherapist-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
-  (0, _emberQunit.moduleForComponent)('delete-province', 'Integration | Component | delete province', {
+  (0, _emberQunit.moduleForComponent)('delete-physiotherapist', 'Integration | Component | delete physiotherapist', {
     integration: true
   });
 
@@ -829,8 +1283,8 @@ define('self-start-front-end/tests/integration/components/delete-province-test',
     // Handle any actions with this.on('myAction', function(val) { ... });
 
     this.render(Ember.HTMLBars.template({
-      "id": "pnFar+Bs",
-      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"delete-province\"],false]],\"hasEval\":false}",
+      "id": "qYG7IdOz",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"delete-physiotherapist\"],false]],\"hasEval\":false}",
       "meta": {}
     }));
 
@@ -838,8 +1292,95 @@ define('self-start-front-end/tests/integration/components/delete-province-test',
 
     // Template block usage:
     this.render(Ember.HTMLBars.template({
-      "id": "2rdbFEPD",
-      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"delete-province\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "id": "ZkYMjcTw",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"delete-physiotherapist\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/delete-question-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('delete-question', 'Integration | Component | delete question', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "KKV1s7w+",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"delete-question\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "ojQ4YWdb",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"delete-question\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/delete-rehabplan-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('delete-rehabplan', 'Integration | Component | delete rehabplan', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "j+4mWThs",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"delete-rehabplan\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "EDtNnsrm",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"delete-rehabplan\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/display-questions-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('display-questions', 'Integration | Component | display questions', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "ohDdx9uF",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"display-questions\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "X5z97jjl",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"display-questions\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
       "meta": {}
     }));
 
@@ -904,6 +1445,35 @@ define('self-start-front-end/tests/integration/components/edit-exercises-test', 
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/edit-form-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('edit-form', 'Integration | Component | edit form', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "6cQfsP4N",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"edit-form\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "aErfLX51",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"edit-form\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/edit-gender-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -962,6 +1532,93 @@ define('self-start-front-end/tests/integration/components/edit-patient-test', ['
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/edit-physiotherapist-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('edit-physiotherapist', 'Integration | Component | edit physiotherapist', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "kDmUYLx6",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"edit-physiotherapist\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "1jTTEcnj",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"edit-physiotherapist\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/edit-rehabplan-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('edit-rehabplan', 'Integration | Component | edit rehabplan', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "XFCkeT+W",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"edit-rehabplan\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "zlzl0bjs",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"edit-rehabplan\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/manage-form-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('manage-form', 'Integration | Component | manage form', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "3QvFGct2",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"manage-form\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "QvbIQtkp",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"manage-form\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/manage-patients-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -985,6 +1642,35 @@ define('self-start-front-end/tests/integration/components/manage-patients-test',
     this.render(Ember.HTMLBars.template({
       "id": "JGFtGeSY",
       "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"manage-patients\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/modify-question-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('modify-question', 'Integration | Component | modify question', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "lnFT5Un5",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"modify-question\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "dEWRlZ9q",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"modify-question\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
       "meta": {}
     }));
 
@@ -1020,6 +1706,35 @@ define('self-start-front-end/tests/integration/components/nav-bar-test', ['ember
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/parse-question-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('parse-question', 'Integration | Component | parse question', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "3eIW3CM9",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"parse-question\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "bmt3TjJe",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"parse-question\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/register-user-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -1049,6 +1764,35 @@ define('self-start-front-end/tests/integration/components/register-user-test', [
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/show-form-questions-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('show-form-questions', 'Integration | Component | show form questions', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "mhUiiyxF",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"show-form-questions\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "1R3+O6DT",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"show-form-questions\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/show-patient-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -1072,6 +1816,64 @@ define('self-start-front-end/tests/integration/components/show-patient-test', ['
     this.render(Ember.HTMLBars.template({
       "id": "CDaa3Vhz",
       "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"show-patient\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/simple-example-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('simple-example', 'Integration | Component | simple example', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "TbZjxy9y",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"simple-example\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "Hb4ZgQDk",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"simple-example\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/upload-file-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('upload-file', 'Integration | Component | upload file', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "5TkSC30a",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"upload-file\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "wD6saKd7",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"upload-file\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
       "meta": {}
     }));
 
@@ -1136,6 +1938,64 @@ define('self-start-front-end/tests/integration/components/user-login-test', ['em
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/view-appointment-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('view-appointment', 'Integration | Component | view appointment', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "wHWZ+Nta",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"view-appointment\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "5E6wqLfG",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"view-appointment\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/view-schedule-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('view-schedule', 'Integration | Component | view schedule', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "kV5YlrR7",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"view-schedule\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "RfMug7ud",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"view-schedule\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/welcome-page-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -1163,6 +2023,146 @@ define('self-start-front-end/tests/integration/components/welcome-page-test', ['
     }));
 
     assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/helpers/compare-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('compare', 'helper:compare', {
+    integration: true
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it renders', function (assert) {
+    this.set('inputValue', '1234');
+
+    this.render(Ember.HTMLBars.template({
+      "id": "Q+uXofJN",
+      "block": "{\"symbols\":[],\"statements\":[[1,[25,\"compare\",[[20,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '1234');
+  });
+});
+define('self-start-front-end/tests/integration/helpers/index-plus-one-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('index-plus-one', 'helper:index-plus-one', {
+    integration: true
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it renders', function (assert) {
+    this.set('inputValue', '1234');
+
+    this.render(Ember.HTMLBars.template({
+      "id": "DLg8u0h7",
+      "block": "{\"symbols\":[],\"statements\":[[1,[25,\"index-plus-one\",[[20,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '1234');
+  });
+});
+define('self-start-front-end/tests/integration/helpers/indexpicker-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('indexpicker', 'helper:indexpicker', {
+    integration: true
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it renders', function (assert) {
+    this.set('inputValue', '1234');
+
+    this.render(Ember.HTMLBars.template({
+      "id": "6Xoked9E",
+      "block": "{\"symbols\":[],\"statements\":[[1,[25,\"indexpicker\",[[20,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '1234');
+  });
+});
+define('self-start-front-end/tests/integration/helpers/input-identification-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('input-identification', 'helper:input-identification', {
+    integration: true
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it renders', function (assert) {
+    this.set('inputValue', '1234');
+
+    this.render(Ember.HTMLBars.template({
+      "id": "tz1nLuQG",
+      "block": "{\"symbols\":[],\"statements\":[[1,[25,\"input-identification\",[[20,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '1234');
+  });
+});
+define('self-start-front-end/tests/integration/helpers/is-equal-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('is-equal', 'helper:is-equal', {
+    integration: true
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it renders', function (assert) {
+    this.set('inputValue', '1234');
+
+    this.render(Ember.HTMLBars.template({
+      "id": "K2xUbCcD",
+      "block": "{\"symbols\":[],\"statements\":[[1,[25,\"is-equal\",[[20,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '1234');
+  });
+});
+define('self-start-front-end/tests/integration/helpers/mc-display-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('mc-display', 'helper:mc-display', {
+    integration: true
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it renders', function (assert) {
+    this.set('inputValue', '1234');
+
+    this.render(Ember.HTMLBars.template({
+      "id": "DCrDRcfj",
+      "block": "{\"symbols\":[],\"statements\":[[1,[25,\"mc-display\",[[20,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '1234');
+  });
+});
+define('self-start-front-end/tests/integration/helpers/number-of-mc-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('number-of-mc', 'helper:number-of-mc', {
+    integration: true
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it renders', function (assert) {
+    this.set('inputValue', '1234');
+
+    this.render(Ember.HTMLBars.template({
+      "id": "gmYiInYv",
+      "block": "{\"symbols\":[],\"statements\":[[1,[25,\"number-of-mc\",[[20,[\"inputValue\"]]],null],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '1234');
   });
 });
 define('self-start-front-end/tests/test-helper', ['self-start-front-end/tests/helpers/resolver', 'ember-qunit', 'ember-cli-qunit', 'self-start-front-end/tests/helpers/responsive'], function (_resolver, _emberQunit, _emberCliQunit) {
@@ -1206,9 +2206,9 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/add-country-test.js should pass ESLint\n\n');
   });
 
-  QUnit.test('integration/components/add-exercises-test.js', function (assert) {
+  QUnit.test('integration/components/add-form-test.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'integration/components/add-exercises-test.js should pass ESLint\n\n');
+    assert.ok(true, 'integration/components/add-form-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/add-gender-test.js', function (assert) {
@@ -1221,9 +2221,19 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/add-patient-test.js should pass ESLint\n\n');
   });
 
-  QUnit.test('integration/components/add-province-test.js', function (assert) {
+  QUnit.test('integration/components/add-physiotherapist-test.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'integration/components/add-province-test.js should pass ESLint\n\n');
+    assert.ok(true, 'integration/components/add-physiotherapist-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/add-question-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/add-question-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/add-rehabplan-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/add-rehabplan-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/admin-nav-test.js', function (assert) {
@@ -1241,9 +2251,19 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/back-to-top-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('integration/components/book-appointment-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/book-appointment-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('integration/components/config-selection-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/config-selection-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/confirm-booking-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/confirm-booking-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/delete-country-test.js', function (assert) {
@@ -1256,6 +2276,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/delete-exercises-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('integration/components/delete-form-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/delete-form-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('integration/components/delete-gender-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/delete-gender-test.js should pass ESLint\n\n');
@@ -1266,9 +2291,24 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/delete-patient-test.js should pass ESLint\n\n');
   });
 
-  QUnit.test('integration/components/delete-province-test.js', function (assert) {
+  QUnit.test('integration/components/delete-physiotherapist-test.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'integration/components/delete-province-test.js should pass ESLint\n\n');
+    assert.ok(true, 'integration/components/delete-physiotherapist-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/delete-question-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/delete-question-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/delete-rehabplan-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/delete-rehabplan-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/display-questions-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/display-questions-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/edit-country-test.js', function (assert) {
@@ -1281,6 +2321,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/edit-exercises-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('integration/components/edit-form-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/edit-form-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('integration/components/edit-gender-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/edit-gender-test.js should pass ESLint\n\n');
@@ -1291,9 +2336,29 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/edit-patient-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('integration/components/edit-physiotherapist-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/edit-physiotherapist-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/edit-rehabplan-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/edit-rehabplan-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/manage-form-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/manage-form-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('integration/components/manage-patients-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/manage-patients-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/modify-question-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/modify-question-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/nav-bar-test.js', function (assert) {
@@ -1301,14 +2366,34 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/nav-bar-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('integration/components/parse-question-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/parse-question-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('integration/components/register-user-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/register-user-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('integration/components/show-form-questions-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/show-form-questions-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('integration/components/show-patient-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/show-patient-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/simple-example-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/simple-example-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/upload-file-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/upload-file-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/user-info-test.js', function (assert) {
@@ -1321,9 +2406,54 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/user-login-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('integration/components/view-appointment-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/view-appointment-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/view-schedule-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/view-schedule-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('integration/components/welcome-page-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/welcome-page-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/helpers/compare-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/helpers/compare-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/helpers/index-plus-one-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/helpers/index-plus-one-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/helpers/indexpicker-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/helpers/indexpicker-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/helpers/input-identification-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/helpers/input-identification-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/helpers/is-equal-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/helpers/is-equal-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/helpers/mc-display-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/helpers/mc-display-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/helpers/number-of-mc-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/helpers/number-of-mc-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('test-helper.js', function (assert) {
@@ -1336,6 +2466,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/adapters/application-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/controllers/form-display-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/controllers/form-display-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/controllers/home-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/controllers/home-test.js should pass ESLint\n\n');
@@ -1346,14 +2481,44 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/controllers/new-patient-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/controllers/questions-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/controllers/questions-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/controllers/rehabplans-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/controllers/rehabplans-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/initializers/doc-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/initializers/doc-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/initializers/home-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/initializers/home-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/mixins/table-common-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/mixins/table-common-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/models/answer-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/models/answer-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/models/appointment-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/models/appointment-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/models/assesment-test-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/models/assesment-test-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/models/city-test.js', function (assert) {
@@ -1369,6 +2534,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('unit/models/exercise-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/models/exercise-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/models/form-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/models/form-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/models/gender-test.js', function (assert) {
@@ -1391,9 +2561,29 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/models/patient-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/models/physiotherapest-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/models/physiotherapest-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/models/provinces-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/models/provinces-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/models/question-order-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/models/question-order-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/models/question-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/models/question-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/models/rehabilitationplan-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/models/rehabilitationplan-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/routes/admin-test.js', function (assert) {
@@ -1416,9 +2606,24 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/routes/dashboard-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/routes/exercise-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/exercise-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/routes/exercises-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/routes/exercises-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/routes/form-display-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/form-display-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/routes/forms-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/forms-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/routes/home-test.js', function (assert) {
@@ -1441,9 +2646,19 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/routes/message-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/routes/new-exercise-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/new-exercise-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/routes/new-patient-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/routes/new-patient-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/routes/new-rehabplans-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/new-rehabplans-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/routes/patient-file-test.js', function (assert) {
@@ -1456,14 +2671,29 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/routes/patients-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/routes/physiotherapists-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/physiotherapists-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/routes/province-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/routes/province-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/routes/questions-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/questions-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/routes/register-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/routes/register-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/routes/rehabplans-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/rehabplans-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/routes/update-patient-test.js', function (assert) {
@@ -1479,6 +2709,16 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('unit/serializers/patient-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/serializers/patient-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/services/doc-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/services/doc-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/services/home-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/services/home-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/utils/file-object-test.js', function (assert) {
@@ -1498,6 +2738,20 @@ define('self-start-front-end/tests/unit/adapters/application-test', ['ember-quni
   (0, _emberQunit.test)('it exists', function (assert) {
     var adapter = this.subject();
     assert.ok(adapter);
+  });
+});
+define('self-start-front-end/tests/unit/controllers/form-display-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('controller:form-display', 'Unit | Controller | form display', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var controller = this.subject();
+    assert.ok(controller);
   });
 });
 define('self-start-front-end/tests/unit/controllers/home-test', ['ember-qunit'], function (_emberQunit) {
@@ -1528,6 +2782,84 @@ define('self-start-front-end/tests/unit/controllers/new-patient-test', ['ember-q
     assert.ok(controller);
   });
 });
+define('self-start-front-end/tests/unit/controllers/questions-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('controller:questions', 'Unit | Controller | questions', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var controller = this.subject();
+    assert.ok(controller);
+  });
+});
+define('self-start-front-end/tests/unit/controllers/rehabplans-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('controller:rehabplans', 'Unit | Controller | rehabplans', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var controller = this.subject();
+    assert.ok(controller);
+  });
+});
+define('self-start-front-end/tests/unit/initializers/doc-test', ['self-start-front-end/initializers/doc', 'qunit', 'self-start-front-end/tests/helpers/destroy-app'], function (_doc, _qunit, _destroyApp) {
+  'use strict';
+
+  (0, _qunit.module)('Unit | Initializer | doc', {
+    beforeEach: function beforeEach() {
+      var _this = this;
+
+      Ember.run(function () {
+        _this.application = Ember.Application.create();
+        _this.application.deferReadiness();
+      });
+    },
+    afterEach: function afterEach() {
+      (0, _destroyApp.default)(this.application);
+    }
+  });
+
+  // Replace this with your real tests.
+  (0, _qunit.test)('it works', function (assert) {
+    (0, _doc.initialize)(this.application);
+
+    // you would normally confirm the results of the initializer here
+    assert.ok(true);
+  });
+});
+define('self-start-front-end/tests/unit/initializers/home-test', ['self-start-front-end/initializers/home', 'qunit', 'self-start-front-end/tests/helpers/destroy-app'], function (_home, _qunit, _destroyApp) {
+  'use strict';
+
+  (0, _qunit.module)('Unit | Initializer | home', {
+    beforeEach: function beforeEach() {
+      var _this = this;
+
+      Ember.run(function () {
+        _this.application = Ember.Application.create();
+        _this.application.deferReadiness();
+      });
+    },
+    afterEach: function afterEach() {
+      (0, _destroyApp.default)(this.application);
+    }
+  });
+
+  // Replace this with your real tests.
+  (0, _qunit.test)('it works', function (assert) {
+    (0, _home.initialize)(this.application);
+
+    // you would normally confirm the results of the initializer here
+    assert.ok(true);
+  });
+});
 define('self-start-front-end/tests/unit/mixins/table-common-test', ['self-start-front-end/mixins/table-common', 'qunit'], function (_tableCommon, _qunit) {
   'use strict';
 
@@ -1540,10 +2872,38 @@ define('self-start-front-end/tests/unit/mixins/table-common-test', ['self-start-
     assert.ok(subject);
   });
 });
+define('self-start-front-end/tests/unit/models/answer-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForModel)('answer', 'Unit | Model | answer', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var model = this.subject();
+    // let store = this.store();
+    assert.ok(!!model);
+  });
+});
 define('self-start-front-end/tests/unit/models/appointment-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
   (0, _emberQunit.moduleForModel)('appointment', 'Unit | Model | appointment', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var model = this.subject();
+    // let store = this.store();
+    assert.ok(!!model);
+  });
+});
+define('self-start-front-end/tests/unit/models/assesment-test-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForModel)('assesment-test', 'Unit | Model | assesment test', {
     // Specify the other units that are required for this test.
     needs: []
   });
@@ -1586,6 +2946,20 @@ define('self-start-front-end/tests/unit/models/exercise-test', ['ember-qunit'], 
   'use strict';
 
   (0, _emberQunit.moduleForModel)('exercise', 'Unit | Model | exercise', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var model = this.subject();
+    // let store = this.store();
+    assert.ok(!!model);
+  });
+});
+define('self-start-front-end/tests/unit/models/form-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForModel)('form', 'Unit | Model | form', {
     // Specify the other units that are required for this test.
     needs: []
   });
@@ -1652,10 +3026,66 @@ define('self-start-front-end/tests/unit/models/patient-test', ['ember-qunit'], f
     assert.ok(!!model);
   });
 });
+define('self-start-front-end/tests/unit/models/physiotherapest-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForModel)('physiotherapest', 'Unit | Model | physiotherapest', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var model = this.subject();
+    // let store = this.store();
+    assert.ok(!!model);
+  });
+});
 define('self-start-front-end/tests/unit/models/provinces-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
   (0, _emberQunit.moduleForModel)('provinces', 'Unit | Model | provinces', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var model = this.subject();
+    // let store = this.store();
+    assert.ok(!!model);
+  });
+});
+define('self-start-front-end/tests/unit/models/question-order-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForModel)('question-order', 'Unit | Model | question order', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var model = this.subject();
+    // let store = this.store();
+    assert.ok(!!model);
+  });
+});
+define('self-start-front-end/tests/unit/models/question-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForModel)('question', 'Unit | Model | question', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var model = this.subject();
+    // let store = this.store();
+    assert.ok(!!model);
+  });
+});
+define('self-start-front-end/tests/unit/models/rehabilitationplan-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForModel)('rehabilitationplan', 'Unit | Model | rehabilitationplan', {
     // Specify the other units that are required for this test.
     needs: []
   });
@@ -1718,10 +3148,49 @@ define('self-start-front-end/tests/unit/routes/dashboard-test', ['ember-qunit'],
     assert.ok(route);
   });
 });
+define('self-start-front-end/tests/unit/routes/exercise-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:exercise', 'Unit | Route | exercise', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
 define('self-start-front-end/tests/unit/routes/exercises-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
   (0, _emberQunit.moduleFor)('route:exercises', 'Unit | Route | exercises', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
+define('self-start-front-end/tests/unit/routes/form-display-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:form-display', 'Unit | Route | form display', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
+define('self-start-front-end/tests/unit/routes/forms-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:forms', 'Unit | Route | forms', {
     // Specify the other units that are required for this test.
     // needs: ['controller:foo']
   });
@@ -1783,10 +3252,36 @@ define('self-start-front-end/tests/unit/routes/message-test', ['ember-qunit'], f
     assert.ok(route);
   });
 });
+define('self-start-front-end/tests/unit/routes/new-exercise-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:new-exercise', 'Unit | Route | new exercise', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
 define('self-start-front-end/tests/unit/routes/new-patient-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
   (0, _emberQunit.moduleFor)('route:new-patient', 'Unit | Route | new patient', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
+define('self-start-front-end/tests/unit/routes/new-rehabplans-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:new-rehabplans', 'Unit | Route | new rehabplans', {
     // Specify the other units that are required for this test.
     // needs: ['controller:foo']
   });
@@ -1822,6 +3317,19 @@ define('self-start-front-end/tests/unit/routes/patients-test', ['ember-qunit'], 
     assert.ok(route);
   });
 });
+define('self-start-front-end/tests/unit/routes/physiotherapists-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:physiotherapists', 'Unit | Route | physiotherapists', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
 define('self-start-front-end/tests/unit/routes/province-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -1835,10 +3343,36 @@ define('self-start-front-end/tests/unit/routes/province-test', ['ember-qunit'], 
     assert.ok(route);
   });
 });
+define('self-start-front-end/tests/unit/routes/questions-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:questions', 'Unit | Route | questions', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
 define('self-start-front-end/tests/unit/routes/register-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
   (0, _emberQunit.moduleFor)('route:register', 'Unit | Route | register', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
+define('self-start-front-end/tests/unit/routes/rehabplans-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:rehabplans', 'Unit | Route | rehabplans', {
     // Specify the other units that are required for this test.
     // needs: ['controller:foo']
   });
@@ -1893,6 +3427,34 @@ define('self-start-front-end/tests/unit/serializers/patient-test', ['ember-qunit
     var serializedRecord = record.serialize();
 
     assert.ok(serializedRecord);
+  });
+});
+define('self-start-front-end/tests/unit/services/doc-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('service:doc', 'Unit | Service | doc', {
+    // Specify the other units that are required for this test.
+    // needs: ['service:foo']
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var service = this.subject();
+    assert.ok(service);
+  });
+});
+define('self-start-front-end/tests/unit/services/home-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('service:home', 'Unit | Service | home', {
+    // Specify the other units that are required for this test.
+    // needs: ['service:foo']
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var service = this.subject();
+    assert.ok(service);
   });
 });
 define('self-start-front-end/tests/unit/utils/file-object-test', ['self-start-front-end/utils/file-object', 'qunit'], function (_fileObject, _qunit) {

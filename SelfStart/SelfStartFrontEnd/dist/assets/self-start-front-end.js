@@ -79,7 +79,6 @@ define('self-start-front-end/components/add-country', ['exports'], function (exp
           },
 
           onApprove: function onApprove() {
-
             var newCountry = _this.get('DS').createRecord('country', {
               name: _this.get('name')
             });
@@ -87,6 +86,7 @@ define('self-start-front-end/components/add-country', ['exports'], function (exp
               return true;
             });
           }
+
         }).modal('show');
       }
     }
@@ -190,6 +190,7 @@ define('self-start-front-end/components/add-exercises', ['exports', 'self-start-
         this.set('Objective', "");
       },
       cancel: function cancel() {
+
         this.set('isEditing', false);
         // this.get('DS').find('exercise' , this.tempExercise.get("ID")).then((exercise)=>{
         //     exercise.destroyRecord().then(() =>{
@@ -200,6 +201,7 @@ define('self-start-front-end/components/add-exercises', ['exports', 'self-start-
       },
       addExercise: function addExercise() {
         this.set('isEditing', true);
+
         // this.exerciseData = this.get('DS').createRecord('exercise', {
         //     name:this.get('Name'),
         //     description:this.get('Description'),
@@ -272,6 +274,7 @@ define('self-start-front-end/components/add-exercises', ['exports', 'self-start-
 
         // console.log("This is save image");
         // console.log(saveImage);
+
         var exercise = this.get('DS').createRecord('exercise', {
           name: this.get('Name'),
           description: this.get('Description'),
@@ -282,6 +285,7 @@ define('self-start-front-end/components/add-exercises', ['exports', 'self-start-
           frequency: this.get('Frequency'),
           duration: this.get('Duration'),
           multimediaURL: this.get('MMURL'),
+
           targetDate: this.get('TargetDate'),
           images: []
         });
@@ -321,7 +325,6 @@ define('self-start-front-end/components/add-exercises', ['exports', 'self-start-
         });
 
         this.get('queue').clear();
-
         this.set('Name', "");
         this.set('Description', "");
         this.set('Objective', "");
@@ -342,6 +345,95 @@ define('self-start-front-end/components/add-exercises', ['exports', 'self-start-
 
     }
   });
+});
+define('self-start-front-end/components/add-form-question', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Component.extend({
+        DS: Ember.inject.service('store'),
+
+        isEditing: false,
+        count: 0,
+
+        actions: {
+            addFQ: function addFQ() {
+                this.set('isEditing', true);
+            },
+
+
+            cancel: function cancel() {
+                this.set('isEditing', false);
+            },
+
+            submit: function submit() {
+
+                // let self = this;
+
+                var form = this.get('DS').createRecord('form', {
+                    // question: self.get.objectAt('newQuestion'),
+                    // )
+                });
+
+                form.save().then(function () {
+                    this.set('isEditing', false);
+                    return true;
+                });
+            }
+        }
+    });
+});
+define('self-start-front-end/components/add-form', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Component.extend({
+        DS: Ember.inject.service('store'),
+
+        isEditing: false,
+
+        actions: {
+            addForm: function addForm() {
+                this.set('isEditing', true);
+            },
+
+
+            cancel: function cancel() {
+                this.set('isEditing', false);
+            },
+
+            submit: function submit() {
+
+                var self = this;
+
+                var form = this.get('DS').createRecord('form', {
+                    name: self.get('fName'),
+                    description: self.get('fDescription')
+                });
+
+                console.log(this.get('fName'));
+
+                // let tName = this.get('fName');
+                // let tDescription = this.get('fDescription');
+
+                var newForm = this.get('DS').createRecord('form', {
+                    name: this.get('fName'),
+                    description: this.get('fDescription')
+                });
+                console.log(this.get('fDescription'));
+
+                newForm.save().then(function () {
+                    return true;
+                });
+                this.set('isEditing', false);
+                window.location.reload();
+            }
+        }
+    });
 });
 define('self-start-front-end/components/add-gender', ['exports'], function (exports) {
   'use strict';
@@ -498,6 +590,98 @@ define('self-start-front-end/components/add-patient', ['exports'], function (exp
 
   });
 });
+define('self-start-front-end/components/add-physiotherapist', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+    routing: Ember.inject.service('-routing'),
+
+    tagName: '',
+
+    didRender: function didRender() {
+      this._super.apply(this, arguments);
+
+      Ember.$(document).ready(function ($) {
+        if ($('.floating-labels').length > 0) floatLabels();
+
+        function floatLabels() {
+          var inputFields = $('.floating-labels .cd-label').next();
+          inputFields.each(function () {
+            var singleInput = $(this);
+            //check if user is filling one of the form fields
+            checkVal(singleInput);
+            singleInput.on('change keyup', function () {
+              checkVal(singleInput);
+            });
+          });
+        }
+
+        function checkVal(inputField) {
+          inputField.val() == '' ? inputField.prev('.cd-label').removeClass('float') : inputField.prev('.cd-label').addClass('float');
+        }
+      });
+    },
+
+
+    conutryModel: Ember.computed(function () {
+      return this.get('DS').findAll('country');
+    }),
+
+    genderModel: Ember.computed(function () {
+      return this.get('DS').findAll('gender');
+    }),
+
+    maritalStatusModel: Ember.computed(function () {
+      return this.get('DS').findAll('maritalStatus');
+    }),
+
+    actions: {
+      addPatient: function addPatient() {
+        this.set('isEditing', true);
+      },
+      assignDate: function assignDate(date) {
+        this.set('selectedDate', date);
+      },
+      cancel: function cancel() {
+        return true;
+      },
+
+
+      save: function save() {
+        var _this = this;
+
+        var self = this;
+
+        var physiotherapist = this.get('DS').createRecord('physiotherapest', {
+          familyName: self.get('familyName'),
+          givenName: self.get('givenName'),
+          email: self.get('email'),
+          dateHired: self.get('dateHired'),
+          dateFired: self.get('dateFired'),
+          treatment: self.get('treatment'),
+          account: self.get('account')
+
+        });
+        physiotherapist.save().then(function () {
+          _this.get('routing').transitionTo('physiotherapists');
+        });
+
+        this.set('familyName', '');
+        this.set('givenName', '');
+        this.set('email', '');
+        this.set('dateHired', '');
+        this.set('dateFired', '');
+        this.set('treatment', '');
+        this.set('account', '');
+      }
+    }
+
+  });
+});
 define('self-start-front-end/components/add-province', ['exports'], function (exports) {
   'use strict';
 
@@ -549,6 +733,241 @@ define('self-start-front-end/components/add-province', ['exports'], function (ex
         }).modal('show');
       }
     }
+  });
+});
+define('self-start-front-end/components/add-question', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+
+    isEditing: false,
+    shortAns: false,
+    multipleChoice: false,
+    rating: false,
+    trueFalse: false,
+    option2: false,
+    option3: false,
+    option4: false,
+    option5: false,
+    option6: false,
+    oNumber: 1,
+    removable: false,
+    addable: true,
+
+    actions: {
+      multipleChoice: function multipleChoice() {
+        this.set('multipleChoice', true);
+        this.set('shortAns', false);
+        this.set('trueFalse', false);
+        this.set('rating', false);
+      },
+      addOption: function addOption() {
+        if (this.option2 == false) {
+          this.set('option2', true);
+          this.set('removable', true);
+          this.oNumber++;
+          return;
+        }
+        if (this.option3 == false) {
+          this.set('option3', true);
+          this.oNumber++;
+          return;
+        }
+        if (this.option4 == false) {
+          this.set('option4', true);
+          this.oNumber++;
+          return;
+        }
+        if (this.option5 == false) {
+          this.set('option5', true);
+          this.oNumber++;
+          return;
+        }
+        if (this.option6 == false) {
+          this.set('option6', true);
+          this.set('addable', false);
+          this.oNumber++;
+          return;
+        }
+      },
+      removeOption: function removeOption() {
+        if (this.option6 == true) {
+          this.set('option6', false);
+          this.set('addable', true);
+          this.oNumber--;
+          return;
+        }
+        if (this.option5 == true) {
+          this.set('option5', false);
+          this.oNumber--;
+          return;
+        }
+        if (this.option4 == true) {
+          this.set('option4', false);
+          this.oNumber--;
+          return;
+        }
+        if (this.option3 == true) {
+          this.set('option3', false);
+          this.oNumber--;
+          return;
+        }
+        if (this.option2 == true) {
+          this.set('option2', false);
+          this.set('removable', false);
+          this.oNumber--;
+          return;
+        }
+      },
+      shortAns: function shortAns() {
+        this.set('shortAns', true);
+        this.set('multipleChoice', false);
+        this.set('trueFalse', false);
+        this.set('rating', false);
+      },
+      trueFalse: function trueFalse() {
+        this.set('trueFalse', true);
+        this.set('shortAns', false);
+        this.set('multipleChoice', false);
+        this.set('rating', false);
+      },
+      rating: function rating() {
+        this.set('trueFalse', false);
+        this.set('shortAns', false);
+        this.set('multipleChoice', false);
+        this.set('rating', true);
+      },
+      addQuestion: function addQuestion() {
+        this.set('isEditing', true);
+      },
+
+
+      cancel: function cancel() {
+        this.set('isEditing', false);
+      },
+
+      submit: function submit() {
+
+        var question,
+            help,
+            qtype,
+            optStr = '';
+
+        var self = this;
+
+        if (this.shortAns) {
+          help = self.get('sahelp');
+          question = self.get('saquestion');
+          qtype = "Short answer";
+        }
+        if (this.multipleChoice) {
+          help = self.get('mchelp');
+          question = self.get('mcquestion');
+          qtype = "Multiple choice";
+
+          for (var i = 1; i <= this.oNumber; i++) {
+            optStr += self.get('mcop' + i);
+            optStr += "+++";
+          }
+        }
+        if (this.trueFalse) {
+          help = self.get('tfhelp');
+          question = self.get('tfquestion');
+          qtype = "True/False";
+        }
+
+        if (this.rating) {
+          help = self.get('rhelp');
+          question = self.get('rquestion');
+          qtype = "Rating";
+        }
+
+        var newQuestion = this.get('DS').createRecord('question', {
+
+          helpDescription: help,
+          questionText: question,
+          type: qtype,
+          optionNumber: this.oNumber,
+          optionString: optStr,
+          mc: this.multipleChoice,
+          tf: this.trueFalse,
+          ra: this.rating,
+          sa: this.shortAns
+        });
+
+        newQuestion.save().then(function () {
+          this.set('isEditing', false);
+          return true;
+        });
+
+        this.set('isEditing', false);
+      }
+    }
+  });
+});
+define('self-start-front-end/components/add-rehabplan', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+    routing: Ember.inject.service('-routing'),
+
+    exerciseModel: Ember.computed(function () {
+      return this.get('DS').findAll('exercise');
+    }),
+
+    isEditing: false,
+
+    actions: {
+      addRehabPlan: function addRehabPlan() {
+        this.set('isEditing', true);
+      },
+
+
+      cancel: function cancel() {
+        this.set('isEditing', false);
+      },
+
+      decreaseTime: function decreaseTime() {},
+
+      increaseTime: function increaseTime() {},
+
+      save: function save() {
+
+        var self = this;
+        //connect to rehabilitationplans
+        var rehabplan = this.get('DS').createRecord('rehabilitationplan', {
+          planName: self.get('Name'),
+          physioID: self.get('authorName'),
+          description: self.get('description'),
+          goal: self.get('goal'),
+          timeToComplete: self.get('timeToComplete')
+          //exercises: self.get('exercises'),
+          // assessmentTests: self.get('assessmentTests'),
+        });
+        //when save is successfull close form
+        rehabplan.save().then(function () {
+          self.get('routing').transitionTo('rehabplans');
+        });
+        //CHANGE THIS WHEN ITS DONE
+        this.set('isEditing', false);
+        this.set('Name', '');
+        this.set('description', '');
+        this.set('goal', '');
+        this.set('timeToComplete', '');
+        this.set('exercises', '');
+        this.set('assessmentTests', '');
+        this.set('authorName', '');
+      }
+    }
+
   });
 });
 define('self-start-front-end/components/admin-nav', ['exports'], function (exports) {
@@ -629,15 +1048,69 @@ define('self-start-front-end/components/admin-welcome', ['exports'], function (e
   });
   exports.default = Ember.Component.extend({});
 });
-define('self-start-front-end/components/as-scrollable', ['exports', 'ember-scrollable/components/ember-scrollable'], function (exports, _emberScrollable) {
+define('self-start-front-end/components/as-calendar', ['exports', 'ember-calendar/components/as-calendar'], function (exports, _asCalendar) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = _emberScrollable.default.extend({
-    classNames: 'as-scrollable'
+  exports.default = _asCalendar.default;
+});
+define('self-start-front-end/components/as-calendar/header', ['exports', 'ember-calendar/components/as-calendar/header'], function (exports, _header) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
   });
+  exports.default = _header.default;
+});
+define('self-start-front-end/components/as-calendar/occurrence', ['exports', 'ember-calendar/components/as-calendar/occurrence'], function (exports, _occurrence) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _occurrence.default;
+});
+define('self-start-front-end/components/as-calendar/time-zone-option', ['exports', 'ember-calendar/components/as-calendar/time-zone-option'], function (exports, _timeZoneOption) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _timeZoneOption.default;
+});
+define('self-start-front-end/components/as-calendar/time-zone-select', ['exports', 'ember-calendar/components/as-calendar/time-zone-select'], function (exports, _timeZoneSelect) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _timeZoneSelect.default;
+});
+define('self-start-front-end/components/as-calendar/timetable', ['exports', 'ember-calendar/components/as-calendar/timetable'], function (exports, _timetable) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _timetable.default;
+});
+define('self-start-front-end/components/as-calendar/timetable/content', ['exports', 'ember-calendar/components/as-calendar/timetable/content'], function (exports, _content) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _content.default;
+});
+define('self-start-front-end/components/as-calendar/timetable/occurrence', ['exports', 'ember-calendar/components/as-calendar/timetable/occurrence'], function (exports, _occurrence) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _occurrence.default;
 });
 define('self-start-front-end/components/back-to-top', ['exports'], function (exports) {
   'use strict';
@@ -666,6 +1139,117 @@ define('self-start-front-end/components/back-to-top', ['exports'], function (exp
           scrollTop: 0 // Scroll to top of body
         }, 500);
       });
+    }
+  });
+});
+define('self-start-front-end/components/basic-dropdown', ['exports', 'ember-basic-dropdown/components/basic-dropdown'], function (exports, _basicDropdown) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _basicDropdown.default;
+    }
+  });
+});
+define('self-start-front-end/components/basic-dropdown/content-element', ['exports', 'ember-basic-dropdown/components/basic-dropdown/content-element'], function (exports, _contentElement) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _contentElement.default;
+    }
+  });
+});
+define('self-start-front-end/components/basic-dropdown/content', ['exports', 'ember-basic-dropdown/components/basic-dropdown/content'], function (exports, _content) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _content.default;
+    }
+  });
+});
+define('self-start-front-end/components/basic-dropdown/trigger', ['exports', 'ember-basic-dropdown/components/basic-dropdown/trigger'], function (exports, _trigger) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _trigger.default;
+    }
+  });
+});
+define('self-start-front-end/components/book-appointment', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    occurrences: Ember.A(),
+
+    init: function init() {
+      this._super.apply(this, arguments);
+
+      //random data to see if it works
+      this.get('occurrences').pushObject(Ember.Object.create({
+        title: "Ouda",
+        startsAt: "2018-03-12T17:00:00.000Z",
+        endsAt: "2018-03-12T18:00:00.000Z"
+      }));
+
+      this.get('occurrences').pushObject(Ember.Object.create({
+        title: "Yousef",
+        startsAt: "2018-03-14T17:00:00.000Z",
+        endsAt: "2018-03-14T18:00:00.000Z"
+      }));
+
+      this.get('occurrences').pushObject(Ember.Object.create({
+        title: "Yousef Ouda",
+        startsAt: "2018-03-13T17:00:00.000Z",
+        endsAt: "2018-03-13T18:00:00.000Z"
+      }));
+    },
+
+
+    actions: {
+      calendarAddOccurrence: function calendarAddOccurrence(occurrence) {
+        this.get('occurrences').pushObject(Ember.Object.create({
+          title: occurrence.get('title'),
+          startsAt: occurrence.get('startsAt'),
+          endsAt: occurrence.get('endsAt')
+        }));
+
+        console.log(JSON.stringify(this.get('occurrences')));
+      },
+
+      calendarUpdateOccurrence: function calendarUpdateOccurrence(occurrence, properties, isPreview) {
+        occurrence.setProperties(properties);
+
+        if (!isPreview) {
+          console.log(JSON.stringify(properties));
+        }
+      },
+
+      calendarRemoveOccurrence: function calendarRemoveOccurrence(occurrence) {
+        this.get('occurrences').removeObject(occurrence);
+        console.log(JSON.stringify(occurrence));
+      }
     }
   });
 });
@@ -700,6 +1284,67 @@ define('self-start-front-end/components/config-selection', ['exports'], function
     }
   });
 });
+define('self-start-front-end/components/confirm-booking', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    init: function init() {
+      this._super();
+      //let a = this.get('DS').find('form', this.get('ID'));
+      //console.log(a.get('name'));
+    },
+
+    DS: Ember.inject.service('store'),
+
+    modalName: Ember.computed(function () {
+      return 'confirm-booking' + this.get('ID');
+    }),
+
+    edit: false,
+
+    questionsModel: Ember.computed(function () {
+      return this.get('DS').findAll('question');
+    }),
+
+    actions: {
+      addQuestion: function addQuestion(thisQuestion, thisForm, qid) {
+        thisForm.get('questions').pushObject(thisQuestion);
+        thisQuestion.get('forms').pushObject(thisForm);
+
+        this.get('DS').findRecord('form', this.get('ID')).then(function (rec) {
+          rec.save().then(function () {});
+        });
+
+        this.get('DS').findRecord('question', this.get('qid')).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      manageForm: function manageForm() {
+        this.set('edit', true);
+      },
+      done: function done() {
+        this.set('edit', false);
+      },
+
+
+      openModal: function openModal() {
+        Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+          closeable: false,
+          detachable: false,
+          onDeny: function onDeny() {
+            return true;
+          },
+          onApprove: function onApprove() {
+            return true;
+          }
+        }).modal('show');
+      }
+    }
+  });
+});
 define('self-start-front-end/components/delete-country', ['exports'], function (exports) {
   'use strict';
 
@@ -720,7 +1365,6 @@ define('self-start-front-end/components/delete-country', ['exports'], function (
         Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
           closable: false,
           transition: 'fly down',
-
           onDeny: function onDeny() {
             return true;
           },
@@ -766,6 +1410,45 @@ define('self-start-front-end/components/delete-exercises', ['exports'], function
           onApprove: function onApprove() {
             _this.get('DS').find('exercise', _this.get('ID')).then(function (exercise) {
               exercise.destroyRecord().then(function () {
+
+                return true;
+              });
+            });
+          }
+
+        }).modal('show');
+      }
+    }
+
+  });
+});
+define('self-start-front-end/components/delete-form', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+
+    modalName: Ember.computed(function () {
+      return 'Delete-form' + this.get('ID');
+    }),
+
+    actions: {
+      openModal: function openModal() {
+        var _this = this;
+
+        Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+          closeable: false,
+          detachable: false,
+          transition: 'fly down',
+          onDeny: function onDeny() {
+            return true;
+          },
+          onApprove: function onApprove() {
+            _this.get('DS').find('form', _this.get('ID')).then(function (form) {
+              form.destroyRecord().then(function () {
                 return true;
               });
             });
@@ -773,7 +1456,6 @@ define('self-start-front-end/components/delete-exercises', ['exports'], function
         }).modal('show');
       }
     }
-
   });
 });
 define('self-start-front-end/components/delete-gender', ['exports'], function (exports) {
@@ -796,7 +1478,6 @@ define('self-start-front-end/components/delete-gender', ['exports'], function (e
         Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
           closable: false,
           transition: 'fly down',
-
           onDeny: function onDeny() {
             return true;
           },
@@ -854,7 +1535,7 @@ define('self-start-front-end/components/delete-patient', ['exports'], function (
     }
   });
 });
-define('self-start-front-end/components/delete-province', ['exports'], function (exports) {
+define('self-start-front-end/components/delete-physiotherapist', ['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -864,7 +1545,7 @@ define('self-start-front-end/components/delete-province', ['exports'], function 
     DS: Ember.inject.service('store'),
 
     modalName: Ember.computed(function () {
-      return 'Delete-Province' + this.get('ID');
+      return 'Delete-physiotherapest' + this.get('ID');
     }),
 
     actions: {
@@ -880,9 +1561,11 @@ define('self-start-front-end/components/delete-province', ['exports'], function 
           },
           onApprove: function onApprove() {
 
-            _this.get('DS').find('province', _this.get('ID')).then(function (province) {
-              province.save().then(function () {
-                province.destroyRecord();
+            _this.get('DS').find('physiotherapest', _this.get('ID')).then(function (physiotherapest) {
+
+              physiotherapest.set('name', '');
+              physiotherapest.save().then(function () {
+                physiotherapest.destroyRecord();
               });
             });
           }
@@ -890,6 +1573,163 @@ define('self-start-front-end/components/delete-province', ['exports'], function 
       }
     }
   });
+});
+define('self-start-front-end/components/delete-question', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+
+    modalName: Ember.computed(function () {
+      return 'Delete-question' + this.get('ID');
+    }),
+
+    actions: {
+      openModal: function openModal() {
+        var _this = this;
+
+        Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+          closeable: false,
+          detachable: false,
+          transition: 'fly down',
+          onDeny: function onDeny() {
+            return true;
+          },
+          onApprove: function onApprove() {
+            _this.get('DS').find('question', _this.get('ID')).then(function (question) {
+              question.destroyRecord().then(function () {
+                return true;
+              });
+            });
+          }
+        }).modal('show');
+      }
+    }
+  });
+});
+define('self-start-front-end/components/delete-rehabplan', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+
+    DS: Ember.inject.service('store'),
+    modalName: Ember.computed(function () {
+      return 'Delete-rehabplan' + this.get('ID');
+    }),
+
+    actions: {
+      openModal: function openModal() {
+        var _this = this;
+
+        Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+          closable: false,
+          detachable: false,
+          transition: 'fly down',
+          onDeny: function onDeny() {
+            return true;
+          },
+
+          onApprove: function onApprove() {
+            _this.get('DS').find('rehabilitationplan', _this.get('ID')).then(function (rehabilitationplan) {
+              rehabilitationplan.destroyRecord().then(function () {
+                return true;
+              });
+            });
+          }
+        }).modal('show');
+      }
+    }
+  });
+});
+define('self-start-front-end/components/delete-status', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+
+    modalName: Ember.computed(function () {
+      return 'Delete-maritalStatus' + this.get('ID');
+    }),
+
+    actions: {
+      openModal: function openModal() {
+        var _this = this;
+
+        Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+          closable: false,
+          detachable: false,
+          transition: 'fly down',
+          onDeny: function onDeny() {
+            return true;
+          },
+          onApprove: function onApprove() {
+
+            _this.get('DS').find('maritalStatus', _this.get('ID')).then(function (maritalStatus) {
+
+              maritalStatus.set('name', '');
+              maritalStatus.save().then(function () {
+                maritalStatus.destroyRecord();
+              });
+            });
+          }
+        }).modal('show');
+      }
+    }
+  });
+});
+define('self-start-front-end/components/display-questions', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Component.extend({
+        DS: Ember.inject.service('store'),
+        questionNumber: 54,
+
+        formModel: Ember.computed(function () {
+            return this.get('DS').find('form', this.get('id'));
+        }),
+
+        actions: {
+            Submit: function Submit() {
+
+                var question = this.get('aa');
+                console.log(question);
+
+                // let arr = [];
+                // let form = this.get('DS').find('form', this.get('id')).then((frm) =>{
+                //     frm.get('questions').forEach(function(element) {
+                //         arr.pushObject(element.get('questionText'));
+                //     });
+                // });
+                // console.log(arr);
+                // arr.forEach(function(q) {
+                //     console.log("dvsd");
+                // });
+                //  console.log(arr.objectAt(1));
+
+                // let answer = this.get('DS').createRecord('answer', {
+                //      answer: "d",
+                // patient:this.get(''),
+                // question: element,
+                //  form: frm,
+                //    });
+
+                //  answer.save().then(() =>{});
+            }
+        }
+
+    });
 });
 define('self-start-front-end/components/edit-country', ['exports'], function (exports) {
   'use strict';
@@ -1002,6 +1842,7 @@ define('self-start-front-end/components/edit-exercises', ['exports', 'self-start
     Duration: Ember.computed.oneWay('exerciseData.duration'),
     TargetedDate: Ember.computed.oneWay('exerciseData.targetDate'),
     MMURL: Ember.computed.oneWay('exerciseData.multimediaURL'),
+
     Imgs: Ember.computed.oneWay('exerciseData.images'),
 
     modalName: Ember.computed(function () {
@@ -1009,6 +1850,7 @@ define('self-start-front-end/components/edit-exercises', ['exports', 'self-start
     }),
 
     actions: {
+
       selectFile: function selectFile(data) {
         if (!Ember.isEmpty(data.target.files)) {
           for (var i = data.target.files.length - 1; i >= 0; i--) {
@@ -1071,6 +1913,7 @@ define('self-start-front-end/components/edit-exercises', ['exports', 'self-start
           transition: 'horizontal flip',
           detachable: false,
           onDeny: function onDeny() {
+
             _this.secQueue.clear();
             _this.removeImages.clear();
             _this.queue.clear();
@@ -1166,6 +2009,48 @@ define('self-start-front-end/components/edit-exercises', ['exports', 'self-start
       }
     }
   });
+});
+define('self-start-front-end/components/edit-form', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Component.extend({
+        DS: Ember.inject.service('store'),
+        formData: null,
+        fName: Ember.computed.oneWay('formData.name'),
+        fDescription: Ember.computed.oneWay('formData.description'),
+
+        modalName: Ember.computed(function () {
+            return 'formData' + this.get('ID');
+        }),
+
+        actions: {
+            openModal: function openModal() {
+                var _this = this;
+
+                this.set('formData', this.get('DS').peekRecord('form', this.get('ID')));
+
+                Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+                    closeable: false,
+                    transaction: 'horizontal flip',
+                    detachable: false,
+                    onDeny: function onDeny() {
+                        return true;
+                    },
+
+                    onApprove: function onApprove() {
+                        _this.get('DS').findRecord('form', _this.get('ID')).then(function (rec) {
+                            rec.set('name', _this.get('fName')), rec.set('description', _this.get('fDescription')), rec.save().then(function () {
+                                return true;
+                            });
+                        });
+                    }
+                }).modal('show');
+            }
+        }
+    });
 });
 define('self-start-front-end/components/edit-gender', ['exports'], function (exports) {
   'use strict';
@@ -1332,42 +2217,224 @@ define('self-start-front-end/components/edit-patient', ['exports'], function (ex
 
   });
 });
-define('self-start-front-end/components/ember-scrollable', ['exports', 'ember-scrollable/components/ember-scrollable'], function (exports, _emberScrollable) {
+define('self-start-front-end/components/edit-physiotherapist', ['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _emberScrollable.default;
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+
+    routing: Ember.inject.service('-routing'),
+    physiotherapistData: null,
+
+    tagName: '',
+
+    didRender: function didRender() {
+      this._super.apply(this, arguments);
+
+      Ember.$(document).ready(function ($) {
+        if ($('.floating-labels').length > 0) floatLabels();
+
+        function floatLabels() {
+          var inputFields = $('.floating-labels .cd-label').next();
+          inputFields.each(function () {
+            var singleInput = $(this);
+            //check if user is filling one of the form fields
+            checkVal(singleInput);
+            singleInput.on('change keyup', function () {
+              checkVal(singleInput);
+            });
+          });
+        }
+
+        function checkVal(inputField) {
+          inputField.val() == '' ? inputField.prev('.cd-label').removeClass('float') : inputField.prev('.cd-label').addClass('float');
+        }
+      });
+    },
+
+
+    conutryModel: Ember.computed(function () {
+      return this.get('DS').findAll('country');
+    }),
+
+    genderModel: Ember.computed(function () {
+      return this.get('DS').findAll('gender');
+    }),
+
+    maritalStatusModel: Ember.computed(function () {
+      return this.get('DS').findAll('maritalStatus');
+    }),
+
+    modalName: Ember.computed(function () {
+      return 'edit-physiotherapist' + this.get('ID');
+    }),
+
+    actions: {
+      openModal: function openModal() {
+        var _this = this;
+
+        Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+          closable: false,
+          detachable: false,
+          transition: 'fly down',
+
+          onDeny: function onDeny() {
+            return true;
+          },
+          onApprove: function onApprove() {
+
+            _this.get('DS').find('physiotherapest', _this.get('ID')).then(function (physiotherapest) {
+
+              physiotherapest.destroyRecord();
+            });
+          }
+        }).modal('show');
+      },
+
+      addPatient: function addPatient() {
+        this.set('isEditing', true);
+      },
+      assignDate: function assignDate(date) {
+        this.set('selectedDate', date);
+      },
+      cancel: function cancel() {
+        return true;
+      },
+
+
+      save: function save() {
+        var _this2 = this;
+
+        this.get('DS').findRecord('physiotherapest', this.get('physiotherapistData').id).then(function (rec) {
+          rec.set('familyName', _this2.get('physiotherapistData.familyName'));
+          rec.set('givenName', _this2.get('physiotherapistData.givenName'));
+          rec.set('email', _this2.get('physiotherapistData.email'));
+          rec.set('dateHired', _this2.get('physiotherapistData.dateHired'));
+          rec.set('datefired', _this2.get('physiotherapistData.dateFired'));
+          rec.set('treatment', _this2.get('physiotherapistData.treatment'));
+          rec.set('account', _this2.get('physiotherapistData.account'));
+        });
+
+        var self = this;
+
+        var physiotherapist = this.get('DS').createRecord('physiotherapest', {
+          familyName: self.get('familyName'),
+          givenName: self.get('givenName'),
+          email: self.get('email'),
+          dateHired: self.get('dateHired'),
+          dateFired: self.get('dateFired'),
+          treatment: self.get('treatment'),
+          account: self.get('account')
+
+        });
+
+        rec.save().then(function () {
+          _this2.get('routing').transitionTo('physiotherapists');
+        });
+      }
     }
+
   });
 });
-define('self-start-front-end/components/ember-scrollbar', ['exports', 'ember-scrollable/components/ember-scrollbar'], function (exports, _emberScrollbar) {
+define('self-start-front-end/components/edit-rehabplan', ['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _emberScrollbar.default;
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+    rehabilitationplansData: null,
+    description: Ember.computed.oneWay('rehabilitationplansData.description'),
+    physioID: Ember.computed.oneWay('rehabilitationplansData.physioID'),
+    goal: Ember.computed.oneWay('rehabilitationplansData.goal'),
+    timeToComplete: Ember.computed.oneWay('rehabilitationplansData.timeToComplete'),
+    planName: Ember.computed.oneWay('rehabilitationplansData.planName'),
+    exercises: Ember.computed.oneWay('rehabilitationplansData.exercises'),
+    assessmentTests: Ember.computed.oneWay('rehabilitationplansData.assessmentTests'),
+
+    modalName: Ember.computed(function () {
+      return 'editRehabilitationplan' + this.get('ID');
+    }),
+
+    actions: {
+      openModal: function openModal() {
+        var _this = this;
+
+        this.set('rehabilitationplansData', this.get('DS').peekRecord('rehabilitationplan', this.get('ID')));
+
+        Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+          closable: false,
+          transition: 'horizontal flip',
+          detachable: false,
+          onDeny: function onDeny() {
+            return true;
+          },
+
+          onApprove: function onApprove() {
+            _this.get('DS').findRecord('rehabilitationplan', _this.get('ID')).then(function (rec) {
+              rec.set('planName', _this.get('planName'));
+              rec.set('description', _this.get('description'));
+              rec.set('physioID', _this.get('physioID'));
+              rec.set('goal', _this.get('goal'));
+              rec.set('timeToComplete', _this.get('timeToComplete'));
+              rec.set('exercises', _this.get('exercises'));
+              // rec.set('assessmentTests', this.get('assessmentTests'));
+              rec.save().then(function () {
+                return true;
+              });
+            });
+          }
+        }).modal('show');
+      }
     }
+
   });
 });
-define('self-start-front-end/components/ember-wormhole', ['exports', 'ember-wormhole/components/ember-wormhole'], function (exports, _emberWormhole) {
+define('self-start-front-end/components/edit-status', ['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _emberWormhole.default;
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+
+    statusData: null,
+    name: Ember.computed.oneWay('statusData.name'),
+
+    modalName: Ember.computed(function () {
+      return 'editStatus' + this.get('ID');
+    }),
+
+    actions: {
+      openModal: function openModal() {
+        var _this = this;
+
+        this.set('statusData', this.get('DS').peekRecord('maritalStatus', this.get('ID')));
+
+        Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+          closable: false,
+          transition: 'horizontal flip',
+          detachable: false,
+
+          onDeny: function onDeny() {
+            return true;
+          },
+
+          onApprove: function onApprove() {
+            _this.get('DS').findRecord('maritalStatus', _this.get('ID')).then(function (rec) {
+              rec.set('name', _this.get('name'));
+              rec.save().then(function () {
+                return true;
+              });
+            });
+          }
+        }).modal('show');
+      }
     }
   });
 });
@@ -1384,7 +2451,7 @@ define("self-start-front-end/components/illiquid-model", ["exports", "liquid-fir
     }
   });
 });
-define('self-start-front-end/components/light-table', ['exports', 'ember-light-table/components/light-table'], function (exports, _lightTable) {
+define('self-start-front-end/components/labeled-radio-button', ['exports', 'ember-radio-button/components/labeled-radio-button'], function (exports, _labeledRadioButton) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -1393,33 +2460,7 @@ define('self-start-front-end/components/light-table', ['exports', 'ember-light-t
   Object.defineProperty(exports, 'default', {
     enumerable: true,
     get: function () {
-      return _lightTable.default;
-    }
-  });
-});
-define('self-start-front-end/components/light-table/cells/base', ['exports', 'ember-light-table/components/cells/base'], function (exports, _base) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _base.default;
-    }
-  });
-});
-define('self-start-front-end/components/light-table/columns/base', ['exports', 'ember-light-table/components/columns/base'], function (exports, _base) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _base.default;
+      return _labeledRadioButton.default;
     }
   });
 });
@@ -1559,107 +2600,59 @@ define("self-start-front-end/components/liquid-versions", ["exports", "liquid-fi
     }
   });
 });
-define('self-start-front-end/components/lt-body', ['exports', 'ember-light-table/components/lt-body'], function (exports, _ltBody) {
+define('self-start-front-end/components/manage-form', ['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _ltBody.default;
-    }
-  });
-});
-define('self-start-front-end/components/lt-column-resizer', ['exports', 'ember-light-table/components/lt-column-resizer'], function (exports, _ltColumnResizer) {
-  'use strict';
+  exports.default = Ember.Component.extend({
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _ltColumnResizer.default;
-    }
-  });
-});
-define('self-start-front-end/components/lt-foot', ['exports', 'ember-light-table/components/lt-foot'], function (exports, _ltFoot) {
-  'use strict';
+    DS: Ember.inject.service('store'),
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _ltFoot.default;
-    }
-  });
-});
-define('self-start-front-end/components/lt-head', ['exports', 'ember-light-table/components/lt-head'], function (exports, _ltHead) {
-  'use strict';
+    modalName: Ember.computed(function () {
+      return 'Manage-form' + this.get('ID');
+    }),
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _ltHead.default;
-    }
-  });
-});
-define('self-start-front-end/components/lt-infinity', ['exports', 'ember-light-table/components/lt-infinity'], function (exports, _ltInfinity) {
-  'use strict';
+    edit: false,
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _ltInfinity.default;
-    }
-  });
-});
-define('self-start-front-end/components/lt-row', ['exports', 'ember-light-table/components/lt-row'], function (exports, _ltRow) {
-  'use strict';
+    questionsModel: Ember.computed(function () {
+      return this.get('DS').findAll('question');
+    }),
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _ltRow.default;
-    }
-  });
-});
-define('self-start-front-end/components/lt-scrollable', ['exports', 'ember-light-table/components/lt-scrollable'], function (exports, _ltScrollable) {
-  'use strict';
+    actions: {
+      addQuestion: function addQuestion(thisQuestion, thisForm, qid) {
+        thisForm.get('questions').pushObject(thisQuestion);
+        thisQuestion.get('forms').pushObject(thisForm);
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _ltScrollable.default;
-    }
-  });
-});
-define('self-start-front-end/components/lt-spanned-row', ['exports', 'ember-light-table/components/lt-spanned-row'], function (exports, _ltSpannedRow) {
-  'use strict';
+        this.get('DS').findRecord('form', this.get('ID')).then(function (rec) {
+          rec.save().then(function () {});
+        });
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _ltSpannedRow.default;
+        this.get('DS').findRecord('question', qid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      manageForm: function manageForm() {
+        this.set('edit', true);
+      },
+      done: function done() {
+        this.set('edit', false);
+      },
+
+
+      openModal: function openModal() {
+        Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+          closeable: false,
+          detachable: false,
+          onDeny: function onDeny() {
+            return true;
+          },
+          onApprove: function onApprove() {
+            return true;
+          }
+        }).modal('show');
+      }
     }
   });
 });
@@ -1807,6 +2800,116 @@ define('self-start-front-end/components/manage-patients', ['exports'], function 
     }
   });
 });
+define('self-start-front-end/components/modify-question', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+    questionData: null,
+    questionText: Ember.computed.oneWay('questionData.questionText'),
+    helpDescription: Ember.computed.oneWay('questionData.helpDescription'),
+    questionType: Ember.computed.oneWay('questionData.type'),
+    multipleChoice: false,
+    opt2: false,
+    opt3: false,
+    opt4: false,
+    opt5: false,
+    opt6: false,
+    opt1String: " ",
+    opt2String: " ",
+    opt3String: " ",
+    opt4String: " ",
+    opt5String: " ",
+    opt6String: " ",
+    optString: " ",
+
+    modalName: Ember.computed(function () {
+      return 'questionData' + this.get('ID');
+    }),
+    actions: {
+
+      isMultipleChoice: function isMultipleChoice() {
+        // console.log(this.get('questionData.type'));
+        if (this.get('questionData.type') === "Multiple choice") {
+          this.set('multipleChoice', true);
+          var breakdown = this.get('questionData.optionString').split('+++');
+
+          if (this.get('questionData.optionNumber') === 6) {
+            this.set('opt2', true);
+            this.set('opt3', true);
+            this.set('opt4', true);
+            this.set('opt5', true);
+            this.set('opt6', true);
+            for (var i = 0; i < 6; i++) {
+              this.set('opt' + (i + 1) + 'String', breakdown[i]);
+            }
+          } else if (this.get('questionData.optionNumber') === 5) {
+            this.set('opt2', true);
+            this.set('opt3', true);
+            this.set('opt4', true);
+            this.set('opt5', true);
+            for (var j = 0; j < 5; j++) {
+              this.set('opt' + (j + 1) + 'String', breakdown[j]);
+            }
+          } else if (this.get('questionData.optionNumber') === 4) {
+            this.set('opt2', true);
+            this.set('opt3', true);
+            this.set('opt4', true);
+            for (var k = 0; k < 4; k++) {
+              this.set('opt' + (k + 1) + 'String', breakdown[k]);
+            }
+          } else if (this.get('questionData.optionNumber') === 3) {
+            this.set('opt2', true);
+            this.set('opt3', true);
+            for (var l = 0; l < 3; l++) {
+              this.set('opt' + (l + 1) + 'String', breakdown[l]);
+            }
+          } else if (this.get('questionData.optionNumber') === 2) {
+            this.set('opt2', true);
+            for (var m = 0; m < 2; m++) {
+              this.set('opt' + (m + 1) + 'String', breakdown[m]);
+            }
+          }
+        } else this.set('multipleChoice', false);
+      },
+
+      openModal: function openModal() {
+        var _this = this;
+
+        this.set('questionData', this.get('DS').peekRecord('question', this.get('ID')));
+
+        Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+          closeable: false,
+          transaction: 'horizontal flip',
+          detachable: false,
+          onDeny: function onDeny() {
+            return true;
+          },
+          onApprove: function onApprove() {
+            if (_this.get('questionData.type') === "Multiple choice") {
+              _this.set('optString', "");
+              for (var i = 0; i < _this.get('questionData.optionNumber'); i++) {
+                _this.set('optString', _this.get('optString') + _this.get('opt' + (i + 1) + 'String'));
+                _this.set('optString', _this.get('optString') + '+++');
+              }
+            }
+            _this.get('DS').findRecord('question', _this.get('ID')).then(function (rec) {
+              rec.set('questionText', _this.get('questionText'));
+              rec.set('optionString', _this.get('optString'));
+              rec.set('helpDescription', _this.get('helpDescription'));
+              rec.save().then(function () {
+                return true;
+              });
+            });
+          }
+        }).modal('show');
+      }
+    }
+  });
+});
 define('self-start-front-end/components/nav-bar', ['exports'], function (exports) {
   'use strict';
 
@@ -1814,6 +2917,7 @@ define('self-start-front-end/components/nav-bar', ['exports'], function (exports
     value: true
   });
   exports.default = Ember.Component.extend({
+
     DS: Ember.inject.service('store'),
 
     model: null,
@@ -1822,6 +2926,7 @@ define('self-start-front-end/components/nav-bar', ['exports'], function (exports
     temp: false,
 
     authentication: function authentication() {
+
       if (localStorage.getItem('temp')) {
         return this.get('ajax').request('http://localhost:8082/Authenticate', {
           method: 'POST',
@@ -1845,8 +2950,32 @@ define('self-start-front-end/components/nav-bar', ['exports'], function (exports
       // if(localStorage.getItem('loggedIn')){
       //   this.set('loggedOut', false);
       // }
+      var scrollLink = Ember.$('.scroll');
+
+      // Smooth scrolling
+      scrollLink.click(function (e) {
+        e.preventDefault();
+        Ember.$('body,html').animate({
+          scrollTop: Ember.$(this.hash).offset().top
+        }, 1000);
+      });
+
+      // Active link switching
+      Ember.$(window).scroll(function () {
+        var scrollbarLocation = Ember.$(this).scrollTop();
+
+        scrollLink.each(function () {
+
+          var sectionOffset = Ember.$(this.hash).offset().top - 20;
+
+          if (sectionOffset <= scrollbarLocation) {
+            Ember.$(this).parent().addClass('active');
+            Ember.$(this).parent().siblings().removeClass('active');
+          }
+        });
+      });
     },
-    init: function init() {
+    didInsertElement: function didInsertElement() {
       this._super.apply(this, arguments);
 
       if (Ember.$(window).width() > 600) {
@@ -1868,36 +2997,6 @@ define('self-start-front-end/components/nav-bar', ['exports'], function (exports
           }
         });
       }
-      Ember.$('.additional.item').popup({
-        delay: {
-          show: 200,
-          hide: 50
-        },
-        position: 'bottom center'
-      });
-
-      var $menu = Ember.$('#toc'),
-          $tocSticky = Ember.$('.toc .ui.sticky'),
-          $fullHeightContainer = Ember.$('.pusher > .full.height');
-
-      // create sidebar sticky
-      requestAnimationFrame(function () {
-        $tocSticky.sticky({
-          silent: true,
-          container: Ember.$('html'),
-          context: $fullHeightContainer
-        });
-      });
-
-      // main sidebar
-      $menu.sidebar({
-        dimPage: true,
-        transition: 'overlay',
-        mobileTransition: 'uncover'
-      });
-
-      // launch buttons
-      $menu.sidebar('attach events', '.launch.button, .view-ui, .launch.item');
     },
 
 
@@ -1960,6 +3059,182 @@ define('self-start-front-end/components/nav-bar', ['exports'], function (exports
 
         }).modal('show');
       }
+    }
+  });
+});
+define('self-start-front-end/components/parse-question', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Component.extend({
+        init: function init() {
+            this._super();
+            if (this.get('name.type') == "Multiple choice") {
+                this.set('multiplechoice', true);
+                var breakdown = this.get('name.questionText').split('+++');
+                this.set("string", breakdown[0]);
+            }
+        },
+
+        multiplechoice: false,
+        string: ""
+    });
+});
+define('self-start-front-end/components/power-select-multiple', ['exports', 'ember-power-select/components/power-select-multiple'], function (exports, _powerSelectMultiple) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _powerSelectMultiple.default;
+    }
+  });
+});
+define('self-start-front-end/components/power-select-multiple/trigger', ['exports', 'ember-power-select/components/power-select-multiple/trigger'], function (exports, _trigger) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _trigger.default;
+    }
+  });
+});
+define('self-start-front-end/components/power-select', ['exports', 'ember-power-select/components/power-select'], function (exports, _powerSelect) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _powerSelect.default;
+    }
+  });
+});
+define('self-start-front-end/components/power-select/before-options', ['exports', 'ember-power-select/components/power-select/before-options'], function (exports, _beforeOptions) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _beforeOptions.default;
+    }
+  });
+});
+define('self-start-front-end/components/power-select/options', ['exports', 'ember-power-select/components/power-select/options'], function (exports, _options) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _options.default;
+    }
+  });
+});
+define('self-start-front-end/components/power-select/placeholder', ['exports', 'ember-power-select/components/power-select/placeholder'], function (exports, _placeholder) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _placeholder.default;
+    }
+  });
+});
+define('self-start-front-end/components/power-select/power-select-group', ['exports', 'ember-power-select/components/power-select/power-select-group'], function (exports, _powerSelectGroup) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _powerSelectGroup.default;
+    }
+  });
+});
+define('self-start-front-end/components/power-select/search-message', ['exports', 'ember-power-select/components/power-select/search-message'], function (exports, _searchMessage) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _searchMessage.default;
+    }
+  });
+});
+define('self-start-front-end/components/power-select/trigger', ['exports', 'ember-power-select/components/power-select/trigger'], function (exports, _trigger) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _trigger.default;
+    }
+  });
+});
+define('self-start-front-end/components/radio-button-input', ['exports', 'ember-radio-button/components/radio-button-input'], function (exports, _radioButtonInput) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _radioButtonInput.default;
+    }
+  });
+});
+define('self-start-front-end/components/radio-button', ['exports', 'ember-radio-button/components/radio-button'], function (exports, _radioButton) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _radioButton.default;
+    }
+  });
+});
+define('self-start-front-end/components/range-slider', ['exports', 'ui-slider/components/range-slider'], function (exports, _rangeSlider) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _rangeSlider.default;
     }
   });
 });
@@ -2086,31 +3361,109 @@ define('self-start-front-end/components/register-user', ['exports'], function (e
 
   });
 });
-define('self-start-front-end/components/resize-detector', ['exports', 'ember-element-resize-detector/components/resize-detector'], function (exports, _resizeDetector) {
+define('self-start-front-end/components/rl-dropdown-container', ['exports', 'ember-rl-dropdown/components/rl-dropdown-container'], function (exports, _rlDropdownContainer) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _resizeDetector.default;
-    }
-  });
+  exports.default = _rlDropdownContainer.default;
 });
-define('self-start-front-end/components/scroll-content-element', ['exports', 'ember-scrollable/components/scroll-content-element'], function (exports, _scrollContentElement) {
+define('self-start-front-end/components/rl-dropdown-toggle', ['exports', 'ember-rl-dropdown/components/rl-dropdown-toggle'], function (exports, _rlDropdownToggle) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _scrollContentElement.default;
-    }
+  exports.default = _rlDropdownToggle.default;
+});
+define('self-start-front-end/components/rl-dropdown', ['exports', 'ember-rl-dropdown/components/rl-dropdown'], function (exports, _rlDropdown) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
   });
+  exports.default = _rlDropdown.default;
+});
+define('self-start-front-end/components/show-form-questions', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Component.extend({
+        DS: Ember.inject.service('store'),
+        initialized: false,
+        order: [],
+        arr: [],
+        actions: {
+            removeQuestion: function removeQuestion(q, f, qid, fid) {
+                f.get('questions').removeObject(q);
+                q.get('forms').removeObject(f);
+
+                console.log(fid);
+                this.get('DS').findRecord('form', fid).then(function (rec) {
+                    rec.save().then(function () {});
+                });
+
+                this.get('DS').findRecord('question', qid).then(function (rec) {
+                    rec.save().then(function () {});
+                });
+            },
+            orderChange: function orderChange(q, f, fid) {
+                var thisForm = this;
+                if (!this.initialized) {
+                    for (var x = 0; x < f.get('questions').get('length'); x++) {
+                        this.order[x] = x + 1;
+                    }
+                    this.set('initialized', true);
+                }
+                console.log(this.order);
+                var value = this.$('option:selected').val();
+                var indexb = f.get('questions').indexOf(q);
+                var option = this.$('option:selected');
+                console.log(value);
+                console.log(option);
+
+                var temp = this.order[value];
+                this.order[value] = this.order[indexb];
+                this.order[indexb] = temp;
+
+                console.log(this.order);
+
+                // f.get('questions').forEach(function(q) {
+                //     arr.pushObject(q);
+                // });
+                //     let tmp = arr.objectAt(indexb);
+                //    // f.get('questions').removeAt(indexb);
+                //    // f.get('questions').insertAt(value, tmp);  
+                //     arr.replace(indexb, 1,arr.objectAt(value));  
+                //     arr.replace(value, 1,tmp);  
+                //     console.log(arr);
+                // this.get('DS').findRecord('form', fid).then((rec) => {
+                //     rec.save().then(()=>{
+                //     });
+                // });
+
+                // window.location.reload();
+            },
+            save: function save(f, fid) {
+                for (var x = 0; x < this.order.length; x++) {
+                    this.arr[x] = f.get('questions').objectAt(this.order[x] - 1);
+                }
+                console.log(this.arr);
+
+                f.get('questions').clear();
+                for (var x = 0; x < this.order.length; x++) {
+                    f.get('questions').pushObject(this.arr[x]);
+                }
+                this.get('DS').findRecord('form', fid).then(function (rec) {
+                    rec.save().then(function () {});
+                });
+                window.location.reload();
+            }
+        }
+    });
 });
 define('self-start-front-end/components/show-patient', ['exports'], function (exports) {
   'use strict';
@@ -2125,6 +3478,30 @@ define('self-start-front-end/components/show-patient', ['exports'], function (ex
       var dateString = date.toISOString().substring(0, 10);
       return dateString;
     })
+  });
+});
+define('self-start-front-end/components/simple-example', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+    ImageIsAdding: false,
+
+    model: Ember.computed(function () {
+      return this.get('DS').findAll('image');
+    }),
+
+    actions: {
+      deleteImage: function deleteImage(file) {
+        file.destroyRecord();
+      },
+      addNewImage: function addNewImage() {
+        this.set('ImageIsAdding', true);
+      }
+    }
   });
 });
 define('self-start-front-end/components/stylish-button', ['exports', 'ember-stylish-buttons/components/stylish-button', 'self-start-front-end/config/environment'], function (exports, _stylishButton, _environment) {
@@ -2323,6 +3700,19 @@ define('self-start-front-end/components/ui-sidebar', ['exports', 'semantic-ui-em
     }
   });
 });
+define('self-start-front-end/components/ui-slider', ['exports', 'ui-slider/components/ui-slider'], function (exports, _uiSlider) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _uiSlider.default;
+    }
+  });
+});
 define('self-start-front-end/components/ui-sticky', ['exports', 'semantic-ui-ember/components/ui-sticky'], function (exports, _uiSticky) {
   'use strict';
 
@@ -2333,6 +3723,126 @@ define('self-start-front-end/components/ui-sticky', ['exports', 'semantic-ui-emb
     enumerable: true,
     get: function () {
       return _uiSticky.default;
+    }
+  });
+});
+define("self-start-front-end/components/upload-file", ["exports", "self-start-front-end/utils/file-object"], function (exports, _fileObject) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+    model: null,
+    flag: null,
+    accept: 'audio/*,video/*,image/*',
+    multiple: true,
+    queue: [],
+    savingInProgress: false,
+
+    labelArray: ['height: 6.25em', 'line-height: 5.25em', 'text-align: center'],
+
+    inputStyle: Ember.computed(function () {
+      var style_array = ['opacity: 0', 'width:100% !important', 'overflow:hidden', 'position:relative', 'left:-100%', 'display:block'];
+      return Ember.String.htmlSafe(style_array.join(';'));
+    }),
+
+    labelStyle: Ember.computed('labelArray', function () {
+      return Ember.String.htmlSafe(this.get('labelArray').join(';'));
+    }),
+
+    dragLeave: function dragLeave(event) {
+      event.preventDefault();
+      this.set('labelArray', ['height: 6.25em', 'line-height: 5.25em', 'text-align: center']);
+      return this.set('dragClass', 'deactivated');
+    },
+
+    dragOver: function dragOver() {
+      this.set('labelArray', ['height: 6.25em', 'line-height: 5.25em', 'text-align: center', 'background: green']);
+    },
+
+    drop: function drop() {
+      this.set('labelArray', ['height: 6.25em', 'line-height: 5.25em', 'text-align: center']);
+    },
+
+    actions: {
+      selectFile: function selectFile(data) {
+        if (!Ember.isEmpty(data.target.files)) {
+          for (var i = data.target.files.length - 1; i >= 0; i--) {
+            var file = _fileObject.default.create({
+              fileToUpload: data.target.files[i],
+              maximumFileSize: this.get('maximumFileSize')
+            });
+            this.get('queue').pushObject(file);
+          }
+        }
+      },
+
+      deleteFile: function deleteFile(file) {
+        this.get('queue').removeObject(file);
+        if (Ember.isEmpty(this.get('queue'))) {
+          this.set('flag', false);
+        }
+      },
+
+      deleteAllFiles: function deleteAllFiles() {
+        this.get('queue').clear();
+        this.set('flag', false);
+      },
+
+      saveFile: function saveFile(file) {
+        var _this = this;
+
+        console.log(this.get('queue'));
+        var newFile = this.get('DS').createRecord(this.get('model'), {
+          name: file.name,
+          size: file.size,
+          type: file.type,
+          rawSize: file.rawSize,
+          imageData: file.base64Image
+        });
+        newFile.save().then(function () {
+          _this.get('queue').removeObject(file);
+
+          if (Ember.isEmpty(_this.get('queue'))) {
+            _this.set('flag', false);
+          }
+        });
+      },
+
+      saveAllFiles: function saveAllFiles() {
+        var _this2 = this;
+
+        this.set('savingInProgress', true);
+        var counter = 0;
+        this.get('queue').forEach(function (file) {
+          if (file.isDisplayableImage) {
+            var newFile = _this2.get('DS').createRecord(_this2.get('model'), {
+              name: file.name,
+              size: file.size,
+              type: file.type,
+              rawSize: file.rawSize,
+              imageData: file.base64Image
+            });
+            newFile.save().then(function () {
+              counter++;
+              if (_this2.get('queue').length == counter) {
+                _this2.get('queue').clear();
+                _this2.set('flag', false);
+                _this2.set('savingInProgress', false);
+              }
+            });
+          } else {
+            counter++;
+          }
+        });
+      },
+
+      done: function done() {
+        this.get('queue').clear();
+        this.set('flag', false);
+      }
     }
   });
 });
@@ -2553,17 +4063,319 @@ define('self-start-front-end/components/user-login', ['exports'], function (expo
 
   });
 });
-define('self-start-front-end/components/vertical-collection', ['exports', '@html-next/vertical-collection/components/vertical-collection/component'], function (exports, _component) {
+define('self-start-front-end/components/view-appointment', ['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _component.default;
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+    routing: Ember.inject.service('-routing'),
+    isEditing: false,
+    selectedclient: null,
+    getclient: Ember.computed(function () {
+      return this.get('DS').findAll('patient');
+    }),
+
+    appointmenthistory: null,
+
+    actions: {
+      bookAppointment: function bookAppointment() {
+        this.set('isEditing', true);
+      },
+      cancelbookingappointment: function cancelbookingappointment() {
+        this.set('isEditing', false);
+      },
+      updateValue: function updateValue(physio) {
+        this.set('selectedphysio', this.get('DS').peekRecord('physiotherapest', physio));
+        //get associated physiotherapist schedule
+        var container = this.get('selectedphysio').get('appointments').filter(function (item) {
+          var cur_time = new Date();
+          cur_time = cur_time.toISOString();
+          return item.get('date') > cur_time;
+        });
+        //set appointment filter to the container
+        this.set('appointments_filter', container);
+      }
     }
+
+  });
+});
+define('self-start-front-end/components/view-schedule', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    DS: Ember.inject.service('store'),
+    routing: Ember.inject.service('-routing'),
+    selectedphysio: null,
+    physios: null,
+    appointments_filter: null,
+    isEditing: false,
+    event: "event-1",
+
+    availablespot: [],
+
+    dragFinishText: false,
+    dragStartedText: false,
+    dragEndedText: false,
+    myObject: { id: 1, name: 'objectName' },
+
+    weekdate: [],
+    init: function init() {
+      this._super();
+      var d = new Date();
+      for (var i = 0; i < d.getDay(); i++) {
+        var result = new Date();
+        result.setDate(result.getDate() + -d.getDay());
+        this.get('weekdate')[i] = result.toDateString();
+      }
+      this.get('weekdate')[d.getDay()] = d.toDateString();
+      for (var _i = d.getDay(); _i < 6; _i++) {
+        var _result = new Date();
+        _result.setDate(d.getDate() + _i);
+        this.get('weekdate')[_i + 1] = _result.toDateString();
+      }
+      this.functionA();
+    },
+
+    getphysio: Ember.computed(function () {
+      return this.get('DS').findAll('physiotherapest');
+    }),
+    didRender: function didRender() {
+      this.functionA();
+    },
+    functionA: function functionA() {
+      var transitionEnd = 'webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend';
+      var transitionsSupported = Ember.$('.csstransitions').length > 0;
+
+      //if browser does not support transitions - use a different event to trigger them
+      if (!transitionsSupported) transitionEnd = 'noTransition';
+
+      //should add a loding while the events are organized
+
+      function SchedulePlan(element) {
+        this.element = element;
+        this.timeline = this.element.find('.timeline');
+        this.timelineItems = this.timeline.find('li');
+        this.timelineItemsNumber = this.timelineItems.length;
+        this.timelineStart = getScheduleTimestamp(this.timelineItems.eq(0).text());
+        //need to store delta (in our case half hour) timestamp
+        this.timelineUnitDuration = getScheduleTimestamp(this.timelineItems.eq(1).text()) - getScheduleTimestamp(this.timelineItems.eq(0).text());
+
+        this.eventsWrapper = this.element.find('.events');
+        this.eventsGroup = this.eventsWrapper.find('.events-group');
+        this.singleEvents = this.eventsGroup.find('.single-event');
+        this.eventSlotHeight = this.eventsGroup.eq(0).children('.top-info').outerHeight();
+
+        this.animating = false;
+
+        this.initSchedule();
+      }
+
+      SchedulePlan.prototype.initSchedule = function () {
+        this.scheduleReset();
+        //this.initEvents();
+      };
+
+      SchedulePlan.prototype.scheduleReset = function () {
+        var mq = this.mq();
+        if (mq == 'desktop' && !this.element.hasClass('js-full')) {
+          //in this case you are on a desktop version (first load or resize from mobile)
+          this.eventSlotHeight = this.eventsGroup.eq(0).children('.top-info').outerHeight();
+          this.element.addClass('js-full');
+          this.placeEvents();
+          // this.element.hasClass('modal-is-open') && this.checkEventModal();
+        } else if (mq == 'mobile' && this.element.hasClass('js-full')) {
+          //in this case you are on a mobile version (first load or resize from desktop)
+          this.element.removeClass('js-full loading');
+          this.eventsGroup.children('ul').add(this.singleEvents).removeAttr('style');
+          this.eventsWrapper.children('.grid-line').remove();
+        } else {
+          this.element.removeClass('loading');
+        }
+      };
+
+      // SchedulePlan.prototype.initEvents = function () {
+      //   var self = this;
+      //     this.singleEvents.each(function () {
+      //       var durationLabel = '<span class="event-date">' + $(this).data('start') + ' - ' + $(this).data('end') + '</span>';
+      //       $(this).children('a').prepend($(durationLabel));
+      //     });
+      //
+      //
+      // };
+
+      SchedulePlan.prototype.placeEvents = function () {
+        var self = this;
+        this.singleEvents.each(function () {
+          //place each event in the grid -> need to set top position and height
+          var start = getScheduleTimestamp(Ember.$(this).attr('data-start')),
+              duration = getScheduleTimestamp(Ember.$(this).attr('data-end')) - start;
+
+          var eventTop = self.eventSlotHeight * (start - self.timelineStart) / self.timelineUnitDuration,
+              eventHeight = self.eventSlotHeight * duration / self.timelineUnitDuration;
+
+          Ember.$(this).css({
+            top: eventTop - 1 + 'px',
+            height: eventHeight + 1 + 'px'
+          });
+        });
+
+        this.element.removeClass('loading');
+      };
+
+      SchedulePlan.prototype.mq = function () {
+        //get MQ value ('desktop' or 'mobile')
+        var self = this;
+        return window.getComputedStyle(this.element.get(0), '::before').getPropertyValue('content').replace(/["']/g, '');
+      };
+
+      var schedules = Ember.$('.cd-schedule');
+      var objSchedulesPlan = [],
+          windowResize = false;
+
+      if (schedules.length > 0) {
+        schedules.each(function () {
+          //create SchedulePlan objects
+          objSchedulesPlan.push(new SchedulePlan(Ember.$(this)));
+        });
+      }
+
+      Ember.$(window).on('resize', function () {
+        if (!windowResize) {
+          windowResize = true;
+          !window.requestAnimationFrame ? setTimeout(checkResize) : window.requestAnimationFrame(checkResize);
+        }
+      });
+
+      Ember.$(window).keyup(function (event) {
+        if (event.keyCode == 27) {
+          objSchedulesPlan.forEach(function (element) {
+            element.closeModal(element.eventsGroup.find('.selected-event'));
+          });
+        }
+      });
+
+      function checkResize() {
+        objSchedulesPlan.forEach(function (element) {
+          element.scheduleReset();
+        });
+        windowResize = false;
+      }
+
+      function getScheduleTimestamp(time) {
+        //accepts hh:mm format - convert hh:mm to timestamp
+        time = time.replace(/ /g, '');
+        var timeArray = time.split(':');
+        var timeStamp = parseInt(timeArray[0]) * 60 + parseInt(timeArray[1]);
+        return timeStamp;
+      }
+
+      function transformElement(element, value) {
+        element.css({
+          '-moz-transform': value,
+          '-webkit-transform': value,
+          '-ms-transform': value,
+          '-o-transform': value,
+          'transform': value
+        });
+      }
+    },
+
+
+    actions: {
+      viewschedule: function viewschedule() {
+        this.set('isEditing', true);
+      },
+      updateValue: function updateValue(physio) {
+        this.set('physios', physio);
+        this.set('selectedphysio', this.get('DS').peekRecord('physiotherapest', physio));
+        //get associated physiotherapist schedule
+        var container = this.get('selectedphysio').get('appointments').filter(function (item) {
+          var cur_time = new Date();
+          cur_time = cur_time.toISOString();
+          return item.get('date') > cur_time;
+        });
+        //set appointment filter to the container
+        this.set('appointments_filter', container);
+      },
+      getclient: function getclient(pid) {
+        console.log("getlient invoked");
+        this.get('DS').findRecord('patient', pid).then(function (src) {
+
+          var a = src.get('familyName');
+          var b = src.get('givenName');
+          console.log(a.toString());
+          console.log(b.toString());
+          return '';
+        });
+      },
+      cancel: function cancel() {
+        return true;
+      },
+      prev: function prev() {
+        var newcont = [];
+        var counter = 0;
+        this.get('weekdate').forEach(function (e) {
+          var result = new Date(e);
+          result.setDate(result.getDate() - 7);
+          newcont[counter++] = result.toDateString();
+        });
+        this.get('weekdate').replace(0, 7, newcont);
+      },
+      next: function next() {
+        var newcont = [];
+        var counter = 0;
+        this.get('weekdate').forEach(function (e) {
+          var result = new Date(e);
+          result.setDate(result.getDate() + 7);
+          newcont[counter++] = result.toDateString();
+        });
+        this.get('weekdate').replace(0, 7, newcont);
+      },
+      setslot: function setslot(slot, date) {
+        var d = new Date(date);
+        switch (slot) {
+          case 1:
+            d.setHours(9, 30);
+            break;
+          case 2:
+            d.setHours(12, 0);
+            break;
+          case 3:
+            d.setHours(13, 30);
+            break;
+          case 4:
+            d.setHours(15, 0);
+            break;
+        }
+        var booking = this.get('DS').createRecord('appointment', {
+          date: d.toISOString()
+        });
+        this.set('event', "event-3");
+
+        this.get('availablespot').push(booking);
+      },
+      save: function save() {
+        var self = this;
+        var physio = self.get('physios');
+
+        console.log(physio);
+        this.get('DS').find('physiotherapest', physio).then(function (a) {
+          self.get('availablespot').forEach(function (e) {
+            e.save().then(function () {
+              a.get('appointments').pushObject(e);
+              a.save();
+            });
+          });
+        });
+      }
+    }
+
   });
 });
 define('self-start-front-end/components/welcome-page', ['exports'], function (exports) {
@@ -2605,6 +4417,17 @@ define('self-start-front-end/components/welcome-page', ['exports'], function (ex
     }
   });
 });
+define('self-start-front-end/controllers/form-display', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Controller.extend({
+        queryParams: ['id'],
+        id: null
+    });
+});
 define('self-start-front-end/controllers/new-patient', ['exports'], function (exports) {
   'use strict';
 
@@ -2615,6 +4438,27 @@ define('self-start-front-end/controllers/new-patient', ['exports'], function (ex
     tagName: '',
     queryParams: ['account'],
     account: null
+  });
+});
+define('self-start-front-end/controllers/questions', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Controller.extend({});
+});
+define('self-start-front-end/controllers/rehabplans', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Controller.extend({
+
+    sortProperties: ['id'],
+    theFilter: ""
+
   });
 });
 define('self-start-front-end/helpers/and', ['exports', 'ember-truth-helpers/helpers/and'], function (exports, _and) {
@@ -2660,63 +4504,6 @@ define('self-start-front-end/helpers/app-version', ['exports', 'self-start-front
 
   exports.default = Ember.Helper.helper(appVersion);
 });
-define('self-start-front-end/helpers/append', ['exports', 'ember-composable-helpers/helpers/append'], function (exports, _append) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _append.default;
-    }
-  });
-  Object.defineProperty(exports, 'append', {
-    enumerable: true,
-    get: function () {
-      return _append.append;
-    }
-  });
-});
-define('self-start-front-end/helpers/array', ['exports', 'ember-composable-helpers/helpers/array'], function (exports, _array) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _array.default;
-    }
-  });
-  Object.defineProperty(exports, 'array', {
-    enumerable: true,
-    get: function () {
-      return _array.array;
-    }
-  });
-});
-define('self-start-front-end/helpers/camelize', ['exports', 'ember-cli-string-helpers/helpers/camelize'], function (exports, _camelize) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _camelize.default;
-    }
-  });
-  Object.defineProperty(exports, 'camelize', {
-    enumerable: true,
-    get: function () {
-      return _camelize.camelize;
-    }
-  });
-});
 define('self-start-front-end/helpers/cancel-all', ['exports', 'ember-concurrency/-helpers'], function (exports, _helpers) {
   'use strict';
 
@@ -2739,7 +4526,63 @@ define('self-start-front-end/helpers/cancel-all', ['exports', 'ember-concurrency
 
   exports.default = Ember.Helper.helper(cancelHelper);
 });
-define('self-start-front-end/helpers/capitalize', ['exports', 'ember-cli-string-helpers/helpers/capitalize'], function (exports, _capitalize) {
+define('self-start-front-end/helpers/compare', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.compare = compare;
+
+  var _slicedToArray = function () {
+    function sliceIterator(arr, i) {
+      var _arr = [];
+      var _n = true;
+      var _d = false;
+      var _e = undefined;
+
+      try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);
+
+          if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;
+        _e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"]) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }
+
+      return _arr;
+    }
+
+    return function (arr, i) {
+      if (Array.isArray(arr)) {
+        return arr;
+      } else if (Symbol.iterator in Object(arr)) {
+        return sliceIterator(arr, i);
+      } else {
+        throw new TypeError("Invalid attempt to destructure non-iterable instance");
+      }
+    };
+  }();
+
+  function compare(_ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+        a = _ref2[0],
+        b = _ref2[1];
+
+    return a === b;
+  }
+
+  exports.default = Ember.Helper.helper(compare);
+});
+define('self-start-front-end/helpers/ember-power-select-is-group', ['exports', 'ember-power-select/helpers/ember-power-select-is-group'], function (exports, _emberPowerSelectIsGroup) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -2748,17 +4591,17 @@ define('self-start-front-end/helpers/capitalize', ['exports', 'ember-cli-string-
   Object.defineProperty(exports, 'default', {
     enumerable: true,
     get: function () {
-      return _capitalize.default;
+      return _emberPowerSelectIsGroup.default;
     }
   });
-  Object.defineProperty(exports, 'capitalize', {
+  Object.defineProperty(exports, 'emberPowerSelectIsGroup', {
     enumerable: true,
     get: function () {
-      return _capitalize.capitalize;
+      return _emberPowerSelectIsGroup.emberPowerSelectIsGroup;
     }
   });
 });
-define('self-start-front-end/helpers/chunk', ['exports', 'ember-composable-helpers/helpers/chunk'], function (exports, _chunk) {
+define('self-start-front-end/helpers/ember-power-select-is-selected', ['exports', 'ember-power-select/helpers/ember-power-select-is-selected'], function (exports, _emberPowerSelectIsSelected) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -2767,17 +4610,17 @@ define('self-start-front-end/helpers/chunk', ['exports', 'ember-composable-helpe
   Object.defineProperty(exports, 'default', {
     enumerable: true,
     get: function () {
-      return _chunk.default;
+      return _emberPowerSelectIsSelected.default;
     }
   });
-  Object.defineProperty(exports, 'chunk', {
+  Object.defineProperty(exports, 'emberPowerSelectIsSelected', {
     enumerable: true,
     get: function () {
-      return _chunk.chunk;
+      return _emberPowerSelectIsSelected.emberPowerSelectIsSelected;
     }
   });
 });
-define('self-start-front-end/helpers/classify', ['exports', 'ember-cli-string-helpers/helpers/classify'], function (exports, _classify) {
+define('self-start-front-end/helpers/ember-power-select-true-string-if-present', ['exports', 'ember-power-select/helpers/ember-power-select-true-string-if-present'], function (exports, _emberPowerSelectTrueStringIfPresent) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -2786,127 +4629,13 @@ define('self-start-front-end/helpers/classify', ['exports', 'ember-cli-string-he
   Object.defineProperty(exports, 'default', {
     enumerable: true,
     get: function () {
-      return _classify.default;
+      return _emberPowerSelectTrueStringIfPresent.default;
     }
   });
-  Object.defineProperty(exports, 'classify', {
+  Object.defineProperty(exports, 'emberPowerSelectTrueStringIfPresent', {
     enumerable: true,
     get: function () {
-      return _classify.classify;
-    }
-  });
-});
-define('self-start-front-end/helpers/compact', ['exports', 'ember-composable-helpers/helpers/compact'], function (exports, _compact) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _compact.default;
-    }
-  });
-  Object.defineProperty(exports, 'compact', {
-    enumerable: true,
-    get: function () {
-      return _compact.compact;
-    }
-  });
-});
-define('self-start-front-end/helpers/compute', ['exports', 'ember-composable-helpers/helpers/compute'], function (exports, _compute) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _compute.default;
-    }
-  });
-  Object.defineProperty(exports, 'compute', {
-    enumerable: true,
-    get: function () {
-      return _compute.compute;
-    }
-  });
-});
-define('self-start-front-end/helpers/contains', ['exports', 'ember-composable-helpers/helpers/contains'], function (exports, _contains) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _contains.default;
-    }
-  });
-  Object.defineProperty(exports, 'contains', {
-    enumerable: true,
-    get: function () {
-      return _contains.contains;
-    }
-  });
-});
-define('self-start-front-end/helpers/dasherize', ['exports', 'ember-cli-string-helpers/helpers/dasherize'], function (exports, _dasherize) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _dasherize.default;
-    }
-  });
-  Object.defineProperty(exports, 'dasherize', {
-    enumerable: true,
-    get: function () {
-      return _dasherize.dasherize;
-    }
-  });
-});
-define('self-start-front-end/helpers/dec', ['exports', 'ember-composable-helpers/helpers/dec'], function (exports, _dec) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _dec.default;
-    }
-  });
-  Object.defineProperty(exports, 'dec', {
-    enumerable: true,
-    get: function () {
-      return _dec.dec;
-    }
-  });
-});
-define('self-start-front-end/helpers/drop', ['exports', 'ember-composable-helpers/helpers/drop'], function (exports, _drop) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _drop.default;
-    }
-  });
-  Object.defineProperty(exports, 'drop', {
-    enumerable: true,
-    get: function () {
-      return _drop.drop;
+      return _emberPowerSelectTrueStringIfPresent.emberPowerSelectTrueStringIfPresent;
     }
   });
 });
@@ -2926,101 +4655,6 @@ define('self-start-front-end/helpers/eq', ['exports', 'ember-truth-helpers/helpe
     enumerable: true,
     get: function () {
       return _equal.equal;
-    }
-  });
-});
-define('self-start-front-end/helpers/filter-by', ['exports', 'ember-composable-helpers/helpers/filter-by'], function (exports, _filterBy) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _filterBy.default;
-    }
-  });
-  Object.defineProperty(exports, 'filterBy', {
-    enumerable: true,
-    get: function () {
-      return _filterBy.filterBy;
-    }
-  });
-});
-define('self-start-front-end/helpers/filter', ['exports', 'ember-composable-helpers/helpers/filter'], function (exports, _filter) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _filter.default;
-    }
-  });
-  Object.defineProperty(exports, 'filter', {
-    enumerable: true,
-    get: function () {
-      return _filter.filter;
-    }
-  });
-});
-define('self-start-front-end/helpers/find-by', ['exports', 'ember-composable-helpers/helpers/find-by'], function (exports, _findBy) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _findBy.default;
-    }
-  });
-  Object.defineProperty(exports, 'findBy', {
-    enumerable: true,
-    get: function () {
-      return _findBy.findBy;
-    }
-  });
-});
-define('self-start-front-end/helpers/flatten', ['exports', 'ember-composable-helpers/helpers/flatten'], function (exports, _flatten) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _flatten.default;
-    }
-  });
-  Object.defineProperty(exports, 'flatten', {
-    enumerable: true,
-    get: function () {
-      return _flatten.flatten;
-    }
-  });
-});
-define('self-start-front-end/helpers/group-by', ['exports', 'ember-composable-helpers/helpers/group-by'], function (exports, _groupBy) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _groupBy.default;
-    }
-  });
-  Object.defineProperty(exports, 'groupBy', {
-    enumerable: true,
-    get: function () {
-      return _groupBy.groupBy;
     }
   });
 });
@@ -3062,137 +4696,57 @@ define('self-start-front-end/helpers/gte', ['exports', 'ember-truth-helpers/help
     }
   });
 });
-define('self-start-front-end/helpers/has-next', ['exports', 'ember-composable-helpers/helpers/has-next'], function (exports, _hasNext) {
+define('self-start-front-end/helpers/index-plus-one', ['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _hasNext.default;
-    }
-  });
-  Object.defineProperty(exports, 'hasNext', {
-    enumerable: true,
-    get: function () {
-      return _hasNext.hasNext;
-    }
-  });
+  exports.indexPlusOne = indexPlusOne;
+  function indexPlusOne(index) {
+    return parseInt(index) + 1;
+  }
+  exports.default = Ember.Helper.helper(indexPlusOne);
 });
-define('self-start-front-end/helpers/has-previous', ['exports', 'ember-composable-helpers/helpers/has-previous'], function (exports, _hasPrevious) {
+define('self-start-front-end/helpers/indexpicker', ['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _hasPrevious.default;
-    }
-  });
-  Object.defineProperty(exports, 'hasPrevious', {
-    enumerable: true,
-    get: function () {
-      return _hasPrevious.hasPrevious;
-    }
-  });
+  exports.indexpicker = indexpicker;
+  function indexpicker(params /*, hash*/) {
+    return parseInt(params) + 1;
+  }
+
+  exports.default = Ember.Helper.helper(indexpicker);
 });
-define('self-start-front-end/helpers/html-safe', ['exports', 'ember-cli-string-helpers/helpers/html-safe'], function (exports, _htmlSafe) {
-  'use strict';
+define("self-start-front-end/helpers/input-identification", ["exports"], function (exports) {
+  "use strict";
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _htmlSafe.default;
+  exports.inputIdentification = inputIdentification;
+  function inputIdentification(questionNumber) {
+    var str = "";
+    for (var i = 0; i < questionNumber; i++) {
+      str.concat("a");
     }
-  });
-  Object.defineProperty(exports, 'htmlSafe', {
-    enumerable: true,
-    get: function () {
-      return _htmlSafe.htmlSafe;
-    }
-  });
+    console.log(str);
+    return str;
+  }
+
+  exports.default = Ember.Helper.helper(inputIdentification);
 });
-define('self-start-front-end/helpers/humanize', ['exports', 'ember-cli-string-helpers/helpers/humanize'], function (exports, _humanize) {
+define('self-start-front-end/helpers/is-after', ['exports', 'self-start-front-end/config/environment', 'ember-moment/helpers/is-after'], function (exports, _environment, _isAfter) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _humanize.default;
-    }
-  });
-  Object.defineProperty(exports, 'humanize', {
-    enumerable: true,
-    get: function () {
-      return _humanize.humanize;
-    }
-  });
-});
-define('self-start-front-end/helpers/inc', ['exports', 'ember-composable-helpers/helpers/inc'], function (exports, _inc) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _inc.default;
-    }
-  });
-  Object.defineProperty(exports, 'inc', {
-    enumerable: true,
-    get: function () {
-      return _inc.inc;
-    }
-  });
-});
-define('self-start-front-end/helpers/intersect', ['exports', 'ember-composable-helpers/helpers/intersect'], function (exports, _intersect) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _intersect.default;
-    }
-  });
-  Object.defineProperty(exports, 'intersect', {
-    enumerable: true,
-    get: function () {
-      return _intersect.intersect;
-    }
-  });
-});
-define('self-start-front-end/helpers/invoke', ['exports', 'ember-composable-helpers/helpers/invoke'], function (exports, _invoke) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _invoke.default;
-    }
-  });
-  Object.defineProperty(exports, 'invoke', {
-    enumerable: true,
-    get: function () {
-      return _invoke.invoke;
-    }
+  exports.default = _isAfter.default.extend({
+    globalAllowEmpty: !!Ember.get(_environment.default, 'moment.allowEmpty')
   });
 });
 define('self-start-front-end/helpers/is-array', ['exports', 'ember-truth-helpers/helpers/is-array'], function (exports, _isArray) {
@@ -3214,42 +4768,109 @@ define('self-start-front-end/helpers/is-array', ['exports', 'ember-truth-helpers
     }
   });
 });
-define('self-start-front-end/helpers/is-equal', ['exports', 'ember-truth-helpers/helpers/is-equal'], function (exports, _isEqual) {
+define('self-start-front-end/helpers/is-before', ['exports', 'self-start-front-end/config/environment', 'ember-moment/helpers/is-before'], function (exports, _environment, _isBefore) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _isEqual.default;
-    }
-  });
-  Object.defineProperty(exports, 'isEqual', {
-    enumerable: true,
-    get: function () {
-      return _isEqual.isEqual;
-    }
+  exports.default = _isBefore.default.extend({
+    globalAllowEmpty: !!Ember.get(_environment.default, 'moment.allowEmpty')
   });
 });
-define('self-start-front-end/helpers/join', ['exports', 'ember-composable-helpers/helpers/join'], function (exports, _join) {
+define('self-start-front-end/helpers/is-between', ['exports', 'self-start-front-end/config/environment', 'ember-moment/helpers/is-between'], function (exports, _environment, _isBetween) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _join.default;
-    }
+  exports.default = _isBetween.default.extend({
+    globalAllowEmpty: !!Ember.get(_environment.default, 'moment.allowEmpty')
   });
-  Object.defineProperty(exports, 'join', {
-    enumerable: true,
-    get: function () {
-      return _join.join;
+});
+define('self-start-front-end/helpers/is-equal', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.isEqual = isEqual;
+
+  var _slicedToArray = function () {
+    function sliceIterator(arr, i) {
+      var _arr = [];
+      var _n = true;
+      var _d = false;
+      var _e = undefined;
+
+      try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);
+
+          if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;
+        _e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"]) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }
+
+      return _arr;
     }
+
+    return function (arr, i) {
+      if (Array.isArray(arr)) {
+        return arr;
+      } else if (Symbol.iterator in Object(arr)) {
+        return sliceIterator(arr, i);
+      } else {
+        throw new TypeError("Invalid attempt to destructure non-iterable instance");
+      }
+    };
+  }();
+
+  function isEqual(_ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+        q1 = _ref2[0],
+        q2 = _ref2[1];
+
+    return q1 === q2;
+  }
+  exports.default = Ember.Helper.helper(isEqual);
+});
+define('self-start-front-end/helpers/is-same-or-after', ['exports', 'self-start-front-end/config/environment', 'ember-moment/helpers/is-same-or-after'], function (exports, _environment, _isSameOrAfter) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _isSameOrAfter.default.extend({
+    globalAllowEmpty: !!Ember.get(_environment.default, 'moment.allowEmpty')
+  });
+});
+define('self-start-front-end/helpers/is-same-or-before', ['exports', 'self-start-front-end/config/environment', 'ember-moment/helpers/is-same-or-before'], function (exports, _environment, _isSameOrBefore) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _isSameOrBefore.default.extend({
+    globalAllowEmpty: !!Ember.get(_environment.default, 'moment.allowEmpty')
+  });
+});
+define('self-start-front-end/helpers/is-same', ['exports', 'self-start-front-end/config/environment', 'ember-moment/helpers/is-same'], function (exports, _environment, _isSame) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _isSame.default.extend({
+    globalAllowEmpty: !!Ember.get(_environment.default, 'moment.allowEmpty')
   });
 });
 define('self-start-front-end/helpers/lf-lock-model', ['exports', 'liquid-fire/helpers/lf-lock-model'], function (exports, _lfLockModel) {
@@ -3287,25 +4908,6 @@ define('self-start-front-end/helpers/lf-or', ['exports', 'liquid-fire/helpers/lf
     enumerable: true,
     get: function () {
       return _lfOr.lfOr;
-    }
-  });
-});
-define('self-start-front-end/helpers/lowercase', ['exports', 'ember-cli-string-helpers/helpers/lowercase'], function (exports, _lowercase) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _lowercase.default;
-    }
-  });
-  Object.defineProperty(exports, 'lowercase', {
-    enumerable: true,
-    get: function () {
-      return _lowercase.lowercase;
     }
   });
 });
@@ -3347,25 +4949,6 @@ define('self-start-front-end/helpers/lte', ['exports', 'ember-truth-helpers/help
     }
   });
 });
-define('self-start-front-end/helpers/map-by', ['exports', 'ember-composable-helpers/helpers/map-by'], function (exports, _mapBy) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _mapBy.default;
-    }
-  });
-  Object.defineProperty(exports, 'mapBy', {
-    enumerable: true,
-    get: function () {
-      return _mapBy.mapBy;
-    }
-  });
-});
 define('self-start-front-end/helpers/map-value', ['exports', 'semantic-ui-ember/helpers/map-value'], function (exports, _mapValue) {
   'use strict';
 
@@ -3385,7 +4968,86 @@ define('self-start-front-end/helpers/map-value', ['exports', 'semantic-ui-ember/
     }
   });
 });
-define('self-start-front-end/helpers/map', ['exports', 'ember-composable-helpers/helpers/map'], function (exports, _map) {
+define('self-start-front-end/helpers/mc-display', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.mcDisplay = mcDisplay;
+
+  var _slicedToArray = function () {
+    function sliceIterator(arr, i) {
+      var _arr = [];
+      var _n = true;
+      var _d = false;
+      var _e = undefined;
+
+      try {
+        for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+          _arr.push(_s.value);
+
+          if (i && _arr.length === i) break;
+        }
+      } catch (err) {
+        _d = true;
+        _e = err;
+      } finally {
+        try {
+          if (!_n && _i["return"]) _i["return"]();
+        } finally {
+          if (_d) throw _e;
+        }
+      }
+
+      return _arr;
+    }
+
+    return function (arr, i) {
+      if (Array.isArray(arr)) {
+        return arr;
+      } else if (Symbol.iterator in Object(arr)) {
+        return sliceIterator(arr, i);
+      } else {
+        throw new TypeError("Invalid attempt to destructure non-iterable instance");
+      }
+    };
+  }();
+
+  function mcDisplay(_ref) {
+    var _ref2 = _slicedToArray(_ref, 2),
+        string = _ref2[0],
+        num = _ref2[1];
+
+    var breakdown = string.split('+++');
+    var length = breakdown.length;
+    if (num < length - 1) return breakdown[num];
+    return false;
+  }
+
+  exports.default = Ember.Helper.helper(mcDisplay);
+});
+define('self-start-front-end/helpers/moment-add', ['exports', 'self-start-front-end/config/environment', 'ember-moment/helpers/moment-add'], function (exports, _environment, _momentAdd) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _momentAdd.default.extend({
+    globalAllowEmpty: !!Ember.get(_environment.default, 'moment.allowEmpty')
+  });
+});
+define('self-start-front-end/helpers/moment-calendar', ['exports', 'self-start-front-end/config/environment', 'ember-moment/helpers/moment-calendar'], function (exports, _environment, _momentCalendar) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _momentCalendar.default.extend({
+    globalAllowEmpty: !!Ember.get(_environment.default, 'moment.allowEmpty')
+  });
+});
+define('self-start-front-end/helpers/moment-duration', ['exports', 'ember-moment/helpers/moment-duration'], function (exports, _momentDuration) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -3394,17 +5056,81 @@ define('self-start-front-end/helpers/map', ['exports', 'ember-composable-helpers
   Object.defineProperty(exports, 'default', {
     enumerable: true,
     get: function () {
-      return _map.default;
-    }
-  });
-  Object.defineProperty(exports, 'map', {
-    enumerable: true,
-    get: function () {
-      return _map.map;
+      return _momentDuration.default;
     }
   });
 });
-define('self-start-front-end/helpers/next', ['exports', 'ember-composable-helpers/helpers/next'], function (exports, _next) {
+define('self-start-front-end/helpers/moment-format', ['exports', 'self-start-front-end/config/environment', 'ember-moment/helpers/moment-format'], function (exports, _environment, _momentFormat) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _momentFormat.default.extend({
+    globalAllowEmpty: !!Ember.get(_environment.default, 'moment.allowEmpty')
+  });
+});
+define('self-start-front-end/helpers/moment-from-now', ['exports', 'self-start-front-end/config/environment', 'ember-moment/helpers/moment-from-now'], function (exports, _environment, _momentFromNow) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _momentFromNow.default.extend({
+    globalAllowEmpty: !!Ember.get(_environment.default, 'moment.allowEmpty')
+  });
+});
+define('self-start-front-end/helpers/moment-from', ['exports', 'self-start-front-end/config/environment', 'ember-moment/helpers/moment-from'], function (exports, _environment, _momentFrom) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _momentFrom.default.extend({
+    globalAllowEmpty: !!Ember.get(_environment.default, 'moment.allowEmpty')
+  });
+});
+define('self-start-front-end/helpers/moment-subtract', ['exports', 'self-start-front-end/config/environment', 'ember-moment/helpers/moment-subtract'], function (exports, _environment, _momentSubtract) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _momentSubtract.default.extend({
+    globalAllowEmpty: !!Ember.get(_environment.default, 'moment.allowEmpty')
+  });
+});
+define('self-start-front-end/helpers/moment-to-date', ['exports', 'self-start-front-end/config/environment', 'ember-moment/helpers/moment-to-date'], function (exports, _environment, _momentToDate) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _momentToDate.default.extend({
+    globalAllowEmpty: !!Ember.get(_environment.default, 'moment.allowEmpty')
+  });
+});
+define('self-start-front-end/helpers/moment-to-now', ['exports', 'self-start-front-end/config/environment', 'ember-moment/helpers/moment-to-now'], function (exports, _environment, _momentToNow) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _momentToNow.default.extend({
+    globalAllowEmpty: !!Ember.get(_environment.default, 'moment.allowEmpty')
+  });
+});
+define('self-start-front-end/helpers/moment-to', ['exports', 'self-start-front-end/config/environment', 'ember-moment/helpers/moment-to'], function (exports, _environment, _momentTo) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _momentTo.default.extend({
+    globalAllowEmpty: !!Ember.get(_environment.default, 'moment.allowEmpty')
+  });
+});
+define('self-start-front-end/helpers/moment-unix', ['exports', 'ember-moment/helpers/unix'], function (exports, _unix) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -3413,13 +5139,26 @@ define('self-start-front-end/helpers/next', ['exports', 'ember-composable-helper
   Object.defineProperty(exports, 'default', {
     enumerable: true,
     get: function () {
-      return _next.default;
+      return _unix.default;
     }
   });
-  Object.defineProperty(exports, 'next', {
+  Object.defineProperty(exports, 'unix', {
     enumerable: true,
     get: function () {
-      return _next.next;
+      return _unix.unix;
+    }
+  });
+});
+define('self-start-front-end/helpers/moment', ['exports', 'ember-moment/helpers/moment'], function (exports, _moment) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _moment.default;
     }
   });
 });
@@ -3461,7 +5200,7 @@ define('self-start-front-end/helpers/not', ['exports', 'ember-truth-helpers/help
     }
   });
 });
-define('self-start-front-end/helpers/object-at', ['exports', 'ember-composable-helpers/helpers/object-at'], function (exports, _objectAt) {
+define('self-start-front-end/helpers/now', ['exports', 'ember-moment/helpers/now'], function (exports, _now) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -3470,34 +5209,65 @@ define('self-start-front-end/helpers/object-at', ['exports', 'ember-composable-h
   Object.defineProperty(exports, 'default', {
     enumerable: true,
     get: function () {
-      return _objectAt.default;
-    }
-  });
-  Object.defineProperty(exports, 'objectAt', {
-    enumerable: true,
-    get: function () {
-      return _objectAt.objectAt;
+      return _now.default;
     }
   });
 });
-define('self-start-front-end/helpers/optional', ['exports', 'ember-composable-helpers/helpers/optional'], function (exports, _optional) {
-  'use strict';
+define('self-start-front-end/helpers/number-of-mc', ['exports'], function (exports) {
+   'use strict';
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _optional.default;
-    }
-  });
-  Object.defineProperty(exports, 'optional', {
-    enumerable: true,
-    get: function () {
-      return _optional.optional;
-    }
-  });
+   Object.defineProperty(exports, "__esModule", {
+      value: true
+   });
+   exports.numberOfMC = numberOfMC;
+
+   var _slicedToArray = function () {
+      function sliceIterator(arr, i) {
+         var _arr = [];
+         var _n = true;
+         var _d = false;
+         var _e = undefined;
+
+         try {
+            for (var _i = arr[Symbol.iterator](), _s; !(_n = (_s = _i.next()).done); _n = true) {
+               _arr.push(_s.value);
+
+               if (i && _arr.length === i) break;
+            }
+         } catch (err) {
+            _d = true;
+            _e = err;
+         } finally {
+            try {
+               if (!_n && _i["return"]) _i["return"]();
+            } finally {
+               if (_d) throw _e;
+            }
+         }
+
+         return _arr;
+      }
+
+      return function (arr, i) {
+         if (Array.isArray(arr)) {
+            return arr;
+         } else if (Symbol.iterator in Object(arr)) {
+            return sliceIterator(arr, i);
+         } else {
+            throw new TypeError("Invalid attempt to destructure non-iterable instance");
+         }
+      };
+   }();
+
+   function numberOfMC(_ref) {
+      var _ref2 = _slicedToArray(_ref, 2),
+          numOps = _ref2[0],
+          curNum = _ref2[1];
+
+      return numOps > curNum;
+   }
+
+   exports.default = Ember.Helper.helper(numberOfMC);
 });
 define('self-start-front-end/helpers/or', ['exports', 'ember-truth-helpers/helpers/or'], function (exports, _or) {
   'use strict';
@@ -3531,38 +5301,6 @@ define('self-start-front-end/helpers/perform', ['exports', 'ember-concurrency/-h
 
   exports.default = Ember.Helper.helper(performHelper);
 });
-define('self-start-front-end/helpers/pipe-action', ['exports', 'ember-composable-helpers/helpers/pipe-action'], function (exports, _pipeAction) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _pipeAction.default;
-    }
-  });
-});
-define('self-start-front-end/helpers/pipe', ['exports', 'ember-composable-helpers/helpers/pipe'], function (exports, _pipe) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _pipe.default;
-    }
-  });
-  Object.defineProperty(exports, 'pipe', {
-    enumerable: true,
-    get: function () {
-      return _pipe.pipe;
-    }
-  });
-});
 define('self-start-front-end/helpers/pluralize', ['exports', 'ember-inflector/lib/helpers/pluralize'], function (exports, _pluralize) {
   'use strict';
 
@@ -3571,171 +5309,6 @@ define('self-start-front-end/helpers/pluralize', ['exports', 'ember-inflector/li
   });
   exports.default = _pluralize.default;
 });
-define('self-start-front-end/helpers/previous', ['exports', 'ember-composable-helpers/helpers/previous'], function (exports, _previous) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _previous.default;
-    }
-  });
-  Object.defineProperty(exports, 'previous', {
-    enumerable: true,
-    get: function () {
-      return _previous.previous;
-    }
-  });
-});
-define('self-start-front-end/helpers/queue', ['exports', 'ember-composable-helpers/helpers/queue'], function (exports, _queue) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _queue.default;
-    }
-  });
-  Object.defineProperty(exports, 'queue', {
-    enumerable: true,
-    get: function () {
-      return _queue.queue;
-    }
-  });
-});
-define('self-start-front-end/helpers/range', ['exports', 'ember-composable-helpers/helpers/range'], function (exports, _range) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _range.default;
-    }
-  });
-  Object.defineProperty(exports, 'range', {
-    enumerable: true,
-    get: function () {
-      return _range.range;
-    }
-  });
-});
-define('self-start-front-end/helpers/reduce', ['exports', 'ember-composable-helpers/helpers/reduce'], function (exports, _reduce) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _reduce.default;
-    }
-  });
-  Object.defineProperty(exports, 'reduce', {
-    enumerable: true,
-    get: function () {
-      return _reduce.reduce;
-    }
-  });
-});
-define('self-start-front-end/helpers/reject-by', ['exports', 'ember-composable-helpers/helpers/reject-by'], function (exports, _rejectBy) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _rejectBy.default;
-    }
-  });
-  Object.defineProperty(exports, 'rejectBy', {
-    enumerable: true,
-    get: function () {
-      return _rejectBy.rejectBy;
-    }
-  });
-});
-define('self-start-front-end/helpers/repeat', ['exports', 'ember-composable-helpers/helpers/repeat'], function (exports, _repeat) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _repeat.default;
-    }
-  });
-  Object.defineProperty(exports, 'repeat', {
-    enumerable: true,
-    get: function () {
-      return _repeat.repeat;
-    }
-  });
-});
-define('self-start-front-end/helpers/reverse', ['exports', 'ember-composable-helpers/helpers/reverse'], function (exports, _reverse) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _reverse.default;
-    }
-  });
-  Object.defineProperty(exports, 'reverse', {
-    enumerable: true,
-    get: function () {
-      return _reverse.reverse;
-    }
-  });
-});
-define('self-start-front-end/helpers/send', ['exports', 'ember-component-inbound-actions/helpers/send'], function (exports, _send) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _send.default;
-    }
-  });
-});
-define('self-start-front-end/helpers/shuffle', ['exports', 'ember-composable-helpers/helpers/shuffle'], function (exports, _shuffle) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _shuffle.default;
-    }
-  });
-  Object.defineProperty(exports, 'shuffle', {
-    enumerable: true,
-    get: function () {
-      return _shuffle.shuffle;
-    }
-  });
-});
 define('self-start-front-end/helpers/singularize', ['exports', 'ember-inflector/lib/helpers/singularize'], function (exports, _singularize) {
   'use strict';
 
@@ -3743,63 +5316,6 @@ define('self-start-front-end/helpers/singularize', ['exports', 'ember-inflector/
     value: true
   });
   exports.default = _singularize.default;
-});
-define('self-start-front-end/helpers/slice', ['exports', 'ember-composable-helpers/helpers/slice'], function (exports, _slice) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _slice.default;
-    }
-  });
-  Object.defineProperty(exports, 'slice', {
-    enumerable: true,
-    get: function () {
-      return _slice.slice;
-    }
-  });
-});
-define('self-start-front-end/helpers/sort-by', ['exports', 'ember-composable-helpers/helpers/sort-by'], function (exports, _sortBy) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _sortBy.default;
-    }
-  });
-  Object.defineProperty(exports, 'sortBy', {
-    enumerable: true,
-    get: function () {
-      return _sortBy.sortBy;
-    }
-  });
-});
-define('self-start-front-end/helpers/take', ['exports', 'ember-composable-helpers/helpers/take'], function (exports, _take) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _take.default;
-    }
-  });
-  Object.defineProperty(exports, 'take', {
-    enumerable: true,
-    get: function () {
-      return _take.take;
-    }
-  });
 });
 define('self-start-front-end/helpers/task', ['exports'], function (exports) {
   'use strict';
@@ -3834,7 +5350,7 @@ define('self-start-front-end/helpers/task', ['exports'], function (exports) {
 
   exports.default = Ember.Helper.helper(taskHelper);
 });
-define('self-start-front-end/helpers/titleize', ['exports', 'ember-cli-string-helpers/helpers/titleize'], function (exports, _titleize) {
+define('self-start-front-end/helpers/unix', ['exports', 'ember-moment/helpers/unix'], function (exports, _unix) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -3843,159 +5359,13 @@ define('self-start-front-end/helpers/titleize', ['exports', 'ember-cli-string-he
   Object.defineProperty(exports, 'default', {
     enumerable: true,
     get: function () {
-      return _titleize.default;
+      return _unix.default;
     }
   });
-  Object.defineProperty(exports, 'titleize', {
+  Object.defineProperty(exports, 'unix', {
     enumerable: true,
     get: function () {
-      return _titleize.titleize;
-    }
-  });
-});
-define('self-start-front-end/helpers/toggle-action', ['exports', 'ember-composable-helpers/helpers/toggle-action'], function (exports, _toggleAction) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _toggleAction.default;
-    }
-  });
-});
-define('self-start-front-end/helpers/toggle', ['exports', 'ember-composable-helpers/helpers/toggle'], function (exports, _toggle) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _toggle.default;
-    }
-  });
-  Object.defineProperty(exports, 'toggle', {
-    enumerable: true,
-    get: function () {
-      return _toggle.toggle;
-    }
-  });
-});
-define('self-start-front-end/helpers/truncate', ['exports', 'ember-cli-string-helpers/helpers/truncate'], function (exports, _truncate) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _truncate.default;
-    }
-  });
-  Object.defineProperty(exports, 'truncate', {
-    enumerable: true,
-    get: function () {
-      return _truncate.truncate;
-    }
-  });
-});
-define('self-start-front-end/helpers/underscore', ['exports', 'ember-cli-string-helpers/helpers/underscore'], function (exports, _underscore) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _underscore.default;
-    }
-  });
-  Object.defineProperty(exports, 'underscore', {
-    enumerable: true,
-    get: function () {
-      return _underscore.underscore;
-    }
-  });
-});
-define('self-start-front-end/helpers/union', ['exports', 'ember-composable-helpers/helpers/union'], function (exports, _union) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _union.default;
-    }
-  });
-  Object.defineProperty(exports, 'union', {
-    enumerable: true,
-    get: function () {
-      return _union.union;
-    }
-  });
-});
-define('self-start-front-end/helpers/uppercase', ['exports', 'ember-cli-string-helpers/helpers/uppercase'], function (exports, _uppercase) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _uppercase.default;
-    }
-  });
-  Object.defineProperty(exports, 'uppercase', {
-    enumerable: true,
-    get: function () {
-      return _uppercase.uppercase;
-    }
-  });
-});
-define('self-start-front-end/helpers/w', ['exports', 'ember-cli-string-helpers/helpers/w'], function (exports, _w) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _w.default;
-    }
-  });
-  Object.defineProperty(exports, 'w', {
-    enumerable: true,
-    get: function () {
-      return _w.w;
-    }
-  });
-});
-define('self-start-front-end/helpers/without', ['exports', 'ember-composable-helpers/helpers/without'], function (exports, _without) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _without.default;
-    }
-  });
-  Object.defineProperty(exports, 'without', {
-    enumerable: true,
-    get: function () {
-      return _without.without;
+      return _unix.unix;
     }
   });
 });
@@ -4067,15 +5437,21 @@ define('self-start-front-end/initializers/data-adapter', ['exports'], function (
     initialize: function initialize() {}
   };
 });
-define('self-start-front-end/initializers/debug', ['exports', '@html-next/vertical-collection/-debug'], function (exports) {
+define('self-start-front-end/initializers/doc', ['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
+  exports.initialize = initialize;
+  function initialize(application) {
+    application.inject('component', 'doc', 'service:doc');
+  }
+
   exports.default = {
-    name: 'vertical-collection-debug',
-    initialize: function initialize() {}
+    name: 'doc',
+
+    initialize: initialize
   };
 });
 define('self-start-front-end/initializers/ember-concurrency', ['exports', 'ember-concurrency'], function (exports) {
@@ -4150,6 +5526,23 @@ define('self-start-front-end/initializers/export-application-global', ['exports'
     initialize: initialize
   };
 });
+define('self-start-front-end/initializers/home', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.initialize = initialize;
+  function initialize(application) {
+    application.inject('component', 'home', 'service:home');
+  }
+
+  exports.default = {
+    name: 'home',
+
+    initialize: initialize
+  };
+});
 define('self-start-front-end/initializers/injectStore', ['exports'], function (exports) {
   'use strict';
 
@@ -4212,53 +5605,6 @@ define('self-start-front-end/initializers/transforms', ['exports'], function (ex
     initialize: function initialize() {}
   };
 });
-define('self-start-front-end/initializers/viewport-config', ['exports', 'self-start-front-end/config/environment', 'ember-in-viewport/utils/can-use-dom'], function (exports, _environment, _canUseDom) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.initialize = initialize;
-
-
-  var defaultConfig = {
-    viewportEnabled: true,
-    viewportSpy: false,
-    viewportScrollSensitivity: 1,
-    viewportRefreshRate: 100,
-    viewportListeners: [{ context: window, event: 'scroll.scrollable' }, { context: window, event: 'resize.resizable' }],
-    viewportTolerance: {
-      top: 0,
-      left: 0,
-      bottom: 0,
-      right: 0
-    }
-  };
-
-  if (_canUseDom.default) {
-    defaultConfig.viewportListeners.push({
-      context: document,
-      event: 'touchmove.scrollable'
-    });
-  }
-
-  var assign = Ember.assign || Ember.merge;
-
-  function initialize() {
-    var application = arguments[1] || arguments[0];
-    var _config$viewportConfi = _environment.default.viewportConfig,
-        viewportConfig = _config$viewportConfi === undefined ? {} : _config$viewportConfi;
-
-    var mergedConfig = assign({}, defaultConfig, viewportConfig);
-
-    application.register('config:in-viewport', mergedConfig, { instantiate: false });
-  }
-
-  exports.default = {
-    name: 'viewport-config',
-    initialize: initialize
-  };
-});
 define("self-start-front-end/instance-initializers/ember-data", ["exports", "ember-data/instance-initializers/initialize-store-service"], function (exports, _initializeStoreService) {
   "use strict";
 
@@ -4296,7 +5642,33 @@ define('self-start-front-end/mixins/promise-resolver', ['exports', 'ember-promis
     }
   });
 });
+define('self-start-front-end/models/answer', ['exports', 'ember-data'], function (exports, _emberData) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = _emberData.default.Model.extend({
+        question: _emberData.default.belongsTo('question', { async: true }),
+        patient: _emberData.default.belongsTo('patient', { async: true }),
+        form: _emberData.default.belongsTo('form', { async: true }),
+        answer: _emberData.default.attr()
+    });
+});
 define('self-start-front-end/models/appointment', ['exports', 'ember-data'], function (exports, _emberData) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _emberData.default.Model.extend({
+    date: _emberData.default.attr(),
+    reason: _emberData.default.attr(),
+    other: _emberData.default.attr(),
+    patient: _emberData.default.belongsTo('patient')
+  });
+});
+define('self-start-front-end/models/assesment-test', ['exports', 'ember-data'], function (exports, _emberData) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -4345,10 +5717,26 @@ define('self-start-front-end/models/exercise', ['exports', 'ember-data'], functi
     duration: _emberData.default.attr(),
     multimediaURL: _emberData.default.attr(),
     targetDate: _emberData.default.attr(),
+
     images: _emberData.default.hasMany('image')
     // rehabilitationPlan:DS.belongsTo('rehabilitationplan',{ async: true })
     // images:DS.attr()
+
   });
+});
+define('self-start-front-end/models/form', ['exports', 'ember-data'], function (exports, _emberData) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = _emberData.default.Model.extend({
+        name: _emberData.default.attr(),
+        description: _emberData.default.attr(),
+        author: _emberData.default.attr(),
+        answers: _emberData.default.hasMany('answer'),
+        questions: _emberData.default.hasMany('question')
+    });
 });
 define('self-start-front-end/models/gender', ['exports', 'ember-data'], function (exports, _emberData) {
   'use strict';
@@ -4374,6 +5762,7 @@ define('self-start-front-end/models/image', ['exports', 'ember-data'], function 
     rawSize: _emberData.default.attr('number'),
     imageData: _emberData.default.attr(),
     exercise: _emberData.default.hasMany('exercise')
+
   });
 });
 define('self-start-front-end/models/marital-status', ['exports', 'ember-data'], function (exports, _emberData) {
@@ -4384,6 +5773,7 @@ define('self-start-front-end/models/marital-status', ['exports', 'ember-data'], 
   });
   exports.default = _emberData.default.Model.extend({
     // status
+
     name: _emberData.default.attr()
   });
 });
@@ -4410,9 +5800,28 @@ define('self-start-front-end/models/patient', ['exports', 'ember-data'], functio
     gender: _emberData.default.attr(),
     phoneNumber: _emberData.default.attr(),
     postalCode: _emberData.default.attr(),
+    appointments: _emberData.default.hasMany('appointment', { async: true }),
     account: _emberData.default.attr()
 
   });
+});
+define('self-start-front-end/models/physiotherapest', ['exports', 'ember-data'], function (exports, _emberData) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = _emberData.default.Model.extend({
+        ID: _emberData.default.attr(),
+        familyName: _emberData.default.attr(),
+        givenName: _emberData.default.attr(),
+        email: _emberData.default.attr(),
+        dateHired: _emberData.default.attr(),
+        dateFired: _emberData.default.attr(),
+        treatment: _emberData.default.attr(),
+        account: _emberData.default.attr(),
+        appointments: _emberData.default.hasMany('appointment', { async: true })
+    });
 });
 define('self-start-front-end/models/province', ['exports', 'ember-data'], function (exports, _emberData) {
   'use strict';
@@ -4425,6 +5834,56 @@ define('self-start-front-end/models/province', ['exports', 'ember-data'], functi
     name: _emberData.default.attr(),
     country: _emberData.default.belongsTo('country', { async: true }), //1 to 1
     cities: _emberData.default.hasMany('city', { async: true }) //1 to many
+  });
+});
+define('self-start-front-end/models/question-order', ['exports', 'ember-data'], function (exports, _emberData) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = _emberData.default.Model.extend({
+        question: _emberData.default.belongsTo('question'),
+        form: _emberData.default.belongsTo('form'),
+        order: _emberData.default.attr()
+    });
+});
+define('self-start-front-end/models/question', ['exports', 'ember-data'], function (exports, _emberData) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _emberData.default.Model.extend({
+    questionText: _emberData.default.attr(),
+    helpDescription: _emberData.default.attr(),
+    Order: _emberData.default.attr('number'),
+    type: _emberData.default.attr(),
+    optionNumber: _emberData.default.attr('number'),
+    optionString: _emberData.default.attr(),
+    mc: _emberData.default.attr('boolean'),
+    sa: _emberData.default.attr('boolean'),
+    tf: _emberData.default.attr('boolean'),
+    ra: _emberData.default.attr('boolean'),
+    answers: _emberData.default.hasMany('answer'),
+    forms: _emberData.default.hasMany('form')
+  });
+});
+define('self-start-front-end/models/rehabilitationplan', ['exports', 'ember-data'], function (exports, _emberData) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _emberData.default.Model.extend({
+
+    planName: _emberData.default.attr(),
+    description: _emberData.default.attr(),
+    physioID: _emberData.default.attr(),
+    goal: _emberData.default.attr(),
+    timeToComplete: _emberData.default.attr(),
+    exercises: _emberData.default.hasMany('exercise', { async: true }),
+    assessmentTests: _emberData.default.hasMany('assesmentTest', { async: true })
   });
 });
 define('self-start-front-end/resolver', ['exports', 'ember-resolver'], function (exports, _emberResolver) {
@@ -4451,14 +5910,23 @@ define('self-start-front-end/router', ['exports', 'self-start-front-end/config/e
   Router.map(function () {
     this.route('home', { path: '/' });
     this.route('patients');
+    this.route('rehabplans');
+    this.route('admin');
+    this.route('questions');
+    this.route('forms');
     this.route('province');
     this.route('manage-selections');
     this.route('city');
+    this.route('marital-status');
+    this.route('new-rehabplans');
+    this.route('physiotherapists');
+    this.route('new-physiotherapist');
+    this.route('update-physiotherapist', { path: 'physiotherapist/:physiotherapest_id' });
+    this.route('formDisplay');
     this.route('update-patient', { path: 'patient/:patient_id' });
     this.route('new-patient');
     this.route('appointment');
     this.route('patient-file');
-    this.route('admin');
     this.route('exercises');
     this.route('images');
     this.route('register');
@@ -4482,7 +5950,11 @@ define('self-start-front-end/routes/appointment', ['exports'], function (exports
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.Route.extend({});
+  exports.default = Ember.Route.extend({
+    model: function model() {
+      return this.store.findAll('appointment');
+    }
+  });
 });
 define('self-start-front-end/routes/city', ['exports'], function (exports) {
   'use strict';
@@ -4499,6 +5971,18 @@ define('self-start-front-end/routes/dashboard', ['exports'], function (exports) 
     value: true
   });
   exports.default = Ember.Route.extend({});
+});
+define('self-start-front-end/routes/exercise', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Route.extend({
+    model: function model() {
+      return this.store.findAll('exercise');
+    }
+  });
 });
 define('self-start-front-end/routes/exercises', ['exports'], function (exports) {
   'use strict';
@@ -4517,6 +6001,39 @@ define('self-start-front-end/routes/exercises', ['exports'], function (exports) 
       this.store.findAll('image');
     }
   });
+});
+define('self-start-front-end/routes/form-display', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Route.extend({
+        model: function model() {
+            return Ember.RSVP.hash({
+                form: this.store.findAll('form'),
+                question: this.store.findAll('question')
+            });
+        }
+    });
+});
+define('self-start-front-end/routes/forms', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Route.extend({
+        model: function model() {
+            return Ember.RSVP.hash({
+                form: this.store.findAll('form'),
+                question: this.store.findAll('question')
+            });
+        },
+        afterModel: function afterModel() {
+            this.store.findAll('question');
+        }
+    });
 });
 define('self-start-front-end/routes/home', ['exports'], function (exports) {
   'use strict';
@@ -4566,6 +6083,14 @@ define('self-start-front-end/routes/message', ['exports'], function (exports) {
   });
   exports.default = Ember.Route.extend({});
 });
+define('self-start-front-end/routes/new-exercise', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Route.extend({});
+});
 define('self-start-front-end/routes/new-patient', ['exports'], function (exports) {
   'use strict';
 
@@ -4577,6 +6102,14 @@ define('self-start-front-end/routes/new-patient', ['exports'], function (exports
       return this.store.findAll('patient');
     }
   });
+});
+define('self-start-front-end/routes/new-rehabplans', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Route.extend({});
 });
 define('self-start-front-end/routes/patient-file', ['exports'], function (exports) {
   'use strict';
@@ -4598,17 +6131,37 @@ define('self-start-front-end/routes/patients', ['exports'], function (exports) {
     }
   });
 });
+define('self-start-front-end/routes/physiotherapists', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Route.extend({
+        model: function model() {
+            return this.store.findAll('physiotherapest');
+        }
+    });
+});
 define('self-start-front-end/routes/province', ['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.Route.extend({
-    model: function model() {
-      return this.store.findAll('province');
-    }
-  });
+  exports.default = Ember.Route.extend({});
+});
+define('self-start-front-end/routes/questions', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Route.extend({
+        model: function model() {
+            return this.store.findAll('question');
+        }
+    });
 });
 define('self-start-front-end/routes/register', ['exports'], function (exports) {
   'use strict';
@@ -4619,6 +6172,18 @@ define('self-start-front-end/routes/register', ['exports'], function (exports) {
   exports.default = Ember.Route.extend({
     model: function model() {
       return this.store.findAll('patient');
+    }
+  });
+});
+define('self-start-front-end/routes/rehabplans', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Route.extend({
+    model: function model() {
+      return this.store.findAll('rehabilitationplan');
     }
   });
 });
@@ -4667,6 +6232,1336 @@ define('self-start-front-end/services/ajax', ['exports', 'ember-ajax/services/aj
     }
   });
 });
+define('self-start-front-end/services/doc', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  };
+
+  exports.default = Ember.Service.extend({
+    didInsertElement: function didInsertElement() {
+      this._super.apply(this, arguments);
+
+      // namespace
+      window.semantic = {
+        handler: {}
+      };
+
+      // selector cache
+      var $document = Ember.$(document),
+          $sortableTables = Ember.$('.sortable.table'),
+          $sticky = Ember.$('.ui.sticky'),
+          $tocSticky = Ember.$('.toc .ui.sticky'),
+          $themeDropdown = Ember.$('.theme.dropdown'),
+          $ui = Ember.$('.ui').not('.hover, .down'),
+          $swap = Ember.$('.theme.menu .item'),
+          $menu = Ember.$('#toc'),
+          $hideMenu = Ember.$('#toc .hide.item'),
+          $search = Ember.$('#search'),
+          $sortTable = Ember.$('.sortable.table'),
+          $demo = Ember.$('.demo'),
+          $begSegment = Ember.$('.beg.segment'),
+          $fullHeightContainer = Ember.$('.pusher > .full.height'),
+          $container = Ember.$('.main.container'),
+          $allHeaders = Ember.$('.main.container > h2, .main.container > .tab > h2, .main.container > .tab > .examples h2'),
+          $sectionHeaders = $container.children('h2'),
+          $followMenu = $container.find('.following.menu'),
+          $sectionExample = $container.find('.example'),
+          $exampleHeaders = $sectionExample.children('h4'),
+          $footer = Ember.$('.page > .footer'),
+          $menuMusic = Ember.$('.ui.main.menu .music.item'),
+          $menuPopup = Ember.$('.ui.main.menu .popup.item'),
+          $pageDropdown = Ember.$('.ui.main.menu .page.dropdown'),
+          $pageTabs = Ember.$('.masthead.tab.segment .tabs.menu .item'),
+          $languageDropdown = Ember.$('.language.dropdown'),
+          $chineseModal = Ember.$('.chinese.modal'),
+          $languageModal = Ember.$('.language.modal'),
+          $downloadPopup = Ember.$('.download.button'),
+          $downloads = Ember.$('.download.popup'),
+          $downloadFramework = Ember.$('.framework.column .button'),
+          $downloadInput = Ember.$('.download.popup input'),
+          $downloadStandalone = Ember.$('.standalone.column .button'),
+          $helpPopup = Ember.$('.header .help'),
+          $example = Ember.$('.example'),
+          $popupExample = $example.not('.no'),
+          $shownExample = $example.filter('.shown'),
+          $prerenderedExample = $example.has('.ui.checkbox, .ui.dropdown, .ui.search, .ui.progress, .ui.rating, .ui.dimmer, .ui.embed'),
+          $visibilityExample = $example.filter('.visiblity').find('.overlay, .demo.segment, .items img'),
+          $sidebarButton = Ember.$('.fixed.launch.button'),
+          $code = Ember.$('div.code').not('.existing'),
+          $existingCode = Ember.$('.existing.code'),
+          expertiseLevel = Ember.$.cookie !== undefined ? Ember.$.cookie('expertiseLevel') || 0 : 0,
+          languageDropdownUsed = false,
+          metadata,
+          requestAnimationFrame = window.requestAnimationFrame || window.mozRequestAnimationFrame || window.webkitRequestAnimationFrame || window.msRequestAnimationFrame || function (callback) {
+        setTimeout(callback, 0);
+      },
+
+
+      // alias
+      handler;
+
+      // event handlers
+      handler = {
+
+        getMetadata: function getMetadata() {
+          Ember.$.api({
+            debug: false,
+            on: 'now',
+            url: '/metadata.json',
+            cache: 'local',
+            onSuccess: function onSuccess(response) {
+              metadata = response;
+            }
+          });
+        },
+
+        showBeg: function showBeg() {
+          if (window.localStorage !== undefined) {
+            $begSegment.find('.delete.icon').on('click', handler.hideBeg);
+            if (!window.localStorage.getItem('begDismissed')) {
+              $begSegment.transition('slide down');
+            }
+          }
+        },
+
+        hideBeg: function hideBeg() {
+          $begSegment.transition('slide down');
+          if (window.localStorage !== undefined) {
+            window.localStorage.setItem('begDismissed', true);
+          }
+        },
+
+        createIcon: function createIcon() {
+          $example.each(function () {
+            var $insertPoint = Ember.$(this).is('.another') ? Ember.$(this).children().eq(0) : Ember.$(this).children().eq(1);
+            Ember.$('<i/>').addClass('fitted icon code').insertBefore($insertPoint);
+          }).find('i.code').on('click', handler.createCode);
+        },
+
+        shortcut: {
+          modal: function modal() {
+            var $modal = Ember.$('#shortcuts'),
+                shortcutModalExists,
+                shortcut,
+                index;
+            if (!shortcutModalExists) {
+              var html = '<div class="ui small modal" id="shortcuts">';
+              html += '<div class="header">Keyboard Shortcuts</div>';
+              html += '<div class="content">';
+              html += '<table class="ui striped basic table">';
+              for (index = 0; index < shortcuts.length; index++) {
+                shortcut = shortcuts[index];
+                html += '<tr><td><b>' + shortcut.aka + '</b></td><td>' + shortcut.description + '</td></tr>';
+              }
+              html += '</table>';
+              html += '<div class="actions"><div class="ui small teal button">OK</div></div>';
+              html += '</div></div>';
+              Ember.$('body').append(html);
+              $modal = Ember.$('#shortcuts');
+            }
+            Ember.$('#shortcuts').modal('show');
+          }
+        },
+
+        createWaypoints: function createWaypoints() {
+          $sectionHeaders.visibility({
+            observeChanges: false,
+            once: false,
+            offset: 50,
+            onTopPassed: handler.activate.section,
+            onTopPassedReverse: handler.activate.previous
+          });
+
+          $sectionExample.visibility({
+            observeChanges: false,
+            once: false,
+            offset: 50,
+            onTopPassed: handler.activate.example,
+            onBottomPassedReverse: handler.activate.example
+          });
+          $footer.visibility({
+            observeChanges: false,
+            once: false,
+            onBottomVisible: function onBottomVisible(calculations) {
+              var $title = $followMenu.find('> .item > .title').last();
+              $followMenu.accordion('open', $title);
+            }
+          });
+        },
+
+        activate: {
+          previous: function previous() {
+            var $menuItems = $followMenu.children('.item'),
+                $section = $menuItems.filter('.active'),
+                index = $menuItems.index($section);
+            if ($section.prev().length > 0) {
+              $section.removeClass('active').prev('.item').addClass('active');
+              $followMenu.accordion('open', index - 1);
+            }
+          },
+          accordion: function accordion() {
+            var $section = Ember.$(this),
+                index = $sectionHeaders.index($section),
+                $followSection = $followMenu.children('.item'),
+                $activeSection = $followSection.eq(index);
+          },
+          section: function section() {
+            var $section = Ember.$(this),
+                index = $sectionHeaders.index($section),
+                $followSection = $followMenu.children('.item'),
+                $activeSection = $followSection.eq(index),
+                isActive = $activeSection.hasClass('active');
+            if (!isActive) {
+              $followSection.filter('.active').removeClass('active');
+              $activeSection.addClass('active');
+              $followMenu.accordion('open', index);
+            }
+          },
+          example: function example() {
+            var $section = Ember.$(this).children('h4').eq(0),
+                index = $exampleHeaders.index($section),
+                $followSection = $followMenu.find('.menu > .item'),
+                $activeSection = $followSection.eq(index),
+                inClosedTab = Ember.$(this).closest('.tab:not(.active)').length > 0,
+                anotherExample = Ember.$(this).filter('.another.example').length > 0,
+                isActive = $activeSection.hasClass('active');
+            if (index !== -1 && !inClosedTab && !anotherExample && !isActive) {
+              $followSection.filter('.active').removeClass('active');
+              $activeSection.addClass('active');
+            }
+          }
+        },
+
+        translatePage: function translatePage(languageCode, text, $choice) {
+          languageDropdownUsed = true;
+          if (window.Transifex !== undefined) {
+            window.Transifex.live.translateTo(languageCode, true);
+          }
+        },
+
+        showLanguageModal: function showLanguageModal(languageCode) {
+          var $choice = $languageDropdown.find('[data-value="' + languageCode + '"]').eq(0),
+              percent = $choice.data('percent') || 0,
+              text = $choice.text();
+          // dont trigger on translate event every page load
+          if (languageDropdownUsed) {
+            if (languageCode == 'zh' && window.location.host.replace('www.', '') !== 'semantic-ui.cn') {
+              $chineseModal.modal({
+                closable: false
+              }).modal('show');
+            } else if (percent < 100) {
+              languageDropdownUsed = false;
+              $languageModal.modal().find('.header .name').html(text).end().find('.complete').html(percent).end();
+              $languageModal.modal('show', function () {
+                Ember.$('.language.modal .progress .bar').css('width', percent + '%');
+              });
+            }
+          }
+        },
+
+        tryCreateMenu: function tryCreateMenu(event) {
+          if (Ember.$(window).width() > 640 && !Ember.$('body').hasClass('basic')) {
+            if ($container.length > 0 && $container.find('.following.menu').length === 0) {
+              handler.createMenu();
+              handler.createWaypoints();
+              Ember.$(window).off('resize.menu');
+            }
+          }
+        },
+
+        createAnchors: function createAnchors() {
+          $allHeaders.each(function () {
+            var $section = Ember.$(this),
+                text = handler.getText($section),
+                safeName = handler.getSafeName(text),
+                id = window.escape(safeName),
+                $anchor = Ember.$('<a />').addClass('anchor').attr('id', id);
+            $section.append($anchor);
+          });
+          $example.each(function () {
+            var $title = Ember.$(this).children('h4').eq(0),
+                text = handler.getText($title),
+                safeName = handler.getSafeName(text),
+                id = window.escape(safeName),
+                $anchor = Ember.$('<a />').addClass('anchor').attr('id', id);
+            if ($title.length > 0) {
+              $title.after($anchor);
+            }
+          });
+        },
+
+        getPageTitle: function getPageTitle() {
+          return Ember.$.trim(Ember.$('h1').eq(0).contents().filter(function () {
+            return this.nodeType == 3;
+          }).text().toLowerCase());
+        },
+        getSafeName: function getSafeName(text) {
+          return text.replace(/\s+/g, '-').replace(/[^-,'A-Za-z0-9]+/g, '').toLowerCase();
+        },
+
+        getText: function getText($element) {
+          $element = $element.find('a').not('.label, .anchor').length > 0 ? $element.find('a') : $element;
+          var $text = $element.contents().filter(function () {
+            return this.nodeType == 3;
+          });
+          return $text.length > 0 ? $text[0].nodeValue.trim() : $element.find('a').text().trim();
+        },
+
+        createMenu: function createMenu() {
+          // grab each h3
+          var html = '',
+              pageTitle = handler.getPageTitle(),
+              title = pageTitle.charAt(0).toUpperCase() + pageTitle.slice(1),
+              $sticky,
+              $rail;
+          $sectionHeaders.each(function (index) {
+            var $currentHeader = Ember.$(this),
+                $nextElements = $currentHeader.nextUntil('h2'),
+                $examples = $nextElements.find('.example:not(.another)').addBack().filter('.example:not(.another)'),
+                activeClass = index === 0 ? 'active ' : '',
+                text = handler.getText($currentHeader),
+                safeName = handler.getSafeName(text),
+                id = window.escape(safeName),
+                $anchor = Ember.$('<a />').addClass('anchor').attr('id', id);
+            html += '<div class="item">';
+            if ($examples.length === 0) {
+              html += '<a class="' + activeClass + 'title" href="#' + id + '"><b>' + Ember.$(this).text() + '</b></a>';
+            } else {
+              html += '<a class="' + activeClass + 'title"><i class="dropdown icon"></i> <b>' + Ember.$(this).text() + '</b></a>';
+            }
+            if ($examples.length > 0) {
+              html += '<div class="' + activeClass + 'content menu">';
+              $examples.each(function () {
+                var $title = Ember.$(this).children('h4').eq(0),
+                    text = handler.getText($title),
+                    safeName = handler.getSafeName(text),
+                    id = window.escape(safeName),
+                    $anchor = Ember.$('<a />').addClass('anchor').attr('id', id);
+                if ($title.length > 0) {
+                  html += '<a class="item" href="#' + id + '">' + text + '</a>';
+                }
+              });
+              html += '</div>';
+            }
+            html += '</div>';
+          });
+          $followMenu = Ember.$('<div />').addClass('ui vertical following fluid accordion text menu').html(html);
+          /* Advert
+          var $advertisement = $('<div />')
+            .addClass('advertisement')
+            .html('<script type="text/javascript" src="//cdn.carbonads.com/carbon.js?zoneid=1673&serve=C6AILKT&placement=semanticuicom" id="_carbonads_js"></script>')
+          ;
+          */
+          $sticky = Ember.$('<div />').addClass('ui sticky').html($followMenu)
+          //.prepend($advertisement)
+          .prepend('<h4 class="ui header">' + title + '</h4>');
+          $rail = Ember.$('<div />').addClass('ui dividing right rail').html($sticky).prependTo($container);
+          requestAnimationFrame(function () {
+            $sticky.sticky({
+              silent: true,
+              context: $container,
+              container: Ember.$('html'),
+              offset: 30
+            });
+            $followMenu.accordion({
+              exclusive: false,
+              animateChildren: false,
+              onChange: function onChange() {
+                Ember.$('.ui.sticky').sticky('refresh');
+              }
+            }).find('.menu a[href], .title[href]').on('click', handler.scrollTo);
+          });
+        },
+
+        scrollTo: function scrollTo(event) {
+          var id = Ember.$(this).attr('href').replace('#', ''),
+              $element = Ember.$('#' + id),
+              position = $element.offset().top + 10;
+          $element.addClass('active');
+          Ember.$('html, body').animate({
+            scrollTop: position
+          }, 500);
+          location.hash = '#' + id;
+          event.stopImmediatePropagation();
+          event.preventDefault();
+          return false;
+        },
+
+        less: {
+
+          parseFile: function parseFile(content) {
+            var variables = {},
+                lines = content.match(/^\s*(@[\s|\S]+?;)/gm),
+                name,
+                value;
+            if (lines) {
+              Ember.$.each(lines, function (index, line) {
+                // clear whitespace
+                line = Ember.$.trim(line);
+                // match variables only
+                if (line[0] == '@') {
+                  name = line.match(/^@(.+?):/);
+                  value = line.match(/:\s*([\s|\S]+?;)/);
+                  if (Ember.$.isArray(name) && name.length >= 2 && Ember.$.isArray(value) && value.length >= 2) {
+                    name = name[1];
+                    value = value[1];
+                    variables[name] = value;
+                  }
+                }
+              });
+            }
+            console.log(variables);
+            return variables;
+          },
+
+          changeTheme: function changeTheme(theme) {
+            var $themeDropdown = Ember.$(this),
+                element = $themeDropdown.data('element'),
+                urlData = {
+              theme: _typeof(theme === 'string') ? theme.toLowerCase() : theme,
+              type: $themeDropdown.data('type'),
+              element: $themeDropdown.data('element')
+            },
+                variables = {
+              theme: urlData.theme
+            };
+            variables[element] = urlData.theme;
+            window.less.modifyVars(variables);
+
+            $themeDropdown.api({
+              on: 'now',
+              debug: true,
+              action: 'getVariables',
+              dataType: 'text',
+              urlData: urlData,
+              onSuccess: function onSuccess(content) {
+                window.less.modifyVars(handler.less.parseFile(content));
+                $themeDropdown.api({
+                  on: 'now',
+                  action: 'getOverrides',
+                  dataType: 'text',
+                  urlData: urlData,
+                  onSuccess: function onSuccess(content) {
+                    if (Ember.$('style.override').length > 0) {
+                      Ember.$('style.override').remove();
+                    }
+                    console.log(content);
+                    Ember.$('<style>' + content + '</style>').addClass('override').appendTo('body');
+                    $sticky.sticky('refresh');
+                  }
+                });
+              }
+            });
+          }
+
+        },
+
+        create: {
+          examples: function examples(json) {
+            var types = json['Types'],
+                text = json['Text'],
+                states = json['States'],
+                variations = json['Variations'],
+                $element,
+                html;
+            Ember.$.each(types, function (name, type) {
+              html += '<h2 class="ui dividing header">' + name + '</h2>';
+              if (Ember.$.isPlainObject(type)) {
+                Ember.$.each(type, function (name, subType) {
+                  $element = Ember.$.zc(subType);
+                  $element = handler.create.text($element, text);
+                  html += '<h3 class="ui header">' + name + '</h3>';
+                  html += handler.create.variations($element, variations);
+                });
+              } else {
+                $element = Ember.$.zc(type);
+                $element = handler.create.text($element);
+                html += handler.create.variations($element, variations);
+              }
+            });
+            // Each TYPE
+            //   show type name
+            //   html = koan (html)
+            //   each text
+            //     find label
+            //     if(obj)
+            //       replace random text
+            //     else
+            //       replace text
+            //   end
+            //   Each variation
+            //     (if obj)
+            //       each
+            //         add class
+            //     (else)
+            //       add class
+            //     label = property
+            //     class = class
+            //     show html
+            //   end
+            // end
+          },
+          element: function element(koan, type, text, variation) {},
+          variations: function variations($element, _variations) {
+            Ember.$.each(_variations, function (name, variation) {});
+          },
+          text: function text($element, _text) {
+            Ember.$.each(_text, function (selector, text) {
+              $element.find(selector).text(text);
+            });
+            return $element;
+          }
+        },
+
+        openMusic: function openMusic() {
+          var url = 'http://stratus.soundcloud.com/player?links=https://soundcloud.com/into-the-light/sets/sui-2&popup=true',
+              newWindow = window.open(url, 'name', 'height=196,width=733');
+          if (window.focus) {
+            newWindow.focus();
+          }
+        },
+
+        getIndent: function getIndent(text) {
+          var lines = text.split("\n"),
+              firstLine = lines[0] === '' ? lines[1] : lines[0],
+              spacesPerIndent = 2,
+              leadingSpaces = firstLine !== undefined ? firstLine.length - firstLine.replace(/^\s*/g, '').length : false,
+              indent;
+          if (!leadingSpaces) {
+            return $pageTabs.length > 0 ? 6 : 4;
+          }
+          if (leadingSpaces !== 0) {
+            indent = leadingSpaces;
+          } else {
+            // string has already been trimmed, get first indented line and subtract 2
+            Ember.$.each(lines, function (index, line) {
+              leadingSpaces = line.length - line.replace(/^\s*/g, '').length;
+              if (leadingSpaces !== 0) {
+                indent = leadingSpaces - spacesPerIndent;
+                return false;
+              }
+            });
+          }
+          return indent || 4;
+        },
+
+        generateCode: function generateCode() {
+          var $example = Ember.$(this).closest('.example'),
+              $annotation = $example.find('.annotation'),
+              $code = $annotation.find('.code'),
+              $intro = $example.children().not('.ignored, h4:first-child').filter('.ui, i:not(.code)').eq(0).prevAll(),
+              $ignored = Ember.$('i.code:last-child, .wireframe, .anchor, .code, .existing, .instructive, .language.label, .annotation, br, .ignore, .ignored'),
+              $demo = $example.children().not($intro).not($ignored),
+              code = '';
+          if ($code.length === 0) {
+            $demo.each(function () {
+              var $this = Ember.$(this).clone(false),
+                  $wireframe = $this.find('.wireframe').add($this.filter('.wireframe'));
+              $wireframe.each(function () {
+                var src = Ember.$(this).attr('src'),
+                    image = src.search('image') !== -1,
+                    paragraph = src.search('paragraph') !== -1;
+                if (paragraph) {
+                  Ember.$(this).replaceWith('<p></p>');
+                } else if (image) {
+                  Ember.$(this).replaceWith('<img>');
+                }
+              });
+
+              // remove wireframe images
+              $this.find('.wireframe').remove();
+
+              if ($this.not('br').not('.wireframe')) {
+                // allow inline styles only with this one class
+                if ($this.is('.my-container')) {
+                  code += $this.get(0).outerHTML + "\n";
+                } else {
+                  code += $this.removeAttr('style').get(0).outerHTML + "\n";
+                }
+              }
+            });
+          }
+          $example.data('code', code);
+          return code;
+        },
+
+        copyCode: function copyCode() {
+          Ember.$(this).popup('change content', 'Copied to clipboard');
+        },
+
+        createCode: function createCode() {
+          var $example = Ember.$(this).closest('.example'),
+              $intro = $example.children().not('.ignored, h4:first-child').filter('.ui, i:not(.code)').eq(0).prevAll(),
+              $annotation = $example.find('.annotation'),
+              $code = $annotation.find('.code'),
+              $html = $example.children('.html'),
+              $ignoredContent = Ember.$('.ui.popup, i.code:last-child, .anchor, .code, .existing.segment, .instructive, .language.label, .annotation, .ignore, style, script, .ignored'),
+              $demo = $example.children().not($intro).not($ignoredContent),
+              code = $example.data('code') || Ember.$.proxy(handler.generateCode, this)(),
+              $copyCode,
+              $label;
+
+          // process existing code first
+          if ($code.hasClass('existing')) {
+            $code.removeClass('existing');
+            Ember.$.proxy(handler.initializeCode, $code)(true);
+          }
+
+          // create annotation wrapper
+          if ($annotation.length === 0) {
+            $annotation = Ember.$('<div/>').addClass('annotation').hide().insertAfter($demo.last());
+          }
+
+          if ($html.length === 0) {
+            $html = Ember.$('<div class="html">').insertBefore($annotation);
+            $label = Ember.$('<div class="ui top attached label">').html('Example <i data-content="Copy code" class="copy link icon"></i>');
+            $copyCode = $label.find('i.copy');
+            $copyCode.on('click', handler.copyCode).popup({
+              variation: 'inverted',
+              distanceAway: 6
+            });
+            $label.prependTo($html);
+            new Clipboard($copyCode.get(0), {
+              text: function text() {
+                var code = $copyCode.closest('.example').data('code') || '';
+                return handler.formatCode(code);
+              }
+            });
+            if ($demo.length === 0) {
+              $html.addClass('empty');
+            } else {
+              $demo.detach().prependTo($html);
+            }
+          }
+
+          // create code inside annotation wrapper
+          if ($example.find('.instructive').length === 0) {
+            $code = Ember.$('<div/>').data('type', 'html').addClass('code').html(code).hide().appendTo($annotation);
+            Ember.$.proxy(handler.initializeCode, $code)(true);
+          }
+          if ($annotation.hasClass('visible')) {
+            $annotation.transition('hide');
+            $html.removeClass('ui top attached segment');
+          } else {
+            $html.addClass('ui top attached segment');
+            $intro.css('display', '');
+            $annotation.transition('show');
+          }
+          setTimeout(function () {
+            handler.refreshSticky();
+          }, 400);
+        },
+
+        refreshSticky: function refreshSticky() {
+          $sectionHeaders.visibility('refresh');
+          $sectionExample.visibility('refresh');
+          Ember.$('.ui.sticky').sticky('refresh');
+          $footer.visibility('refresh');
+          $visibilityExample.visibility('refresh');
+        },
+
+        createAnnotation: function createAnnotation() {
+          if (!Ember.$(this).data('type')) {
+            Ember.$(this).data('type', 'html');
+          }
+          Ember.$(this).wrap('<div class="annotation">').parent().hide();
+        },
+
+        makeCode: function makeCode() {
+          if (window.hljs !== undefined) {
+            $code.filter(':visible').each(handler.initializeCode);
+            $existingCode.each(handler.createAnnotation);
+          } else {
+            console.log('Syntax highlighting not found');
+          }
+        },
+
+        highlightClasses: function highlightClasses($code) {
+          var $closestExample = $code.closest('.example'),
+              $example = $closestExample.length === 0 ? $code.closest('.segment').prevAll('.example').not('.another').eq(0) : $closestExample.hasClass('another') ? $closestExample.prevAll('.example').not('.another').eq(0) : $closestExample,
+              $header = $example.find('h4').eq(0),
+              $attributes = $code.find('.attribute, .class'),
+              $tags = $code.find('.title'),
+              pageName = handler.getPageTitle(),
+              name = handler.getText($header).toLowerCase(),
+              classes = $example.data('class') || '',
+              tags = $example.data('tag') || false,
+              useContent = $example.data('use-content') || false;
+          // Add title
+          if (name) {
+            if (name == pageName) {
+              name = 'ui ' + name;
+            }
+            classes = classes === '' ? name : classes + ',' + name;
+          }
+          // Add common variations
+          classes = classes.replace('text alignment', "left aligned, right aligned, justified, center aligned");
+          classes = classes.replace('floated', "right floated,left floated,floated");
+          classes = classes.replace('floating', "right floated,left floated,floated");
+          classes = classes.replace('horizontally aligned', "left aligned, center aligned, right aligned, justified");
+          classes = classes.replace('vertically aligned', "top aligned, middle aligned, bottom aligned");
+          classes = classes.replace('vertically attached', "attached");
+          classes = classes.replace('horizontally attached', "attached");
+          classes = classes.replace('padded', "very padded, padded");
+          classes = classes.replace('relaxed', "very relaxed, relaxed");
+          classes = classes.replace('attached', "left attached,right attached,top attached,bottom attached,attached");
+          classes = classes.replace('wide', "one wide,two wide,three wide,four wide,five wide,six wide,seven wide,eight wide,nine wide,ten wide,eleven wide,twelve wide,thirteen wide,fourteen wide,fifteen wide,sixteen wide");
+          classes = classes.replace('count', "one,two,three,four,five,six,seven,eight,nine,ten,eleven,twelve,thirteen,fourteen,fifteen,sixteen");
+          classes = classes.replace('column count', "one column,two column,three column,four column,five column,six column,seven column,eight column,nine column,ten column,eleven column,twelve column,thirteen column,fourteen column,fifteen column,sixteen column");
+          classes = classes.replace('evenly divided', "one,two,three,four,five,six,seven,eight,nine,ten,eleven,twelve,thirteen,fourteen,fifteen,sixteen");
+          classes = classes.replace('size', "mini,tiny,small,medium,large,big,huge,massive");
+          classes = classes.replace('emphasis', "primary,secondary,tertiary");
+          classes = classes.replace('colored', "red,orange,yellow,olive,green,teal,blue,violet,purple,pink,brown,grey,black");
+          classes = classes !== '' ? classes.split(',') : [];
+          // highlight tags if asked
+          if (tags) {
+            tags = tags !== '' ? tags.split(',') : [];
+            $tags.each(function () {
+              var $tag = Ember.$(this),
+                  tagHTML = $tag.html(),
+                  newHTML = false;
+              Ember.$.each(tags, function (index, tag) {
+                if (tagHTML == tag) {
+                  newHTML = tagHTML.replace(tag, '<b>' + tag + '</b>');
+                }
+              });
+              if (newHTML) {
+                $tag.addClass('class').html(newHTML);
+              }
+            });
+          }
+          // highlight classes
+          $attributes.each(function () {
+            var $attribute = Ember.$(this),
+                attributeHTML = $attribute.html(),
+                $tag,
+                $value,
+                tagHTML,
+                isUI,
+                isPageElement,
+                isOtherUI,
+                isOtherIcon,
+                classNames,
+                classString,
+                html,
+                newHTML;
+            // only parse classes
+            if (attributeHTML.search('class') === -1) {
+              return true;
+            }
+            $value = $attribute.next('.value, .string').eq(0);
+            $tag = $attribute.prev('.title').eq(0);
+            tagHTML = $tag.html();
+            html = $value.html();
+            classNames = html.replace(/\"/g, '').split(' ');
+
+            isUI = html.search('ui') !== -1;
+            isPageElement = html.search(pageName) > 0;
+            isOtherUI = !isPageElement && isUI;
+            isOtherIcon = !isPageElement && tagHTML === 'i' && html.search('icon') !== -1;
+            // check if any class match
+            Ember.$.each(classes, function (index, string) {
+              var className = Ember.$.trim(string),
+                  isClassMatch = html.search(className) !== -1;
+              if (className === '') {
+                return true;
+              }
+              // class match on current page element (or content if allowed)
+              if (isClassMatch && (isPageElement || useContent)) {
+                newHTML = html.replace(className, '<b title="Required Class">' + className + '</b>');
+                return false;
+              }
+            });
+
+            // generate links to other UI
+            if (isOtherUI || isOtherIcon) {
+              html = newHTML || html;
+              classString = /^\"(.*)\"/g.exec(html);
+              if (!classString || classString.length < 2) {
+                return true;
+              }
+              classString = classString[1];
+              Ember.$.each(classNames, function (index, string) {
+                var className = string.replace('"', '');
+                // yep..
+                if (className == 'item') {
+                  return;
+                }
+                if (metadata && metadata[className] && metadata[className].url) {
+                  // we found a match
+                  newHTML = html.replace(classString, '<a href="' + metadata[className].url + '">' + classString + '</a>');
+                }
+              });
+            }
+
+            if (newHTML) {
+              $value.addClass('class').html(newHTML);
+            }
+          });
+        },
+
+        formatCode: function formatCode(code) {
+          var indent = handler.getIndent(code) || 2,
+              whiteSpace = new RegExp('\\n\\s{' + indent + '}', 'g');
+          return Ember.$.trim(code).replace(whiteSpace, '\n');
+        },
+
+        initializeCode: function initializeCode(codeSample) {
+          var $code = Ember.$(this).show(),
+              $codeTag = Ember.$('<code />'),
+              codeSample = codeSample || false,
+              code = $code.html(),
+              existingCode = $code.hasClass('existing'),
+              evaluatedCode = $code.hasClass('evaluated'),
+              contentType = $code.data('type') || 'html',
+              title = $code.data('title') || false,
+              less = $code.data('less') || false,
+              demo = $code.data('demo') || false,
+
+          // eval          = $code.data('eval')     || false,
+          preview = $code.data('preview') || false,
+              label = $code.data('label') || false,
+              preserve = $code.data('preserve') || false,
+              escape = $code.data('escape') || false,
+              displayType = {
+            html: 'HTML',
+            javascript: 'Javascript',
+            css: 'CSS',
+            text: 'Command Line',
+            sh: 'Command Line'
+          },
+              padding = 20,
+              name = codeSample === true ? 'instructive bottom attached' : 'existing',
+              formattedCode = code,
+              styledCode,
+              $example,
+              $label,
+              codeHeight;
+          var entityMap = {
+            "&amp;": "&",
+            "&lt;": "<",
+            "&gt;": ">",
+            '&quot;': '"',
+            '&#39;': "'",
+            '&#x2F;': "/"
+          };
+          contentType = contentType.toLowerCase();
+
+          function escapeHTML(string) {
+            return Ember.$('<div>').html(string).text();
+          }
+
+          // escape html entities
+          if (contentType != 'html' || escape) {
+            code = escapeHTML(code);
+          }
+
+          // evaluate if specified
+          // if(evaluatedCode) {
+          //   window.eval(code);
+          // }
+
+          // should trim whitespace
+          if (preserve) {
+            formattedCode = code;
+          } else {
+            formattedCode = handler.formatCode(code);
+          }
+
+          // color code
+          formattedCode = window.hljs.highlightAuto(formattedCode);
+
+          // create <code> tag
+          $codeTag.addClass($code.attr('class')).addClass(formattedCode.language).html(formattedCode.value);
+          // replace <div> with <code>
+          $code.replaceWith($codeTag);
+          $code = $codeTag;
+          $code.wrap('<div class="ui ' + name + ' segment"></div>').wrap('<pre></pre>');
+
+          if (contentType == 'html') {
+            // add class emphasis to used classes
+            handler.highlightClasses($code);
+          }
+
+          // add label
+          if (title) {
+            Ember.$('<div>').addClass('ui attached top label').html('<span class="title">' + title + '</span>' + '<em>' + (displayType[contentType] || contentType) + '</em>').prependTo($code.closest('.segment'));
+          }
+          if (label) {
+            Ember.$('<div>').addClass('ui pointing below ignored language label').html(displayType[contentType] || contentType).insertBefore($code.closest('.segment'));
+          }
+          // add apply less button
+          if (less) {
+            Ember.$('<a>').addClass('ui black pointing below ignored label').html('Apply Theme').on('click', function () {
+              window.less.modifyVars(handler.less.parseFile(code));
+            }).insertBefore($code.closest('.segment'));
+          }
+          // add run code button
+          // if(demo) {
+          //   $('<a>')
+          //     .addClass('ui black pointing below ignored label')
+          //     .html('Run Code')
+          //     .on('click', function() {
+          //       if(eval) {
+          //         window.eval(eval);
+          //       }
+          //       else {
+          //         window.eval(code);
+          //       }
+          //     })
+          //     .insertBefore ( $code.closest('.segment') )
+          //   ;
+          // }
+          // add preview if specified
+          if (preview) {
+            Ember.$(code).insertAfter($code.closest('.segment'));
+          }
+
+          $code.removeClass('hidden');
+        },
+
+        resetDownloads: function resetDownloads() {
+          $downloads.find('.grid').hide().filter('.choice.grid').show();
+        },
+
+        selectAll: function selectAll() {
+          this.setSelectionRange(0, this.value.length);
+        },
+
+        chooseStandalone: function chooseStandalone() {
+          $downloads.find('.grid').hide().filter('.standalone.grid').show();
+          $downloadPopup.popup('reposition');
+        },
+
+        chooseFramework: function chooseFramework() {
+          $downloads.find('.grid').hide().filter('.framework.grid').show();
+          $downloadPopup.popup('reposition');
+        },
+
+        swapStyle: function swapStyle() {
+          var theme = Ember.$(this).data('theme');
+          Ember.$(this).addClass('active').siblings().removeClass('active');
+          Ember.$('head link.ui').each(function () {
+            var href = Ember.$(this).attr('href'),
+                subDirectory = href.split('/')[3],
+                newLink = href.replace(subDirectory, theme);
+            Ember.$(this).attr('href', newLink);
+          });
+        }
+      };
+
+      semantic.handler = handler;
+
+      // add anchors to docs headers
+      handler.createAnchors();
+
+      // create sidebar sticky
+      requestAnimationFrame(function () {
+
+        $tocSticky.sticky({
+          silent: true,
+          container: Ember.$('html'),
+          context: $fullHeightContainer
+        });
+      });
+
+      // load page tabs
+      if ($pageTabs.length > 0) {
+        $pageTabs.tab({
+          context: '.main.container',
+          childrenOnly: true,
+          history: true,
+          onFirstLoad: function onFirstLoad() {
+            handler.makeCode();
+
+            $container = Ember.$('.fixed.column').length > 0 ? Ember.$(this).find('.examples') : Ember.$(this);
+            Ember.$(this).find('> .rail .ui.sticky, .fixed .ui.sticky').sticky({
+              context: $container,
+              container: Ember.$('html'),
+              silent: true,
+              offset: 30
+            });
+            $sectionHeaders = $container.children('h2');
+            $sectionExample = $container.find('.example');
+            $exampleHeaders = $sectionExample.children('h4');
+            // create code
+            handler.tryCreateMenu();
+            Ember.$(window).on('resize.menu', function () {
+              handler.tryCreateMenu();
+            });
+          },
+          onLoad: function onLoad() {
+            $tocSticky.sticky('refresh');
+            Ember.$(this).find('.ui.sticky').sticky('refresh');
+          }
+        });
+      } else {
+        handler.makeCode();
+        handler.tryCreateMenu();
+        Ember.$(window).on('resize.menu', function () {
+          handler.tryCreateMenu();
+        });
+      }
+
+      $shownExample.each(handler.createCode);
+      $prerenderedExample.each(handler.generateCode);
+
+      // main sidebar
+      $menu.sidebar({
+        dimPage: true,
+        transition: 'overlay',
+        mobileTransition: 'uncover'
+      });
+
+      // launch buttons
+      $menu.sidebar('attach events', '.launch.button, .view-ui, .launch.item');
+
+      handler.createIcon();
+
+      if (expertiseLevel < 2 && Ember.$(window).width() > 640) {
+        $popupExample.each(function () {
+          Ember.$(this).popup({
+            preserve: false,
+            on: 'hover',
+            variation: 'inverted',
+            delay: {
+              show: 500,
+              hide: 100
+            },
+            position: 'top left',
+            content: 'View Source',
+            target: Ember.$(this).find('i.code')
+          }).find('i.code').on('click', function () {
+            Ember.$.cookie('expertiseLevel', 2, {
+              expires: 365
+            });
+          });
+        });
+      }
+
+      $menuMusic.on('click', handler.openMusic);
+
+      $downloadPopup.popup({
+        transition: 'horizontal flip',
+        duration: 350,
+        position: 'bottom center',
+        on: 'click',
+        onHidden: handler.resetDownloads
+      });
+      $downloadInput.on('mouseup', handler.selectAll);
+      $downloadFramework.on('click', handler.chooseFramework);
+      $downloadStandalone.on('click', handler.chooseStandalone);
+
+      $themeDropdown.dropdown({
+        allowTab: false,
+        onChange: handler.less.changeTheme
+      });
+
+      if (Ember.$.fn.tablesort !== undefined && $sortTable.length > 0) {
+        $sortTable.tablesort();
+      }
+
+      $helpPopup.popup({
+        position: 'top left',
+        variation: 'inverted'
+      });
+
+      $swap.on('click', handler.swapStyle);
+
+      $menuPopup.add($languageDropdown).popup({
+        position: 'bottom center',
+        delay: {
+          show: 100,
+          hide: 50
+        }
+      });
+
+      $pageDropdown.dropdown({
+        on: 'hover',
+        action: 'nothing',
+        allowTab: false
+      });
+
+      $languageDropdown.dropdown({
+        allowTab: false,
+        on: 'click',
+        fullTextSearch: 'exact',
+        match: 'text',
+        onShow: function onShow() {
+          Ember.$(this).popup('hide');
+        },
+        onChange: handler.translatePage
+      });
+
+      //$.fn.api.settings.base = '//api.semantic-ui.com';
+      Ember.$.extend(Ember.$.fn.api.settings.api, {
+        categorySearch: '//api.semantic-ui.com/search/category/{query}',
+        getOverrides: '/src/themes/{$theme}/{$type}s/{$element}.overrides',
+        getVariables: '/src/themes/{$theme}/{$type}s/{$element}.variables',
+        search: '//api.semantic-ui.com/search/{query}'
+      });
+
+      if (window.Transifex !== undefined) {
+        window.Transifex.live.onTranslatePage(handler.showLanguageModal);
+      }
+
+      // if(typeof detectAdBlock === 'undefined') {
+      //   handler.showBeg();
+      // }
+      // else {
+      //   detectAdBlock.onDetected(handler.showBeg);
+      // }
+
+      // handler.getMetadata();
+    }
+  });
+});
+define('self-start-front-end/services/home', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+
+  var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) {
+    return typeof obj;
+  } : function (obj) {
+    return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+  };
+
+  exports.default = Ember.Service.extend({
+    didInsertElement: function didInsertElement() {
+      this._super.apply(this, arguments);
+
+      semantic.home = {};
+
+      var $themeDropdown = Ember.$('.theme.dropdown'),
+          $header = Ember.$('.masthead'),
+          $ui = $header.find('h1 b'),
+          $phrase = $header.find('h1 span'),
+          $download = $header.find('.download'),
+          $library = $header.find('.library'),
+          $cursor = $header.find('.typed-cursor'),
+          $version = $header.find('.version'),
+          $themeButton = Ember.$('.theming .source.button'),
+          $themeGrid = Ember.$('.theming .source.grid'),
+          handler;
+
+      handler = {
+        getRandomInt: function getRandomInt(min, max) {
+          return Math.floor(Math.random() * (max - min + 1)) + min;
+        },
+        introduction: function introduction() {
+          var background = 'bg' + handler.getRandomInt(1, 14);
+          // zoom out
+          $header.addClass(background).removeClass('zoomed');
+        },
+        changeLogo: function changeLogo() {
+          var $logo = Ember.$('.following .logo'),
+              $nextSide = $logo.find('.' + Ember.$(this).data('site') + '.side'),
+              directions = ['up', 'left', 'down', 'right'],
+              direction = directions[Math.floor(Math.random() * directions.length)];
+          if ($nextSide.length > 0) {
+            clearTimeout(handler.timer);
+            handler.timer = setTimeout(function () {
+              $logo.shape('set next side', $nextSide).shape('flip ' + direction);
+            }, 50);
+          }
+        },
+        returnLogo: function returnLogo() {
+          var $logo = Ember.$('.following .logo'),
+              $nextSide = $logo.find('.ui.side');
+          clearTimeout(handler.timer);
+          handler.timer = setTimeout(function () {
+            $logo.shape('set next side', $nextSide).shape('flip over');
+          }, 500);
+        },
+
+        less: {
+
+          parseFile: function parseFile(content) {
+            var variables = {},
+                lines = content.match(/^\s*(@[\s|\S]+?;)/gm),
+                name,
+                value;
+            if (lines) {
+              Ember.$.each(lines, function (index, line) {
+                // clear whitespace
+                line = Ember.$.trim(line);
+                // match variables only
+                if (line[0] == '@') {
+                  name = line.match(/^@(.+?):/);
+                  value = line.match(/:\s*([\s|\S]+?;)/);
+                  if (Ember.$.isArray(name) && name.length >= 2 && Ember.$.isArray(value) && value.length >= 2) {
+                    name = name[1];
+                    value = value[1];
+                    variables[name] = value;
+                  }
+                }
+              });
+            }
+            console.log(variables);
+            return variables;
+          },
+
+          changeTheme: function changeTheme(theme) {
+            var $themeDropdown = Ember.$(this),
+                $variableCode = Ember.$('.variable.code'),
+                $overrideCode = Ember.$('.override.code'),
+                $existingVariables = $variableCode.closest('.existing'),
+                $existingOverrides = $overrideCode.closest('.existing'),
+                variableURL = '/src/themes/{$theme}/{$type}s/{$element}.variables',
+                overrideURL = '/src/themes/{$theme}/{$type}s/{$element}.overrides',
+                urlData = {
+              theme: _typeof(theme === 'string') ? theme.toLowerCase() : theme,
+              type: $themeDropdown.data('type'),
+              element: $themeDropdown.data('element')
+            };
+            if ($existingVariables.length > 0) {
+              $variableCode = Ember.$('<div class="ui variable code" data-type="less" data-preserve="true" />');
+              $variableCode.insertAfter($existingVariables);
+              $existingVariables.remove();
+              console.log($variableCode);
+            }
+
+            if ($existingOverrides.length > 0) {
+              $overrideCode = Ember.$('<div class="ui override code" data-type="less" data-preserve="true" />');
+              $overrideCode.insertAfter($existingOverrides);
+              $existingOverrides.remove();
+              console.log($overrideCode);
+            }
+
+            $themeDropdown.api({
+              on: 'now',
+              url: variableURL,
+              dataType: 'text',
+              urlData: urlData,
+              onSuccess: function onSuccess(content) {
+                window.less.modifyVars(handler.less.parseFile(content));
+                $themeDropdown.api({
+                  on: 'now',
+                  url: overrideURL,
+                  dataType: 'text',
+                  urlData: urlData,
+                  onSuccess: function onSuccess(content) {
+                    if (Ember.$('style.override').length > 0) {
+                      Ember.$('style.override').remove();
+                    }
+                    Ember.$('<style>' + content + '</style>').addClass('override').appendTo('body');
+                    Ember.$('.sticky').sticky('refresh');
+
+                    $overrideCode.html(content);
+                    Ember.$.proxy(semantic.handler.initializeCode, $overrideCode[0])();
+                  }
+                });
+                $variableCode.html(content);
+                Ember.$.proxy(semantic.handler.initializeCode, $variableCode[0])();
+              }
+            });
+          }
+        },
+        showThemeButton: function showThemeButton(value, text) {
+          if (!$themeButton.transition('is visible')) {
+            $themeButton.transition('scale in');
+          }
+          Ember.$.proxy(handler.less.changeTheme, this)(value);
+        },
+        createDemos: function createDemos() {
+          Ember.$('.demo.menu .item, .demo.buttons .button').on('click', function () {
+            if (!Ember.$(this).hasClass('dropdown')) {
+              Ember.$(this).addClass('active').closest('.ui.menu, .ui.buttons').find('.item, .button').not(Ember.$(this)).removeClass('active');
+            }
+          });
+          Ember.$('.example .message .close').on('click', function () {
+            Ember.$(this).closest('.message').transition('scale out');
+          });
+        },
+        toggleTheme: function toggleTheme() {
+          Ember.$(this).toggleClass('active');
+          $themeGrid.toggleClass('visible');
+        }
+      };
+
+      // intro
+      handler.introduction();
+
+      if (Ember.$(window).width() > 600) {
+        Ember.$('body').visibility({
+          offset: -10,
+          observeChanges: false,
+          once: false,
+          continuous: false,
+          onTopPassed: function onTopPassed() {
+            requestAnimationFrame(function () {
+              Ember.$('.following.bar').addClass('light fixed').find('.menu').removeClass('inverted');
+              Ember.$('.following .additional.item').transition('scale in', 750);
+            });
+          },
+          onTopPassedReverse: function onTopPassedReverse() {
+            requestAnimationFrame(function () {
+              Ember.$('.following.bar').removeClass('light fixed').find('.menu').addClass('inverted').find('.additional.item').transition('hide');
+            });
+          }
+        });
+      }
+      Ember.$('.additional.item').popup({
+        delay: {
+          show: 200,
+          hide: 50
+        },
+        position: 'bottom center'
+      });
+
+      Ember.$('.email.stripe form').form({
+        fields: {
+          email: {
+            identifier: 'email',
+            rules: [{
+              type: 'empty',
+              prompt: 'Please enter an e-mail'
+            }, {
+              type: 'email',
+              prompt: 'Please enter a valid e-mail address'
+            }]
+          }
+        }
+      });
+
+      $themeDropdown.dropdown('setting', 'transition', 'drop').dropdown('setting', 'duration', 350).dropdown('setting', 'action', 'activate').dropdown('setting', 'onChange', handler.showThemeButton);
+
+      $themeButton.on('click', handler.toggleTheme);
+
+      // demos
+      Ember.$('.demo .checkbox').checkbox();
+      Ember.$('.demo .accordion').accordion();
+      Ember.$('.demo .dimmer').dimmer({
+        on: 'hover'
+      });
+      Ember.$('.demo .ui.dropdown').dropdown();
+
+      if (window.Transifex !== undefined) {
+        window.Transifex.live.onTranslatePage(function (countryCode) {
+          var fullName = Ember.$('.language.dropdown .item[data-value=' + countryCode + ']').eq(0).text();
+          Ember.$('.language.dropdown > .text').html(fullName);
+        });
+      }
+
+      Ember.$('.ui.sidebar').sidebar('setting', {
+        transition: 'overlay'
+      });
+
+      handler.createDemos();
+    }
+  });
+});
 define("self-start-front-end/services/liquid-fire-transitions", ["exports", "liquid-fire/transition-map"], function (exports, _transitionMap) {
   "use strict";
 
@@ -4683,20 +7578,17 @@ define('self-start-front-end/services/media', ['exports', 'ember-responsive/medi
   });
   exports.default = _media.default;
 });
-define('self-start-front-end/services/resize-detector', ['exports', 'ember-element-resize-detector/services/resize-detector'], function (exports, _resizeDetector) {
+define('self-start-front-end/services/moment', ['exports', 'self-start-front-end/config/environment', 'ember-moment/services/moment'], function (exports, _environment, _moment) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _resizeDetector.default;
-    }
+  exports.default = _moment.default.extend({
+    defaultFormat: Ember.get(_environment.default, 'moment.outputFormat')
   });
 });
-define('self-start-front-end/services/scrollbar-thickness', ['exports', 'ember-scrollable/services/scrollbar-thickness'], function (exports, _scrollbarThickness) {
+define('self-start-front-end/services/text-measurer', ['exports', 'ember-text-measurer/services/text-measurer'], function (exports, _textMeasurer) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -4705,7 +7597,7 @@ define('self-start-front-end/services/scrollbar-thickness', ['exports', 'ember-s
   Object.defineProperty(exports, 'default', {
     enumerable: true,
     get: function () {
-      return _scrollbarThickness.default;
+      return _textMeasurer.default;
     }
   });
 });
@@ -4715,7 +7607,7 @@ define("self-start-front-end/templates/admin", ["exports"], function (exports) {
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "fDyCFZCS", "block": "{\"symbols\":[],\"statements\":[[1,[18,\"admin-welcome\"],false],[0,\"\\n\"],[1,[18,\"outlet\"],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/admin.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "lzjWWtSO", "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[1,[18,\"admin-welcome\"],false],[0,\"\\n\"],[1,[18,\"outlet\"],false],[0,\"\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/admin.hbs" } });
 });
 define("self-start-front-end/templates/application", ["exports"], function (exports) {
   "use strict";
@@ -4723,7 +7615,7 @@ define("self-start-front-end/templates/application", ["exports"], function (expo
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "ekvyitS4", "block": "{\"symbols\":[],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/reset.css\"]]],[7],[8],[0,\" \"],[2,\" CSS reset \"],[0,\"\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/doc.css\"]]],[7],[8],[0,\"\\n\\n\\n\\n\"],[1,[18,\"outlet\"],false],[0,\"\\n\\n\\n\\n\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/application.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "rKizXn1z", "block": "{\"symbols\":[],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/reset.css\"]]],[7],[8],[0,\" \"],[2,\" CSS reset \"],[0,\"\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/doc.css\"]]],[7],[8],[0,\"\\n\\n\\n\\n\"],[1,[18,\"outlet\"],false],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/application.hbs" } });
 });
 define("self-start-front-end/templates/appointment", ["exports"], function (exports) {
   "use strict";
@@ -4731,7 +7623,7 @@ define("self-start-front-end/templates/appointment", ["exports"], function (expo
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "qU7BtNj0", "block": "{\"symbols\":[],\"statements\":[[1,[18,\"outlet\"],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/appointment.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "f4rQuRz8", "block": "{\"symbols\":[],\"statements\":[[1,[18,\"book-appointment\"],false],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/appointment.hbs" } });
 });
 define("self-start-front-end/templates/city", ["exports"], function (exports) {
   "use strict";
@@ -4747,7 +7639,7 @@ define("self-start-front-end/templates/components/add-country", ["exports"], fun
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "htL5M5vV", "block": "{\"symbols\":[],\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"cd-button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n    \"],[6,\"input\"],[9,\"type\",\"submit\"],[9,\"value\",\"Add Country\"],[7],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"newCountry\",\"small newCountry\"]],{\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"\\n    Adding new country\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Country Name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"cols\",\"rows\",\"value\",\"placeholder\"],[\"text\",\"50\",\"1\",[20,[\"name\"]],\"add country\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0; \"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui positive right\"],[9,\"style\",\"padding:1em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Save\"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui deny\"],[9,\"style\",\"padding:1em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"Cancel\"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\\n\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/add-country.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "AM68n2zH", "block": "{\"symbols\":[],\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"cd-button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n    \"],[6,\"input\"],[9,\"type\",\"submit\"],[9,\"value\",\"Add Country\"],[7],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"newCountry\",\"small newCountry\"]],{\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"\\n    Adding new country\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Country Name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"cols\",\"rows\",\"value\",\"placeholder\"],[\"text\",\"50\",\"1\",[20,[\"name\"]],\"add country\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0; \"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui positive right\"],[9,\"style\",\"padding:1em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Save\"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui deny\"],[9,\"style\",\"padding:1em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"Cancel\"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\\n\\n\\n\"]],\"parameters\":[]},null],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/add-country.hbs" } });
 });
 define("self-start-front-end/templates/components/add-exercises", ["exports"], function (exports) {
   "use strict";
@@ -4755,7 +7647,15 @@ define("self-start-front-end/templates/components/add-exercises", ["exports"], f
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "nJ0+nR1S", "block": "{\"symbols\":[\"file\",\"aS\",\"o\"],\"statements\":[[4,\"if\",[[20,[\"isEditing\"]]],null,{\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui fluid raised very padded text container segment\"],[7],[0,\"\\n    \"],[6,\"h2\"],[9,\"id\",\"exercise\"],[9,\"class\",\"ui fluid centered header\"],[7],[0,\"Add New Exercise\"],[8],[0,\"\\n\\n    \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Exercise Name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Name\"]],\"Exercise Name\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Description\"],[8],[0,\"\\n        \"],[1,[25,\"textarea\",null,[[\"value\",\"cols\",\"rows\",\"placeholder\"],[[20,[\"Description\"]],\"80\",\"6\",\"Description\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Author Name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"AuthName\"]],\"Author Name\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\\n        \"],[6,\"label\"],[7],[0,\"Objectives\"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui action input\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Objective\"]],\"Objective\"]]],false],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui white right labeled icon button\"],[3,\"action\",[[19,0,[]],\"addObjective\"]],[7],[0,\"\\n            Add Objective\\n            \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui inverted segment\"],[7],[0,\"\\n          \"],[6,\"label\"],[7],[0,\"Current Objectives\"],[8],[0,\"\\n          \"],[6,\"ul\"],[9,\"align\",\"left\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"obj\"]]],null,{\"statements\":[[0,\"              \"],[6,\"li\"],[7],[0,\"\\n                \"],[6,\"p\"],[7],[0,\"\\n                  \"],[1,[19,3,[]],false],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Edit\"],[9,\"class\",\"gray write icon\"],[3,\"action\",[[19,0,[]],\"edit\"]],[7],[8],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Delete\"],[9,\"class\",\"red remove icon\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Action Steps\"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui action input\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"ActionSteps\"]],\"Action Steps\"]]],false],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui white right labeled icon button\"],[3,\"action\",[[19,0,[]],\"addActionStep\"]],[7],[0,\"\\n            Add Action Step\\n            \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui inverted segment\"],[7],[0,\"\\n          \"],[6,\"label\"],[7],[0,\"Current Action Steps\"],[8],[0,\"\\n          \"],[6,\"ol\"],[9,\"align\",\"left\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"actionStep\"]]],null,{\"statements\":[[0,\"              \"],[6,\"li\"],[7],[0,\"\\n                \"],[6,\"p\"],[7],[0,\"\\n                  \"],[1,[19,2,[]],false],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Edit\"],[9,\"class\",\"gray write icon\"],[3,\"action\",[[19,0,[]],\"edit\"]],[7],[8],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Delete\"],[9,\"class\",\"red remove icon\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Location\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Location\"]],\"Location\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Frequency\"],[8],[0,\"\\n\"],[0,\"        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Frequency\"]],\"Frequency\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Duration\"],[8],[0,\"\\n\"],[0,\"        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Duration\"]],\"Duration\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Target Date\"],[8],[0,\"\\n\"],[0,\"        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"TargetDate\"]],\"Target Date\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Multimedia URL\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"MMURL\"]],\"Multi Media URL\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"queue\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui divided demo items\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"image\"],[7],[0,\"\\n\"],[4,\"if\",[[19,1,[\"isUploading\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"div\"],[9,\"class\",\"ui active inverted dimmer\"],[7],[0,\"\\n                    \"],[6,\"div\"],[9,\"class\",\"ui loader\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                  \"],[6,\"img\"],[10,\"src\",[26,[[19,1,[\"base64Image\"]]]]],[7],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n\"],[4,\"if\",[[19,1,[\"isDisplayableImage\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"label\"],[7],[0,\"Image Name\"],[8],[0,\"\\n                    \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[19,1,[\"name\"]],\"Exercise Name\"]]],false],[0,\"\\n                    \"],[6,\"button\"],[9,\"class\",\"ui red basic button\"],[3,\"action\",[[19,0,[]],\"deleteFile\",[19,1,[]]]],[7],[0,\"\\n                      Delete\\n                    \"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                    \"],[6,\"p\"],[7],[0,\"Unsupported image\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui fluid labeled input\"],[7],[0,\"\\n          \"],[6,\"label\"],[9,\"class\",\"ui fluid huge label\"],[10,\"style\",[18,\"labelStyle\"],null],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"big cloud upload icon\"],[7],[8],[0,\"\\n            Click or Drop files into this area to upload files\\n          \"],[8],[0,\"\\n          \"],[6,\"input\"],[9,\"type\",\"file\"],[9,\"value\",\"target.value\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectFile\"],null],null],[10,\"style\",[18,\"inputStyle\"],null],[10,\"accept\",[26,[[18,\"accept\"]]]],[10,\"multiple\",[18,\"multiple\"],null],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n\"],[0,\"      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"inline\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui button\"],[9,\"type\",\"submit\"],[3,\"action\",[[19,0,[]],\"submit\"]],[7],[0,\"Submit\"],[8],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui button\"],[9,\"type\",\"submit\"],[3,\"action\",[[19,0,[]],\"cancel\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[6,\"button\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"addExercise\"]],[7],[0,\"\\n    Add Exercise\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/add-exercises.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "i4ooKLW/", "block": "{\"symbols\":[\"file\",\"aS\",\"o\"],\"statements\":[[0,\"\\n\"],[4,\"if\",[[20,[\"isEditing\"]]],null,{\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui fluid raised very padded text container segment\"],[7],[0,\"\\n    \"],[6,\"h2\"],[9,\"id\",\"exercise\"],[9,\"class\",\"ui fluid centered header\"],[7],[0,\"Add New Exercise\"],[8],[0,\"\\n\\n    \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Exercise Name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Name\"]],\"Exercise Name\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Description\"],[8],[0,\"\\n        \"],[1,[25,\"textarea\",null,[[\"value\",\"cols\",\"rows\",\"placeholder\"],[[20,[\"Description\"]],\"80\",\"6\",\"Description\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Author Name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"AuthName\"]],\"Author Name\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\\n        \"],[6,\"label\"],[7],[0,\"Objectives\"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui action input\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Objective\"]],\"Objective\"]]],false],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui white right labeled icon button\"],[3,\"action\",[[19,0,[]],\"addObjective\"]],[7],[0,\"\\n            Add Objective\\n            \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui inverted segment\"],[7],[0,\"\\n          \"],[6,\"label\"],[7],[0,\"Current Objectives\"],[8],[0,\"\\n          \"],[6,\"ul\"],[9,\"align\",\"left\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"obj\"]]],null,{\"statements\":[[0,\"              \"],[6,\"li\"],[7],[0,\"\\n                \"],[6,\"p\"],[7],[0,\"\\n                  \"],[1,[19,3,[]],false],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Edit\"],[9,\"class\",\"gray write icon\"],[3,\"action\",[[19,0,[]],\"edit\"]],[7],[8],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Delete\"],[9,\"class\",\"red remove icon\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Action Steps\"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui action input\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"ActionSteps\"]],\"Action Steps\"]]],false],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui white right labeled icon button\"],[3,\"action\",[[19,0,[]],\"addActionStep\"]],[7],[0,\"\\n            Add Action Step\\n            \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui inverted segment\"],[7],[0,\"\\n          \"],[6,\"label\"],[7],[0,\"Current Action Steps\"],[8],[0,\"\\n          \"],[6,\"ol\"],[9,\"align\",\"left\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"actionStep\"]]],null,{\"statements\":[[0,\"              \"],[6,\"li\"],[7],[0,\"\\n                \"],[6,\"p\"],[7],[0,\"\\n                  \"],[1,[19,2,[]],false],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Edit\"],[9,\"class\",\"gray write icon\"],[3,\"action\",[[19,0,[]],\"edit\"]],[7],[8],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Delete\"],[9,\"class\",\"red remove icon\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Location\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Location\"]],\"Location\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Frequency\"],[8],[0,\"\\n\"],[0,\"        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Frequency\"]],\"Frequency\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Duration\"],[8],[0,\"\\n\"],[0,\"        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Duration\"]],\"Duration\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Target Date\"],[8],[0,\"\\n\"],[0,\"        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"TargetDate\"]],\"Target Date\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Multimedia URL\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"MMURL\"]],\"Multi Media URL\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"queue\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui divided demo items\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"image\"],[7],[0,\"\\n\"],[4,\"if\",[[19,1,[\"isUploading\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"div\"],[9,\"class\",\"ui active inverted dimmer\"],[7],[0,\"\\n                    \"],[6,\"div\"],[9,\"class\",\"ui loader\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                  \"],[6,\"img\"],[10,\"src\",[26,[[19,1,[\"base64Image\"]]]]],[7],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n\"],[4,\"if\",[[19,1,[\"isDisplayableImage\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"label\"],[7],[0,\"Image Name\"],[8],[0,\"\\n                    \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[19,1,[\"name\"]],\"Exercise Name\"]]],false],[0,\"\\n                    \"],[6,\"button\"],[9,\"class\",\"ui red basic button\"],[3,\"action\",[[19,0,[]],\"deleteFile\",[19,1,[]]]],[7],[0,\"\\n                      Delete\\n                    \"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                    \"],[6,\"p\"],[7],[0,\"Unsupported image\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui fluid labeled input\"],[7],[0,\"\\n          \"],[6,\"label\"],[9,\"class\",\"ui fluid huge label\"],[10,\"style\",[18,\"labelStyle\"],null],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"big cloud upload icon\"],[7],[8],[0,\"\\n            Click or Drop files into this area to upload files\\n          \"],[8],[0,\"\\n          \"],[6,\"input\"],[9,\"type\",\"file\"],[9,\"value\",\"target.value\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectFile\"],null],null],[10,\"style\",[18,\"inputStyle\"],null],[10,\"accept\",[26,[[18,\"accept\"]]]],[10,\"multiple\",[18,\"multiple\"],null],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n\"],[0,\"      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"inline\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui button\"],[9,\"type\",\"submit\"],[3,\"action\",[[19,0,[]],\"submit\"]],[7],[0,\"Submit\"],[8],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui button\"],[9,\"type\",\"submit\"],[3,\"action\",[[19,0,[]],\"cancel\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[6,\"button\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"addExercise\"]],[7],[0,\"\\n    Add Exercise\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/add-exercises.hbs" } });
+});
+define("self-start-front-end/templates/components/add-form", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "ybNrcv4i", "block": "{\"symbols\":[],\"statements\":[[4,\"if\",[[20,[\"isEditing\"]]],null,{\"statements\":[[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui fluid raised very padded text container segment\"],[7],[0,\"\\n    \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"sixteen wide field\"],[7],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"fName\"]],\"Name of form\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"sixteen wide field\"],[7],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"fDescription\"]],\"Description of form\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui fluid positive button\"],[3,\"action\",[[19,0,[]],\"submit\"]],[7],[0,\"Submit\"],[8],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"cancel\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"    \"],[6,\"button\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"addForm\"]],[7],[0,\"\\n        Add Form\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/add-form.hbs" } });
 });
 define("self-start-front-end/templates/components/add-gender", ["exports"], function (exports) {
   "use strict";
@@ -4771,7 +7671,15 @@ define("self-start-front-end/templates/components/add-patient", ["exports"], fun
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "+/+zXXVl", "block": "{\"symbols\":[\"oneCountry\",\"oneGender\"],\"statements\":[[4,\"nav-bar\",null,null,{\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n        \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"tagline\"],[7],[0,\"\\n           Add New Client\\n        \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"style\",\"padding-left: 368px\"],[7],[0,\"\\n          \"],[6,\"a\"],[9,\"href\",\"/patients\"],[9,\"class\",\"ui large inverted download button\"],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"arrow left icon\"],[7],[8],[0,\"Return to Clients\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"background\"],[7],[0,\"\\n\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui centered very padded raised segment container\"],[9,\"style\",\"background-color: white\"],[7],[0,\"\\n      \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n      \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n        \"],[6,\"fieldset\"],[7],[0,\"\\n          \"],[6,\"legend\"],[7],[0,\"Account Settings\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Account Name\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"text\",[20,[\"userAccountName\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Temporary Password\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"lock\",\"text\",[20,[\"encryptedPassword\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"fieldset\"],[7],[0,\"\\n          \"],[6,\"legend\"],[7],[0,\"Personal Info\"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"First Name\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"text\",[20,[\"givenName\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Last Name\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"text\",[20,[\"familyName\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Date of Birth\"],[8],[0,\"\\n            \"],[6,\"input\"],[9,\"class\",\"date\"],[9,\"type\",\"date\"],[10,\"value\",[18,\"selectedDate\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"assignDate\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[7],[0,\"\\n            \"],[6,\"h4\"],[7],[0,\"Gender\"],[8],[0,\"\\n            \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n              \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectGender\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"true\"],[7],[0,\"\\n                \"],[6,\"option\"],[9,\"selected\",\"selected\"],[7],[0,\"\\n                  Select Gender\\n                \"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"genderModel\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"option\"],[10,\"value\",[19,2,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"gender\"]],[19,2,[\"name\"]]],null],null],[7],[0,\"\\n                    \"],[1,[19,2,[\"name\"]],false],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Health Card Number\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"card\",\"text\",[20,[\"healthCardNumber\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n\\n        \"],[6,\"fieldset\"],[7],[0,\"\\n          \"],[6,\"legend\"],[7],[0,\"Address\"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Number\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"home\",\"text\",[20,[\"streetNumber\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Street Name\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"home\",\"text\",[20,[\"streetName\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Unit\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"bookmark\",\"text\",[20,[\"apartment\"]]]]],false],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Postal/ZIP Code\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"flag\",\"text\",[20,[\"postalCode\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n\\n\\n          \"],[6,\"div\"],[7],[0,\"\\n            \"],[6,\"h4\"],[7],[0,\"Country\"],[8],[0,\"\\n            \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n              \"],[6,\"select\"],[9,\"class\",\"world\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectCountry\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"true\"],[7],[0,\"\\n                \"],[6,\"option\"],[9,\"selected\",\"selected\"],[7],[0,\"\\n                  Select Country\\n                \"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"conutryModel\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"option\"],[10,\"value\",[19,1,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"country\"]],[19,1,[\"name\"]]],null],null],[7],[0,\"\\n                    \"],[1,[19,1,[\"name\"]],false],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n\\n\\n        \"],[6,\"fieldset\"],[7],[0,\"\\n          \"],[6,\"legend\"],[7],[0,\"Contact Info\"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Phone Number\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"phone\",\"text\",[20,[\"phoneNumber\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-email\"],[7],[0,\"Email\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"email\",\"email\",[20,[\"email\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"cd-button\"],[9,\"style\",\"float: left\"],[7],[0,\"\\n            \"],[6,\"input\"],[9,\"type\",\"submit\"],[9,\"value\",\"Submit\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/add-patient.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "wIgAeFkn", "block": "{\"symbols\":[\"oneCountry\",\"oneGender\"],\"statements\":[[4,\"admin-nav\",null,null,{\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n        \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"tagline\"],[7],[0,\"\\n           Add New Client\\n        \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"style\",\"padding-left: 368px\"],[7],[0,\"\\n          \"],[6,\"a\"],[9,\"href\",\"/patients\"],[9,\"class\",\"ui large inverted download button\"],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"arrow left icon\"],[7],[8],[0,\"Return to Clients\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"background\"],[7],[0,\"\\n\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui centered very padded raised segment container\"],[9,\"style\",\"background-color: white\"],[7],[0,\"\\n      \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n      \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n        \"],[6,\"fieldset\"],[7],[0,\"\\n          \"],[6,\"legend\"],[7],[0,\"Account Settings\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Account Name\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"text\",[20,[\"userAccountName\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Temporary Password\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"lock\",\"text\",[20,[\"encryptedPassword\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"fieldset\"],[7],[0,\"\\n          \"],[6,\"legend\"],[7],[0,\"Personal Info\"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"First Name\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"text\",[20,[\"givenName\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Last Name\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"text\",[20,[\"familyName\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Date of Birth\"],[8],[0,\"\\n            \"],[6,\"input\"],[9,\"class\",\"date\"],[9,\"type\",\"date\"],[10,\"value\",[18,\"selectedDate\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"assignDate\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[7],[0,\"\\n            \"],[6,\"h4\"],[7],[0,\"Gender\"],[8],[0,\"\\n            \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n              \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectGender\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"true\"],[7],[0,\"\\n                \"],[6,\"option\"],[9,\"selected\",\"selected\"],[7],[0,\"\\n                  Select Gender\\n                \"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"genderModel\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"option\"],[10,\"value\",[19,2,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"gender\"]],[19,2,[\"name\"]]],null],null],[7],[0,\"\\n                    \"],[1,[19,2,[\"name\"]],false],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Health Card Number\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"card\",\"text\",[20,[\"healthCardNumber\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n\\n        \"],[6,\"fieldset\"],[7],[0,\"\\n          \"],[6,\"legend\"],[7],[0,\"Address\"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Number\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"home\",\"text\",[20,[\"streetNumber\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Street Name\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"home\",\"text\",[20,[\"streetName\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Unit\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"bookmark\",\"text\",[20,[\"apartment\"]]]]],false],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Postal/ZIP Code\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"flag\",\"text\",[20,[\"postalCode\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n\\n\\n          \"],[6,\"div\"],[7],[0,\"\\n            \"],[6,\"h4\"],[7],[0,\"Country\"],[8],[0,\"\\n            \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n              \"],[6,\"select\"],[9,\"class\",\"world\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectCountry\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"true\"],[7],[0,\"\\n                \"],[6,\"option\"],[9,\"selected\",\"selected\"],[7],[0,\"\\n                  Select Country\\n                \"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"conutryModel\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"option\"],[10,\"value\",[19,1,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"country\"]],[19,1,[\"name\"]]],null],null],[7],[0,\"\\n                    \"],[1,[19,1,[\"name\"]],false],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n\\n\\n        \"],[6,\"fieldset\"],[7],[0,\"\\n          \"],[6,\"legend\"],[7],[0,\"Contact Info\"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Phone Number\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"phone\",\"text\",[20,[\"phoneNumber\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-email\"],[7],[0,\"Email\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"email\",\"email\",[20,[\"email\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"cd-button\"],[9,\"style\",\"float: left\"],[7],[0,\"\\n            \"],[6,\"input\"],[9,\"type\",\"submit\"],[9,\"value\",\"Submit\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/add-patient.hbs" } });
+});
+define("self-start-front-end/templates/components/add-physiotherapist", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "jY06avMB", "block": "{\"symbols\":[],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"fieldset\"],[7],[0,\"\\n    \"],[6,\"legend\"],[7],[0,\"Personal Info\"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"First Name\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"text\",[20,[\"givenName\"]],true]]],false],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Last Name\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"text\",[20,[\"familyName\"]],true]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Employment start date\"],[8],[0,\"\\n      \"],[6,\"input\"],[9,\"class\",\"date\"],[9,\"type\",\"date\"],[10,\"value\",[18,\"selectedDate\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"assignDate\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n  \\n  \"],[8],[0,\"\\n  \\n  \"],[6,\"fieldset\"],[7],[0,\"\\n    \"],[6,\"legend\"],[7],[0,\"Contact Info\"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-email\"],[7],[0,\"Email\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"email\",\"email\",[20,[\"email\"]],true]]],false],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"fieldset\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[7],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"cd-button\"],[7],[0,\"\\n        \"],[6,\"input\"],[9,\"type\",\"submit\"],[9,\"value\",\"Submit\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n\\n\\n\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/add-physiotherapist.hbs" } });
 });
 define("self-start-front-end/templates/components/add-province", ["exports"], function (exports) {
   "use strict";
@@ -4781,13 +7689,29 @@ define("self-start-front-end/templates/components/add-province", ["exports"], fu
   });
   exports.default = Ember.HTMLBars.template({ "id": "BDT1MQbZ", "block": "{\"symbols\":[\"country\"],\"statements\":[[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"cd-button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"input\"],[9,\"type\",\"submit\"],[9,\"value\",\"Add Province\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"newProvince\",\"small newProvince\"]],{\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"\\n    Adding new Province\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Province Name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"cols\",\"rows\",\"value\",\"placeholder\"],[\"text\",\"50\",\"1\",[20,[\"name\"]],\"add province\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\\n        \"],[6,\"label\"],[7],[0,\"Country Name\"],[8],[0,\"\\n\"],[4,\"ui-dropdown\",null,[[\"class\",\"onChange\"],[\"search selection\",[25,\"action\",[[19,0,[]],\"setCountryId\"],null]]],{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"default text\"],[7],[0,\"Select a country\"],[8],[0,\"\\n          \"],[6,\"i\"],[9,\"class\",\"dropdown icon\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"menu\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"countries\"]]],null,{\"statements\":[[0,\"              \"],[6,\"div\"],[10,\"data-value\",[26,[[19,1,[\"id\"]]]]],[9,\"class\",\"item\"],[7],[0,\"\\n                \"],[1,[19,1,[\"name\"]],false],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0; \"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui positive right\"],[9,\"style\",\"padding:1em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Save\"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui deny\"],[9,\"style\",\"padding:1em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"Cancel\"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\\n\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/add-province.hbs" } });
 });
+define("self-start-front-end/templates/components/add-question", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "9Ajqq7ff", "block": "{\"symbols\":[],\"statements\":[[4,\"if\",[[20,[\"isEditing\"]]],null,{\"statements\":[[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui fluid raised very padded text container segment\"],[7],[0,\"\\n\\n  \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"inline fields\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Question Type:\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                    \"],[6,\"input\"],[9,\"name\",\"type\"],[9,\"type\",\"radio\"],[3,\"action\",[[19,0,[]],\"multipleChoice\"]],[7],[8],[0,\"\\n\\n                    \"],[6,\"label\"],[7],[0,\"Multiple Choice\"],[8],[0,\"\\n                \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                    \"],[6,\"input\"],[9,\"name\",\"type\"],[9,\"type\",\"radio\"],[3,\"action\",[[19,0,[]],\"shortAns\"]],[7],[8],[0,\"\\n                    \"],[6,\"label\"],[7],[0,\"Short Answer\"],[8],[0,\"\\n                \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                    \"],[6,\"input\"],[9,\"name\",\"type\"],[9,\"type\",\"radio\"],[3,\"action\",[[19,0,[]],\"rating\"]],[7],[8],[0,\"\\n                    \"],[6,\"label\"],[7],[0,\"Rating\"],[8],[0,\"\\n                \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                    \"],[6,\"input\"],[9,\"name\",\"type\"],[9,\"type\",\"radio\"],[3,\"action\",[[19,0,[]],\"trueFalse\"]],[7],[8],[0,\"\\n                    \"],[6,\"label\"],[7],[0,\"True/False\"],[8],[0,\"\\n                \"],[8],[0,\"\\n            \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n\\n\"],[4,\"if\",[[20,[\"rating\"]]],null,{\"statements\":[[0,\"    \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"rquestion\"]],\"Question\"]]],false],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"rhelp\"]],\"Help\"]]],false],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"shortAns\"]]],null,{\"statements\":[[0,\"    \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"saquestion\"]],\"Question\"]]],false],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"sahelp\"]],\"Help\"]]],false],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"trueFalse\"]]],null,{\"statements\":[[0,\"    \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"tfquestion\"]],\"Question\"]]],false],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"tfhelp\"]],\"Help\"]]],false],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"multipleChoice\"]]],null,{\"statements\":[[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"fourteen wide field\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"mcquestion\"]],\"Question\"]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"fourteen wide field\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"mcop1\"]],\"Option 1\"]]],false],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"option2\"]]],null,{\"statements\":[[0,\"            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"mcop2\"]],\"Option 2\"]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"option3\"]]],null,{\"statements\":[[0,\"            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"mcop3\"]],\"Option 3\"]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"option4\"]]],null,{\"statements\":[[0,\"            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"mcop4\"]],\"Option 4\"]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"option5\"]]],null,{\"statements\":[[0,\"            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"mcop5\"]],\"Option 5\"]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"option6\"]]],null,{\"statements\":[[0,\"            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"mcop6\"]],\"Option 6\"]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"fourteen wide field\"],[7],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"addable\"]]],null,{\"statements\":[[0,\"        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[3,\"action\",[[19,0,[]],\"addOption\"]],[7],[0,\"Add Option\"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"removable\"]]],null,{\"statements\":[[0,\"        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[3,\"action\",[[19,0,[]],\"removeOption\"]],[7],[0,\"Remove Option\"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"    \"],[8],[0,\"  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"fourteen wide field\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"mchelp\"]],\"Help\"]]],false],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n      \"],[6,\"button\"],[9,\"class\",\"ui fluid positive button\"],[3,\"action\",[[19,0,[]],\"submit\"]],[7],[0,\"Submit\"],[8],[0,\"\\n      \"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"cancel\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},{\"statements\":[[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n    \"],[6,\"button\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"addQuestion\"]],[7],[0,\"\\n        Add Question\\n    \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/add-question.hbs" } });
+});
+define("self-start-front-end/templates/components/add-rehabplan", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "vxIZumQN", "block": "{\"symbols\":[\"oneExercise\"],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"fieldset\"],[7],[0,\"\\n    \"],[6,\"legend\"],[7],[0,\"Rehabilitation Plan\"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Name\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"star\",\"text\",[20,[\"Name\"]],true]]],false],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Author\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"text\",[20,[\"authorName\"]],true]]],false],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-textarea\"],[7],[0,\"Description\"],[8],[0,\"\\n      \"],[1,[25,\"textarea\",null,[[\"class\",\"name\",\"value\",\"required\"],[\"message\",\"cd-textarea\",[20,[\"description\"]],true]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Goal\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"award\",\"text\",[20,[\"goal\"]],true]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Time\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"video\",\"text\",[20,[\"timeToComplete\"]],true]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n    \"],[6,\"div\"],[7],[0,\"\\n      \"],[6,\"h4\"],[7],[0,\"Exercises\"],[8],[0,\"\\n      \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n        \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],[25,\"mut\",[[20,[\"exercise\"]]],null]],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"exerciseModel\"]]],null,{\"statements\":[[0,\"            \"],[6,\"option\"],[10,\"value\",[19,1,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"exercise\",\"name\"]],[19,1,[\"name\"]]],null],null],[7],[0,\"\\n              \"],[1,[19,1,[\"name\"]],false],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n    \"],[6,\"div\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"cd-button\"],[7],[0,\"\\n        \"],[6,\"input\"],[9,\"type\",\"submit\"],[9,\"value\",\"Submit\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n\\n\\n\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\\n\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/add-rehabplan.hbs" } });
+});
 define("self-start-front-end/templates/components/admin-nav", ["exports"], function (exports) {
   "use strict";
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "d5V0Axhi", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/home-style.css\"]]],[7],[8],[0,\"\\n\\n\"],[2,\"<style>\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .fixed,\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .pusher {\"],[0,\"\\n\"],[2,\"-ebkit-transform: translate3d(260px, 0, 0); transform: translate3d(260px, 0, 0);\"],[0,\"\\n\"],[2,\"}\"],[0,\"\\n\"],[2,\"</style>\"],[0,\"\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index pushable\"],[7],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"following bar\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n                  \"],[4,\"link-to\",[\"admin\"],null,{\"statements\":[[6,\"img\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/Header.png\"],[7],[8]],\"parameters\":[]},null],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"right menu inverted\"],[7],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"../patients\"],[9,\"class\",\"item\"],[7],[0,\"Clients\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"../exercises\"],[9,\"class\",\"item\"],[7],[0,\"Exercise\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Forms\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"../manage-selections\"],[9,\"class\",\"item\"],[7],[0,\"Configure\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Appointments\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"href\",\"../\"],[9,\"class\",\"item\"],[7],[0,\"Log out\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[11,1],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/admin-nav.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "uDQgynS3", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/home-style.css\"]]],[7],[8],[0,\"\\n\\n\"],[2,\"<style>\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .fixed,\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .pusher {\"],[0,\"\\n\"],[2,\"-ebkit-transform: translate3d(260px, 0, 0); transform: translate3d(260px, 0, 0);\"],[0,\"\\n\"],[2,\"}\"],[0,\"\\n\"],[2,\"</style>\"],[0,\"\\n\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index pushable\"],[7],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"following bar\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n                  \"],[4,\"link-to\",[\"admin\"],null,{\"statements\":[[6,\"img\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/Header.png\"],[7],[8]],\"parameters\":[]},null],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"right menu inverted\"],[7],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"../patients\"],[9,\"class\",\"item\"],[7],[0,\"Clients\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"../exercises\"],[9,\"class\",\"item\"],[7],[0,\"Exercise\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"../forms\"],[9,\"class\",\"item\"],[7],[0,\"Forms\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"../questions\"],[9,\"class\",\"item\"],[7],[0,\"Questions\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"../manage-selections\"],[9,\"class\",\"item\"],[7],[0,\"Configure\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"../appointment\"],[9,\"class\",\"item\"],[7],[0,\"Appointments\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"href\",\"../\"],[9,\"class\",\"item\"],[7],[0,\"Log out\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[11,1],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/admin-nav.hbs" } });
 });
 define("self-start-front-end/templates/components/admin-welcome", ["exports"], function (exports) {
   "use strict";
@@ -4797,6 +7721,70 @@ define("self-start-front-end/templates/components/admin-welcome", ["exports"], f
   });
   exports.default = Ember.HTMLBars.template({ "id": "baed85T6", "block": "{\"symbols\":[],\"statements\":[[4,\"admin-nav\",null,null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"masthead segment bg3\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n        \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"library\"],[7],[0,\"Welcome Stephanie\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/admin-welcome.hbs" } });
 });
+define("self-start-front-end/templates/components/as-calendar", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "H+FjSGB7", "block": "{\"symbols\":[\"day\",\"timetable\",\"occurrence\",\"@onRemoveOccurrence\",\"@onUpdateOccurrence\",\"&default\"],\"statements\":[[4,\"if\",[[20,[\"showHeader\"]]],null,{\"statements\":[[0,\"  \"],[1,[25,\"as-calendar/header\",null,[[\"title\",\"model\",\"onNavigateWeek\"],[[20,[\"title\"]],[20,[\"model\"]],[25,\"action\",[[19,0,[]],\"onNavigateWeek\"],null]]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"as-calendar/timetable\",null,[[\"model\",\"timeZone\",\"timeZoneOptions\",\"showTimeZoneSearch\",\"timeSlotHeight\",\"defaultTimeZoneQuery\",\"onSelectTime\",\"onChangeTimeZone\"],[[20,[\"model\"]],[20,[\"timeZone\"]],[20,[\"timeZoneOptions\"]],[20,[\"showTimeZoneSearch\"]],[20,[\"timeSlotHeight\"]],[20,[\"defaultTimeZoneQuery\"]],[25,\"action\",[[19,0,[]],\"addOccurrence\"],null],[25,\"action\",[[19,0,[]],\"changeTimeZone\"],null]]],{\"statements\":[[0,\"  \"],[6,\"ul\"],[9,\"class\",\"occurrences\"],[7],[0,\"\\n\"],[4,\"each\",[[19,1,[\"occurrences\"]]],null,{\"statements\":[[0,\"      \"],[6,\"li\"],[7],[0,\"\\n\"],[4,\"if\",[[22,6]],null,{\"statements\":[[0,\"          \"],[11,6,[[19,3,[]],[19,2,[]],[19,0,[]]]],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"          \"],[1,[25,\"as-calendar/timetable/occurrence\",null,[[\"model\",\"timeSlotHeight\",\"timetable\",\"timeSlotDuration\",\"onUpdate\",\"onRemove\"],[[19,3,[]],[20,[\"timeSlotHeight\"]],[19,2,[]],[20,[\"timeSlotDuration\"]],[25,\"action\",[[19,0,[]],[19,5,[]]],null],[25,\"action\",[[19,0,[]],[19,4,[]]],null]]]],false],[0,\"\\n\"]],\"parameters\":[]}],[0,\"      \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"\\n\"],[4,\"if\",[[19,1,[\"occurrencePreview\"]]],null,{\"statements\":[[0,\"      \"],[6,\"li\"],[7],[0,\"\\n        \"],[1,[25,\"as-calendar/occurrence\",null,[[\"class\",\"model\",\"timeSlotHeight\",\"timeSlotDuration\"],[\"as-calendar-occurrence--preview\",[19,1,[\"occurrencePreview\"]],[20,[\"timeSlotHeight\"]],[20,[\"timeSlotDuration\"]]]]],false],[0,\"\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"  \"],[8],[0,\"\\n\"]],\"parameters\":[1,2]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/as-calendar.hbs" } });
+});
+define("self-start-front-end/templates/components/as-calendar/header", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "wyEUc5Xs", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"h1\"],[9,\"class\",\"as-calendar-header__title\"],[7],[1,[18,\"title\"],false],[8],[0,\"\\n\\n\"],[11,1,[[19,0,[]]]],[0,\"\\n\\n\"],[6,\"nav\"],[9,\"class\",\"as-calendar-header__nav\"],[7],[0,\"\\n  \"],[6,\"ul\"],[9,\"class\",\"as-calendar-header__nav-group\"],[7],[0,\"\\n    \"],[6,\"li\"],[9,\"class\",\"as-calendar-header__nav-group-item\"],[7],[0,\"\\n      \"],[6,\"button\"],[9,\"class\",\"as-calendar-header__nav-group-action as-calendar-header__nav-group-action--previous-week\"],[3,\"action\",[[19,0,[]],\"navigateWeek\",-1]],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"li\"],[9,\"class\",\"as-calendar-header__nav-group-item\"],[7],[0,\"\\n      \"],[6,\"button\"],[10,\"disabled\",[18,\"isInCurrentWeek\"],null],[9,\"class\",\"as-calendar-header__nav-group-action as-calendar-header__nav-group-action--current-week\"],[3,\"action\",[[19,0,[]],\"goToCurrentWeek\"]],[7],[0,\"This Week\"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"li\"],[9,\"class\",\"as-calendar-header__nav-group-item\"],[7],[0,\"\\n      \"],[6,\"button\"],[9,\"class\",\"as-calendar-header__nav-group-action as-calendar-header__nav-group-action--next-week\"],[3,\"action\",[[19,0,[]],\"navigateWeek\",1]],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/as-calendar/header.hbs" } });
+});
+define("self-start-front-end/templates/components/as-calendar/occurrence", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "YamFOLN7", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"div\"],[9,\"class\",\"as-calendar-occurrence__container\"],[7],[0,\"\\n\"],[4,\"if\",[[22,1]],null,{\"statements\":[[0,\"    \"],[11,1],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"    \"],[6,\"h1\"],[9,\"class\",\"as-calendar-occurrence__title\"],[10,\"style\",[18,\"titleStyle\"],null],[7],[1,[18,\"title\"],false],[8],[0,\"\\n\"]],\"parameters\":[]}],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/as-calendar/occurrence.hbs" } });
+});
+define("self-start-front-end/templates/components/as-calendar/time-zone-option", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "yZ8f2QDq", "block": "{\"symbols\":[],\"statements\":[[1,[18,\"description\"],false],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/as-calendar/time-zone-option.hbs" } });
+});
+define("self-start-front-end/templates/components/as-calendar/time-zone-select", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "EreDUHiK", "block": "{\"symbols\":[\"option\",\"@onChangeTimeZone\"],\"statements\":[[4,\"rl-dropdown-container\",null,[[\"dropdownExpanded\"],[[20,[\"showResults\"]]]],{\"statements\":[[4,\"rl-dropdown-toggle\",null,null,{\"statements\":[[0,\"    \"],[6,\"span\"],[7],[1,[18,\"selectedOptionAbbreviation\"],false],[8],[0,\"\\n    \"],[6,\"i\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"rl-dropdown\",null,[[\"closeOnChildClick\"],[\".results\"]],{\"statements\":[[4,\"if\",[[20,[\"showResults\"]]],[[\"use\",\"containerless\"],[\"crossFade\",true]],{\"statements\":[[4,\"if\",[[20,[\"showSearch\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"search\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[6,\"i\"],[7],[8],[8],[0,\"\\n\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"key-up\",\"placeholder\"],[\"text\",[20,[\"inputQuery\"]],\"inputQueryChanged\",\"Search timezones\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"results\"],[7],[0,\"\\n        \"],[6,\"ul\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"arrangedOptions\"]]],null,{\"statements\":[[0,\"            \"],[6,\"li\"],[7],[0,\"\\n              \"],[1,[25,\"as-calendar/time-zone-option\",null,[[\"option\",\"select\",\"selectedOption\",\"tagName\",\"onSelect\"],[[19,1,[]],[19,0,[]],[20,[\"selectedOption\"]],\"a\",[25,\"action\",[[19,0,[]],[19,2,[]]],null]]]],false],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[]},null]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/as-calendar/time-zone-select.hbs" } });
+});
+define("self-start-front-end/templates/components/as-calendar/timetable", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "hRH7zobJ", "block": "{\"symbols\":[\"day\",\"timeSlot\",\"day\",\"&default\",\"@onChangeTimeZone\",\"@onSelectTime\"],\"statements\":[[6,\"div\"],[9,\"class\",\"as-calendar-timetable__row as-calendar-timetable__row--highlighted\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"as-calendar-timetable__first-column\"],[7],[0,\"\\n    \"],[1,[25,\"as-calendar/time-zone-select\",null,[[\"value\",\"options\",\"defaultQuery\",\"showSearch\",\"onChangeTimeZone\"],[[20,[\"timeZone\"]],[20,[\"timeZoneOptions\"]],[20,[\"defaultTimeZoneQuery\"]],[20,[\"showTimeZoneSearch\"]],[25,\"action\",[[19,0,[]],[19,5,[]]],null]]]],false],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"as-calendar-timetable__columns\"],[7],[0,\"\\n    \"],[6,\"ul\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"days\"]]],null,{\"statements\":[[0,\"        \"],[6,\"li\"],[10,\"class\",[26,[\"as-calendar-timetable__column-item \",[25,\"if\",[[19,3,[\"isToday\"]],\"as-calendar-timetable__column-item--highlighted\"],null]]]],[7],[0,\"\\n          \"],[1,[25,\"moment-format\",[[19,3,[\"value\"]],\"ddd D MMM\"],null],false],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"as-calendar-timetable__row\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"as-calendar-timetable__first-column\"],[7],[0,\"\\n    \"],[6,\"ul\"],[9,\"class\",\"as-calendar-timetable__slot-labels\"],[10,\"style\",[18,\"timeSlotLabelListStyle\"],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"labeledTimeSlots\"]]],null,{\"statements\":[[0,\"        \"],[6,\"li\"],[9,\"class\",\"as-calendar-timetable__slot-label\"],[10,\"style\",[18,\"timeSlotLabelStyle\"],null],[7],[0,\"\\n          \"],[1,[25,\"moment-format\",[[19,2,[\"value\"]],\"h A\"],null],false],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"as-calendar-timetable__columns\"],[7],[0,\"\\n\"],[4,\"as-calendar/timetable/content\",null,[[\"timeSlotHeight\",\"model\",\"timetable\",\"onSelectTime\"],[[20,[\"timeSlotHeight\"]],[20,[\"model\"]],[19,0,[]],[25,\"action\",[[19,0,[]],[19,6,[]]],null]]],{\"statements\":[[0,\"      \"],[11,4,[[19,1,[]],[19,0,[]]]],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/as-calendar/timetable.hbs" } });
+});
+define("self-start-front-end/templates/components/as-calendar/timetable/content", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "nbRbm0f1", "block": "{\"symbols\":[\"day\",\"index\",\"timeSlot\",\"&default\"],\"statements\":[[6,\"ul\"],[9,\"class\",\"as-calendar-timetable__slots\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"timeSlots\"]]],null,{\"statements\":[[0,\"    \"],[6,\"li\"],[9,\"class\",\"as-calendar-timetable__slot-item\"],[10,\"style\",[18,\"timeSlotStyle\"],null],[7],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[8],[0,\"\\n\\n\"],[6,\"ul\"],[9,\"class\",\"as-calendar-timetable__days\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"days\"]]],null,{\"statements\":[[0,\"    \"],[6,\"li\"],[9,\"data-test-day\",\"\"],[10,\"data-test-day-id\",[26,[[19,2,[]]]]],[10,\"class\",[26,[\"as-calendar-timetable__day \",[25,\"if\",[[19,1,[\"isToday\"]],\"as-calendar-timetable__day--today\"],null]]]],[7],[0,\"\\n      \"],[11,4,[[19,1,[]],[19,0,[]]]],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[1,2]},null],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/as-calendar/timetable/content.hbs" } });
+});
+define("self-start-front-end/templates/components/as-calendar/timetable/occurrence", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "end+gUPf", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"div\"],[9,\"class\",\"as-calendar-occurrence__container\"],[7],[0,\"\\n\"],[4,\"if\",[[22,1]],null,{\"statements\":[[0,\"    \"],[11,1],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"    \"],[6,\"h1\"],[9,\"class\",\"as-calendar-occurrence__title\"],[10,\"style\",[18,\"titleStyle\"],null],[7],[1,[18,\"title\"],false],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n\"],[4,\"unless\",[[20,[\"isInteracting\"]]],null,{\"statements\":[[4,\"if\",[[20,[\"isRemovable\"]]],null,{\"statements\":[[0,\"      \"],[6,\"a\"],[9,\"class\",\"as-calendar-occurrence__remove\"],[3,\"action\",[[19,0,[]],\"remove\"],[[\"bubbles\"],[false]]],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"isResizable\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"as-calendar-occurrence__resize-handle\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[]},null],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/as-calendar/timetable/occurrence.hbs" } });
+});
 define("self-start-front-end/templates/components/back-to-top", ["exports"], function (exports) {
   "use strict";
 
@@ -4805,6 +7793,14 @@ define("self-start-front-end/templates/components/back-to-top", ["exports"], fun
   });
   exports.default = Ember.HTMLBars.template({ "id": "2X3Y11K3", "block": "{\"symbols\":[\"&default\"],\"statements\":[[11,1],[0,\"\\n\"],[2,\" ICON NEEDS FONT AWESOME FOR CHEVRON UP ICON \"],[0,\"\\n\"],[6,\"link\"],[9,\"href\",\"//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css\"],[9,\"rel\",\"stylesheet\"],[7],[8],[0,\"\\n\\n\"],[2,\" Return to Top \"],[0,\"\\n\"],[6,\"a\"],[9,\"href\",\"javascript:\"],[9,\"id\",\"return-to-top\"],[7],[6,\"i\"],[9,\"class\",\"icon-chevron-up\"],[7],[8],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/back-to-top.hbs" } });
 });
+define("self-start-front-end/templates/components/book-appointment", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "7PX37VG1", "block": "{\"symbols\":[],\"statements\":[[1,[25,\"as-calendar\",null,[[\"title\",\"occurrences\",\"defaultTimeZoneQuery\",\"dayStartingTime\",\"dayEndingTime\",\"timeSlotDuration\",\"onAddOccurrence\",\"onUpdateOccurrence\",\"onRemoveOccurrence\"],[\"Ember Calendar\",[20,[\"occurrences\"]],\"Toronto|New York\",\"9:00\",\"18:00\",\"00:30\",[25,\"action\",[[19,0,[]],\"calendarAddOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarUpdateOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarRemoveOccurrence\"],null]]]],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/book-appointment.hbs" } });
+});
 define("self-start-front-end/templates/components/config-selection", ["exports"], function (exports) {
   "use strict";
 
@@ -4812,6 +7808,14 @@ define("self-start-front-end/templates/components/config-selection", ["exports"]
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "ChMEr3Yr", "block": "{\"symbols\":[\"province\",\"country\",\"gender\"],\"statements\":[[6,\"link\"],[9,\"href\",\"http://fonts.googleapis.com/css?family=Ubuntu:400,700\"],[9,\"rel\",\"stylesheet\"],[9,\"type\",\"text/css\"],[7],[8],[0,\"\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/table-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\"],[4,\"admin-nav\",null,null,{\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"masthead segment bg4\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n        \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"tagline\"],[7],[0,\"\\n           Configure Selections\\n        \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui centered cards\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:200px\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Countries\"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[3,\"action\",[[19,0,[]],\"countrySelect\"]],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"Add Country\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:200px\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Provinces\"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[3,\"action\",[[19,0,[]],\"provinceSelect\"]],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n          Add Province\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:200px\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Cities\"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n        Add City\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:200px\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Genders\"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[3,\"action\",[[19,0,[]],\"genderSelect\"]],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"Add Gender\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\\n\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"genderSelected\"]]],null,{\"statements\":[[0,\"  \"],[6,\"section\"],[9,\"id\",\"cd-section\"],[7],[0,\"\\n    \"],[6,\"section\"],[9,\"id\",\"cd-table\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"cd-table-container\"],[7],[0,\"\\n        \"],[6,\"ul\"],[7],[0,\"\\n          \"],[6,\"li\"],[9,\"style\",\"  text-align: center; font-size: 1.2rem; text-transform: uppercase;\\n                          font-weight: bold; color: white; background-color: #f58b4c;\"],[7],[0,\"Genders\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\",\"gender\"]]],null,{\"statements\":[[0,\"\\n            \"],[6,\"li\"],[7],[0,\"\\n              \"],[1,[19,3,[\"name\"]],false],[0,\"\\n              \"],[6,\"p\"],[9,\"style\",\"float: right;\"],[7],[1,[25,\"delete-gender\",null,[[\"ID\"],[[19,3,[\"id\"]]]]],false],[8],[0,\"\\n              \"],[6,\"p\"],[9,\"style\",\"float: right; padding-right: 2%;\"],[7],[1,[25,\"edit-gender\",null,[[\"ID\"],[[19,3,[\"id\"]]]]],false],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n\"]],\"parameters\":[3]},null],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\" \"],[2,\" cd-table \"],[0,\"\\n    \"],[1,[18,\"add-gender\"],false],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"countrySelected\"]]],null,{\"statements\":[[0,\"  \"],[6,\"section\"],[9,\"id\",\"cd-section\"],[7],[0,\"\\n    \"],[6,\"section\"],[9,\"id\",\"cd-table\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"cd-table-container\"],[7],[0,\"\\n        \"],[6,\"ul\"],[7],[0,\"\\n          \"],[6,\"li\"],[9,\"style\",\"  text-align: center; font-size: 1.2rem; text-transform: uppercase;\\n                          font-weight: bold; color: white; background-color: #f58b4c;\"],[7],[0,\"Countries\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\",\"country\"]]],null,{\"statements\":[[0,\"\\n            \"],[6,\"li\"],[7],[1,[19,2,[\"name\"]],false],[0,\"\\n              \"],[6,\"p\"],[9,\"style\",\"float: right;\"],[7],[1,[25,\"delete-country\",null,[[\"ID\"],[[19,2,[\"id\"]]]]],false],[8],[0,\"\\n              \"],[6,\"p\"],[9,\"style\",\"float: right; padding-right: 2%;\"],[7],[1,[25,\"edit-country\",null,[[\"ID\"],[[19,2,[\"id\"]]]]],false],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n\"]],\"parameters\":[2]},null],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\" \"],[2,\" cd-table \"],[0,\"\\n    \"],[1,[18,\"add-country\"],false],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"provinceSelected\"]]],null,{\"statements\":[[0,\"  \"],[6,\"section\"],[9,\"id\",\"cd-section\"],[7],[0,\"\\n    \"],[6,\"section\"],[9,\"id\",\"cd-table\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"cd-table-container\"],[7],[0,\"\\n        \"],[6,\"ul\"],[7],[0,\"\\n          \"],[6,\"li\"],[9,\"style\",\"  text-align: center; font-size: 1.2rem; text-transform: uppercase;\\n                          font-weight: bold; color: white; background-color: #f58b4c;\"],[7],[0,\"Provinces\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\",\"province\"]]],null,{\"statements\":[[0,\"\\n            \"],[6,\"li\"],[7],[1,[19,1,[\"name\"]],false],[0,\"\\n              \"],[6,\"p\"],[9,\"style\",\"float: right;\"],[7],[1,[25,\"delete-province\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n\"]],\"parameters\":[1]},null],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\" \"],[2,\" cd-table \"],[0,\"\\n    \"],[1,[18,\"add-province\"],false],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/config-selection.hbs" } });
+});
+define("self-start-front-end/templates/components/confirm-booking", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "Q/QR1tNW", "block": "{\"symbols\":[],\"statements\":[[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"fieldset\"],[7],[0,\"\\n      \"],[6,\"legend\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n      \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n      \"],[6,\"p\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Reason\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"star\",\"text\",[20,[\"Reason\"]]]]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Other\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"user\",\"text\",[20,[\"Other\"]]]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Date\"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"cd-button\"],[7],[0,\"\\n          \"],[6,\"input\"],[9,\"type\",\"submit\"],[9,\"value\",\"Submit\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"cancelbookingappointment\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/confirm-booking.hbs" } });
 });
 define("self-start-front-end/templates/components/delete-country", ["exports"], function (exports) {
   "use strict";
@@ -4827,7 +7831,15 @@ define("self-start-front-end/templates/components/delete-exercises", ["exports"]
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "3BQRD3b5", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"button\"],[9,\"class\",\"ui mini circular icon red button\"],[9,\"title\",\"Delete\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"i\"],[9,\"class\",\" remove icon\"],[7],[0,\" \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    \"],[6,\"i\"],[9,\"class\",\" warning sign icon\"],[7],[8],[0,\"\\n    Please Confirm\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you want to delete this exercise?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui red cancel inverted button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"remove icon\"],[7],[8],[0,\"\\n      No\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui green ok inverted button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[0,\"\\n      Yes\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[11,1]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/delete-exercises.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "+nxMKZ9i", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"button\"],[9,\"class\",\"ui mini circular icon red button\"],[9,\"title\",\"Delete\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"i\"],[9,\"class\",\" remove icon\"],[7],[0,\" \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    \"],[6,\"i\"],[9,\"class\",\" warning sign icon\"],[7],[8],[0,\"\\n    Please Confirm\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you want to delete this exercise?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui red cancel inverted button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"remove icon\"],[7],[8],[0,\"\\n      No\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui green ok inverted button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[0,\"\\n      Yes\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[11,1],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/delete-exercises.hbs" } });
+});
+define("self-start-front-end/templates/components/delete-form", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "C8e2swLZ", "block": "{\"symbols\":[],\"statements\":[[6,\"button\"],[9,\"class\",\"ui mini circular labeled icon red button\"],[9,\"title\",\"Delete\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"i\"],[9,\"class\",\"remove icon\"],[7],[8],[0,\"\\n  Delete\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    \"],[6,\"i\"],[9,\"class\",\"warning sign icon\"],[7],[8],[0,\"\\n    Delete form?\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui right floated red cancel inverted button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"remove icon\"],[7],[8],[0,\"\\n      No\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui green ok inverted button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[0,\"\\n      Yes\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/delete-form.hbs" } });
 });
 define("self-start-front-end/templates/components/delete-gender", ["exports"], function (exports) {
   "use strict";
@@ -4843,15 +7855,47 @@ define("self-start-front-end/templates/components/delete-patient", ["exports"], 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "e3PosvNV", "block": "{\"symbols\":[],\"statements\":[[6,\"p\"],[9,\"style\",\"cursor: pointer;\"],[9,\"title\",\"Delete\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"img\"],[9,\"src\",\"assets/images/trash-simple.svg\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Please Confirm ...\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you need to delete this element?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #fc7169; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/delete-patient.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "ybzHFBUt", "block": "{\"symbols\":[],\"statements\":[[6,\"p\"],[9,\"style\",\"cursor: pointer;\"],[9,\"title\",\"Delete\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"img\"],[9,\"src\",\"assets/images/trash-simple.svg\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Please Confirm ...\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you need to delete this element?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #fc7169; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/delete-patient.hbs" } });
 });
-define("self-start-front-end/templates/components/delete-province", ["exports"], function (exports) {
+define("self-start-front-end/templates/components/delete-physiotherapist", ["exports"], function (exports) {
   "use strict";
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "N6XDsEYf", "block": "{\"symbols\":[],\"statements\":[[6,\"p\"],[9,\"style\",\"cursor: pointer;\"],[9,\"title\",\"Delete\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[6,\"i\"],[9,\"class\",\"red remove icon\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Please Confirm ...\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you need to delete this element?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"float:left; width: 50%; cursor: pointer; background: #fc7169; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/delete-province.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "U2BkXUSk", "block": "{\"symbols\":[],\"statements\":[[6,\"p\"],[9,\"style\",\"cursor: pointer;\"],[9,\"title\",\"Delete\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[6,\"i\"],[9,\"class\",\"red remove icon\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Please Confirm ...\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you need to delete this element?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"float:left; width: 50%; cursor: pointer; background: #fc7169; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/delete-physiotherapist.hbs" } });
+});
+define("self-start-front-end/templates/components/delete-question", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "HCUH5RCQ", "block": "{\"symbols\":[],\"statements\":[[6,\"button\"],[9,\"class\",\"ui mini circular labeled icon red button\"],[9,\"title\",\"Delete\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"i\"],[9,\"class\",\"remove icon\"],[7],[8],[0,\"\\n  Delete\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Please Confirm ...\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you need to delete this element?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"float:left; width: 50%; cursor: pointer; background: #fc7169; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/delete-question.hbs" } });
+});
+define("self-start-front-end/templates/components/delete-rehabplan", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "GZkuwdTM", "block": "{\"symbols\":[],\"statements\":[[6,\"button\"],[9,\"class\",\"ui mini circular labeled icon red button\"],[9,\"title\",\"Delete\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"i\"],[9,\"class\",\"remove icon\"],[7],[8],[0,\"\\n  Delete\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Please Confirm ...\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you need to delete this element?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"float:left; width: 50%; cursor: pointer; background: #fc7169; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/delete-rehabplan.hbs" } });
+});
+define("self-start-front-end/templates/components/delete-status", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "jCwNEmuY", "block": "{\"symbols\":[],\"statements\":[[6,\"p\"],[9,\"style\",\"cursor: pointer;\"],[9,\"title\",\"Delete\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[6,\"i\"],[9,\"class\",\"red remove icon\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Please Confirm ...\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you need to delete this element?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"float:left; width: 50%; cursor: pointer; background: #fc7169; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/delete-status.hbs" } });
+});
+define("self-start-front-end/templates/components/display-questions", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "NGZTFNTU", "block": "{\"symbols\":[\"q\"],\"statements\":[[6,\"script\"],[9,\"type\",\"text/javascript\"],[7],[0,\"$(document).ready(function(){$(\\\".rating\\\").rating();});\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\"],[6,\"ol\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"formModel\",\"questions\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"if\",[[19,1,[\"sa\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui input focus\"],[7],[0,\"\\n            \"],[6,\"li\"],[7],[1,[25,\"input\",null,[[\"type\",\"value\"],[\"text\",[20,[\"the\"]]]]],false],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[19,1,[\"ra\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n         \"],[6,\"li\"],[7],[6,\"div\"],[9,\"class\",\"ui large heart rating\"],[9,\"data-max-rating\",\"10\"],[7],[8],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[19,1,[\"tf\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n     \"],[6,\"li\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"inline fields\"],[7],[0,\"\\n           \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"tf\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[0,\"True\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n               \"],[6,\"input\"],[9,\"name\",\"tf\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n               \"],[6,\"label\"],[7],[0,\"False\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"  \\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[19,1,[\"mc\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"grouped fields\"],[7],[0,\"\\n          \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],0],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],1],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],2],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"],[4,\"if\",[[25,\"number-of-mc\",[[19,1,[\"optionNumber\"]],3],null]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],3],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"number-of-mc\",[[19,1,[\"optionNumber\"]],4],null]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],4],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"number-of-mc\",[[19,1,[\"optionNumber\"]],5],null]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],5],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[1]},null],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"button\"],[3,\"action\",[[19,0,[]],\"Submit\"]],[7],[0,\"Submit\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/display-questions.hbs" } });
 });
 define("self-start-front-end/templates/components/edit-country", ["exports"], function (exports) {
   "use strict";
@@ -4867,7 +7911,15 @@ define("self-start-front-end/templates/components/edit-exercises", ["exports"], 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "+4bDBm6R", "block": "{\"symbols\":[\"file\",\"image\",\"aS\",\"o\"],\"statements\":[[6,\"button\"],[9,\"class\",\"ui mini circular icon green button\"],[9,\"title\",\"Edit\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"i\"],[9,\"class\",\" pencil icon\"],[7],[0,\" \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui fluid raised very padded text container segment\"],[7],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"id\",\"rehabPlan\"],[9,\"class\",\"ui fluid centered header\"],[7],[0,\"Edit Exercise \"],[1,[18,\"Name\"],false],[8],[0,\"\\n\\n    \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Exercise Name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Name\"]],\"Exercise Name\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[2,\"Description\"],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Description\"],[8],[0,\"\\n        \"],[1,[25,\"textarea\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Description\"]],\"Description\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Author Name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"AuthName\"]],\"Author Name\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Objectives\"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui action input\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Objective\"]],\"Objective\"]]],false],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui white right labeled icon button\"],[3,\"action\",[[19,0,[]],\"addObjective\"]],[7],[0,\"\\n            Add \"],[6,\"br\"],[7],[8],[0,\" Objective\\n            \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui inverted segment\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"align\",\"center\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Current Objectives\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"ul\"],[9,\"align\",\"left\"],[10,\"value\",[18,\"obj\"],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"obj\"]]],null,{\"statements\":[[0,\"              \"],[6,\"li\"],[7],[0,\"\\n                \"],[6,\"p\"],[7],[0,\"\\n                  \"],[1,[19,4,[]],false],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Edit\"],[9,\"class\",\"gray write icon\"],[3,\"action\",[[19,0,[]],\"edit\"]],[7],[8],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Delete\"],[9,\"class\",\"red remove icon\"],[3,\"action\",[[19,0,[]],\"openModelDelete\"]],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[4]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Action Steps\"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui action input\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"ActionSteps\"]],\"Action Steps\"]]],false],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui white right labeled icon button\"],[3,\"action\",[[19,0,[]],\"addActionStep\"]],[7],[0,\"\\n            Add \"],[6,\"br\"],[7],[8],[0,\" Action Step\\n            \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui inverted segment\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"align\",\"center\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Current Action Steps\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"ol\"],[9,\"align\",\"left\"],[10,\"value\",[18,\"actionStep\"],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"actionStep\"]]],null,{\"statements\":[[0,\"              \"],[6,\"li\"],[7],[0,\"\\n                \"],[6,\"p\"],[7],[0,\"\\n                  \"],[1,[19,3,[]],false],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Edit\"],[9,\"class\",\"gray write icon\"],[3,\"action\",[[19,0,[]],\"edit\"]],[7],[8],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Delete\"],[9,\"class\",\"red remove icon\"],[3,\"action\",[[19,0,[]],\"delete\"]],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Location\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Location\"]],\"Location\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Frequency\"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui left icon action input\"],[7],[0,\"\\n          \"],[6,\"i\"],[9,\"class\",\"hourglass half icon\"],[7],[8],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Frequency\"]],\"Frequency\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Duration\"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui left icon action input\"],[7],[0,\"\\n          \"],[6,\"i\"],[9,\"class\",\"calendar icon\"],[7],[8],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Duration\"]],\"Duration\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Target Date\"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui left icon action input\"],[7],[0,\"\\n          \"],[6,\"i\"],[9,\"class\",\"add to calendar icon\"],[7],[8],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"TargetDate\"]],\"Target Date\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Multimedia URL\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"MMURL\"]],\"Multi Media URL\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"secQueue\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui items\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui small image\"],[7],[0,\"\\n                \"],[6,\"img\"],[10,\"src\",[26,[[19,2,[\"imageData\"]]]]],[7],[8],[0,\"\\n                \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n                  \"],[6,\"label\"],[7],[0,\"Image Name\"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[19,2,[\"name\"]],[19,2,[\"name\"]]]]],false],[0,\" \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[6,\"button\"],[9,\"class\",\"ui red basic button\"],[3,\"action\",[[19,0,[]],\"deleteFile\",[19,2,[]]]],[7],[0,\"\\n                    Delete\\n                  \"],[8],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"queue\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui divided demo items\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"image\"],[7],[0,\"\\n\"],[4,\"if\",[[19,1,[\"isUploading\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"div\"],[9,\"class\",\"ui active inverted dimmer\"],[7],[0,\"\\n                    \"],[6,\"div\"],[9,\"class\",\"ui loader\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                  \"],[6,\"img\"],[10,\"src\",[26,[[19,1,[\"base64Image\"]]]]],[7],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n\"],[4,\"if\",[[19,1,[\"isDisplayableImage\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"label\"],[7],[0,\"Image Name\"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n                    \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[19,1,[\"name\"]],\"Exercise Name\"]]],false],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n                    \"],[6,\"button\"],[9,\"class\",\"ui red basic button\"],[3,\"action\",[[19,0,[]],\"deleteNewFile\",[19,1,[]]]],[7],[0,\"\\n                      Delete\\n                    \"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                    \"],[6,\"p\"],[7],[0,\"Unsupported image\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui fluid labeled input\"],[7],[0,\"\\n          \"],[6,\"label\"],[9,\"class\",\"ui fluid huge label\"],[10,\"style\",[18,\"labelStyle\"],null],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"big cloud upload icon\"],[7],[8],[0,\"\\n            Click or Drop files into this area to upload files\\n          \"],[8],[0,\"\\n          \"],[6,\"input\"],[9,\"type\",\"file\"],[9,\"value\",\"target.value\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectFile\"],null],null],[10,\"style\",[18,\"inputStyle\"],null],[10,\"accept\",[26,[[18,\"accept\"]]]],[10,\"multiple\",[18,\"multiple\"],null],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[2,\"footer for save / cancel\"],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui positive button\"],[7],[0,\"Save\"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui black deny button\"],[7],[0,\"Cancel\"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/edit-exercises.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "D18+8sUl", "block": "{\"symbols\":[\"file\",\"image\",\"aS\",\"o\"],\"statements\":[[0,\"\\n\"],[6,\"button\"],[9,\"class\",\"ui mini circular icon green button\"],[9,\"title\",\"Edit\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"i\"],[9,\"class\",\" pencil icon\"],[7],[0,\" \"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui fluid raised very padded text container segment\"],[7],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"id\",\"rehabPlan\"],[9,\"class\",\"ui fluid centered header\"],[7],[0,\"Edit Exercise \"],[1,[18,\"Name\"],false],[8],[0,\"\\n\\n    \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Exercise Name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Name\"]],\"Exercise Name\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[2,\"Description\"],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Description\"],[8],[0,\"\\n        \"],[1,[25,\"textarea\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Description\"]],\"Description\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Author Name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"AuthName\"]],\"Author Name\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Objectives\"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui action input\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Objective\"]],\"Objective\"]]],false],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui white right labeled icon button\"],[3,\"action\",[[19,0,[]],\"addObjective\"]],[7],[0,\"\\n            Add \"],[6,\"br\"],[7],[8],[0,\" Objective\\n            \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui inverted segment\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"align\",\"center\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Current Objectives\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"ul\"],[9,\"align\",\"left\"],[10,\"value\",[18,\"obj\"],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"obj\"]]],null,{\"statements\":[[0,\"              \"],[6,\"li\"],[7],[0,\"\\n                \"],[6,\"p\"],[7],[0,\"\\n                  \"],[1,[19,4,[]],false],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Edit\"],[9,\"class\",\"gray write icon\"],[3,\"action\",[[19,0,[]],\"edit\"]],[7],[8],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Delete\"],[9,\"class\",\"red remove icon\"],[3,\"action\",[[19,0,[]],\"openModelDelete\"]],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[4]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Action Steps\"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui action input\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"ActionSteps\"]],\"Action Steps\"]]],false],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui white right labeled icon button\"],[3,\"action\",[[19,0,[]],\"addActionStep\"]],[7],[0,\"\\n            Add \"],[6,\"br\"],[7],[8],[0,\" Action Step\\n            \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui inverted segment\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"align\",\"center\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Current Action Steps\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"ol\"],[9,\"align\",\"left\"],[10,\"value\",[18,\"actionStep\"],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"actionStep\"]]],null,{\"statements\":[[0,\"              \"],[6,\"li\"],[7],[0,\"\\n                \"],[6,\"p\"],[7],[0,\"\\n                  \"],[1,[19,3,[]],false],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Edit\"],[9,\"class\",\"gray write icon\"],[3,\"action\",[[19,0,[]],\"edit\"]],[7],[8],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Delete\"],[9,\"class\",\"red remove icon\"],[3,\"action\",[[19,0,[]],\"delete\"]],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Location\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Location\"]],\"Location\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Frequency\"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui left icon action input\"],[7],[0,\"\\n          \"],[6,\"i\"],[9,\"class\",\"hourglass half icon\"],[7],[8],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Frequency\"]],\"Frequency\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Duration\"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui left icon action input\"],[7],[0,\"\\n          \"],[6,\"i\"],[9,\"class\",\"calendar icon\"],[7],[8],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Duration\"]],\"Duration\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Target Date\"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui left icon action input\"],[7],[0,\"\\n          \"],[6,\"i\"],[9,\"class\",\"add to calendar icon\"],[7],[8],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"TargetDate\"]],\"Target Date\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Multimedia URL\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"MMURL\"]],\"Multi Media URL\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"secQueue\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui items\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui small image\"],[7],[0,\"\\n                \"],[6,\"img\"],[10,\"src\",[26,[[19,2,[\"imageData\"]]]]],[7],[8],[0,\"\\n                \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n                  \"],[6,\"label\"],[7],[0,\"Image Name\"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[19,2,[\"name\"]],[19,2,[\"name\"]]]]],false],[0,\" \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[6,\"button\"],[9,\"class\",\"ui red basic button\"],[3,\"action\",[[19,0,[]],\"deleteFile\",[19,2,[]]]],[7],[0,\"\\n                    Delete\\n                  \"],[8],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"queue\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui divided demo items\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"image\"],[7],[0,\"\\n\"],[4,\"if\",[[19,1,[\"isUploading\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"div\"],[9,\"class\",\"ui active inverted dimmer\"],[7],[0,\"\\n                    \"],[6,\"div\"],[9,\"class\",\"ui loader\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                  \"],[6,\"img\"],[10,\"src\",[26,[[19,1,[\"base64Image\"]]]]],[7],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n\"],[4,\"if\",[[19,1,[\"isDisplayableImage\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"label\"],[7],[0,\"Image Name\"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n                    \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[19,1,[\"name\"]],\"Exercise Name\"]]],false],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n                    \"],[6,\"button\"],[9,\"class\",\"ui red basic button\"],[3,\"action\",[[19,0,[]],\"deleteNewFile\",[19,1,[]]]],[7],[0,\"\\n                      Delete\\n                    \"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                    \"],[6,\"p\"],[7],[0,\"Unsupported image\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui fluid labeled input\"],[7],[0,\"\\n          \"],[6,\"label\"],[9,\"class\",\"ui fluid huge label\"],[10,\"style\",[18,\"labelStyle\"],null],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"big cloud upload icon\"],[7],[8],[0,\"\\n            Click or Drop files into this area to upload files\\n          \"],[8],[0,\"\\n          \"],[6,\"input\"],[9,\"type\",\"file\"],[9,\"value\",\"target.value\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectFile\"],null],null],[10,\"style\",[18,\"inputStyle\"],null],[10,\"accept\",[26,[[18,\"accept\"]]]],[10,\"multiple\",[18,\"multiple\"],null],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[2,\"footer for save / cancel\"],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui positive button\"],[7],[0,\"Save\"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui black deny button\"],[7],[0,\"Cancel\"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/edit-exercises.hbs" } });
+});
+define("self-start-front-end/templates/components/edit-form", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "reQAgqpt", "block": "{\"symbols\":[],\"statements\":[[6,\"button\"],[9,\"class\",\"ui mini circular labeled icon green button\"],[9,\"title\",\"Edit\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[6,\"i\"],[9,\"class\",\"edit icon\"],[7],[8],[0,\"\\n        Edit\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n         \"],[6,\"label\"],[7],[0,\"Form Name\"],[8],[0,\"\\n         \"],[1,[25,\"input\",null,[[\"type\",\"cols\",\"rows\",\"value\"],[\"text\",\"50\",\"1\",[20,[\"fName\"]]]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Form Description\"],[8],[0,\"\\n        \"],[1,[25,\"textarea\",null,[[\"cols\",\"rows\",\"value\"],[\"50\",\"1\",[20,[\"fDescription\"]]]]],false],[0,\"\\n      \"],[8],[0,\"      \\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui right floated red deny button\"],[7],[0,\"\\n      Cancel\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui positive right labeled icon button\"],[7],[0,\"\\n      Save\\n      \"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/edit-form.hbs" } });
 });
 define("self-start-front-end/templates/components/edit-gender", ["exports"], function (exports) {
   "use strict";
@@ -4883,7 +7935,31 @@ define("self-start-front-end/templates/components/edit-patient", ["exports"], fu
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "vvC4Y8MA", "block": "{\"symbols\":[\"oneCountry\",\"oneGender\"],\"statements\":[[6,\"p\"],[9,\"style\",\"cursor: pointer; \"],[9,\"title\",\"Edit\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"img\"],[9,\"src\",\"assets/images/pencil.svg\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Edit Client\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"scrolling content\"],[7],[0,\"\\n\\n  \"],[6,\"form\"],[9,\"id\",\"edit\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n    \"],[6,\"fieldset\"],[7],[0,\"\\n      \"],[6,\"legend\"],[7],[0,\"Personal Info\"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"First Name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"\",\"text\",[20,[\"pateintsData\",\"givenName\"]],true]]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Last Name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"\",\"text\",[20,[\"pateintsData\",\"familyName\"]],true]]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Date of Birth\"],[8],[0,\"\\n        \"],[6,\"input\"],[9,\"class\",\"date\"],[9,\"type\",\"date\"],[10,\"value\",[18,\"selectedDate\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"assignDate\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[7],[0,\"\\n        \"],[6,\"h4\"],[7],[0,\"Gender\"],[8],[0,\"\\n        \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n          \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectGender\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"genderModel\"]]],null,{\"statements\":[[0,\"              \"],[6,\"option\"],[10,\"value\",[19,2,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"pateintsData\",\"gender\"]],[19,2,[\"name\"]]],null],null],[7],[0,\"\\n                \"],[1,[19,2,[\"name\"]],false],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Health Card Number\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"card\",\"text\",[20,[\"pateintsData\",\"healthCardNumber\"]],true]]],false],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n    \"],[6,\"fieldset\"],[7],[0,\"\\n      \"],[6,\"legend\"],[7],[0,\"Address\"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Number\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"home\",\"text\",[20,[\"pateintsData\",\"streetNumber\"]],true]]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Street Name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"home\",\"text\",[20,[\"pateintsData\",\"streetName\"]],true]]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Unit\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"bookmark\",\"text\",[20,[\"pateintsData\",\"apartment\"]]]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Postal/ZIP Code\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"flag\",\"text\",[20,[\"pateintsData\",\"postalCode\"]],true]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[7],[0,\"\\n        \"],[6,\"h4\"],[7],[0,\"Country\"],[8],[0,\"\\n        \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n          \"],[6,\"select\"],[9,\"class\",\"world\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectCountry\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"conutryModel\"]]],null,{\"statements\":[[0,\"              \"],[6,\"option\"],[10,\"value\",[19,1,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"pateintsData\",\"country\"]],[19,1,[\"name\"]]],null],null],[7],[0,\"\\n                \"],[1,[19,1,[\"name\"]],false],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n\\n\\n    \"],[6,\"fieldset\"],[7],[0,\"\\n      \"],[6,\"legend\"],[7],[0,\"Contact Info\"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Phone Number\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"phone\",\"text\",[20,[\"pateintsData\",\"phoneNumber\"]],true]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-email\"],[7],[0,\"Email\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"email\",\"email\",[20,[\"pateintsData\",\"email\"]],true]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n            \"],[2,\"<div class=\\\"ok cd-button\\\">\"],[0,\"\\n        \"],[2,\"<input type=\\\"submit\\\" value=\\\"Submit\\\">\"],[0,\"\\n      \"],[2,\"</div>\"],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\\n\\n      \"],[2,\"<div class=\\\"actions\\\">\"],[0,\"\\n        \"],[2,\"<div class=\\\"ok cd-button\\\">\"],[0,\"\\n          \"],[2,\"<input type=\\\"submit\\\" value=\\\"Submit\\\">\"],[0,\"\\n        \"],[2,\"</div>\"],[0,\"\\n      \"],[2,\"</div>\"],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"height: 75px\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui primary approve button\"],[9,\"style\",\"float: right;\"],[7],[0,\"\\n      Submit\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/edit-patient.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "lLBHFW6w", "block": "{\"symbols\":[\"oneCountry\",\"oneGender\"],\"statements\":[[6,\"p\"],[9,\"style\",\"cursor: pointer; \"],[9,\"title\",\"Edit\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"img\"],[9,\"src\",\"assets/images/pencil.svg\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Edit Client\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"scrolling content\"],[7],[0,\"\\n\\n  \"],[6,\"form\"],[9,\"id\",\"edit\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n    \"],[6,\"fieldset\"],[7],[0,\"\\n      \"],[6,\"legend\"],[7],[0,\"Personal Info\"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"First Name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"\",\"text\",[20,[\"pateintsData\",\"givenName\"]],true]]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Last Name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"\",\"text\",[20,[\"pateintsData\",\"familyName\"]],true]]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Date of Birth\"],[8],[0,\"\\n        \"],[6,\"input\"],[9,\"class\",\"date\"],[9,\"type\",\"date\"],[10,\"value\",[18,\"selectedDate\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"assignDate\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[7],[0,\"\\n        \"],[6,\"h4\"],[7],[0,\"Gender\"],[8],[0,\"\\n        \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n          \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectGender\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"genderModel\"]]],null,{\"statements\":[[0,\"              \"],[6,\"option\"],[10,\"value\",[19,2,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"pateintsData\",\"gender\"]],[19,2,[\"name\"]]],null],null],[7],[0,\"\\n                \"],[1,[19,2,[\"name\"]],false],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Health Card Number\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"card\",\"text\",[20,[\"pateintsData\",\"healthCardNumber\"]],true]]],false],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n    \"],[6,\"fieldset\"],[7],[0,\"\\n      \"],[6,\"legend\"],[7],[0,\"Address\"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Number\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"home\",\"text\",[20,[\"pateintsData\",\"streetNumber\"]],true]]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Street Name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"home\",\"text\",[20,[\"pateintsData\",\"streetName\"]],true]]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Unit\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"bookmark\",\"text\",[20,[\"pateintsData\",\"apartment\"]]]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Postal/ZIP Code\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"flag\",\"text\",[20,[\"pateintsData\",\"postalCode\"]],true]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[7],[0,\"\\n        \"],[6,\"h4\"],[7],[0,\"Country\"],[8],[0,\"\\n        \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n          \"],[6,\"select\"],[9,\"class\",\"world\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectCountry\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"conutryModel\"]]],null,{\"statements\":[[0,\"              \"],[6,\"option\"],[10,\"value\",[19,1,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"pateintsData\",\"country\"]],[19,1,[\"name\"]]],null],null],[7],[0,\"\\n                \"],[1,[19,1,[\"name\"]],false],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n\\n\\n    \"],[6,\"fieldset\"],[7],[0,\"\\n      \"],[6,\"legend\"],[7],[0,\"Contact Info\"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Phone Number\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"phone\",\"text\",[20,[\"pateintsData\",\"phoneNumber\"]],true]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-email\"],[7],[0,\"Email\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"email\",\"email\",[20,[\"pateintsData\",\"email\"]],true]]],false],[0,\"\\n\\n      \"],[8],[0,\"\\n\\n            \"],[2,\"<div class=\\\"ok cd-button\\\">\"],[0,\"\\n        \"],[2,\"<input type=\\\"submit\\\" value=\\\"Submit\\\">\"],[0,\"\\n      \"],[2,\"</div>\"],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\\n\\n      \"],[2,\"<div class=\\\"actions\\\">\"],[0,\"\\n        \"],[2,\"<div class=\\\"ok cd-button\\\">\"],[0,\"\\n          \"],[2,\"<input type=\\\"submit\\\" value=\\\"Submit\\\">\"],[0,\"\\n        \"],[2,\"</div>\"],[0,\"\\n      \"],[2,\"</div>\"],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"height: 75px\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui primary approve button\"],[9,\"style\",\"float: right;\"],[7],[0,\"\\n      Submit\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/edit-patient.hbs" } });
+});
+define("self-start-front-end/templates/components/edit-physiotherapist", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "k+JtCz8K", "block": "{\"symbols\":[],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\"],[6,\"p\"],[9,\"style\",\"cursor: pointer;\"],[9,\"title\",\"Edit\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[6,\"i\"],[9,\"class\",\"grey write icon\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"fieldset\"],[7],[0,\"\\n    \"],[6,\"legend\"],[7],[0,\"Personal Info\"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"First Name\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"text\",[20,[\"givenName\"]],true]]],false],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Last Name\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"text\",[20,[\"familyName\"]],true]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n  \"],[6,\"fieldset\"],[7],[0,\"\\n   \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Employment start date\"],[8],[0,\"\\n      \"],[6,\"input\"],[9,\"class\",\"date\"],[9,\"type\",\"date\"],[10,\"value\",[18,\"selectedDate\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"assignDate\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n\"],[8],[0,\"\\n  \"],[6,\"fieldset\"],[7],[0,\"\\n    \"],[6,\"legend\"],[7],[0,\"Contact Info\"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-email\"],[7],[0,\"Email\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"email\",\"email\",[20,[\"email\"]],true]]],false],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"fieldset\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[7],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"cd-button\"],[7],[0,\"\\n        \"],[6,\"input\"],[9,\"type\",\"submit\"],[9,\"value\",\"Submit\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n\\n\\n\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/edit-physiotherapist.hbs" } });
+});
+define("self-start-front-end/templates/components/edit-rehabplan", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "Xsou0g3C", "block": "{\"symbols\":[],\"statements\":[[6,\"button\"],[9,\"class\",\"ui mini circular labeled icon green button\"],[9,\"title\",\"Edit\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"i\"],[9,\"class\",\"edit icon\"],[7],[8],[0,\"\\n  Edit\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"\\n  \"],[6,\"h2\"],[9,\"id\",\"rehabPlan\"],[9,\"class\",\"ui fluid centered header\"],[7],[0,\"Edit Rehabilitation Plan  \"],[1,[18,\"planName\"],false],[8],[0,\"\\n\\n  \"],[6,\"form\"],[9,\"class\",\"ui form\"],[9,\"style\",\"padding: 5%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"fields\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"two wide field\"],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"id\",\"icon\"],[9,\"class\",\"black large user icon\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"seven wide field\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"planName\"]],\"Rehab plan name\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"seven wide field\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"physioID\"]],\"Author Name\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[2,\"Description\"],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"fields\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"two wide field\"],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"id\",\"icon\"],[9,\"class\",\"black large comment icon\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"fourteen wide field\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"description\"]],\"Description\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[2,\"goal\"],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"fields\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"two wide field\"],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"id\",\"icon\"],[9,\"class\",\"black large trophy icon\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"fourteen wide field\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"goal\"]],\"Goal\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"fields\"],[7],[0,\"\\n      \"],[2,\"icon\"],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"two wide field\"],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"id\",\"icon\"],[9,\"class\",\"black large wait icon\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"fourteen wide field\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"timeToComplete\"]],\"Time\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n\\n\\n    \"],[2,\"Exercise\"],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"fields\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"two wide field\"],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"id\",\"icon\"],[9,\"class\",\"black large world icon\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"fourteen wide field\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"exercises\"]],\"Exercise\"]]],false],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n\\n    \"],[2,\"assessment Test\"],[0,\"\\n    \"],[2,\"<div class=\\\"fields\\\">\"],[0,\"\\n    \"],[2,\"<div class=\\\"two wide field\\\">\"],[0,\"\\n    \"],[2,\"<i id=\\\"icon\\\" class=\\\"black large comment icon\\\"></i>\"],[0,\"\\n    \"],[2,\"</div>\"],[0,\"\\n    \"],[2,\"<div class=\\\"fourteen wide field\\\">\"],[0,\"\\n\"],[0,\"    \"],[2,\"</div>\"],[0,\"\\n    \"],[2,\"</div>\"],[0,\"\\n    \"],[2,\"<br>\"],[0,\"\\n    \"],[2,\"footer for save / cancel\"],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui black deny button\"],[7],[0,\"\\n        Cancel\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui positive right labeled icon button\"],[7],[0,\"\\n        Save\\n        \"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\\n\\n\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/edit-rehabplan.hbs" } });
+});
+define("self-start-front-end/templates/components/manage-form", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "P7kKRbvU", "block": "{\"symbols\":[\"question\"],\"statements\":[[0,\"\\n\"],[6,\"button\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\nManage Form Questions\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n           \"],[6,\"h2\"],[7],[0,\" \"],[1,[18,\"fName\"],false],[0,\" \"],[8],[0,\"\\n           \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"questionsModel\"]]],null,{\"statements\":[[0,\"                        \"],[6,\"div\"],[9,\"class\",\"four wide column\"],[7],[0,\"\\n                         \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n                        \"],[8],[0,\"\\n\\n                        \"],[6,\"div\"],[9,\"class\",\"four wide column\"],[7],[0,\"\\n                         \"],[6,\"button\"],[3,\"action\",[[19,0,[]],\"addQuestion\",[19,1,[]],[20,[\"form\"]],[19,1,[\"id\"]]]],[7],[0,\" Add \"],[8],[0,\"\\n                        \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"           \"],[8],[0,\"\\n           \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n         \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n         \"],[6,\"div\"],[9,\"class\",\"ui positive right labeled icon button\"],[7],[0,\"\\n         Done\\n         \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/manage-form.hbs" } });
 });
 define("self-start-front-end/templates/components/manage-patients", ["exports"], function (exports) {
   "use strict";
@@ -4893,13 +7969,29 @@ define("self-start-front-end/templates/components/manage-patients", ["exports"],
   });
   exports.default = Ember.HTMLBars.template({ "id": "hJP+JyVa", "block": "{\"symbols\":[\"patient\",\"column\",\"column\",\"attribute\"],\"statements\":[[4,\"admin-nav\",null,null,{\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n        \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"tagline\"],[7],[0,\"\\n           Client Profiles\\n        \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"style\",\"padding-left: 400px\"],[7],[0,\"\\n          \"],[6,\"a\"],[9,\"href\",\"/new-patient\"],[9,\"class\",\"ui large inverted download button\"],[7],[0,\"\\n            Add Client\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n\\n\\n\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"background\"],[7],[0,\"\\n\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui segment\"],[9,\"style\",\"margin-left: 5%; margin-right: 5%\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui left aligned seven wide column\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"two fields\"],[7],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\"],[4,\"ui-dropdown\",null,[[\"class\",\"selected\",\"onChange\"],[\"selection\",[20,[\"queryPath\"]],[25,\"action\",[[19,0,[]],[25,\"mut\",[[20,[\"queryPath\"]]],null]],null]]],{\"statements\":[[0,\"                \"],[6,\"div\"],[9,\"class\",\"default text\"],[7],[1,[20,[\"modelAttributes\",\"firstObject\",\"name\"]],false],[8],[0,\"\\n                \"],[6,\"i\"],[9,\"class\",\"dropdown icon\"],[7],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"menu\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"div\"],[9,\"class\",\"item\"],[10,\"data-value\",[26,[[19,4,[\"key\"]]]]],[7],[0,\"\\n                      \"],[1,[19,4,[\"name\"]],false],[0,\"\\n                    \"],[8],[0,\"\\n\"]],\"parameters\":[4]},null],[0,\"                \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui icon input\"],[7],[0,\"\\n                \"],[6,\"i\"],[9,\"class\",\"search icon\"],[7],[8],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"type\",\"placeholder\",\"value\"],[\"text\",\"Search...\",[20,[\"query\"]]]]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[7],[0,\"\\n          \"],[6,\"thead\"],[7],[0,\"\\n          \"],[6,\"tr\"],[7],[0,\"\\n            \"],[6,\"th\"],[9,\"class\",\"left aligned one wide column \"],[7],[0,\" \"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"              \"],[6,\"th\"],[10,\"class\",[19,3,[\"class\"]],null],[3,\"action\",[[19,0,[]],\"sortColumn\",[19,3,[\"key\"]],[19,3,[\"dir\"]]]],[7],[1,[19,3,[\"name\"]],false],[0,\"\\n\"],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"asc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort ascending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"desc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort descending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"\\n            \"],[6,\"th\"],[9,\"class\",\"centered aligned two wide  column\"],[7],[0,\"Actions\"],[8],[0,\"\\n            \"],[2,\"<th class=\\\"left aligned one wide  column\\\"></th>\"],[0,\"\\n\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n\\n\\n\\n      \"],[6,\"div\"],[9,\"id\",\"myWindow\"],[9,\"style\",\"height:600px;overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"patientsModel\"]]],null,{\"statements\":[[0,\"\\n            \"],[6,\"tr\"],[7],[0,\"\\n              \"],[6,\"td\"],[9,\"class\",\"left aligned one wide column \"],[7],[0,\"\\n                \"],[6,\"img\"],[9,\"src\",\"assets/images/nav/single-01.svg\"],[9,\"class\",\"ui mini rounded image\"],[3,\"action\",[[19,0,[]],\"toggleDetail\",[19,1,[\"id\"]]]],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"\\n\"],[0,\"\\n                \"],[6,\"td\"],[10,\"class\",[19,2,[\"class\"]],null],[7],[0,\"  \"],[1,[25,\"get\",[[19,1,[]],[19,2,[\"key\"]]],null],false],[0,\"  \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"\\n              \"],[6,\"td\"],[9,\"class\",\"right aligned one wide column \"],[7],[0,\"\\n                \"],[1,[25,\"edit-patient\",null,[[\"pateintsData\"],[[19,1,[]]]]],false],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"td\"],[9,\"class\",\"left aligned one wide column \"],[7],[0,\"\\n                \"],[6,\"p\"],[7],[1,[25,\"delete-patient\",null,[[\"ID\",\"flagDelete\"],[[19,1,[\"id\"]],[20,[\"flagDelete\"]]]]],false],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"tr\"],[7],[0,\"\\n              \"],[6,\"th\"],[9,\"colspan\",\"8\"],[7],[0,\"\\n\"],[4,\"liquid-spacer\",null,[[\"growDuration\"],[500]],{\"statements\":[[4,\"if\",[[25,\"eq\",[[20,[\"isShowing\"]],[19,1,[\"id\"]]],null]],null,{\"statements\":[[0,\"                    \"],[1,[25,\"show-patient\",null,[[\"model\"],[[19,1,[]]]]],false],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[]},null],[0,\"              \"],[8],[0,\"\\n            \"],[6,\"tr\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n\"],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/manage-patients.hbs" } });
 });
+define("self-start-front-end/templates/components/modify-question", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "tKotoPv+", "block": "{\"symbols\":[],\"statements\":[[6,\"button\"],[9,\"class\",\"ui mini circular labeled icon green button\"],[9,\"title\",\"Edit\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[3,\"action\",[[19,0,[]],\"isMultipleChoice\"]],[7],[6,\"i\"],[9,\"class\",\"edit icon\"],[7],[8],[0,\"\\n        Edit\\n\"],[8],[0,\"\\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"\\n    Edit Question: \\\"\"],[1,[18,\"questionText\"],false],[0,\"\\\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"multipleChoice\"]]],null,{\"statements\":[[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"label\"],[7],[0,\"Question\"],[8],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"cols\",\"rows\",\"value\"],[\"text\",\"50\",\"1\",[20,[\"questionText\"]]]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"label\"],[7],[0,\"Help Description\"],[8],[0,\"\\n          \"],[1,[25,\"textarea\",null,[[\"cols\",\"rows\",\"value\"],[\"50\",\"1\",[20,[\"questionData\",\"helpDescription\"]]]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"label\"],[7],[0,\"Option 1\"],[8],[0,\"\\n          \"],[1,[25,\"textarea\",null,[[\"cols\",\"rows\",\"value\"],[\"50\",\"1\",[20,[\"opt1String\"]]]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"opt2\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Option 2\"],[8],[0,\"\\n            \"],[1,[25,\"textarea\",null,[[\"cols\",\"rows\",\"value\"],[\"50\",\"1\",[20,[\"opt2String\"]]]]],false],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"opt3\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Option 3\"],[8],[0,\"\\n            \"],[1,[25,\"textarea\",null,[[\"cols\",\"rows\",\"value\"],[\"50\",\"1\",[20,[\"opt3String\"]]]]],false],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"opt4\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Option 4\"],[8],[0,\"\\n            \"],[1,[25,\"textarea\",null,[[\"cols\",\"rows\",\"value\"],[\"50\",\"1\",[20,[\"opt4String\"]]]]],false],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"opt5\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Option 5\"],[8],[0,\"\\n            \"],[1,[25,\"textarea\",null,[[\"cols\",\"rows\",\"value\"],[\"50\",\"1\",[20,[\"opt5String\"]]]]],false],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"opt6\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[0,\"Option 6\"],[8],[0,\"\\n            \"],[1,[25,\"textarea\",null,[[\"cols\",\"rows\",\"value\"],[\"50\",\"1\",[20,[\"opt6String\"]]]]],false],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"label\"],[7],[0,\"Question \"],[8],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"type\",\"cols\",\"rows\",\"value\"],[\"text\",\"50\",\"1\",[20,[\"questionData\",\"questionText\"]]]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"label\"],[7],[0,\"Help Description\"],[8],[0,\"\\n          \"],[1,[25,\"textarea\",null,[[\"cols\",\"rows\",\"value\"],[\"50\",\"1\",[20,[\"questionData\",\"helpDescription\"]]]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]}],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0; \"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui positive right\"],[9,\"style\",\"padding:.2em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Save\"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui deny\"],[9,\"style\",\"padding:.2em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"Cancel\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/modify-question.hbs" } });
+});
 define("self-start-front-end/templates/components/nav-bar", ["exports"], function (exports) {
   "use strict";
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "ZnRHc7tH", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/home-style.css\"]]],[7],[8],[0,\"\\n\\n\"],[2,\"<style>\"],[0,\"\\n  \"],[2,\".ui.visible.left.sidebar ~ .fixed,\"],[0,\"\\n  \"],[2,\".ui.visible.left.sidebar ~ .pusher {\"],[0,\"\\n    \"],[2,\"-ebkit-transform: translate3d(260px, 0, 0); transform: translate3d(260px, 0, 0);\"],[0,\"\\n  \"],[2,\"}\"],[0,\"\\n\"],[2,\"</style>\"],[0,\"\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index pushable\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"following bar\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n                    \"],[4,\"link-to\",[\"home\"],null,{\"statements\":[[6,\"img\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/Header.png\"],[7],[8]],\"parameters\":[]},null],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n\\n            \"],[6,\"div\"],[9,\"class\",\"right menu inverted\"],[7],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"About\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"How it Works\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Services\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Assessment\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Blog\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Contact\"],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"loggedOut\"]]],null,{\"statements\":[[0,\"                \"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"Log in\"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                \"],[6,\"a\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"logout\"]],[7],[0,\"Logout\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[11,1],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"login\",\"login\"]],{\"statements\":[[0,\"  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"h2\"],[9,\"class\",\"ui fluid centered header\"],[7],[0,\"Login\"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"id\",\"ui container\"],[9,\"style\",\"height: 250px; padding-left:10%; padding-right: 10%; padding-top: 2%\"],[7],[0,\"\\n    \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Email\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Email\"]],\"Email\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Password\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"password\",[20,[\"PWord\"]],\"Password\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"inline\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui green button \"],[3,\"action\",[[19,0,[]],\"submit\"]],[7],[0,\"Submit\"],[8],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui button \"],[3,\"action\",[[19,0,[]],\"deny\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/nav-bar.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "bqxzJ4fB", "block": "{\"symbols\":[\"&default\"],\"statements\":[[0,\"\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/home-style.css\"]]],[7],[8],[0,\"\\n\\n\"],[2,\"<style>\"],[0,\"\\n  \"],[2,\".ui.visible.left.sidebar ~ .fixed,\"],[0,\"\\n  \"],[2,\".ui.visible.left.sidebar ~ .pusher {\"],[0,\"\\n    \"],[2,\"-ebkit-transform: translate3d(260px, 0, 0); transform: translate3d(260px, 0, 0);\"],[0,\"\\n  \"],[2,\"}\"],[0,\"\\n\"],[2,\"</style>\"],[0,\"\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index pushable\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"following bar\"],[9,\"id\",\"header\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n                    \"],[4,\"link-to\",[\"home\"],null,{\"statements\":[[6,\"img\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/Header.png\"],[7],[8]],\"parameters\":[]},null],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n\\n            \"],[6,\"div\"],[9,\"class\",\"right menu inverted\"],[7],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item scroll\"],[9,\"href\",\"#about\"],[7],[0,\"About\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"How it Works\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Services\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Assessment\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Blog\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Contact\"],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"loggedOut\"]]],null,{\"statements\":[[0,\"                \"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"Log in\"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                \"],[6,\"a\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"logout\"]],[7],[0,\"Logout\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[11,1],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"login\",\"login\"]],{\"statements\":[[0,\"  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"h2\"],[9,\"class\",\"ui fluid centered header\"],[7],[0,\"Login\"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"id\",\"ui container\"],[9,\"style\",\"height: 250px; padding-left:10%; padding-right: 10%; padding-top: 2%\"],[7],[0,\"\\n    \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Email\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Email\"]],\"Email\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Password\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"password\",[20,[\"PWord\"]],\"Password\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"inline\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui green button \"],[3,\"action\",[[19,0,[]],\"submit\"]],[7],[0,\"Submit\"],[8],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui button \"],[3,\"action\",[[19,0,[]],\"deny\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/nav-bar.hbs" } });
+});
+define("self-start-front-end/templates/components/parse-question", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "Ws/Z1fuT", "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\\n   \\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/parse-question.hbs" } });
 });
 define("self-start-front-end/templates/components/register-user", ["exports"], function (exports) {
   "use strict";
@@ -4909,13 +8001,37 @@ define("self-start-front-end/templates/components/register-user", ["exports"], f
   });
   exports.default = Ember.HTMLBars.template({ "id": "RQF1PdSF", "block": "{\"symbols\":[],\"statements\":[[6,\"a\"],[9,\"class\",\"ui large inverted download button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  Register\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"register\",\"register\"]],{\"statements\":[[0,\"\\n  \"],[6,\"h2\"],[9,\"class\",\"ui fluid centered header\"],[7],[0,\"Register\"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"id\",\"ui container\"],[9,\"style\",\"height: 320px; padding-left:10%; padding-right: 10%; padding-top: 2%\"],[7],[0,\"\\n    \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"User Name\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"UName\"]],\"User Name\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Email\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Email\"]],\"Email\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Password\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"password\",[20,[\"PWord\"]],\"Password\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"inline\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui green button \"],[3,\"action\",[[19,0,[]],\"submit\"]],[7],[0,\"Submit\"],[8],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui button \"],[3,\"action\",[[19,0,[]],\"deny\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/register-user.hbs" } });
 });
+define("self-start-front-end/templates/components/rl-dropdown-container", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "V78jEbtW", "block": "{\"symbols\":[\"&default\"],\"statements\":[[11,1,[[20,[\"dropdownExpanded\"]]]],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/rl-dropdown-container.hbs" } });
+});
+define("self-start-front-end/templates/components/show-form-questions", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "JLCVeDTJ", "block": "{\"symbols\":[\"oneQuestion\",\"q\",\"index\"],\"statements\":[[6,\"div\"],[9,\"class\",\"ui segment\"],[7],[0,\"\\n  \"],[6,\"h3\"],[7],[0,\"Questions: \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"questions\"]]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"fourteen wide column\"],[7],[0,\"\\n        \"],[6,\"li\"],[7],[0,\"  \"],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"two wide column right aligned\"],[7],[0,\"\\n          \"],[6,\"button\"],[3,\"action\",[[19,0,[]],\"removeQuestion\",[19,1,[]],[20,[\"thisForm\"]],[19,1,[\"id\"]],[20,[\"thisForm\",\"id\"]]]],[7],[0,\"Remove\"],[8],[0,\"\\n              \"],[6,\"div\"],[7],[0,\"\\n      \"],[6,\"h4\"],[7],[0,\"Order\"],[8],[0,\"\\n      \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n        \"],[6,\"select\"],[9,\"class\",\"world\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"orderChange\",[19,1,[]],[20,[\"thisForm\"]],[20,[\"thisForm\",\"id\"]]],null],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"questions\"]]],null,{\"statements\":[[0,\"           \\n              \"],[6,\"option\"],[10,\"value\",[19,3,[]],null],[10,\"selected\",[25,\"is-equal\",[[19,1,[]],[19,2,[]]],null],null],[7],[0,\"\\n              \"],[1,[25,\"index-plus-one\",[[19,3,[]]],null],false],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[2,3]},null],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"     \"],[6,\"div\"],[9,\"class\",\"two wide column right aligned\"],[7],[0,\"\\n          \"],[6,\"button\"],[3,\"action\",[[19,0,[]],\"save\",[20,[\"thisForm\"]],[20,[\"thisForm\",\"id\"]]]],[7],[0,\"Save\"],[8],[0,\"\\n     \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/show-form-questions.hbs" } });
+});
 define("self-start-front-end/templates/components/show-patient", ["exports"], function (exports) {
   "use strict";
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "+pBajxRh", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[9,\"class\",\"ui horizontal segment items\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"six wide column\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui raised very padded text segment\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"eight wide column\"],[9,\"style\",\"padding-left: 50px\"],[7],[0,\"\\n            \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"p\"],[7],[6,\"img\"],[9,\"src\",\"assets/images/nav/single-01.svg\"],[9,\"class\",\"ui small square image\"],[7],[8],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"Client:\"],[8],[0,\" \"],[1,[20,[\"model\",\"givenName\"]],false],[0,\" \"],[1,[20,[\"model\",\"familyName\"]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"left aligned eight wide column\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"Date of Birth:\"],[8],[0,\" \"],[1,[18,\"dateFormat\"],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"br\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"Gender:\"],[8],[1,[20,[\"model\",\"gender\"]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"br\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"Health Card:\"],[8],[0,\" \"],[1,[20,[\"model\",\"healthCardNumber\"]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"br\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"Phone Number:\"],[8],[1,[20,[\"model\",\"phoneNumber\"]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"br\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"Email:\"],[8],[0,\"\\n                \"],[1,[20,[\"model\",\"email\"]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"br\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"Address:\"],[8],[1,[20,[\"model\",\"streetNumber\"]],false],[0,\" \"],[1,[20,[\"model\",\"streetName\"]],false],[0,\", \"],[1,[20,[\"model\",\"postalCode\"]],false],[0,\"\\n                \"],[6,\"p\"],[7],[1,[20,[\"model\",\"city\"]],false],[0,\", \"],[1,[20,[\"model\",\"province\"]],false],[0,\", \"],[1,[20,[\"model\",\"country\"]],false],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ten wide column\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"fourteen wide row\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui raised very padded text segment\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n              \"],[6,\"p\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"History:\"],[8],[0,\"\\n              \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"two wide row\"],[9,\"style\",\"float: right\"],[7],[0,\"\\n\\n        \"],[6,\"a\"],[9,\"href\",\"/patient-file\"],[9,\"id\",\"client\"],[9,\"class\",\"ui inverted download button\"],[7],[0,\"\\n          Client's file \"],[6,\"i\"],[9,\"class\",\"right arrow icon\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/show-patient.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "bx60ProX", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[9,\"class\",\"ui horizontal segment items\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"eight wide column\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui raised very padded text segment\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"six wide column\"],[7],[0,\"\\n            \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"p\"],[7],[6,\"img\"],[9,\"src\",\"assets/images/nav/single-01.svg\"],[9,\"class\",\"ui small square image\"],[7],[8],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"Client:\"],[8],[0,\" \"],[1,[20,[\"model\",\"givenName\"]],false],[0,\" \"],[1,[20,[\"model\",\"familyName\"]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"left aligned eight wide column\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"Date of Birth:\"],[8],[0,\" \"],[1,[18,\"dateFormat\"],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"br\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"Gender:\"],[8],[1,[20,[\"model\",\"gender\"]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"br\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"Health Card:\"],[8],[0,\" \"],[1,[20,[\"model\",\"healthCardNumber\"]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"br\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"Phone Number:\"],[8],[1,[20,[\"model\",\"phoneNumber\"]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"br\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"Email:\"],[8],[0,\"\\n                \"],[1,[20,[\"model\",\"email\"]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"br\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"Address:\"],[8],[1,[20,[\"model\",\"streetNumber\"]],false],[0,\" \"],[1,[20,[\"model\",\"streetName\"]],false],[0,\", \"],[1,[20,[\"model\",\"postalCode\"]],false],[0,\"\\n                \"],[6,\"p\"],[7],[1,[20,[\"model\",\"city\"]],false],[0,\", \"],[1,[20,[\"model\",\"province\"]],false],[0,\", \"],[1,[20,[\"model\",\"country\"]],false],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"eight wide column\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"fourteen wide row\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui raised very padded text segment\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n              \"],[6,\"p\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"History:\"],[8],[0,\"\\n              \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"two wide row\"],[9,\"style\",\"float: right\"],[7],[0,\"\\n\\n        \"],[6,\"a\"],[9,\"href\",\"/patient-file\"],[9,\"id\",\"client\"],[9,\"class\",\"ui inverted download button\"],[7],[0,\"\\n          Client's file \"],[6,\"i\"],[9,\"class\",\"right arrow icon\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/show-patient.hbs" } });
+});
+define("self-start-front-end/templates/components/simple-example", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "Iev+6fac", "block": "{\"symbols\":[\"image\"],\"statements\":[[4,\"if\",[[20,[\"ImageIsAdding\"]]],null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[1,[25,\"upload-file\",null,[[\"model\",\"maximumFileSize\",\"multiple\",\"flag\"],[\"image\",6,true,[20,[\"ImageIsAdding\"]]]]],false],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[9,\"class\",\"ui items\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui small image\"],[7],[0,\"\\n          \"],[6,\"img\"],[10,\"src\",[26,[[19,1,[\"imageData\"]]]]],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[1,[19,1,[\"name\"]],false],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"meta\"],[7],[0,\"\\n            \"],[6,\"span\"],[7],[0,\"Size: \"],[1,[19,1,[\"size\"]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n            \"],[6,\"span\"],[7],[0,\"Type: \"],[1,[19,1,[\"type\"]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"extra\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui icon red basic button\"],[3,\"action\",[[19,0,[]],\"deleteImage\",[19,1,[]]]],[7],[0,\"\\n              \"],[6,\"i\"],[9,\"class\",\"remove icon\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[3,\"action\",[[19,0,[]],\"addNewImage\"]],[7],[0,\"\\n    Add New Image\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]}],[0,\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/simple-example.hbs" } });
 });
 define("self-start-front-end/templates/components/ui-accordion", ["exports"], function (exports) {
   "use strict";
@@ -5037,6 +8153,14 @@ define("self-start-front-end/templates/components/ui-sticky", ["exports"], funct
   });
   exports.default = Ember.HTMLBars.template({ "id": "juXmKGHP", "block": "{\"symbols\":[\"&default\"],\"statements\":[[11,1,[[25,\"action\",[[19,0,[]],\"execute\"],null]]]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/ui-sticky.hbs" } });
 });
+define("self-start-front-end/templates/components/upload-file", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "hHim44W9", "block": "{\"symbols\":[\"file\"],\"statements\":[[4,\"each\",[[20,[\"queue\"]]],null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui divided demo items\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"image\"],[7],[0,\"\\n\"],[4,\"if\",[[19,1,[\"isUploading\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui active inverted dimmer\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui loader\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"          \"],[6,\"img\"],[10,\"src\",[26,[[19,1,[\"base64Image\"]]]]],[7],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[1,[19,1,[\"name\"]],false],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"meta\"],[7],[0,\"\\n          \"],[6,\"span\"],[7],[0,\"Size: \"],[1,[19,1,[\"size\"]],false],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n\"],[4,\"if\",[[19,1,[\"isDisplayableImage\"]]],null,{\"statements\":[[0,\"            \"],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"            \"],[6,\"p\"],[7],[0,\"Unsupported image\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"extra\"],[7],[0,\"\\n\"],[4,\"if\",[[19,1,[\"isDisplayableImage\"]]],null,{\"statements\":[[0,\"            \"],[6,\"button\"],[9,\"class\",\"ui icon green basic button\"],[3,\"action\",[[19,0,[]],\"saveFile\",[19,1,[]]]],[7],[0,\"\\n              \"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"          \"],[6,\"button\"],[9,\"class\",\"ui icon red basic button\"],[3,\"action\",[[19,0,[]],\"deleteFile\",[19,1,[]]]],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"remove icon\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[1]},{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui fluid labeled input\"],[7],[0,\"\\n    \"],[6,\"label\"],[9,\"class\",\"ui fluid huge label\"],[10,\"style\",[18,\"labelStyle\"],null],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"big cloud upload icon\"],[7],[8],[0,\"\\n      Click or Drop files into this area to upload files\\n    \"],[8],[0,\"\\n    \"],[6,\"input\"],[9,\"type\",\"file\"],[9,\"value\",\"target.value\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectFile\"],null],null],[10,\"style\",[18,\"inputStyle\"],null],[10,\"accept\",[26,[[18,\"accept\"]]]],[10,\"multiple\",[18,\"multiple\"],null],[7],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"button\"],[9,\"class\",\"ui black button\"],[3,\"action\",[[19,0,[]],\"done\",[20,[\"file\"]]]],[7],[0,\"\\n    Cancel\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"queue\"]]],null,{\"statements\":[[4,\"if\",[[20,[\"savingInProgress\"]]],null,{\"statements\":[[0,\"    \"],[6,\"button\"],[9,\"class\",\"ui labeled green icon loading button\"],[7],[0,\"Loading\"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"    \"],[6,\"button\"],[9,\"class\",\"ui labeled green icon button\"],[3,\"action\",[[19,0,[]],\"saveAllFiles\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[0,\"\\n      Save All\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"  \"],[6,\"button\"],[9,\"class\",\"ui labeled red icon button\"],[3,\"action\",[[19,0,[]],\"deleteAllFiles\"]],[7],[0,\"\\n    \"],[6,\"i\"],[9,\"class\",\"remove icon\"],[7],[8],[0,\"\\n    Remove All\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/upload-file.hbs" } });
+});
 define("self-start-front-end/templates/components/user-info", ["exports"], function (exports) {
   "use strict";
 
@@ -5053,13 +8177,37 @@ define("self-start-front-end/templates/components/user-login", ["exports"], func
   });
   exports.default = Ember.HTMLBars.template({ "id": "FvE+prOM", "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"Log in\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"login\",\"login\"]],{\"statements\":[[0,\"  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"h2\"],[9,\"class\",\"ui fluid centered header\"],[7],[0,\"Login\"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"id\",\"ui container\"],[9,\"style\",\"height: 250px; padding-left:10%; padding-right: 10%; padding-top: 2%\"],[7],[0,\"\\n  \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Email\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Email\"]],\"Email\"]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Password\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"password\",[20,[\"PWord\"]],\"Password\"]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"inline\"],[7],[0,\"\\n      \"],[6,\"button\"],[9,\"class\",\"ui green button \"],[3,\"action\",[[19,0,[]],\"submit\"]],[7],[0,\"Submit\"],[8],[0,\"\\n      \"],[6,\"button\"],[9,\"class\",\"ui button \"],[3,\"action\",[[19,0,[]],\"deny\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/user-login.hbs" } });
 });
+define("self-start-front-end/templates/components/view-appointment", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "m8sQt8lZ", "block": "{\"symbols\":[\"client\"],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"isEditing\"]]],null,{\"statements\":[[0,\"  \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"fieldset\"],[7],[0,\"\\n      \"],[6,\"legend\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n\\n\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Client\"],[8],[0,\"\\n      \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n        \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectclient\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateValue\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n          \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select patient\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"getclient\"]]],null,{\"statements\":[[0,\"            \"],[6,\"option\"],[10,\"value\",[19,1,[\"id\"]],null],[7],[0,\"\\n              \"],[1,[19,1,[\"familyName\"]],false],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[6,\"button\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"bookAppointment\"]],[7],[0,\"\\n    Book appointment\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/view-appointment.hbs" } });
+});
+define("self-start-front-end/templates/components/view-schedule", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "xYtLS18w", "block": "{\"symbols\":[\"date\",\"appo\",\"phsio\"],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"isEditing\"]]],null,{\"statements\":[[0,\"  \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"fieldset\"],[7],[0,\"\\n      \"],[6,\"legend\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n\\n\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n      \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n        \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectphysio\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateValue\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n          \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"getphysio\"]]],null,{\"statements\":[[0,\"            \"],[6,\"option\"],[10,\"value\",[19,3,[\"id\"]],null],[7],[0,\"\\n              \"],[1,[19,3,[\"givenName\"]],false],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"appointments_filter\"]]],null,{\"statements\":[[0,\"        \"],[6,\"p\"],[7],[1,[19,2,[\"date\"]],false],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"prev\"]],[7],[0,\"previous\"],[8],[0,\"\\n  \"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"next\"]],[7],[0,\"next\"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"cd-schedule loading\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"timeline\"],[7],[0,\"\\n      \"],[6,\"ul\"],[7],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"09:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"09:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"10:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"10:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"11:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"11:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"12:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"12:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"13:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"13:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"14:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"14:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"15:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"15:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"16:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"16:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"17:00\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"17:30\"],[8],[8],[0,\"\\n        \"],[6,\"li\"],[7],[6,\"span\"],[7],[0,\"18:00\"],[8],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"events\"],[7],[0,\"\\n      \"],[6,\"ul\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"weekdate\"]]],null,{\"statements\":[[0,\"          \"],[6,\"li\"],[9,\"class\",\"events-group\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"top-info\"],[7],[6,\"span\"],[7],[1,[19,1,[]],false],[8],[8],[0,\"\\n            \"],[6,\"ul\"],[7],[0,\"\\n              \"],[6,\"li\"],[9,\"class\",\"single-event\"],[9,\"data-start\",\"09:00\"],[9,\"data-end\",\"10:30\"],[9,\"data-content\",\"Open\"],[10,\"data-event\",[26,[[18,\"event\"]]]],[3,\"action\",[[19,0,[]],\"setslot\",1,[19,1,[]]]],[7],[0,\"\\n                \"],[6,\"a\"],[9,\"href\",\"#0\"],[7],[0,\"\\n                  \"],[6,\"span\"],[9,\"class\",\"event-date\"],[7],[0,\"  9  -  10:30\"],[8],[0,\"\\n                  \"],[6,\"em\"],[9,\"class\",\"event-name\"],[7],[0,\"slot1\"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"li\"],[9,\"class\",\"single-event\"],[9,\"value\",\"1\"],[9,\"data-start\",\"10:30\"],[9,\"data-end\",\"12:00\"],[9,\"data-content\",\"Open\"],[10,\"data-event\",[26,[[18,\"event\"]]]],[3,\"action\",[[19,0,[]],\"setslot\",2,[19,1,[]]]],[7],[0,\"\\n                \"],[6,\"a\"],[9,\"href\",\"#0\"],[7],[0,\"\\n                  \"],[6,\"span\"],[9,\"class\",\"event-date\"],[7],[0,\"  10:30  -  12:00\"],[8],[0,\"\\n                  \"],[6,\"em\"],[9,\"class\",\"event-name\"],[7],[0,\"slot2\"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"li\"],[9,\"class\",\"single-event\"],[9,\"data-start\",\"12:00\"],[9,\"data-end\",\"13:30\"],[9,\"data-content\",\"Open\"],[10,\"data-event\",[18,\"event\"],null],[3,\"action\",[[19,0,[]],\"setslot\",3,[19,1,[]]]],[7],[0,\"\\n                \"],[6,\"a\"],[9,\"href\",\"#0\"],[7],[0,\"\\n                  \"],[6,\"span\"],[9,\"class\",\"event-date\"],[7],[0,\"  12:00  -  13:30\"],[8],[0,\"\\n                  \"],[6,\"em\"],[9,\"class\",\"event-name\"],[7],[0,\"Slot3\"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"li\"],[9,\"class\",\"single-event\"],[9,\"data-start\",\"13:30\"],[9,\"data-end\",\"15:00\"],[9,\"data-content\",\"Open\"],[10,\"data-event\",[18,\"event\"],null],[3,\"action\",[[19,0,[]],\"setslot\",4,[19,1,[]]]],[7],[0,\"\\n\\n                \"],[6,\"a\"],[9,\"href\",\"#0\"],[7],[0,\"\\n                  \"],[6,\"span\"],[9,\"class\",\"event-date\"],[7],[0,\"  13:30  -  15:00\"],[8],[0,\"\\n                  \"],[6,\"em\"],[9,\"class\",\"event-name\"],[7],[0,\"Slot4\"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"event-modal\"],[7],[0,\"\\n      \"],[6,\"header\"],[9,\"class\",\"header\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"event-date\"],[7],[8],[0,\"\\n          \"],[6,\"h3\"],[9,\"class\",\"event-name\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"header-bg\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"body\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"event-info\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"body-bg\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"a\"],[9,\"href\",\"#0\"],[9,\"class\",\"close\"],[7],[0,\"Close\"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"button\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"save\"]],[7],[0,\"\\n    Save\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[6,\"button\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"viewschedule\"]],[7],[0,\"\\n    View schedule (physio)\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/view-schedule.hbs" } });
+});
 define("self-start-front-end/templates/components/welcome-page", ["exports"], function (exports) {
   "use strict";
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "KIWd3jTc", "block": "{\"symbols\":[],\"statements\":[[2,\"&lt;!&ndash; PRELOADER &ndash;&gt;\"],[0,\"\\n\"],[2,\"<div id=\\\"preloader\\\"><div><em></em><em></em><em></em><em></em></div></div>\"],[0,\"\\n\"],[2,\"&lt;!&ndash; //PRELOADER &ndash;&gt;\"],[0,\"\\n\"],[4,\"nav-bar\",null,null,{\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"masthead segment bg1\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n        \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"library\"],[7],[0,\"Self Start\"],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"tagline\"],[7],[0,\"\\n            Guiding your health and well–being\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"style\",\"padding-left: 322px\"],[7],[0,\"\\n\\n\\n\\n          \"],[1,[18,\"register-user\"],false],[0,\"\\n\\n          \"],[2,\"<a href=\\\"/appointment\\\"  class=\\\"ui large inverted download button\\\" >\"],[0,\"\\n            \"],[2,\"Book Appointment\"],[0,\"\\n          \"],[2,\"</a>\"],[0,\"\\n          \"],[6,\"a\"],[9,\"href\",\"/#\"],[9,\"class\",\"ui large inverted basic button\"],[7],[0,\"Ask a Physio\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui vertical stripe intro segment\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui stackable centered very relaxed stacked aligned grid container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"four wide column\"],[7],[0,\"\\n          \"],[6,\"img\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/Steph-4491-1200x1800.jpg\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"twelve wide column\"],[7],[0,\"\\n          \"],[6,\"h1\"],[9,\"class\",\"ui header\"],[7],[0,\"Stephanie Marcotte\"],[8],[0,\"\\n          \"],[6,\"p\"],[7],[0,\"I believe movement is life.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe you can heal your body with functional movement patterns.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe it is never to late to create change in a body & it can happen fast.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe your body knows what it needs.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe every system in your body relies on a functional musculoskeletal system.\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n            All systems in the body work on movement:\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n          \"],[6,\"ul\"],[7],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the heart beats\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the lungs breath\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the stomach grinds\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the colon transports\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the blood flows\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the nerves conduct\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the muscles contract\"],[8],[0,\"\\n          \"],[8],[6,\"br\"],[7],[8],[0,\"\\n          Dis-ease in the body begins when movement is impaired. Restore your proper design for movement and your pain will cease. No fancy machinery or magic pills required; your body already has everything it needs to heal.\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n          I believe you need to trust yourself.\"],[6,\"br\"],[7],[8],[0,\"\\n          I believe you need to take responsibility for your present state of health.\"],[6,\"br\"],[7],[8],[0,\"\\n          I believe you can become free of your pain.\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[2,\"<div class=\\\"stackable very relaxed ui grid container\\\">\"],[0,\"\\n    \"],[2,\"</div>\"],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"feature alternate ui stripe vertical segment\"],[7],[0,\"\\n\\n\"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/welcome-page.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "W6IQgI/s", "block": "{\"symbols\":[],\"statements\":[[2,\"&lt;!&ndash; PRELOADER &ndash;&gt;\"],[0,\"\\n\"],[2,\"<div id=\\\"preloader\\\"><div><em></em><em></em><em></em><em></em></div></div>\"],[0,\"\\n\"],[2,\"&lt;!&ndash; //PRELOADER &ndash;&gt;\"],[0,\"\\n\"],[4,\"nav-bar\",null,null,{\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"masthead segment bg1\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n        \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"library\"],[7],[0,\"Self Start\"],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"tagline\"],[7],[0,\"\\n            Guiding your health and well–being\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"style\",\"padding-left: 322px\"],[7],[0,\"\\n\\n          \"],[1,[18,\"register-user\"],false],[0,\"\\n          \"],[2,\"<a href=\\\"/appointment\\\"  class=\\\"ui large inverted download button\\\" >\"],[0,\"\\n            \"],[2,\"Book Appointment\"],[0,\"\\n          \"],[2,\"</a>\"],[0,\"\\n          \"],[6,\"a\"],[9,\"href\",\"/#\"],[9,\"class\",\"ui large inverted basic button\"],[7],[0,\"Ask a Physio\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui vertical stripe intro segment\"],[9,\"id\",\"about\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui stackable centered very relaxed stacked aligned grid container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"four wide column\"],[7],[0,\"\\n          \"],[6,\"img\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/Steph-4491-1200x1800.jpg\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"twelve wide column\"],[7],[0,\"\\n          \"],[6,\"h1\"],[9,\"class\",\"ui header\"],[7],[0,\"Stephanie Marcotte\"],[8],[0,\"\\n          \"],[6,\"p\"],[7],[0,\"I believe movement is life.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe you can heal your body with functional movement patterns.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe it is never to late to create change in a body & it can happen fast.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe your body knows what it needs.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe every system in your body relies on a functional musculoskeletal system.\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n            All systems in the body work on movement:\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n          \"],[6,\"ul\"],[7],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the heart beats\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the lungs breath\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the stomach grinds\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the colon transports\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the blood flows\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the nerves conduct\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the muscles contract\"],[8],[0,\"\\n          \"],[8],[6,\"br\"],[7],[8],[0,\"\\n          Dis-ease in the body begins when movement is impaired. Restore your proper design for movement and your pain will cease. No fancy machinery or magic pills required; your body already has everything it needs to heal.\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n          I believe you need to trust yourself.\"],[6,\"br\"],[7],[8],[0,\"\\n          I believe you need to take responsibility for your present state of health.\"],[6,\"br\"],[7],[8],[0,\"\\n          I believe you can become free of your pain.\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[2,\"<div class=\\\"stackable very relaxed ui grid container\\\">\"],[0,\"\\n    \"],[2,\"</div>\"],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"feature alternate ui stripe vertical segment\"],[7],[0,\"\\n\\n\"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/welcome-page.hbs" } });
+});
+define("self-start-front-end/templates/country", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "aUtP+eOA", "block": "{\"symbols\":[\"country\"],\"statements\":[[6,\"link\"],[9,\"href\",\"http://fonts.googleapis.com/css?family=Ubuntu:400,700\"],[9,\"rel\",\"stylesheet\"],[9,\"type\",\"text/css\"],[7],[8],[0,\"\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/table-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui centered cards\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:12%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Countries\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n\\n\"],[4,\"link-to\",[\"country\"],null,{\"statements\":[[0,\"        Add Country\\n\"]],\"parameters\":[]},null],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:12%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Provinces\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n\"],[4,\"link-to\",[\"province\"],null,{\"statements\":[[0,\"        Add Province\\n\"]],\"parameters\":[]},null],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:12%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Cities\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n      Add City\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:12%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Genders\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n\\n\"],[4,\"link-to\",[\"gender\"],null,{\"statements\":[[0,\"        Add Gender\\n\"]],\"parameters\":[]},null],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:12%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Marital Statuses\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n\"],[4,\"link-to\",[\"marital-status\"],null,{\"statements\":[[0,\"        Add Marital Status\\n\"]],\"parameters\":[]},null],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"section\"],[9,\"id\",\"cd-section\"],[7],[0,\"\\n  \"],[6,\"section\"],[9,\"id\",\"cd-table\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cd-table-container\"],[7],[0,\"\\n      \"],[6,\"ul\"],[7],[0,\"\\n        \"],[6,\"li\"],[9,\"style\",\"  text-align: center; font-size: 1.2rem; text-transform: uppercase;\\n                          font-weight: bold; color: white; background-color: #f58b4c;\"],[7],[0,\"Countries\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"\\n          \"],[6,\"li\"],[7],[1,[19,1,[\"name\"]],false],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"float: right;\"],[7],[1,[25,\"delete-country\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[8],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"float: right; padding-right: 2%;\"],[7],[1,[25,\"edit-country\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\" \"],[2,\" cd-table \"],[0,\"\\n  \"],[1,[18,\"add-country\"],false],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/country.hbs" } });
 });
 define("self-start-front-end/templates/dashboard", ["exports"], function (exports) {
   "use strict";
@@ -5069,6 +8217,14 @@ define("self-start-front-end/templates/dashboard", ["exports"], function (export
   });
   exports.default = Ember.HTMLBars.template({ "id": "TZIG6YLm", "block": "{\"symbols\":[],\"statements\":[[4,\"nav-bar\",null,null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"masthead segment bg4\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n        \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n      \"],[6,\"span\"],[9,\"class\",\"tagline\"],[7],[0,\"\\n         Client Dashboard\\n      \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/dashboard.hbs" } });
 });
+define("self-start-front-end/templates/exercise", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "aVRtzoKj", "block": "{\"symbols\":[\"Exercise\"],\"statements\":[[6,\"link\"],[9,\"href\",\"http://fonts.googleapis.com/css?family=Ubuntu:400,700\"],[9,\"rel\",\"stylesheet\"],[9,\"type\",\"text/css\"],[7],[8],[0,\"\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/table-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"section\"],[9,\"id\",\"cd-section\"],[7],[0,\"\\n  \"],[6,\"section\"],[9,\"id\",\"cd-table\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cd-table-container\"],[7],[0,\"\\n      \"],[6,\"ul\"],[7],[0,\"\\n        \"],[6,\"li\"],[9,\"style\",\"text-align: center; font-size: 1.2rem; text-transform: uppercase;\\n                          font-weight: bold; color: white; background-color: #f58b4c;\"],[7],[0,\"Exercises\"],[8],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"\\n          \"],[6,\"li\"],[7],[0,\"\\n            \"],[1,[19,1,[\"name\"]],false],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"float: right;  padding-top: .5%;\"],[7],[1,[25,\"delete-exercises\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[8],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"float: right; padding-right: 2%;  padding-top: .5%;\"],[7],[1,[25,\"edit-exercises\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[8],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"float: right; padding-right: 30%; \"],[7],[1,[19,1,[\"description\"]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\" \"],[2,\" cd-table \"],[0,\"\\n\"],[8],[0,\"\\n\\n\\n\"],[6,\"div\"],[9,\"id\",\"add\"],[9,\"class\",\"container\"],[7],[0,\"\\n\"],[4,\"link-to\",[\"new-exercise\"],null,{\"statements\":[[0,\"    \"],[6,\"a\"],[9,\"id\",\"add\"],[9,\"class\",\"round-button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"plus icon\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/exercise.hbs" } });
+});
 define("self-start-front-end/templates/exercises", ["exports"], function (exports) {
   "use strict";
 
@@ -5077,13 +8233,37 @@ define("self-start-front-end/templates/exercises", ["exports"], function (export
   });
   exports.default = Ember.HTMLBars.template({ "id": "e5CmHWGA", "block": "{\"symbols\":[\"Exercise\"],\"statements\":[[6,\"div\"],[9,\"id\",\"content\"],[7],[0,\"\\n  \"],[1,[18,\"add-exercises\"],false],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"table\"],[9,\"class\",\"ui single line table\"],[7],[0,\"\\n\\n    \"],[6,\"thead\"],[7],[0,\"\\n    \"],[6,\"tr\"],[7],[0,\"\\n      \"],[6,\"th\"],[7],[0,\"Exercise Name\"],[8],[0,\"\\n      \"],[6,\"th\"],[7],[0,\"Description\"],[8],[0,\"\\n      \"],[6,\"th\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"model\",\"exercise\"]]],null,{\"statements\":[[0,\"      \"],[6,\"tr\"],[7],[0,\"\\n        \"],[6,\"td\"],[7],[1,[19,1,[\"name\"]],false],[8],[0,\"\\n        \"],[6,\"td\"],[7],[1,[19,1,[\"description\"]],false],[8],[0,\"\\n        \"],[6,\"td\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"four wide column right aligned\"],[7],[0,\"\\n            \"],[1,[25,\"edit-exercises\",null,[[\"ID\",\"images\"],[[19,1,[\"id\"]],[19,1,[\"images\"]]]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"four wide column left aligned\"],[7],[0,\"\\n            \"],[1,[25,\"delete-exercises\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/exercises.hbs" } });
 });
+define("self-start-front-end/templates/form-display", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "XzW9AC1k", "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[1,[25,\"display-questions\",null,[[\"id\"],[[20,[\"id\"]]]]],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/form-display.hbs" } });
+});
+define("self-start-front-end/templates/forms", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "zARdPO/F", "block": "{\"symbols\":[\"form\"],\"statements\":[[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"h2\"],[7],[0,\" Forms \"],[8],[0,\"\\n\\n\"],[4,\"ui-accordion\",null,null,{\"statements\":[[4,\"each\",[[20,[\"model\",\"form\"]]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"twelve wide column\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"\\n         \"],[6,\"i\"],[9,\"class\",\"ui dropdown blue icon\"],[7],[8],[0,\"\\n          \"],[1,[19,1,[\"name\"]],false],[0,\"\\n        \"],[8],[0,\"\\n        \"],[1,[25,\"show-form-questions\",null,[[\"questions\",\"thisForm\"],[[19,1,[\"questions\"]],[19,1,[]]]]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"six wide column right aligned\"],[7],[0,\"\\n          \"],[1,[25,\"manage-form\",null,[[\"ID\",\"questions\",\"form\",\"fName\"],[[19,1,[\"id\"]],[19,1,[\"questions\"]],[19,1,[]],[19,1,[\"name\"]]]]],false],[0,\"\\n        \"],[8],[0,\"\\n      \"],[6,\"a\"],[9,\"id\",\"questions\"],[7],[0,\"\\n\"],[4,\"link-to\",[\"formDisplay\",[25,\"query-params\",null,[[\"id\"],[[19,1,[\"id\"]]]]]],null,{\"statements\":[[0,\"              \"],[6,\"button\"],[9,\"class\",\"ui button\"],[7],[0,\"View Form\"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"two wide column right aligned\"],[7],[0,\"\\n        \"],[1,[25,\"edit-form\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"two wide column left aligned\"],[7],[0,\"\\n        \"],[1,[25,\"delete-form\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null]],\"parameters\":[]},null],[0,\"\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[1,[18,\"add-form\"],false],[0,\"\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/forms.hbs" } });
+});
+define("self-start-front-end/templates/gender", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "Ubewetn6", "block": "{\"symbols\":[\"gender\"],\"statements\":[[6,\"link\"],[9,\"href\",\"http://fonts.googleapis.com/css?family=Ubuntu:400,700\"],[9,\"rel\",\"stylesheet\"],[9,\"type\",\"text/css\"],[7],[8],[0,\"\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/table-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui centered cards\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:12%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Countries\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n\\n\"],[4,\"link-to\",[\"country\"],null,{\"statements\":[[0,\"        Add Country\\n\"]],\"parameters\":[]},null],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:12%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Provinces\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n\"],[4,\"link-to\",[\"province\"],null,{\"statements\":[[0,\"        Add Province\\n\"]],\"parameters\":[]},null],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:12%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Cities\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n      Add City\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:12%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Genders\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n\\n\"],[4,\"link-to\",[\"gender\"],null,{\"statements\":[[0,\"        Add Gender\\n\"]],\"parameters\":[]},null],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:12%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Marital Statuses\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n\"],[4,\"link-to\",[\"marital-status\"],null,{\"statements\":[[0,\"        Add Marital Status\\n\"]],\"parameters\":[]},null],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"section\"],[9,\"id\",\"cd-section\"],[7],[0,\"\\n  \"],[6,\"section\"],[9,\"id\",\"cd-table\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cd-table-container\"],[7],[0,\"\\n      \"],[6,\"ul\"],[7],[0,\"\\n        \"],[6,\"li\"],[9,\"style\",\"  text-align: center; font-size: 1.2rem; text-transform: uppercase;\\n                          font-weight: bold; color: white; background-color: #f58b4c;\"],[7],[0,\"Genders\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"\\n          \"],[6,\"li\"],[7],[0,\"\\n            \"],[1,[19,1,[\"name\"]],false],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"float: right;\"],[7],[1,[25,\"delete-gender\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[8],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"float: right; padding-right: 2%;\"],[7],[1,[25,\"edit-gender\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\" \"],[2,\" cd-table \"],[0,\"\\n  \"],[1,[18,\"add-gender\"],false],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/gender.hbs" } });
+});
 define("self-start-front-end/templates/home", ["exports"], function (exports) {
   "use strict";
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "FIEYFbCQ", "block": "{\"symbols\":[],\"statements\":[[1,[25,\"welcome-page\",null,[[\"model\"],[[20,[\"model\"]]]]],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/home.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "+hjUF3+G", "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[1,[25,\"welcome-page\",null,[[\"model\"],[[20,[\"model\"]]]]],false],[0,\"\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/home.hbs" } });
 });
 define("self-start-front-end/templates/images", ["exports"], function (exports) {
   "use strict";
@@ -5109,6 +8289,14 @@ define("self-start-front-end/templates/message", ["exports"], function (exports)
   });
   exports.default = Ember.HTMLBars.template({ "id": "SluaZqBa", "block": "{\"symbols\":[],\"statements\":[[4,\"nav-bar\",null,null,{\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"masthead segment bg1\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n        \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"library\"],[7],[0,\"Self Start\"],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"tagline\"],[7],[0,\"\\n            You have Registered. Login to access your dashboard.\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/message.hbs" } });
 });
+define("self-start-front-end/templates/new-exercise", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "GybKU8+I", "block": "{\"symbols\":[],\"statements\":[[1,[18,\"add-exercises\"],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/new-exercise.hbs" } });
+});
 define("self-start-front-end/templates/new-patient", ["exports"], function (exports) {
   "use strict";
 
@@ -5116,6 +8304,22 @@ define("self-start-front-end/templates/new-patient", ["exports"], function (expo
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "E5IIhA2N", "block": "{\"symbols\":[],\"statements\":[[1,[25,\"add-patient\",null,[[\"model\"],[[20,[\"model\"]]]]],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/new-patient.hbs" } });
+});
+define("self-start-front-end/templates/new-physiotherapist", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "SU7nfG4w", "block": "{\"symbols\":[],\"statements\":[[1,[18,\"add-physiotherapist\"],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/new-physiotherapist.hbs" } });
+});
+define("self-start-front-end/templates/new-rehabplans", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "zCDP/nRZ", "block": "{\"symbols\":[],\"statements\":[[1,[18,\"add-rehabplan\"],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/new-rehabplans.hbs" } });
 });
 define("self-start-front-end/templates/patient-file", ["exports"], function (exports) {
   "use strict";
@@ -5131,7 +8335,15 @@ define("self-start-front-end/templates/patients", ["exports"], function (exports
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "8T7AbAeQ", "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[1,[18,\"manage-patients\"],false],[0,\"\\n\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/patients.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "2cv4Totk", "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[1,[18,\"manage-patients\"],false],[0,\"\\n\\n\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/patients.hbs" } });
+});
+define("self-start-front-end/templates/physiotherapists", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "1FT7h3uN", "block": "{\"symbols\":[\"physiotherapest\"],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/table-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[6,\"section\"],[9,\"id\",\"cd-section\"],[7],[0,\"\\n\\n  \"],[6,\"section\"],[9,\"id\",\"cd-table\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cd-table-container\"],[7],[0,\"\\n      \"],[6,\"ul\"],[7],[0,\"\\n        \"],[6,\"li\"],[9,\"style\",\"  text-align: center; font-size: 1.2rem; text-transform: uppercase;\\n                          font-weight: bold; color: white; background-color: #f58b4c;\"],[7],[0,\"Physiotherapists\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"\\n          \"],[6,\"li\"],[7],[1,[19,1,[\"givenName\"]],false],[0,\" \"],[1,[19,1,[\"familyName\"]],false],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"float: right;\"],[7],[1,[25,\"delete-physiotherapist\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[8],[0,\"\\n\\n            \"],[6,\"p\"],[9,\"style\",\"float: right; padding-right: 2%; cursor: pointer;\"],[9,\"title\",\"Edit\"],[7],[0,\"\\n\"],[4,\"link-to\",[\"update-physiotherapist\",[19,1,[\"id\"]]],null,{\"statements\":[[0,\"                \"],[6,\"i\"],[9,\"class\",\"grey write icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"            \"],[8],[0,\"\\n\\n\\n          \"],[8],[0,\"\\n\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n  \"],[8],[0,\" \"],[2,\" cd-table \"],[0,\"\\n\\n\"],[8],[0,\"\\n\\n\\n\"],[6,\"div\"],[9,\"id\",\"add\"],[9,\"class\",\"container\"],[7],[0,\"\\n\"],[4,\"link-to\",[\"new-physiotherapist\"],null,{\"statements\":[[0,\"    \"],[6,\"a\"],[9,\"id\",\"add\"],[9,\"class\",\"round-button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"plus icon\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/physiotherapists.hbs" } });
 });
 define("self-start-front-end/templates/province", ["exports"], function (exports) {
   "use strict";
@@ -5141,6 +8353,14 @@ define("self-start-front-end/templates/province", ["exports"], function (exports
   });
   exports.default = Ember.HTMLBars.template({ "id": "71SG2//Q", "block": "{\"symbols\":[\"province\"],\"statements\":[[6,\"link\"],[9,\"href\",\"http://fonts.googleapis.com/css?family=Ubuntu:400,700\"],[9,\"rel\",\"stylesheet\"],[9,\"type\",\"text/css\"],[7],[8],[0,\"\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/table-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui centered cards\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:12%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Countries\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n\\n\"],[4,\"link-to\",[\"country\"],null,{\"statements\":[[0,\"        Add Country\\n\"]],\"parameters\":[]},null],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:12%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Provinces\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n\"],[4,\"link-to\",[\"province\"],null,{\"statements\":[[0,\"        Add Province\\n\"]],\"parameters\":[]},null],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:12%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Cities\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n      Add City\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:12%\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Genders\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n\\n\"],[4,\"link-to\",[\"gender\"],null,{\"statements\":[[0,\"        Add Gender\\n\"]],\"parameters\":[]},null],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"section\"],[9,\"id\",\"cd-section\"],[7],[0,\"\\n  \"],[6,\"section\"],[9,\"id\",\"cd-table\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cd-table-container\"],[7],[0,\"\\n      \"],[6,\"ul\"],[7],[0,\"\\n        \"],[6,\"li\"],[9,\"style\",\"  text-align: center; font-size: 1.2rem; text-transform: uppercase;\\n                          font-weight: bold; color: white; background-color: #f58b4c;\"],[7],[0,\"Provinces\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"\\n          \"],[6,\"li\"],[7],[1,[19,1,[\"name\"]],false],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"float: right;\"],[7],[1,[25,\"delete-province\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\" \"],[2,\" cd-table \"],[0,\"\\n  \"],[1,[18,\"add-province\"],false],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/province.hbs" } });
 });
+define("self-start-front-end/templates/questions", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "UZz3qCCC", "block": "{\"symbols\":[\"question\"],\"statements\":[[6,\"link\"],[9,\"href\",\"http://fonts.googleapis.com/css?family=Ubuntu:400,700\"],[9,\"rel\",\"stylesheet\"],[9,\"type\",\"text/css\"],[7],[8],[0,\"\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/table-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[6,\"p\"],[9,\"style\",\"margin-left: 10%\"],[7],[1,[18,\"add-question\"],false],[8],[0,\"\\n\\n\"],[6,\"section\"],[9,\"id\",\"cd-section\"],[7],[0,\"\\n\\n  \"],[6,\"section\"],[9,\"id\",\"cd-table\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cd-table-container\"],[7],[0,\"\\n      \"],[6,\"ul\"],[7],[0,\"\\n        \"],[6,\"li\"],[9,\"style\",\"  text-align: center; font-size: 1.2rem; text-transform: uppercase;\\n                          font-weight: bold; color: white; background-color: #f58b4c;\"],[7],[0,\"Questions\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"\\n          \"],[6,\"li\"],[7],[1,[19,1,[\"questionText\"]],false],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"float: right; padding-top: .5%;\"],[7],[1,[25,\"delete-question\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[8],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"float: right; padding-right: 2%;  padding-top: .5%;\"],[7],[1,[25,\"modify-question\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[8],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"float: right; padding-right: 20%; \"],[7],[1,[19,1,[\"type\"]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\" \"],[2,\" cd-table \"],[0,\"\\n\\n\"],[8],[0,\"\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/questions.hbs" } });
+});
 define("self-start-front-end/templates/register", ["exports"], function (exports) {
   "use strict";
 
@@ -5149,6 +8369,14 @@ define("self-start-front-end/templates/register", ["exports"], function (exports
   });
   exports.default = Ember.HTMLBars.template({ "id": "4DjiPkJ4", "block": "{\"symbols\":[],\"statements\":[[1,[25,\"user-info\",null,[[\"model\"],[[20,[\"model\"]]]]],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/register.hbs" } });
 });
+define("self-start-front-end/templates/rehabplans", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "8uo3sgzL", "block": "{\"symbols\":[\"Rehabplan\"],\"statements\":[[6,\"link\"],[9,\"href\",\"http://fonts.googleapis.com/css?family=Ubuntu:400,700\"],[9,\"rel\",\"stylesheet\"],[9,\"type\",\"text/css\"],[7],[8],[0,\"\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/table-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"id\",\"content\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui search\"],[9,\"style\",\"margin-left: 70%\"],[7],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"input\"],[9,\"class\",\"prompt\"],[9,\"type\",\"text\"],[9,\"placeholder\",\"Search Rehabilitation plan\"],[7],[8],[0,\"\\n    \"],[6,\"i\"],[9,\"class\",\"search icon\"],[7],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\\n\\n  \"],[6,\"section\"],[9,\"id\",\"cd-section\"],[7],[0,\"\\n    \"],[6,\"section\"],[9,\"id\",\"cd-table\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"cd-table-container\"],[7],[0,\"\\n        \"],[6,\"ul\"],[7],[0,\"\\n          \"],[6,\"li\"],[9,\"style\",\"text-align: center; font-size: 1.2rem; text-transform: uppercase;\\n                          font-weight: bold; color: white; background-color: #f58b4c;\"],[7],[0,\"Rehabilitation Plan\"],[8],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"\\n            \"],[6,\"li\"],[7],[0,\"\\n              \"],[1,[19,1,[\"planName\"]],false],[0,\"\\n              \"],[6,\"p\"],[9,\"style\",\"float: right;  padding-top: .5%;\"],[7],[1,[25,\"delete-rehabplan\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[8],[0,\"\\n              \"],[6,\"p\"],[9,\"style\",\"float: right; padding-right: 2%;  padding-top: .5%;\"],[7],[1,[25,\"edit-rehabplan\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[8],[0,\"\\n              \"],[6,\"p\"],[9,\"style\",\"float: right; padding-right: 30%; \"],[7],[1,[19,1,[\"description\"]],false],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n\"]],\"parameters\":[1]},null],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\" \"],[2,\" cd-table \"],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"id\",\"add\"],[9,\"class\",\"container\"],[7],[0,\"\\n\"],[4,\"link-to\",[\"new-rehabplans\"],null,{\"statements\":[[0,\"    \"],[6,\"a\"],[9,\"id\",\"add\"],[9,\"class\",\"round-button\"],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"plus icon\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/rehabplans.hbs" } });
+});
 define("self-start-front-end/templates/update-patient", ["exports"], function (exports) {
   "use strict";
 
@@ -5156,6 +8384,14 @@ define("self-start-front-end/templates/update-patient", ["exports"], function (e
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "5tb/Gk2l", "block": "{\"symbols\":[],\"statements\":[[1,[25,\"edit-patient\",null,[[\"pateintsData\",\"DOB\"],[[20,[\"model\"]],[20,[\"model\",\"dateOfBirth\"]]]]],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/update-patient.hbs" } });
+});
+define("self-start-front-end/templates/update-physiotherapist", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "4kIkaGFU", "block": "{\"symbols\":[],\"statements\":[[1,[25,\"edit-physiotherapist\",null,[[\"physiotherapistData\",\"DOB\"],[[20,[\"model\"]],[20,[\"model\",\"dateOfBirth\"]]]]],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/update-physiotherapist.hbs" } });
 });
 define('self-start-front-end/transitions', ['exports'], function (exports) {
   'use strict';
@@ -5515,19 +8751,6 @@ define('self-start-front-end/utils/smart-resolve', ['exports', 'ember-promise-to
     enumerable: true,
     get: function () {
       return _smartResolve.default;
-    }
-  });
-});
-define('self-start-front-end/utils/titleize', ['exports', 'ember-cli-string-helpers/utils/titleize'], function (exports, _titleize) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  Object.defineProperty(exports, 'default', {
-    enumerable: true,
-    get: function () {
-      return _titleize.default;
     }
   });
 });

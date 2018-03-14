@@ -7,7 +7,7 @@ export default Component.extend({
   DS: inject('store'),
 
   modalName: computed(function () {
-    return 'Delete-Province' + this.get('ID');
+    return 'Delete-physiotherapest' + this.get('ID');
   }),
 
   actions: {
@@ -21,9 +21,11 @@ export default Component.extend({
         },
         onApprove: () => {
 
-          this.get('DS').find('province', this.get('ID')).then((province) => {
-            province.save().then(function () {
-              province.destroyRecord();
+          this.get('DS').find('physiotherapest', this.get('ID')).then((physiotherapest) => {
+    
+            physiotherapest.set('name', '');
+            physiotherapest.save().then(function () {
+              physiotherapest.destroyRecord();
             });
           });
 
@@ -33,5 +35,4 @@ export default Component.extend({
     },
   }
 });
-
 

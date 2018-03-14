@@ -12,3 +12,4 @@ var imagesSchema = mongoose.Schema(
 
 var Images = mongoose.model('image', imagesSchema);
 exports.Model = Images;
+

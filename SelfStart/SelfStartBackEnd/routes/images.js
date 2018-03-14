@@ -42,6 +42,7 @@ router.route('/:image_id')
                 image.imageData = request.body.image.imageData;
                 image.exercise = request.body.image.exercise;
 
+
                 image.save(function (error) {
                     if (error) {
                         response.send({error: error});
@@ -64,3 +65,4 @@ router.route('/:image_id')
     });
 
 module.exports = router;
+

@@ -1,5 +1,6 @@
 import Component from '@ember/component';
 import Ember from 'ember';
+
 import fileObject from "../utils/file-object";
 
 export default Component.extend({
@@ -88,13 +89,16 @@ export default Component.extend({
   Duration: Ember.computed.oneWay('exerciseData.duration'),
   TargetedDate: Ember.computed.oneWay('exerciseData.targetDate'),
   MMURL: Ember.computed.oneWay('exerciseData.multimediaURL'),
+
   Imgs: Ember.computed.oneWay('exerciseData.images'),
+
 
   modalName: Ember.computed(function () {
     return 'editExercise' + this.get('ID');
   }),
 
   actions: {
+
     selectFile: function (data) {
       if (!Ember.isEmpty(data.target.files)) {
         for (let i = data.target.files.length - 1; i >= 0; i--) {
@@ -150,11 +154,13 @@ export default Component.extend({
 
       this.set('exerciseData', this.get('DS').peekRecord('exercise', this.get('ID')));
 
+
       Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
         closable: false,
         transition: 'horizontal flip',
         detachable: false,
         onDeny: () => {
+
           this.secQueue.clear();
           this.removeImages.clear();
           this.queue.clear();
@@ -162,6 +168,7 @@ export default Component.extend({
         },
 
         onApprove: () => {
+
 
           this.removeImages.forEach(file => {
             console.log(file);
@@ -222,6 +229,7 @@ export default Component.extend({
             });
           });
 
+
           window.location.reload();
 
           this.secQueue.clear();
@@ -252,5 +260,6 @@ export default Component.extend({
         this.set('flag', false);
       }
     }
+
   }
 });

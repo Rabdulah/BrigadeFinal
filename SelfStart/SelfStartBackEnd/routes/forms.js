@@ -41,8 +41,9 @@ router.route('/:form_id')
                     form.name = request.body.form.name;
                     form.description = request.body.form.description;
                     form.author = request.body.form.author;
-                    form.question = request.body.form.question;
                     form.assessmentTest = request.body.form.assessmentTest;
+                    form.questions = request.body.form.questions;
+                    form.answer = request.body.form.answer;
                     
                     form.save(function (error) {
                         if (error) {

@@ -1,52 +1,20 @@
 var express = require('express');
 var router = express.Router();
 var Physiotherapest = require('../models/Physiotherapests.js');
-var passport = require('passport');
-var BearerStrategy = require('passport-http-bearer').Strategy;
-const config = require('../config/database');
-const jwt = require('jsonwebtoken');
 
 router.route('/')
     .post(function (request, response) {
         var physiotherapest = new Physiotherapest.Model(request.body.physiotherapest);
-
-        Physiotherapest.getUserByEmail(physiotherapest.email, (err, physio) =>{
-            if(physio) {
-                response.json({success: false, msg: 'User already registered'});
-            }
+        physiotherapest.save(function (error) {
+            if (error) response.send(error);
+            response.json({physiotherapest: physiotherapest});
         });
-
-        Administrators.addPhysio(physio, (err, physio) => {
-            console.log("ASDJKkajsdkjsajkd");
-            if(err) {
-                response.json({success: false, msg: 'Failed to register user'});
-            } else{
-                response.json({physio: physio});
-            }
-        });
-
-        // physiotherapest.save(function (error) {
-        //     if (error) response.send(error);
-        //     response.json({physiotherapest: physiotherapest});
-        // });
     })
 
     .get(function (request, response) {
         Physiotherapest.Model.find(function (error, physiotherapest) {
             if (error) response.send(error);
             response.json({physiotherapest: physiotherapest});
-        });
-    });
-
-router.route('/:email')
-    .get( function (request, response) {
-        Physiotherapest.getUserByEmail(request.params.email, function (error, physio) {
-            if (error) {
-                response.send({error: error});
-            }
-            else {
-                response.json({success: true, physio: physio});
-            }
         });
     });
 
@@ -76,6 +44,7 @@ router.route('/:physiotherapest_id')
                 physiotherapest.dateFired = request.body.physiotherapest.dateFired;
                 physiotherapest.treatment = request.body.physiotherapest.treatment;
                 physiotherapest.account = request.body.physiotherapest.account;
+                physiotherapest.appointments = request.body.physiotherapest.appointments;
 
                 physiotherapest.save(function (error) {
                     if (error) {
@@ -90,9 +59,9 @@ router.route('/:physiotherapest_id')
     })
 
     .delete(function (request, response) {
-        Physiotherapest.Model.findByIdAndRemove(request.params.recommendations_id, function (error, deleted) {
+        Physiotherapest.Model.findByIdAndRemove(request.params.physiotherapest_id, function (error, deleted) {
             if (!error) {
-                response.json({recommendation: deleted});
+                response.json({physiotherapest: deleted});
             }
         });
     });

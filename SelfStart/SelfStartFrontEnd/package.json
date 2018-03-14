@@ -19,6 +19,7 @@
   "devDependencies": {
     "broccoli-asset-rev": "^2.4.5",
     "ember-ajax": "^3.0.0",
+    "ember-calendar": "^0.5.0",
     "ember-cli": "~2.16.2",
     "ember-cli-app-version": "^3.0.0",
     "ember-cli-babel": "^6.6.0",
@@ -27,7 +28,9 @@
     "ember-cli-htmlbars": "^2.0.1",
     "ember-cli-htmlbars-inline-precompile": "^1.0.0",
     "ember-cli-inject-live-reload": "^1.4.1",
+    "ember-cli-moment-shim": "^3.6.0",
     "ember-cli-qunit": "^4.0.0",
+    "ember-cli-sass": "^7.1.7",
     "ember-cli-shims": "^1.1.0",
     "ember-cli-sri": "^2.1.0",
     "ember-cli-uglify": "^2.0.0",
@@ -35,9 +38,10 @@
     "ember-cp-validations": "^3.5.1",
     "ember-data": "~2.16.2",
     "ember-export-application-global": "^2.0.0",
-    "ember-font-awesome": "^4.0.0-rc.2",
-    "ember-light-table": "^1.12.2",
     "ember-load-initializers": "^1.0.0",
+    "ember-moment": "^7.3.0",
+    "ember-power-select": "^2.0.0-beta.3",
+    "ember-radio-button": "^1.2.1",
     "ember-resolver": "^4.0.0",
     "ember-responsive": "^2.0.5",
     "ember-source": "~2.16.0",
@@ -47,12 +51,14 @@
     "eslint-plugin-ember": "^5.0.0",
     "liquid-fire": "^0.29.2",
     "loader.js": "^4.2.3",
-    "semantic-ui-ember": "^2.0.1"
+    "semantic-ui-ember": "^2.0.1",
+    "ui-ember-slider": "^0.5.0"
   },
   "engines": {
     "node": "^4.5 || 6.* || >= 7.*"
   },
   "dependencies": {
-    "snapsvg": "^0.5.1"
+    "is-integer": "^1.0.7",
+    "ui-slider": "^2.0.0-5"
   }
 }
