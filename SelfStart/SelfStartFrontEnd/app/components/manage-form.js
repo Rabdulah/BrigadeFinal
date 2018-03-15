@@ -8,7 +8,7 @@ export default Component.extend({
 
   modalName: Ember.computed(function(){
   return 'Manage-form' + this.get('ID');
-}),
+  }),
 
 edit: false,
 

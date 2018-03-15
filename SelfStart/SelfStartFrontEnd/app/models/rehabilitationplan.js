@@ -8,5 +8,5 @@ export default DS.Model.extend({
   goal : DS.attr(),
   timeToComplete: DS.attr(),
   exercises : DS.hasMany('exercise', { async: true }),
-  assessmentTests : DS.hasMany ('assesmentTest', { async: true })
+  assessmentTests : DS.hasMany ('assesment-test', { async: true })
 });

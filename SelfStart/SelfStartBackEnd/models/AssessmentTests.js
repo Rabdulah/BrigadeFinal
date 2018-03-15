@@ -1,16 +1,10 @@
 var mongoose = require('mongoose');
 
 var assessmentTestSchema = mongoose.Schema({
-    name: String,
-    description: String,
-    authorName: String,
-    testResult: {
-                    question: String,
-                    answer: String
-                },
+    form: {type: mongoose.Schema.ObjectId, ref: 'Forms'},
     rehabilitationPlan: {type: mongoose.Schema.ObjectId, ref: 'RehabilitationPlans'},
-    assessmentTool: {type: mongoose.Schema.ObjectId, ref: 'Forms'},
-    recommendation: [{type: mongoose.Schema.ObjectId, ref: 'Recommendations'}]
+    questions:  [{type: mongoose.Schema.ObjectId, ref: 'Questions'}],
+    answers:  [{type: mongoose.Schema.ObjectId, ref: 'Answers'}]
 
 });
 var AssessmentTestSchema = mongoose.model('assessmentTest', assessmentTestSchema);

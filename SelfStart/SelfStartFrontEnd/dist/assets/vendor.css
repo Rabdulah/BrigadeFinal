@@ -4651,10 +4651,10 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
   border-radius: 0.28571429rem;
   -webkit-box-shadow: 0px 0px 0px 1px transparent inset, 0px 0em 0px 0px rgba(34, 36, 38, 0.15) inset;
   box-shadow: 0px 0px 0px 1px transparent inset, 0px 0em 0px 0px rgba(34, 36, 38, 0.15) inset;
-  -webkit--select: none;
-  -moz--select: none;
-  -ms--select: none;
-  -select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   -webkit-transition: opacity 0.1s ease, background-color 0.1s ease, color 0.1s ease, background 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: opacity 0.1s ease, background-color 0.1s ease, color 0.1s ease, background 0.1s ease, -webkit-box-shadow 0.1s ease;
   transition: opacity 0.1s ease, background-color 0.1s ease, color 0.1s ease, box-shadow 0.1s ease, background 0.1s ease;
@@ -8987,10 +8987,10 @@ body .ui.inverted::-webkit-scrollbar-thumb:hover {
   text-transform: uppercase;
   letter-spacing: 0.05em;
   color: rgba(0, 0, 0, 0.85);
-  -webkit--select: none;
-  -moz--select: none;
-  -ms--select: none;
-  -select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
 }
 
@@ -12284,7 +12284,7 @@ i.icon.window.close.outline:before {
   content: "\f2d4";
 }
 
-/*  Actions */
+/* User Actions */
 
 i.icon.wait:before {
   content: "\f017";
@@ -12490,11 +12490,11 @@ i.icon.in.cart:before {
   content: "\f218";
 }
 
-i.icon.add.:before {
+i.icon.add.user:before {
   content: "\f234";
 }
 
-i.icon.remove.:before {
+i.icon.remove.user:before {
   content: "\f235";
 }
 
@@ -12560,13 +12560,13 @@ i.icon.help.circle.outline:before {
   content: "\f29c";
 }
 
-/* s */
+/* Users */
 
-i.icon.:before {
+i.icon.user:before {
   content: "\f007";
 }
 
-i.icon.s:before {
+i.icon.users:before {
   content: "\f0c0";
 }
 
@@ -12590,15 +12590,15 @@ i.icon.spy:before {
   content: "\f21b";
 }
 
-i.icon..circle:before {
+i.icon.user.circle:before {
   content: "\f2bd";
 }
 
-i.icon..circle.outline:before {
+i.icon.user.circle.outline:before {
   content: "\f2be";
 }
 
-i.icon..outline:before {
+i.icon.user.outline:before {
   content: "\f2c0";
 }
 
@@ -15342,27 +15342,27 @@ i.icon.facebook.official:before {
   content: "\f230";
 }
 
-i.icon..plus:before {
+i.icon.user.plus:before {
   content: "\f234";
 }
 
-i.icon..times:before {
+i.icon.user.times:before {
   content: "\f235";
 }
 
-i.icon..close:before {
+i.icon.user.close:before {
   content: "\f235";
 }
 
-i.icon..cancel:before {
+i.icon.user.cancel:before {
   content: "\f235";
 }
 
-i.icon..delete:before {
+i.icon.user.delete:before {
   content: "\f235";
 }
 
-i.icon..x:before {
+i.icon.user.x:before {
   content: "\f235";
 }
 
@@ -18546,10 +18546,10 @@ ul.ui.list li,
 ul.ui.list li:before,
 .ui.bulleted.list .list > .item:before,
 .ui.bulleted.list > .item:before {
-  -webkit--select: none;
-  -moz--select: none;
-  -ms--select: none;
-  -select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   pointer-events: none;
   position: absolute;
   top: auto;
@@ -18626,10 +18626,10 @@ ol.ui.list li:before,
   position: absolute;
   top: auto;
   left: auto;
-  -webkit--select: none;
-  -moz--select: none;
-  -ms--select: none;
-  -select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   pointer-events: none;
   margin-left: -1.25rem;
   counter-increment: ordered;
@@ -19012,7 +19012,7 @@ ol.ui.horizontal.list li:before,
 *******************************/
 
 /*******************************
-     Variable Overrides
+    User Variable Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.14 - Loader
@@ -25162,10 +25162,10 @@ ol.ui.horizontal.list li:before,
   -webkit-box-flex: 0;
   -ms-flex: 0 0 auto;
   flex: 0 0 auto;
-  -webkit--select: none;
-  -moz--select: none;
-  -ms--select: none;
-  -select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   background: none;
   padding: 0.92857143em 1.14285714em;
   text-transform: none;
@@ -25200,10 +25200,10 @@ ol.ui.horizontal.list li:before,
 .ui.menu .text.item > *,
 .ui.menu .item > a:not(.ui),
 .ui.menu .item > p:only-child {
-  -webkit--select: text;
-  -moz--select: text;
-  -ms--select: text;
-  -select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
   line-height: 1.3;
 }
 
@@ -28955,10 +28955,10 @@ Floated Menu / Item
 
 .ui.sortable.table thead th.sorted,
 .ui.sortable.table thead th.sorted:hover {
-  -webkit--select: none;
-  -moz--select: none;
-  -ms--select: none;
-  -select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 .ui.sortable.table thead th:after {
@@ -29517,7 +29517,7 @@ Floated Menu / Item
 *******************************/
 
 /*******************************
-     Variable Overrides
+    User Variable Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.14 - Item
@@ -30624,7 +30624,7 @@ a.ui.card:hover,
 *******************************/
 
 /*******************************
-     Variable Overrides
+    User Variable Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.14 - Comment
@@ -30783,7 +30783,7 @@ a.ui.card:hover,
 }
 
 /*--------------------
-      Actions
+     User Actions
 ---------------------*/
 
 .ui.comments .comment .actions {
@@ -30910,7 +30910,7 @@ a.ui.card:hover,
 *******************************/
 
 /*******************************
-     Variable Overrides
+    User Variable Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.14 - Feed
@@ -31066,17 +31066,17 @@ a.ui.card:hover,
 }
 
 /*--------------
-
+      User
 ---------------*/
 
-.ui.feed > .event > .content . {
+.ui.feed > .event > .content .user {
   display: inline-block;
   font-weight: bold;
   margin-right: 0em;
   vertical-align: baseline;
 }
 
-.ui.feed > .event > .content . img {
+.ui.feed > .event > .content .user img {
   margin: -0.25em 0.25em 0em 0em;
   width: auto;
   height: 10em;
@@ -31223,7 +31223,7 @@ a.ui.card:hover,
 *******************************/
 
 /*******************************
-     Variable Overrides
+    User Variable Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.14 - Item
@@ -31744,7 +31744,7 @@ a.ui.card:hover,
 *******************************/
 
 /*******************************
-     Variable Overrides
+    User Variable Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.14 - Statistic
@@ -32380,7 +32380,7 @@ a.ui.card:hover,
 *******************************/
 
 /*******************************
-     Variable Overrides
+    User Variable Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.14 - Accordion
@@ -32643,7 +32643,7 @@ a.ui.card:hover,
 }
 
 /*******************************
-         Overrides
+        User Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.14 - Checkbox
@@ -32908,10 +32908,10 @@ a.ui.card:hover,
 
 .ui.checkbox input.hidden + label {
   cursor: pointer;
-  -webkit--select: none;
-  -moz--select: none;
-  -ms--select: none;
-  -select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
 
 /*******************************
@@ -33356,10 +33356,10 @@ a.ui.card:hover,
   animation-duration: 0.5s;
   -webkit-transition: background-color 0.5s linear;
   transition: background-color 0.5s linear;
-  -webkit--select: none;
-  -moz--select: none;
-  -ms--select: none;
-  -select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   will-change: opacity;
   z-index: 1000;
 }
@@ -33370,10 +33370,10 @@ a.ui.card:hover,
   width: 100%;
   height: 100%;
   display: table;
-  -webkit--select: text;
-  -moz--select: text;
-  -ms--select: text;
-  -select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
 .ui.dimmer > .content > * {
@@ -33544,7 +33544,7 @@ body.dimmable > .dimmer {
 *******************************/
 
 /*******************************
-         Overrides
+        User Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.14 - Dropdown
@@ -34032,7 +34032,7 @@ select.ui.dropdown {
   word-wrap: normal;
 }
 
-/*  Item */
+/* User Item */
 
 .ui.selection.dropdown .menu > .hidden.addition.item {
   display: none;
@@ -34261,10 +34261,10 @@ select.ui.dropdown {
 /* Selection Label */
 
 .ui.multiple.dropdown > .label {
-  -webkit--select: none;
-  -moz--select: none;
-  -ms--select: none;
-  -select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
   display: inline-block;
   vertical-align: top;
   white-space: normal;
@@ -35191,7 +35191,7 @@ select.ui.dropdown {
 */
 
 /*******************************
-         Overrides
+        User Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.14 - Video
@@ -35386,10 +35386,10 @@ select.ui.dropdown {
   -webkit-transform-origin: 50% 25%;
   transform-origin: 50% 25%;
   border-radius: 0.28571429rem;
-  -webkit--select: text;
-  -moz--select: text;
-  -ms--select: text;
-  -select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
   will-change: top, left, margin, transform, opacity;
 }
 
@@ -36154,7 +36154,7 @@ a.ui.nag {
 *******************************/
 
 /*******************************
-         Overrides
+        User Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.14 - Popup
@@ -36984,7 +36984,7 @@ a.ui.nag {
 *******************************/
 
 /*******************************
-         Overrides
+        User Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.14 - Progress Bar
@@ -37717,7 +37717,7 @@ a.ui.nag {
 }
 
 /*-------------------
-    Interactive
+   User Interactive
 --------------------*/
 
 /* Selected Rating */
@@ -38353,10 +38353,10 @@ a.ui.nag {
   height: 100%;
   display: table;
   text-align: center;
-  -webkit--select: text;
-  -moz--select: text;
-  -ms--select: text;
-  -select: text;
+  -webkit-user-select: text;
+  -moz-user-select: text;
+  -ms-user-select: text;
+  user-select: text;
 }
 
 .ui.cube.shape .side > .content > div {
@@ -38444,7 +38444,7 @@ a.ui.nag {
 *******************************/
 
 /*******************************
-         Overrides
+        User Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.14 - Sidebar
@@ -39291,7 +39291,7 @@ body.pushable > .pusher {
 *******************************/
 
 /*******************************
-         Overrides
+        User Overrides
 *******************************/
 /*!
  * # Semantic UI 2.2.14 - Transition
@@ -41530,7 +41530,6 @@ body.pushable > .pusher {
 /*******************************
          Site Overrides
 *******************************/
-
 /*! =======================================================
                       VERSION  6.0.17              
 ========================================================= */

@@ -5,5 +5,6 @@ export default DS.Model.extend({
     description: DS.attr(),
     author: DS.attr(),
     answers:DS.hasMany('answer'),
-    questions: DS.hasMany('question')
+    questions: DS.hasMany('question'),
+    assessTest: DS.hasMany('assessment-test')
 });

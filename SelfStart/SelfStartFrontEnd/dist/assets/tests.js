@@ -190,6 +190,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'components/edit-status.js should pass ESLint\n\n');
   });
 
+  QUnit.test('components/list-forms.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/list-forms.js should pass ESLint\n\n');
+  });
+
   QUnit.test('components/manage-form.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/manage-form.js should pass ESLint\n\n');
@@ -307,7 +312,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('helpers/is-equal.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'helpers/is-equal.js should pass ESLint\n\n');
+    assert.ok(false, 'helpers/is-equal.js should pass ESLint\n\n4:3 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('helpers/mc-display.js', function (assert) {
@@ -337,7 +342,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('models/assesment-test.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'models/assesment-test.js should pass ESLint\n\n');
+    assert.ok(false, 'models/assesment-test.js should pass ESLint\n\n2:10 - \'empty\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('models/city.js', function (assert) {
@@ -1570,6 +1575,35 @@ define('self-start-front-end/tests/integration/components/edit-rehabplan-test', 
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/list-forms-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('list-forms', 'Integration | Component | list forms', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "8foyeksP",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"list-forms\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "tc6nx0Xl",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"list-forms\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/manage-form-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -2324,6 +2358,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('integration/components/edit-rehabplan-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/edit-rehabplan-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/list-forms-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/list-forms-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/manage-form-test.js', function (assert) {
