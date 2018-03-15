@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 
 var appointmentsSchema = mongoose.Schema({
     date: Date,
+    endDate: Date,
     reason: String,
     other: String,
     patient: {type: mongoose.Schema.ObjectId, ref: 'Patients'}

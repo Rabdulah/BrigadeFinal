@@ -2,10 +2,14 @@ import Component from '@ember/component';
 import { inject } from '@ember/service';
 import { computed } from '@ember/object';
 import $ from 'jquery';
+import moment from 'moment';
 
 
 export default Component.extend({
   occurrences: Ember.A(),
+  availableSpot: Ember.A(),
+  removedSpot: Ember.A(),
+
   DS: inject('store'),
   routing: inject('-routing'),
   isEditing: false,
@@ -29,28 +33,6 @@ export default Component.extend({
   },
   blocks: [],
 
-  dragFinishText: false,
-  dragStartedText: false,
-  dragEndedText: false,
-  myObject:{id:1, name:'objectName'},
-
-
-  init: function() {
-    this._super();
-    let d = new Date();
-    for (let i =0; i < d.getDay(); i++){
-      let result = new Date();
-      result.setDate(result.getDate() + -d.getDay());
-      this.get('weekdate')[i] = result.toDateString();
-    }
-    this.get('weekdate')[d.getDay()] = d.toDateString();
-    for (let i =d.getDay(); i < 6; i++){
-      let result = new Date();
-      result.setDate(d.getDate()+i);
-      this.get('weekdate')[i+1] = result.toDateString();
-    }
-
-  },
 
   getphysio: computed(function(){
     return this.get('DS').findAll('physiotherapest');
@@ -59,49 +41,31 @@ export default Component.extend({
 
   init() {
     this._super(...arguments);
-
-    //random data to see if it works
-    this.get('occurrences').pushObject(Ember.Object.create({
-      title: "Ouda",
-      startsAt: "2018-03-12T17:00:00.000Z",
-      endsAt: "2018-03-12T18:00:00.000Z"
-    }));
-
-    this.get('occurrences').pushObject(Ember.Object.create({
-      title: "Yousef",
-      startsAt: "2018-03-14T17:00:00.000Z",
-      endsAt: "2018-03-14T18:00:00.000Z"
-    }));
-
-    this.get('occurrences').pushObject(Ember.Object.create({
-      title: "Yousef Ouda",
-      startsAt: "2018-03-13T17:00:00.000Z",
-      endsAt: "2018-03-13T18:00:00.000Z"
-    }));
   },
 
   actions: {
     calendarAddOccurrence: function(occurrence) {
-      this.get('occurrences').pushObject(Ember.Object.create({
-        title: occurrence.get('title'),
-        startsAt: occurrence.get('startsAt'),
-        endsAt: occurrence.get('endsAt')
-      }));
-
-      console.log(JSON.stringify(this.get('occurrences')));
+      // this.get('occurrences').pushObject(Ember.Object.create({
+      //   title: occurrence.get('title'),
+      //   startsAt: occurrence.get('startsAt'),
+      //   endsAt: occurrence.get('endsAt')
+      // }));
+      //
+      // console.log(JSON.stringify(this.get('occurrences')));
     },
 
     calendarUpdateOccurrence: function(occurrence, properties, isPreview) {
-      occurrence.setProperties(properties);
-
-      if (!isPreview) {
-        console.log(JSON.stringify(properties));
-      }
+      // occurrence.setProperties(properties);
+      //
+      // if (!isPreview) {
+      //   console.log(JSON.stringify(properties));
+      // }
+      console.log(JSON.stringify(occurrence));
     },
 
     calendarRemoveOccurrence: function(occurrence) {
-      this.get('occurrences').removeObject(occurrence);
-      console.log(JSON.stringify(occurrence));
+      // this.get('occurrences').removeObject(occurrence);
+      // console.log(JSON.stringify(occurrence));
     },
     saveappointment(){
       console.log("saving form");
@@ -143,41 +107,37 @@ export default Component.extend({
 
 
     updateValue(physio){
+      this.set('occurrences', Ember.A());
+      this.set('removedSpot', Ember.A());
 
-      let self = this;
-      this.set('selectphysio', physio);
-
-      this.get('DS').findRecord('physiotherapest',physio).then(function (phy) {
-        self.set('phyidget', phy);
-        phy.get('appointments').forEach(function (e) {
-          self.get('appointmentsN').pushObject(e);
-        });
-
-        self.get('appointmentsN').forEach(function (e) {
-          let containeddate = e.get('date');
-          let container = new self.get('block');
-          let min90 = new Date(containeddate);
-          container.fulldate = min90;
-          container.date= min90.toDateString();
-          container.datastart = min90.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-          min90.setMinutes(min90.getMinutes() + 90);
-          container.dataend=  min90.toLocaleTimeString([], {hour: '2-digit', minute:'2-digit'});
-          if (!(e.get('patient').get('id') == null)){
-            container.dataevent = "event-1";
-          }
-          else {
-            container.dataevent = "event-3";
-          }
-          container.appointmentid =  e.get('id');
-          self.get('blocks').pushObject(container);
+      let home= this;
+      //save physioid
+      this.set('selectedPhysioId', physio);
+      //get record of selected physiotherapist
+      this.get('DS').findRecord('physiotherapest', physio).then(function (phy){
+        //might not need this
+        home.set('selectedphysio', phy);
+        //get each appointment by  physiotherapist appointment
+        phy.get('appointments').forEach( function(obj){
+          let curid = obj.get('id');
+          home.get('DS').findRecord('appointment',curid).then(function (app) {
+            let scheduledDate = moment(app.get('date'));
+            let endDate = moment(app.get('endDate'));
+            //filter out any appointments that is previous to current date
+            if (scheduledDate > moment()) {
+              console.log(app.get('reason'));
+              if (app.get('reason')==null) {
+                home.get('occurrences').pushObject(Ember.Object.create({
+                  title: "Book Appointment",
+                  startsAt: scheduledDate.toISOString(),
+                  endsAt: endDate.toISOString(),
+                  tempid : app.get('id')
+                }));
+              }
+            }
+          });
         });
       });
-
-
-
-
-      this.set('physioPicked', true);
-
     },
     assignDate (date){
       this.set('selectedDate', date);
@@ -186,27 +146,6 @@ export default Component.extend({
     cancel() {
       return true;
     },
-    prev() {
-      let newcont =[];
-      let counter =0;
-      this.get('weekdate').forEach(function (e) {
-        let result = new Date(e);
-        result.setDate(result.getDate() - 7);
-        newcont[counter++] = result.toDateString();
-      });
-      this.get('weekdate').replace(0,7,newcont);
-    },
-    next() {
-      let newcont =[];
-      let counter =0;
-      this.get('weekdate').forEach(function (e) {
-        let result = new Date(e);
-        result.setDate(result.getDate() + 7);
-        newcont[counter++] = result.toDateString();
-      });
-      this.get('weekdate').replace(0,7,newcont);
-    },
-
 
     save: function () {
       let self = this;
@@ -241,48 +180,7 @@ export default Component.extend({
 
 
       });
-      // this.get('DS').findRecord('patient', client).then(function (src) {
-      //   booking.set('patient', src);
-      // });
-      // booking.save().then(() =>{
-      //   console.log(booking);
-      //   this.get('DS').findRecord('patient', client). then(function (a) {
-      //     a.get('appointments').pushObject(booking);
-      //     a.save().then(()=>{
-      //     });
-      //   });
-      //
-      //   this.get('DS').findRecord('physiotherapist', self.get('selectphysio')). then(function (a) {
-      //     a.get('appointments').pushObject(booking);
-      //     a.save().then(()=>{
-      //     });
-      //   });
-      //
-      //
-      //   this.set('Reason', '');
-      //   this.set('Other', '');
-      //   this.set('selectedDate', '');
-      //   //this.get('routing').transitionTo('patients');
-      // });
-    },
 
-    dragResult: function(obj,ops) {
-      this.set('dragFinishText', ops.target.resultText);
-      console.log('Content of draggable-object :',obj);
     },
-    dragStart: function() {
-      this.set('dragEndedText', false);
-      this.set('dragStartedText','Drag Has Started');
-    },
-    dragEnd: function() {
-      this.set('dragStartedText', false);
-      this.set('dragEndedText','Drag Has Ended');
-    },
-    draggingOverTarget: function() {
-      console.log('Over target');
-    },
-    leftDragTarget: function() {
-      console.log('Off target');
-    }
   }
 });

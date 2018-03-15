@@ -15,24 +15,16 @@
         {{/each}}
       </select>
     </p>
-
-    <div>
-      <div class="cd-button">
-        <input type="submit" value="Submit">
-      </div>
-
-      <button class="ui fluid negative button" {{action "cancelbookingappointment"}}>Cancel</button>
-    </div>
   </fieldset>
 
 </form>
 
 {{as-calendar
-  title="Ember Calendar"
+  title="Ember Schedule"
   occurrences=occurrences
   defaultTimeZoneQuery="Toronto|New York"
-  dayStartingTime="9:00"
-  dayEndingTime="18:00"
+  dayStartingTime="8:00"
+  dayEndingTime="20:00"
   timeSlotDuration="00:30"
   onAddOccurrence=(action "calendarAddOccurrence")
   onUpdateOccurrence=(action "calendarUpdateOccurrence")
