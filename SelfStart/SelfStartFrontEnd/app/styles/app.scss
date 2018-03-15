@@ -5,3 +5,64 @@
 
 @import 'addons/ember-calendar/paint-core';
 @import 'addons/ember-calendar/main';
+
+/*.following.bar .ui.container {*/
+/*width: 1400px;*/
+/*}*/
+
+.ui.divider {
+  margin: 0.8rem 0rem !important;
+}
+
+#login {
+  background: #efd469;
+  color: darkslategrey !important;
+  width: 100px;
+  text-align: center;
+}
+
+#login:hover {
+  background: #F0E68C;
+  color: darkslategrey !important;
+  width: 100px;
+  text-align: center;
+}
+
+
+#client {
+  background: #efd469;
+  color: darkslategrey !important;
+
+  text-align: center;
+
+}
+
+#client:hover {
+  background: #F0E68C;
+  color: darkslategrey !important;
+
+  text-align: center;
+}
+
+.background{
+  background-color: #e9ebee;
+}
+
+
+.login.tiny.ui.modal {
+  position: fixed !important;
+  top: 7.7em !important;
+}
+
+//.ui.centered.very.padded.raised.segment.container {
+//  width: 1600px;
+//}
+
+.ui.grid > .column:not(.row) {
+   padding-top: 0;
+   padding-bottom: 0;
+}
+
+.ui.grid + .grid {
+  margin-top: 0;
+}

@@ -11,6 +11,7 @@ export default Component.extend({
   loggedOut: !localStorage.getItem('loggedIn'),
   ajax: Ember.inject.service(),
   temp: false,
+  loggingIn: true,
 
   authentication() {
 
@@ -105,6 +106,15 @@ export default Component.extend({
   },
 
   actions: {
+
+    forgotPassword() {
+      this.set('loggingIn', false);
+    },
+
+    login() {
+      this.set('loggingIn', true);
+    },
+
     logout: function () {
       localStorage.clear();
       // localStorage.setItem('loggedIn', false);
@@ -157,8 +167,10 @@ export default Component.extend({
 
     openModal: function ()  {
 
-      $('.ui.login.modal').modal({
+      $('.ui.login.modal.tiny').modal({
         // closable: false,
+        transition: 'fade down',
+        dimmerSettings: { opacity: 0.6 },
 
       }).modal('show')
     },
