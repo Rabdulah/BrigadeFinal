@@ -3200,10 +3200,10 @@ define('self-start-front-end/components/list-forms', ['exports'], function (expo
         actions: {
             AddTest: function AddTest(thisForm, thisPlan) {
 
-                var newTest = this.get('DS').createRecord('assesment-test', {
+                var newTest = this.get('DS').createRecord('assessment-test', {
                     form: thisForm,
-                    questions: thisForm.get("questions"),
-                    rehabPlan: thisPlan
+                    questions: thisForm.get("questions")
+                    //  rehabPlan: thisPlan,     
                 });
                 newTest.save().then(function () {
                     return true;
@@ -7222,7 +7222,7 @@ define('self-start-front-end/models/appointment', ['exports', 'ember-data'], fun
     patient: _emberData.default.belongsTo('patient')
   });
 });
-define('self-start-front-end/models/assesment-test', ['exports', 'ember-data'], function (exports, _emberData) {
+define('self-start-front-end/models/assessment-test', ['exports', 'ember-data'], function (exports, _emberData) {
     'use strict';
 
     Object.defineProperty(exports, "__esModule", {
@@ -7425,8 +7425,9 @@ define('self-start-front-end/models/question', ['exports', 'ember-data'], functi
     sa: _emberData.default.attr('boolean'),
     tf: _emberData.default.attr('boolean'),
     ra: _emberData.default.attr('boolean'),
-    answers: _emberData.default.hasMany('answer'),
+    assessmentTest: _emberData.default.hasMany('assessment-test'),
     forms: _emberData.default.hasMany('form')
+
   });
 });
 define('self-start-front-end/models/rehabilitationplan', ['exports', 'ember-data'], function (exports, _emberData) {
@@ -7443,7 +7444,7 @@ define('self-start-front-end/models/rehabilitationplan', ['exports', 'ember-data
     goal: _emberData.default.attr(),
     timeToComplete: _emberData.default.attr(),
     exercises: _emberData.default.hasMany('exercise', { async: true }),
-    assessmentTests: _emberData.default.hasMany('assesment-test', { async: true })
+    assessmentTests: _emberData.default.hasMany('assessment-test')
   });
 });
 define('self-start-front-end/resolver', ['exports', 'ember-resolver'], function (exports, _emberResolver) {
@@ -9166,6 +9167,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+5074004a"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+3ae5038e"});
 }
 //# sourceMappingURL=self-start-front-end.map

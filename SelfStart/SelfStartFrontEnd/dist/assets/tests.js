@@ -192,7 +192,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/list-forms.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'components/list-forms.js should pass ESLint\n\n');
+    assert.ok(false, 'components/list-forms.js should pass ESLint\n\n17:27 - \'thisPlan\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/manage-form.js', function (assert) {
@@ -340,9 +340,9 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'models/appointment.js should pass ESLint\n\n');
   });
 
-  QUnit.test('models/assesment-test.js', function (assert) {
+  QUnit.test('models/assessment-test.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'models/assesment-test.js should pass ESLint\n\n2:10 - \'empty\' is defined but never used. (no-unused-vars)');
+    assert.ok(false, 'models/assessment-test.js should pass ESLint\n\n2:10 - \'empty\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('models/city.js', function (assert) {

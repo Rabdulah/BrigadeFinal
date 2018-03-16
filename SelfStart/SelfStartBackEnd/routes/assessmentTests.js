@@ -1,36 +1,36 @@
 var express = require('express');
 var router = express.Router();
-var Assessments = require('../models/AssessmentTests');
+var AssessmentTests = require('../models/AssessmentTests');
 
 router.route('/')
     .post( function (request, response) {
 
-        var assess = new Assessments.Model(request.body.assess);
-        assess.save(function (error) {
+        var assessmentTest = new AssessmentTests.Model(request.body.assessmentTest);
+        assessmentTest.save(function (error) {
             if (error) response.send(error);
-            response.json({assess: assess});
+            response.json({assessmentTest: assessmentTest});
         });
     })
     .get( function (request, response) {
-        Assessments.Model.find(function (error, assessments) {
+        AssessmentTests.Model.find(function (error, assessmentTests) {
             if (error) response.send(error);
-            response.json({assess: assessments});
+            response.json({assessmentTest: assessmentTests});
         });
     });
     
 router.route('/:assessment_id')
     .get( function (request, response) {
-        Assessments.Model.findById(request.params.assess_id, function (error, assess) {
+        AssessmentTests.Model.findById(request.params.assess_id, function (error, assessmentTest) {
             if (error) {
                 response.send({error: error});
             }
             else {
-                response.json({assess: assess});
+                response.json({assessmentTest: assessmentTest});
             }
         });
     })
     .put( function (request, response) {
-        Assessments.Model.findById(request.params.city_id, function (error, assess) {
+        AssessmentTests.Model.findById(request.params.city_id, function (error, assessmentTest) {
             if (error) {
                 response.send({error: error});
             }
@@ -38,27 +38,27 @@ router.route('/:assessment_id')
 
                 // update each attribute
                 
-                assess.rehabilitationPlan = request.body.assess.rehabilitationPlan;
-                assess.questions = request.body.assess.questions;
-                assess.form = request.body.assess.form;
-                assess.answers = request.body.assess.answers;
+                assessmentTest.rehabilitationPlan = request.body.assessmentTest.rehabilitationPlan;
+                assessmentTest.questions = request.body.assessmentTest.questions;
+                assessmentTest.form = request.body.assessmentTest.form;
+                assessmentTest.answers = request.body.assessmentTest.answers;
 
-                assess.save(function (error) {
+                assessmentTest.save(function (error) {
                     if (error) {
                         response.send({error: error});
                     }
                     else {
-                        response.json({assess: assess});
+                        response.json({assessmentTest: assessmentTest});
                     }
                 });
             }
         });
     })
     .delete( function (request, response) {
-        Assessments.Model.findByIdAndRemove(request.params.city_id,
+        AssessmentTests.Model.findByIdAndRemove(request.params.city_id,
             function (error, deleted) {
                 if (!error) {
-                    response.json({assess: deleted});
+                    response.json({assessmentTest: deleted});
                 }
             }
         );
