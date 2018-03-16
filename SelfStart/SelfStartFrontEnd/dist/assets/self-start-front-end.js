@@ -1210,23 +1210,17 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
     isEditing: false,
 
     modalName: Ember.computed(function () {
-      return 'Manage-form' + this.get('ID');
+      return 'Book Appointment';
     }),
+    givenName: null,
+    familyName: null,
+    timeSlots: Ember.A(),
+    selectedappointmentBlock: null,
+    selectedbookedTime: null,
+
     phyidget: null,
-    selectedappointment: null,
 
     physioPicked: false,
-    appointmentsN: [],
-    weekdate: [],
-    block: {
-      fulldate: null,
-      date: null,
-      datastart: null,
-      dataend: null,
-      dataevent: "event-3",
-      appointmentid: null
-    },
-    blocks: [],
 
     getphysio: Ember.computed(function () {
       return this.get('DS').findAll('physiotherapest');
@@ -1249,35 +1243,11 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
       },
 
       calendarUpdateOccurrence: function calendarUpdateOccurrence(occurrence, properties, isPreview) {
-        // occurrence.setProperties(properties);
-        //
-        // if (!isPreview) {
-        //   console.log(JSON.stringify(properties));
-        // }
         console.log(JSON.stringify(occurrence));
-      },
+        this.set('selectedappointmentBlock', occurrence);
 
-      calendarRemoveOccurrence: function calendarRemoveOccurrence(occurrence) {
-        // this.get('occurrences').removeObject(occurrence);
-        // console.log(JSON.stringify(occurrence));
-      },
-      saveappointment: function saveappointment() {
-        console.log("saving form");
-        var self = this;
-        //temp client until we get token
-        var client = '5a80e1663ddc7324643209cd';
-        //let client = '5a88738e1f0fdc2b94498e81';
-        var physio = self.get('selectphysio');
-        console.log(physio);
-        // let booking = this.get('DS').findRecord('appointment',this.get('appointmentid').
-        self.set('isEditing', false);
-      },
-
-      openModal: function openModal(obj) {
-        this.set('selectedappointment', obj);
-        Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+        Ember.$('.ui.bk.modal').modal({
           closeable: false,
-          detachable: false,
           onDeny: function onDeny() {
             return true;
           },
@@ -1287,15 +1257,11 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
         }).modal('show');
       },
 
-      bookAppointment: function bookAppointment() {
-        this.set('isEditing', true);
+      calendarRemoveOccurrence: function calendarRemoveOccurrence(occurrence) {
+        // this.get('occurrences').removeObject(occurrence);
+        // console.log(JSON.stringify(occurrence));
       },
-      cancelbookingappointment: function cancelbookingappointment() {
-        this.set('Reason', '');
-        this.set('Other', '');
-        this.set('selectedDate', '');
-        this.set('isEditing', false);
-      },
+
       updateValue: function updateValue(physio) {
         this.set('occurrences', Ember.A());
         this.set('removedSpot', Ember.A());
@@ -1307,6 +1273,8 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
         this.get('DS').findRecord('physiotherapest', physio).then(function (phy) {
           //might not need this
           home.set('selectedphysio', phy);
+          home.set('givenName', phy.get('givenName'));
+          home.set('familyName', phy.get('familyName'));
           //get each appointment by  physiotherapist appointment
           phy.get('appointments').forEach(function (obj) {
             var curid = obj.get('id');
@@ -1315,7 +1283,6 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
               var endDate = (0, _moment.default)(app.get('endDate'));
               //filter out any appointments that is previous to current date
               if (scheduledDate > (0, _moment.default)()) {
-                console.log(app.get('reason'));
                 if (app.get('reason') == null) {
                   home.get('occurrences').pushObject(Ember.Object.create({
                     title: "Book Appointment",
@@ -1329,40 +1296,125 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
           });
         });
       },
-      assignDate: function assignDate(date) {
-        this.set('selectedDate', date);
-      },
-      cancel: function cancel() {
-        return true;
-      },
+      updateTime: function updateTime(type) {
+        // this.get('occurrences').pushObject(Ember.Object.create({
+        //   title: occurrence.get('title'),
+        //   startsAt: occurrence.get('startsAt'),
+        //   endsAt: occurrence.get('endsAt')
+        // }));
+        this.set('timeSlots', Ember.A());
 
+        var selected = this.get('selectedappointmentBlock');
+        var start_time = selected.startsAt;
+        var end_time = selected.endsAt;
 
-      save: function save() {
+        var amount = void 0;
+        if (type === 't') amount = 60;else amount = 90;
+
+        while ((0, _moment.default)(start_time).add(amount, 'minute') <= (0, _moment.default)(end_time)) {
+          this.get('timeSlots').pushObject(Ember.Object.create({
+            time: (0, _moment.default)(start_time),
+            end: (0, _moment.default)(start_time).add(amount, 'minute'),
+            value: (0, _moment.default)(start_time).format('hh:mm A')
+          }));
+
+          start_time = (0, _moment.default)(start_time).add(30, 'minute');
+        }
+      },
+      setselectedtime: function setselectedtime(t) {
+        var self = this;
+        this.get('timeSlots').forEach(function (obj) {
+          if ((0, _moment.default)(t).isSame(obj.time)) {
+            self.set('selectedbookedTime', obj);
+          }
+        });
+        console.log(JSON.stringify(this.get('selectedbookedTime')));
+      },
+      cancel_appointment: function cancel_appointment() {
+        this.set('Reason', '');
+        this.set('selectAppointmentType', '');
+        this.set('Other', '');
+        this.set('selectedTime', '');
+        this.set('timeSlots', Ember.A());
+        Ember.$('.ui.bk.modal').modal('hide');
+      },
+      book_appointment: function book_appointment() {
         var self = this;
         //temp client until we get token
-        var client = '5a80e1663ddc7324643209cd';
-        //let client = '5a88738e1f0fdc2b94498e81';
+        //laptop
+        //let client = '5a80e1663ddc7324643209cd';
+        //desktop
+        var client = '5a88738e1f0fdc2b94498e81';
         var physio = self.get('selectphysio');
-        console.log(physio);
         var booking = this.get('DS').createRecord('appointment', {
           reason: self.get('Reason'),
           other: self.get('Other'),
-          date: self.get('selectedDate')
+          date: self.get('selectedbookedTime').time,
+          endDate: self.get('selectedbookedTime').end
         });
-
-        this.get('DS').findRecord('patient', client).then(function (src) {
+        self.get('DS').findRecord('patient', client).then(function (src) {
+          console.log(src);
           booking.set('patient', src);
           src.get('appointments').pushObject(booking);
           booking.save().then(function () {
-            console.log(booking);
             src.save().then(function () {
-              self.get('DS').findRecord('physiotherapest', physio).then(function (a) {
+              self.get('DS').findRecord('physiotherapest', self.get('selectedPhysioId')).then(function (a) {
                 a.get('appointments').pushObject(booking);
                 a.save().then(function () {
-                  self.set('Reason', '');
-                  self.set('Other', '');
-                  self.set('selectedDate', '');
-                  self.set('isEditing', false);
+                  //{"title":"Book Appointment","startsAt":"2018-03-16T13:00:00.000Z","endsAt":"2018-03-16T17:30:00.000Z","tempid":"5aa9d71c004e3909bc597bba"}
+                  var usedBlock = self.get('selectedappointmentBlock');
+                  //time":"2018-03-16T13:00:00.000Z","end":"2018-03-16T14:30:00.000Z","value":"09:00
+                  var bookedTime = self.get('selectedbookedTime');
+                  //remove the block you used
+                  //case 1 booked at the start block
+                  if ((0, _moment.default)(usedBlock.startsAt).isSame(bookedTime.time)) {
+                    console.log("case 1");
+                    console.log(usedBlock.tempid);
+                    self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
+                      old.set('date', bookedTime.end);
+                      old.save().then(function () {
+                        Ember.$('.ui.bk.modal').modal('hide');
+                      });
+                    });
+                  }
+                  //case 2 booked at the end block
+                  else if ((0, _moment.default)(usedBlock.endsAt).isSame(bookedTime.end)) {
+                      self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
+                        old.set('endDate', bookedTime.time);
+                        old.save().then(function () {
+                          Ember.$('.ui.bk.modal').modal('hide');
+                        });
+                      });
+                    }
+                    //case 3 booked in between
+                    else {
+                        //create 2 segmented block
+                        var topappo = self.get('DS').createRecord('appointment', {
+                          date: usedBlock.startsAt,
+                          endDate: bookedTime.time
+                        });
+                        var bottomappo = self.get('DS').createRecord('appointment', {
+                          date: bookedTime.end,
+                          endDate: usedBlock.endsAt
+                        });
+                        topappo.save().then(function () {
+                          bottomappo.save().then(function () {
+                            a.get('appointments').pushObject(topappo);
+                            a.get('appointments').pushObject(bottomappo);
+                            a.save().then(function () {
+                              //remove old block
+                              self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (rec) {
+                                a.get('appointments').removeObject(rec);
+                                a.save().then(function () {
+                                  rec.destroyRecord().then(function () {
+                                    Ember.$('.ui.bk.modal').modal('hide');
+                                  });
+                                });
+                              });
+                            });
+                          });
+                        });
+                      }
                 });
               });
             });
@@ -7804,7 +7856,7 @@ define("self-start-front-end/templates/components/book-appointment", ["exports"]
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "+YjaqgZx", "block": "{\"symbols\":[\"phsio\"],\"statements\":[[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"fieldset\"],[7],[0,\"\\n    \"],[6,\"legend\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n\\n\\n    \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n    \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n      \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectphysio\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateValue\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n        \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"getphysio\"]]],null,{\"statements\":[[0,\"          \"],[6,\"option\"],[10,\"value\",[19,1,[\"id\"]],null],[7],[0,\"\\n            \"],[1,[19,1,[\"givenName\"]],false],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\\n\"],[1,[25,\"as-calendar\",null,[[\"title\",\"occurrences\",\"defaultTimeZoneQuery\",\"dayStartingTime\",\"dayEndingTime\",\"timeSlotDuration\",\"onAddOccurrence\",\"onUpdateOccurrence\",\"onRemoveOccurrence\"],[\"Ember Schedule\",[20,[\"occurrences\"]],\"Toronto|New York\",\"8:00\",\"20:00\",\"00:30\",[25,\"action\",[[19,0,[]],\"calendarAddOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarUpdateOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarRemoveOccurrence\"],null]]]],false],[0,\"\\n\\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"saveappointment\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"fieldset\"],[7],[0,\"\\n      \"],[6,\"legend\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\" Physiotherapist\"],[8],[0,\"\\n      \"],[6,\"p\"],[7],[1,[20,[\"phyidget\",\"familyName\"]],false],[0,\" \"],[1,[20,[\"phyidget\",\"givenName\"]],false],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Reason\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"star\",\"text\",[20,[\"Reason\"]]]]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Other\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"user\",\"text\",[20,[\"Other\"]]]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Date\"],[8],[0,\"\\n        \"],[6,\"p\"],[7],[1,[20,[\"selectedappointment\",\"fulldate\"]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"cd-button\"],[7],[0,\"\\n          \"],[6,\"input\"],[9,\"type\",\"submit\"],[9,\"value\",\"Submit\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[7],[0,\"Cancel\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/book-appointment.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "liUlYpJG", "block": "{\"symbols\":[\"timeslot\",\"phsio\"],\"statements\":[[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"fieldset\"],[7],[0,\"\\n    \"],[6,\"legend\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n\\n\\n    \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n    \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n      \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectphysio\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateValue\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n        \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"getphysio\"]]],null,{\"statements\":[[0,\"          \"],[6,\"option\"],[10,\"value\",[19,2,[\"id\"]],null],[7],[0,\"\\n            \"],[1,[19,2,[\"givenName\"]],false],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\\n\"],[1,[25,\"as-calendar\",null,[[\"title\",\"occurrences\",\"defaultTimeZoneQuery\",\"dayStartingTime\",\"dayEndingTime\",\"timeSlotDuration\",\"onAddOccurrence\",\"onUpdateOccurrence\",\"onRemoveOccurrence\"],[\"Ember Schedule\",[20,[\"occurrences\"]],\"Toronto|New York\",\"8:00\",\"20:00\",\"00:30\",[25,\"action\",[[19,0,[]],\"calendarAddOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarUpdateOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarRemoveOccurrence\"],null]]]],false],[0,\"\\n\\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],\"bk\"]],{\"statements\":[[0,\"  \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[7],[0,\"\\n    \"],[6,\"fieldset\"],[7],[0,\"\\n      \"],[6,\"legend\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\" Physiotherapist\"],[8],[0,\"\\n      \"],[6,\"p\"],[7],[1,[18,\"familyName\"],false],[0,\" \"],[1,[18,\"givenName\"],false],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Type\"],[8],[0,\"\\n      \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n        \"],[6,\"select\"],[9,\"class\",\"selectedAppointment\"],[10,\"value\",[18,\"selectAppointmentType\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateTime\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n          \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select type\"],[8],[0,\"\\n          \"],[6,\"option\"],[9,\"value\",\"i\"],[7],[0,\"\\n            Initial Assessment\\n          \"],[8],[0,\"\\n          \"],[6,\"option\"],[9,\"value\",\"t\"],[7],[0,\"\\n            Treatment\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Reason\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"star\",\"text\",[20,[\"Reason\"]]]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Other\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"user\",\"text\",[20,[\"Other\"]]]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Time Slot\"],[8],[0,\"\\n      \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n        \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectedTime\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"setselectedtime\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n          \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select TimeSlot\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"timeSlots\"]]],null,{\"statements\":[[0,\"            \"],[6,\"option\"],[10,\"value\",[19,1,[\"time\"]],null],[7],[0,\"\\n              \"],[1,[19,1,[\"value\"]],false],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"cancel_appointment\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui fluid positive button\"],[3,\"action\",[[19,0,[]],\"book_appointment\"]],[7],[0,\"Submit\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/book-appointment.hbs" } });
 });
 define("self-start-front-end/templates/components/config-selection", ["exports"], function (exports) {
   "use strict";

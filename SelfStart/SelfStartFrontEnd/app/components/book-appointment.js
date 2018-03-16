@@ -15,24 +15,19 @@ export default Component.extend({
   isEditing: false,
 
   modalName: Ember.computed(function(){
-    return 'Manage-form' + this.get('ID');
+    return 'Book Appointment';
   }),
+  givenName: null,
+  familyName : null,
+  timeSlots: Ember.A(),
+  selectedappointmentBlock: null,
+  selectedbookedTime:null,
+
+
   phyidget: null,
-  selectedappointment: null,
+
 
   physioPicked : false,
-  appointmentsN: [],
-  weekdate: [],
-  block: {
-    fulldate: null,
-    date: null,
-    datastart: null,
-    dataend: null,
-    dataevent: "event-3",
-    appointmentid: null,
-  },
-  blocks: [],
-
 
   getphysio: computed(function(){
     return this.get('DS').findAll('physiotherapest');
@@ -55,56 +50,24 @@ export default Component.extend({
     },
 
     calendarUpdateOccurrence: function(occurrence, properties, isPreview) {
-      // occurrence.setProperties(properties);
-      //
-      // if (!isPreview) {
-      //   console.log(JSON.stringify(properties));
-      // }
       console.log(JSON.stringify(occurrence));
-    },
+      this.set('selectedappointmentBlock',occurrence);
 
-    calendarRemoveOccurrence: function(occurrence) {
-      // this.get('occurrences').removeObject(occurrence);
-      // console.log(JSON.stringify(occurrence));
-    },
-    saveappointment(){
-      console.log("saving form");
-      let self = this;
-      //temp client until we get token
-      let client = '5a80e1663ddc7324643209cd';
-      //let client = '5a88738e1f0fdc2b94498e81';
-      let physio = self.get('selectphysio');
-      console.log(physio);
-      // let booking = this.get('DS').findRecord('appointment',this.get('appointmentid').
-      self.set('isEditing', false);
-    },
-    openModal: function (obj) {
-      this.set('selectedappointment',obj);
-      Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+      $('.ui.bk.modal').modal({
         closeable: false,
-        detachable: false,
         onDeny: () => {
           return true;
         },
         onApprove: () => {
           return true;
         }
-      })
-        .modal('show');
-
+      }).modal('show');
     },
 
-    bookAppointment(){
-      this.set('isEditing', true);
+    calendarRemoveOccurrence: function(occurrence) {
+      // this.get('occurrences').removeObject(occurrence);
+      // console.log(JSON.stringify(occurrence));
     },
-
-    cancelbookingappointment(){
-      this.set('Reason', '');
-      this.set('Other', '');
-      this.set('selectedDate', '');
-      this.set('isEditing', false);
-    },
-
 
     updateValue(physio){
       this.set('occurrences', Ember.A());
@@ -117,6 +80,8 @@ export default Component.extend({
       this.get('DS').findRecord('physiotherapest', physio).then(function (phy){
         //might not need this
         home.set('selectedphysio', phy);
+        home.set('givenName', phy.get('givenName'));
+        home.set('familyName', phy.get('familyName'));
         //get each appointment by  physiotherapist appointment
         phy.get('appointments').forEach( function(obj){
           let curid = obj.get('id');
@@ -125,7 +90,6 @@ export default Component.extend({
             let endDate = moment(app.get('endDate'));
             //filter out any appointments that is previous to current date
             if (scheduledDate > moment()) {
-              console.log(app.get('reason'));
               if (app.get('reason')==null) {
                 home.get('occurrences').pushObject(Ember.Object.create({
                   title: "Book Appointment",
@@ -139,46 +103,143 @@ export default Component.extend({
         });
       });
     },
-    assignDate (date){
-      this.set('selectedDate', date);
+
+    updateTime(type){
+      // this.get('occurrences').pushObject(Ember.Object.create({
+      //   title: occurrence.get('title'),
+      //   startsAt: occurrence.get('startsAt'),
+      //   endsAt: occurrence.get('endsAt')
+      // }));
+      this.set('timeSlots', Ember.A());
+
+      let selected = this.get('selectedappointmentBlock');
+      let start_time = selected.startsAt;
+      let end_time = selected.endsAt;
+
+      let amount;
+      if (type === 't')
+        amount = 60;
+      else
+        amount = 90;
+
+      while(moment(start_time).add(amount, 'minute') <= moment(end_time)){
+        this.get('timeSlots').pushObject(Ember.Object.create({
+          time : moment(start_time),
+          end : moment(start_time).add(amount, 'minute'),
+          value : moment(start_time).format('hh:mm A')
+        }));
+
+        start_time = moment(start_time).add(30, 'minute');
+      }
     },
 
-    cancel() {
-      return true;
+    setselectedtime(t){
+      let self = this;
+      this.get('timeSlots').forEach(function (obj){
+        if (moment(t).isSame(obj.time)) {
+          self.set('selectedbookedTime', obj);
+        }
+      });
+      console.log(JSON.stringify(this.get('selectedbookedTime')));
+
     },
 
-    save: function () {
+    cancel_appointment(){
+      this.set('Reason' , '');
+      this.set('selectAppointmentType' , '');
+      this.set('Other' , '');
+      this.set('selectedTime' , '');
+      this.set('timeSlots' , Ember.A());
+      $('.ui.bk.modal').modal('hide');
+    },
+
+    book_appointment() {
       let self = this;
       //temp client until we get token
-      let client = '5a80e1663ddc7324643209cd';
-      //let client = '5a88738e1f0fdc2b94498e81';
+      //laptop
+      //let client = '5a80e1663ddc7324643209cd';
+      //desktop
+      let client = '5a88738e1f0fdc2b94498e81';
       let physio = self.get('selectphysio');
-      console.log(physio);
       let booking = this.get('DS').createRecord('appointment', {
         reason: self.get('Reason'),
         other: self.get('Other'),
-        date: self.get('selectedDate'),
+        date: self.get('selectedbookedTime').time,
+        endDate: self.get('selectedbookedTime').end
       });
-
-      this.get('DS').findRecord('patient', client).then(function (src) {
+      self.get('DS').findRecord('patient', client).then(function (src) {
+        console.log(src);
         booking.set('patient', src);
         src.get('appointments').pushObject(booking);
         booking.save().then(function (){
-          console.log(booking);
           src.save().then(()=>{
-            self.get('DS').findRecord('physiotherapest',physio).then(function (a) {
+            self.get('DS').findRecord('physiotherapest',self.get('selectedPhysioId')).then(function (a) {
               a.get('appointments').pushObject(booking);
               a.save().then(()=>{
-                self.set('Reason', '');
-                self.set('Other', '');
-                self.set('selectedDate', '');
-                self.set('isEditing', false);
+                //{"title":"Book Appointment","startsAt":"2018-03-16T13:00:00.000Z","endsAt":"2018-03-16T17:30:00.000Z","tempid":"5aa9d71c004e3909bc597bba"}
+                let usedBlock = self.get('selectedappointmentBlock');
+                //time":"2018-03-16T13:00:00.000Z","end":"2018-03-16T14:30:00.000Z","value":"09:00
+                let bookedTime = self.get('selectedbookedTime');
+                //remove the block you used
+                //case 1 booked at the start block
+                if (moment(usedBlock.startsAt).isSame(bookedTime.time)){
+                  console.log("case 1");
+                  console.log(usedBlock.tempid);
+                    self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old){
+                      old.set('date', bookedTime.end);
+                      old.save().then(() => {
+                        $('.ui.bk.modal').modal('hide');
+                      });
+                    });
+                }
+                //case 2 booked at the end block
+                else if (moment(usedBlock.endsAt).isSame(bookedTime.end)){
+                  self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old){
+                    old.set('endDate', bookedTime.time);
+                    old.save().then(() => {
+                      $('.ui.bk.modal').modal('hide');
+                    });
+                  });
+                }
+                //case 3 booked in between
+                else {
+                  //create 2 segmented block
+                  let topappo = self.get('DS').createRecord('appointment', {
+                    date: usedBlock.startsAt,
+                    endDate: bookedTime.time
+                  });
+                  let bottomappo = self.get('DS').createRecord('appointment', {
+                    date: bookedTime.end,
+                    endDate: usedBlock.endsAt
+                  });
+                  topappo.save().then(()=>{
+                    bottomappo.save().then(()=>{
+                      a.get('appointments').pushObject(topappo);
+                      a.get('appointments').pushObject(bottomappo);
+                      a.save().then(() => {
+                        //remove old block
+                        self.get('DS').findRecord('appointment' , usedBlock.tempid).then((rec)=>{
+                          a.get('appointments').removeObject(rec);
+                          a.save().then(()=> {
+                            rec.destroyRecord().then(() =>{
+                              $('.ui.bk.modal').modal('hide');
+                            });
+                          })
+                        })
+                      });
+                    })
+                  });
+
+
+
+
+                }
+
+
               });
             });
           });
         });
-
-
       });
 
     },
