@@ -181,27 +181,40 @@ export default Component.extend({
                 //time":"2018-03-16T13:00:00.000Z","end":"2018-03-16T14:30:00.000Z","value":"09:00
                 let bookedTime = self.get('selectedbookedTime');
                 //remove the block you used
-                //case 1 booked at the start block
-                if (moment(usedBlock.startsAt).isSame(bookedTime.time)){
+
+                //case 1 if the slots are exact
+                if (moment(usedBlock.startsAt).isSame(bookedTime.time) && moment(usedBlock.endsAt).isSame(bookedTime.end)){
                   console.log("case 1");
-                  console.log(usedBlock.tempid);
+                  self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old){
+                    old.destroyRecord().then(() =>{
+                      $('.ui.bk.modal').modal('hide');
+                      window.location.reload();
+                    });
+                  });
+                }
+                //case 2 booked at the start block
+                else if (moment(usedBlock.startsAt).isSame(bookedTime.time)){
+                  console.log("case 2");
                     self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old){
                       old.set('date', bookedTime.end);
                       old.save().then(() => {
                         $('.ui.bk.modal').modal('hide');
+                        window.location.reload();
                       });
                     });
                 }
-                //case 2 booked at the end block
+                //case 3 booked at the end block
                 else if (moment(usedBlock.endsAt).isSame(bookedTime.end)){
+                  console.log("case 3");
                   self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old){
                     old.set('endDate', bookedTime.time);
                     old.save().then(() => {
                       $('.ui.bk.modal').modal('hide');
+                      window.location.reload();
                     });
                   });
                 }
-                //case 3 booked in between
+                //case 4 booked in between
                 else {
                   //create 2 segmented block
                   let topappo = self.get('DS').createRecord('appointment', {
@@ -223,6 +236,7 @@ export default Component.extend({
                           a.save().then(()=> {
                             rec.destroyRecord().then(() =>{
                               $('.ui.bk.modal').modal('hide');
+                              window.location.reload();
                             });
                           })
                         })

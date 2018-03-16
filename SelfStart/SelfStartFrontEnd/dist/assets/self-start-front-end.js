@@ -1366,55 +1366,69 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
                   //time":"2018-03-16T13:00:00.000Z","end":"2018-03-16T14:30:00.000Z","value":"09:00
                   var bookedTime = self.get('selectedbookedTime');
                   //remove the block you used
-                  //case 1 booked at the start block
-                  if ((0, _moment.default)(usedBlock.startsAt).isSame(bookedTime.time)) {
+
+                  //case 1 if the slots are exact
+                  if ((0, _moment.default)(usedBlock.startsAt).isSame(bookedTime.time) && (0, _moment.default)(usedBlock.endsAt).isSame(bookedTime.end)) {
                     console.log("case 1");
-                    console.log(usedBlock.tempid);
                     self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
-                      old.set('date', bookedTime.end);
-                      old.save().then(function () {
+                      old.destroyRecord().then(function () {
                         Ember.$('.ui.bk.modal').modal('hide');
+                        window.location.reload();
                       });
                     });
                   }
-                  //case 2 booked at the end block
-                  else if ((0, _moment.default)(usedBlock.endsAt).isSame(bookedTime.end)) {
+                  //case 2 booked at the start block
+                  else if ((0, _moment.default)(usedBlock.startsAt).isSame(bookedTime.time)) {
+                      console.log("case 2");
                       self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
-                        old.set('endDate', bookedTime.time);
+                        old.set('date', bookedTime.end);
                         old.save().then(function () {
                           Ember.$('.ui.bk.modal').modal('hide');
+                          window.location.reload();
                         });
                       });
                     }
-                    //case 3 booked in between
-                    else {
-                        //create 2 segmented block
-                        var topappo = self.get('DS').createRecord('appointment', {
-                          date: usedBlock.startsAt,
-                          endDate: bookedTime.time
+                    //case 3 booked at the end block
+                    else if ((0, _moment.default)(usedBlock.endsAt).isSame(bookedTime.end)) {
+                        console.log("case 3");
+                        self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
+                          old.set('endDate', bookedTime.time);
+                          old.save().then(function () {
+                            Ember.$('.ui.bk.modal').modal('hide');
+                            window.location.reload();
+                          });
                         });
-                        var bottomappo = self.get('DS').createRecord('appointment', {
-                          date: bookedTime.end,
-                          endDate: usedBlock.endsAt
-                        });
-                        topappo.save().then(function () {
-                          bottomappo.save().then(function () {
-                            a.get('appointments').pushObject(topappo);
-                            a.get('appointments').pushObject(bottomappo);
-                            a.save().then(function () {
-                              //remove old block
-                              self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (rec) {
-                                a.get('appointments').removeObject(rec);
-                                a.save().then(function () {
-                                  rec.destroyRecord().then(function () {
-                                    Ember.$('.ui.bk.modal').modal('hide');
+                      }
+                      //case 4 booked in between
+                      else {
+                          //create 2 segmented block
+                          var topappo = self.get('DS').createRecord('appointment', {
+                            date: usedBlock.startsAt,
+                            endDate: bookedTime.time
+                          });
+                          var bottomappo = self.get('DS').createRecord('appointment', {
+                            date: bookedTime.end,
+                            endDate: usedBlock.endsAt
+                          });
+                          topappo.save().then(function () {
+                            bottomappo.save().then(function () {
+                              a.get('appointments').pushObject(topappo);
+                              a.get('appointments').pushObject(bottomappo);
+                              a.save().then(function () {
+                                //remove old block
+                                self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (rec) {
+                                  a.get('appointments').removeObject(rec);
+                                  a.save().then(function () {
+                                    rec.destroyRecord().then(function () {
+                                      Ember.$('.ui.bk.modal').modal('hide');
+                                      window.location.reload();
+                                    });
                                   });
                                 });
                               });
                             });
                           });
-                        });
-                      }
+                        }
                 });
               });
             });
