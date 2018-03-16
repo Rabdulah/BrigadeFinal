@@ -950,7 +950,7 @@ define('self-start-front-end/components/add-rehabplan', ['exports'], function (e
           goal: self.get('goal'),
           timeToComplete: self.get('timeToComplete')
           //exercises: self.get('exercises'),
-          // assessmentTests: self.get('assessmentTests'),
+          //assessmentTests: self.get('assessmentTests'),
         });
         //when save is successfull close form
         rehabplan.save().then(function () {
@@ -2884,7 +2884,7 @@ define('self-start-front-end/components/edit-rehabplan', ['exports'], function (
               rec.set('goal', _this.get('goal'));
               rec.set('timeToComplete', _this.get('timeToComplete'));
               rec.set('exercises', _this.get('exercises'));
-              // rec.set('assessmentTests', this.get('assessmentTests'));
+              rec.set('assessmentTests', _this.get('assessmentTests'));
               rec.save().then(function () {
                 return true;
               });
@@ -3202,8 +3202,8 @@ define('self-start-front-end/components/list-forms', ['exports'], function (expo
 
                 var newTest = this.get('DS').createRecord('assessment-test', {
                     form: thisForm,
-                    questions: thisForm.get("questions")
-                    //  rehabPlan: thisPlan,     
+                    questions: thisForm.get("questions"),
+                    rehabPlan: thisPlan
                 });
                 newTest.save().then(function () {
                     return true;
@@ -7443,7 +7443,7 @@ define('self-start-front-end/models/rehabilitationplan', ['exports', 'ember-data
     physioID: _emberData.default.attr(),
     goal: _emberData.default.attr(),
     timeToComplete: _emberData.default.attr(),
-    exercises: _emberData.default.hasMany('exercise', { async: true }),
+    exercises: _emberData.default.hasMany('exercise'),
     assessmentTests: _emberData.default.hasMany('assessment-test')
   });
 });
@@ -9167,6 +9167,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+3ae5038e"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+5074004a"});
 }
 //# sourceMappingURL=self-start-front-end.map

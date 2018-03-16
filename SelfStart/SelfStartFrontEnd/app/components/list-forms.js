@@ -19,7 +19,7 @@ export default Component.extend({
             let newTest = this.get('DS').createRecord('assessment-test', {
               form: thisForm,
               questions: thisForm.get("questions"),
-            //  rehabPlan: thisPlan,     
+              rehabPlan: thisPlan,     
            });
             newTest.save().then(()=> {
                 return true;

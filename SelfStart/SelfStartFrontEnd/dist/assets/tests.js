@@ -192,7 +192,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/list-forms.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/list-forms.js should pass ESLint\n\n17:27 - \'thisPlan\' is defined but never used. (no-unused-vars)');
+    assert.ok(true, 'components/list-forms.js should pass ESLint\n\n');
   });
 
   QUnit.test('components/manage-form.js', function (assert) {

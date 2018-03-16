@@ -37,10 +37,9 @@ router.route('/:assessment_id')
             else {
 
                 // update each attribute
-                
-                assessmentTest.rehabilitationPlan = request.body.assessmentTest.rehabilitationPlan;
                 assessmentTest.questions = request.body.assessmentTest.questions;
                 assessmentTest.form = request.body.assessmentTest.form;
+                assessmentTest.rehabPlan = request.body.assessmentTest.rehabPlan;
                 assessmentTest.answers = request.body.assessmentTest.answers;
 
                 assessmentTest.save(function (error) {

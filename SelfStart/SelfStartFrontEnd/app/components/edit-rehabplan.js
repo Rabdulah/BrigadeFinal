@@ -38,7 +38,7 @@ export default Component.extend({
             rec.set('goal', this.get('goal'));
             rec.set('timeToComplete', this.get('timeToComplete'));
             rec.set('exercises', this.get('exercises'));
-            // rec.set('assessmentTests', this.get('assessmentTests'));
+            rec.set('assessmentTests', this.get('assessmentTests'));
             rec.save().then(()=>{
               return true;
             });

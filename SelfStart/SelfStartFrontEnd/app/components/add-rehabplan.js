@@ -40,7 +40,7 @@ export default Component.extend({
         goal: self.get('goal'),
         timeToComplete: self.get('timeToComplete'),
         //exercises: self.get('exercises'),
-        // assessmentTests: self.get('assessmentTests'),
+        //assessmentTests: self.get('assessmentTests'),
       });
       //when save is successfull close form
       rehabplan.save().then(function() {
