@@ -31,6 +31,7 @@ Router.map(function() {
   this.route('register');
   this.route('dashboard');
   this.route('message');
+  this.route('assessment-display');
 });
 
 export default Router;

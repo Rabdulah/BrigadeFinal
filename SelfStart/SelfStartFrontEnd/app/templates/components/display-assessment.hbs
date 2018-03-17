@@ -1,0 +1,5 @@
+<div class="ui form">
+{{#each assessmentModel.questions as |q index|}}
+    {{get-answers question=q qNumber = index assessment=assessmentModel}}
+{{/each}}
+</div>
