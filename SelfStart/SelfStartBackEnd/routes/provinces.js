@@ -29,7 +29,7 @@ router.route('/:province_id')
         });
     })
     .put( function (request, response) {
-        Provinces.Model.findById(request.params.askAPhysio_id, function (error, province) {
+        Provinces.Model.findById(request.params.province_id, function (error, province) {
             if (error) {
                 response.send({error: error});
             }
@@ -38,7 +38,7 @@ router.route('/:province_id')
                 // update each attribute
                 province.name = request.body.province.name;
                 province.country = request.body.province.country;
-                province.cities = request.body.province.citis;
+                province.cities = request.body.province.cities;
                 province.patient = request.body.province.patient;
                       
                 province.save(function (error) {

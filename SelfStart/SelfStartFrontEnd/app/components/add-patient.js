@@ -93,7 +93,7 @@ export default Component.extend({
 
       let patientAccount = {};
       patientAccount['userAccountName'] = self.get('userAccountName');
-      patientAccount['encryptedPassword'] =    self.get('encryptedPassword');
+      patientAccount['encryptedPassword'] = self.get('encryptedPassword');
 
       let patient = this.get('DS').createRecord('patient', {
         familyName: self.get('familyName'),

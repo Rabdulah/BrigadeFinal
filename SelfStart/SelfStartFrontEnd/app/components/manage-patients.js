@@ -10,11 +10,6 @@ export default Component.extend({
   pageSize: 10,
   sort: 'givenName',
   dir:'',
-  // givenNameDir: '',
-  // familyNameDir: '',
-  // emailDir: '',
-  // phoneNumberDir: '',
-  // addressDir: '',
   query: null,
   flagDelete: false,
   modelAttributes:

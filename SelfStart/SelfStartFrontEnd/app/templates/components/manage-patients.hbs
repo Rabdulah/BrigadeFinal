@@ -1,19 +1,13 @@
+
+
 {{#admin-nav}}
 
   <div class="masthead segment bg2">
     <div class="ui container">
       <div class="introduction">
         <h1 class="ui inverted header">
-        <span class="tagline">
-           Client Profiles
-        </span>
+          <span class="library" style="font-size: 1.25em">Manage Clients</span>
         </h1>
-        <div class="ui hidden divider"></div>
-        <div style="padding-left: 400px">
-          <a href="/new-patient"  class="ui large inverted download button" >
-            Add Client
-          </a>
-        </div>
 
       </div>
     </div>
@@ -77,7 +71,7 @@
               </th>
             {{/each}}
 
-            <th class="centered aligned two wide  column">Actions</th>
+            <th class="center aligned two wide  column">Actions</th>
             <!--<th class="left aligned one wide  column"></th>-->
 
           </tr>
@@ -89,7 +83,7 @@
 
 
 
-      <div  id="myWindow" style="height:600px;overflow-y: scroll; overflow-x: hidden;">
+      <div  id="myWindow" style="height:600px; overflow-y: scroll; overflow-x: hidden;">
         <table class="ui fixed table" id="tb" >
           <tbody >
           {{#each patientsModel as |patient|}}
@@ -104,7 +98,8 @@
                 <td class={{column.class}}>  {{dateFormat dateOfBirth}}  </td>
               {{/if}}--}}
 
-                <td class={{column.class}}>  {{get patient column.key}}  </td>
+                <td class={{column.class}}>
+                  {{get patient column.key}}  </td>
               {{/each}}
 
               <td class="right aligned one wide column ">
@@ -139,6 +134,7 @@
         </table>
       </div>
     </div>
+    <br><br><br><br>
   </div>
 
 

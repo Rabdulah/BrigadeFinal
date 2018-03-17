@@ -1,10 +1,103 @@
 import Component from '@ember/component';
+import Ember from "ember";
+// import $ from 'jquery';
 
 export default Component.extend({
+  store: Ember.inject.service(),
+
   genderSelected: false,
   countrySelected: false,
   provinceSelected: false,
   model: null,
+
+  limit: 10,
+  offset: 0,
+  pageSize: 10,
+  sort: 'name',
+  dir:'',
+  query: null,
+  flagDelete: false,
+  modelAttributes:
+
+    [{'key': 'name', 'name':'Name', 'dir' : 'asc', 'class' :'left aligned thirteen wide column'}],
+
+  countriesModel: [],
+  INDEX: null,
+  queryPath: 'name',
+  scrolledLines: 0,
+
+  activeModel: Ember.observer('offset', 'limit', 'sort', 'dir', 'flagDelete', function () {
+    var self = this;
+
+    this.get('store').query('country', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
+      self.set('countriesModel', records.toArray());
+
+    });
+  }),
+
+  filtercountries: Ember.observer('query', 'queryPath', function () {
+    let queryText = this.get('query');
+    if (queryText !== null && queryText.length > 0) {
+      this.set('regex', "^"+queryText);
+    } else {
+      this.set('regex', '');
+    }
+
+    this.get('store').query('country', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then((records) => {
+      this.set('countriesModel', records.toArray());
+    });
+  }),
+
+  init() {
+    this._super(...arguments);
+    this.set('limit', 10);
+    this.set('offset', 0);
+    this.set('pageSize', 10);
+    let self = this;
+    this.get('store').query('country', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
+      self.set('countriesModel', records.toArray());
+
+    });
+
+  },
+
+  didInsertElement: function() {
+    this._super(...arguments);
+    this.bindScrolling();
+  },
+  willRemoveElement: function() {
+    this._super(...arguments);
+    this.unbindScrolling();
+  },
+  scrolled: function() {
+    console.log("scrolled");
+    if (this.get('scrolledLines') < Ember.$("#myWin").scrollTop()) {
+      this.set('scrolledLines', Ember.$("#myWin").scrollTop());
+      this.set('limit', this.get('limit') + 10);
+    }
+  },
+
+
+
+  bindScrolling: function() {
+    var self = this;
+    // var onScroll = function() {
+    //   console.log("bottom");
+    //   Ember.run.debounce(self, self.scrolled, 500);
+    // };
+
+    //Ember.$("#myWin").bind('touchmove', onScroll);
+     Ember.$("#myWin").bind('scroll', function(){
+       console.log("bottom");
+       Ember.run.debounce(self, self.scrolled, 500);
+     });
+
+  },
+
+  unbindScrolling: function() {
+    //Ember.$("#myWin").unbind('scroll');
+    //Ember.$("#myWin").unbind('touchmove');
+  },
 
   actions: {
     genderSelect: function(){
@@ -16,11 +109,46 @@ export default Component.extend({
       this.set('countrySelected', true);
       this.set('genderSelected', false);
       this.set('provinceSelected', false);
+
+
     },
     provinceSelect: function(){
       this.set('provinceSelected', true);
       this.set('genderSelected', false);
       this.set('countrySelected', false);
+    },
+    sortColumn(columnName, direction) {
+
+      this.get('modelAttributes').forEach((element)=>{
+        if (element.key === columnName) {
+          if (direction === 'asc') {
+            Ember.set(element, 'dir', 'desc');
+            this.set('dir', 'desc');
+          }
+          else if (direction === 'desc') {
+            Ember.set(element, 'dir', 'asc');
+            this.set('dir', 'asc');
+          } else {
+            Ember.set(element, 'dir', 'asc');
+            this.set('dir', 'asc');
+          }
+        }
+        else
+          Ember.set(element, 'dir', '');
+      });
+      this.set('sort', columnName);
+    },
+
+    loadNext: function () {
+      this.set('offset', this.get('offset') + this.get('pageSize'));
+    },
+
+    loadPrevious: function () {
+      if (this.get('offset') >= this.get('pageSize')) {
+
+        this.set('offset', this.get('offset') - this.get('pageSize'));
+
+      }
     },
   }
 });

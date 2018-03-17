@@ -126,6 +126,7 @@ export default Component.extend({
     },
     backToAccount() {
       this.set('accountValue', "active");
+      this.set('introValue', "");
       this.set('intro', false);
       this.set('account', true);
     },
@@ -137,6 +138,7 @@ export default Component.extend({
     },
     backToIntro() {
       this.set('introValue', "active");
+      this.set('appointmentValue', "");
       this.set('intro', true);
       this.set('appointment', false);
     },
@@ -148,6 +150,7 @@ export default Component.extend({
     },
     backToAppointment() {
       this.set('appointmentValue', "active");
+      this.set('paymentValue', "");
       this.set('payment', false);
       this.set('appointment', true);
     },
@@ -159,6 +162,7 @@ export default Component.extend({
     },
     backToPayment() {
       this.set('paymentValue', "active");
+      this.set('confirmValue', "");
       this.set('payment', true);
       this.set('confirm', false);
     },

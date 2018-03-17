@@ -10,11 +10,14 @@ Router.map(function() {
   this.route('home', {path: '/'});
   this.route('patients');
   this.route('rehabplans');
-  this.route('admin');
+  this.route('admin', function() {
+    this.route('admin-welcome', {path: '/'});
+    this.route('manage-accounts');
+    this.route('manage-selections');
+  });
   this.route('questions');
   this.route('forms');
   this.route('province');
-  this.route('manage-selections');
   this.route('city');
   this.route('marital-status');
   this.route('new-rehabplans');
@@ -31,6 +34,9 @@ Router.map(function() {
   this.route('register');
   this.route('dashboard');
   this.route('message');
+  this.route('practioner', function() {
+    this.route('accounts');
+  });
 });
 
 export default Router;

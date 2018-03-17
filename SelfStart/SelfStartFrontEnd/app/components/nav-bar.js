@@ -1,6 +1,7 @@
 import Component from '@ember/component';
 import { inject } from '@ember/service';
 import { computed } from '@ember/object';
+import Ember from "ember";
 import $ from 'jquery';
 
 export default Component.extend({
@@ -69,10 +70,9 @@ export default Component.extend({
 
 
   didInsertElement() {
-    this._super(...arguments);
+   this._super(...arguments);
 
-    if ($(window).width() > 600) {
-      $('body')
+      $('#window')
         .visibility({
           offset: -10,
           observeChanges: false,
@@ -86,6 +86,8 @@ export default Component.extend({
                 .removeClass('inverted');
               $('.following .additional.item')
                 .transition('scale in', 750);
+              $('.selfStart')
+                .attr("src",'assets/images/marcotte-self-start-bodysmartFINAL.png');
             });
           },
           onTopPassedReverse: function () {
@@ -96,14 +98,14 @@ export default Component.extend({
                 .addClass('inverted')
                 .find('.additional.item')
                 .transition('hide');
+              $('.selfStart')
+                .attr("src",'assets/images/home/Header.png');
             });
           }
         })
       ;
-    }
-
-
   },
+
 
   actions: {
 

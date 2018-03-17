@@ -1,25 +1,27 @@
+<div id="window">
+
 
 <link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/home-style.css">
 
-<div id="example" class="index pushable">
+<div id="example" class="index">
 
     <div class="full height">
-      <div class="following bar" id="header">
+      <div class="following bar {{stickyValue}}" id="header">
         <div class="ui container">
 
-          <div class="ui large secondary network menu inverted">
+          <div class="ui large secondary network menu inverted" id="menu">
             <div class="item">
               <div class="ui logo shape">
                 <div class="sides">
                   <div class="active ui side">
-                    {{#link-to 'home'}}<img class="ui image" src="assets/images/home/Header.png">{{/link-to}}
+                    {{#link-to 'home'}}<img class="ui image selfStart" src='assets/images/home/Header.png'>{{/link-to}}
                   </div>
                 </div>
               </div>
             </div>
 
 
-            <div class="right menu inverted">
+            <div class="right menu {{invertedValue}}">
               <a class="item scroll" href="#about">About</a>
               <a class="item">How it Works</a>
               <a class="item">Services</a>
@@ -41,6 +43,7 @@
     </div>
   </div>
 
+</div>
 
 {{#ui-modal name="login" class="login tiny"}}
 

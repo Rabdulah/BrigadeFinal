@@ -12,23 +12,29 @@
     <div class="scrolling content" >
 
   <form id="edit" class="cd-form floating-labels" {{action "save" on="submit"}}>
-    <fieldset>
+
+
       <legend>Personal Info</legend>
 
-      <div class="icon">
+    <div class="ui hidden divider"></div>
+    <div class="ui two column grid">
+      <div class="column " style="margin: 1em 0;">
         <label class="cd-label">First Name</label>
-        {{input class="" type="text" value = pateintsData.givenName required = true}}
+        {{input class="user" type="text" value = pateintsData.givenName required = true}}
       </div>
-      <div class="icon">
-        <label class="cd-label">Last Name</label>
-        {{input class="" type="text" value = pateintsData.familyName required = true}}
+      <div class="column " style="margin: 1em 0;">
+      <label class="cd-label">Last Name</label>
+        {{input class="user" type="text" value = pateintsData.familyName required = true}}
       </div>
-      <div class="icon">
+    </div>
+
+    <div class="ui two column grid">
+      <div class="column " style="margin: 1em 0;">
         <label class="cd-label">Date of Birth</label>
         <input class="date" type="date" value= {{selectedDate}}  onchange={{action 'assignDate' value="target.value"}} required>
       </div>
 
-      <div >
+      <div class="column " style="margin: 1em 0;">
         <h4>Gender</h4>
         <p class="cd-select icon">
           <select class="people" onchange={{action 'selectGender' value="target.value"}}>
@@ -40,38 +46,48 @@
           </select>
         </p>
       </div>
+    </div>
 
 
-      <div class="icon">
+
+    <div class="field" style="margin: 1em 0;">
         <label class="cd-label">Health Card Number</label>
         {{input class="card" type="text" value = pateintsData.healthCardNumber required = true}}
       </div>
-    </fieldset>
 
 
-    <fieldset>
-      <legend>Address</legend>
+    <div class="ui hidden divider"></div>
+    <div class="ui hidden divider"></div>
 
-      <div class="icon">
-        <label class="cd-label">Number</label>
+    <legend>Address</legend>
+    <div class="ui hidden divider"></div>
+
+
+    <div class="ui two column grid">
+      <div class="column " style="margin: 1em 0;">        <label class="cd-label">Number</label>
         {{input class="home" type="text" value = pateintsData.streetNumber required = true}}
       </div>
-      <div class="icon">
+      <div class="column " style="margin: 1em 0;">
         <label class="cd-label">Street Name</label>
         {{input class="home" type="text" value = pateintsData.streetName required = true}}
       </div>
-      <div class="icon">
-        <label class="cd-label" for="cd-name">Unit</label>
-        {{input class="bookmark" type="text" value = pateintsData.apartment}}
+    </div>
+
+
+      <div class="ui two column grid">
+        <div class="column " style="margin: 1em 0;">        <label class="cd-label" for="cd-name">Unit</label>
+          {{input class="bookmark" type="text" value = pateintsData.apartment}}
+        </div>
+
+        <div class="column " style="margin: 1em 0;">
+          <label class="cd-label" for="cd-name">Postal/ZIP Code</label>
+          {{input class="flag" type="text" value = pateintsData.postalCode required = true}}
+        </div>
       </div>
 
-      <div class="icon">
-        <label class="cd-label" for="cd-name">Postal/ZIP Code</label>
-        {{input class="flag" type="text" value = pateintsData.postalCode required = true}}
-      </div>
 
-
-      <div >
+    <div class="ui three column grid" id="grid">
+      <div class="column " style="margin: 1em 0;">
         <h4>Country</h4>
         <p class="cd-select icon">
           <select class="world" onchange={{action 'selectCountry' value="target.value"}}>
@@ -83,20 +99,31 @@
           </select>
         </p>
       </div>
+      <div class="column " style="margin: 1em 0;">
+        <h4>Province</h4>
+        {{input class="world" type="text" value = province placeholder="Province/State" required = true}}
+      </div>
+      <div class="column " style="margin: 1em 0;">
+        <h4>City</h4>
+        {{input class="world" type="text" value = city placeholder="City" required = true}}
+      </div>
+    </div>
 
-    </fieldset>
 
 
-    <fieldset>
-      <legend>Contact Info</legend>
+    <div class="ui hidden divider"></div>
+    <div class="ui hidden divider"></div>
+
+    <legend>Contact Info</legend>
+    <div class="ui hidden divider"></div>
 
 
-      <div class="icon">
+      <div class="field" style="margin: 1em 0;">
         <label class="cd-label" for="cd-name">Phone Number</label>
         {{input class="phone" type="text" value = pateintsData.phoneNumber required = true}}
       </div>
 
-      <div class="icon">
+      <div class="field" style="margin: 1em 0;">
         <label class="cd-label" for="cd-email">Email</label>
         {{input class="email" type="email" value = pateintsData.email required = true}}
 
@@ -105,7 +132,6 @@
             <!--<div class="ok cd-button">-->
         <!--<input type="submit" value="Submit">-->
       <!--</div>-->
-    </fieldset>
 
   </form>
 
