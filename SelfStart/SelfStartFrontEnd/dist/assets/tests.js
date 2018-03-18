@@ -87,7 +87,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/book-appointment.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/book-appointment.js should pass ESLint\n\n61:11 - \'transitionEnd\' is assigned a value but never used. (no-unused-vars)\n124:13 - \'self\' is assigned a value but never used. (no-unused-vars)\n320:13 - \'self\' is assigned a value but never used. (no-unused-vars)\n431:16 - \'transformElement\' is defined but never used. (no-unused-vars)\n447:7 - Unexpected console statement. (no-console)\n450:11 - \'client\' is assigned a value but never used. (no-unused-vars)\n453:7 - Unexpected console statement. (no-console)\n557:7 - Unexpected console statement. (no-console)\n568:11 - Unexpected console statement. (no-console)\n611:7 - Unexpected console statement. (no-console)\n622:7 - Unexpected console statement. (no-console)\n625:7 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/book-appointment.js should pass ESLint\n\n9:16 - \'Ember\' is not defined. (no-undef)\n10:18 - \'Ember\' is not defined. (no-undef)\n11:16 - \'Ember\' is not defined. (no-undef)\n17:14 - \'Ember\' is not defined. (no-undef)\n22:14 - \'Ember\' is not defined. (no-undef)\n42:37 - \'occurrence\' is defined but never used. (no-unused-vars)\n52:64 - \'isPreview\' is defined but never used. (no-unused-vars)\n53:7 - Unexpected console statement. (no-console)\n67:40 - \'occurrence\' is defined but never used. (no-unused-vars)\n73:31 - \'Ember\' is not defined. (no-undef)\n74:31 - \'Ember\' is not defined. (no-undef)\n94:52 - \'Ember\' is not defined. (no-undef)\n113:29 - \'Ember\' is not defined. (no-undef)\n126:42 - \'Ember\' is not defined. (no-undef)\n143:7 - Unexpected console statement. (no-console)\n152:30 - \'Ember\' is not defined. (no-undef)\n163:11 - \'physio\' is assigned a value but never used. (no-unused-vars)\n171:9 - Unexpected console statement. (no-console)\n187:19 - Unexpected console statement. (no-console)\n197:19 - Unexpected console statement. (no-console)\n208:19 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/config-selection.js', function (assert) {
@@ -207,7 +207,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/nav-bar.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/nav-bar.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n12:9 - \'Ember\' is not defined. (no-undef)\n31:7 - Unexpected console statement. (no-console)\n134:11 - Unexpected console statement. (no-console)\n136:13 - Unexpected console statement. (no-console)\n145:13 - Unexpected console statement. (no-console)\n155:13 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/nav-bar.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n12:9 - \'Ember\' is not defined. (no-undef)\n32:7 - Unexpected console statement. (no-console)\n122:11 - Unexpected console statement. (no-console)\n124:13 - Unexpected console statement. (no-console)\n133:13 - Unexpected console statement. (no-console)\n143:13 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/parse-question.js', function (assert) {
@@ -257,7 +257,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/view-schedule.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/view-schedule.js should pass ESLint\n\n50:9 - \'transitionEnd\' is assigned a value but never used. (no-unused-vars)\n136:11 - \'self\' is assigned a value but never used. (no-unused-vars)\n181:14 - \'transformElement\' is defined but never used. (no-unused-vars)\n213:7 - Unexpected console statement. (no-console)\n218:9 - Unexpected console statement. (no-console)\n219:9 - Unexpected console statement. (no-console)\n279:7 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/view-schedule.js should pass ESLint\n\n4:8 - \'$\' is defined but never used. (no-unused-vars)\n8:16 - \'Ember\' is not defined. (no-undef)\n11:18 - \'Ember\' is not defined. (no-undef)\n12:16 - \'Ember\' is not defined. (no-undef)\n31:23 - \'Ember\' is not defined. (no-undef)\n38:7 - Unexpected console statement. (no-console)\n47:7 - Unexpected console statement. (no-console)\n56:7 - Unexpected console statement. (no-console)\n57:7 - Unexpected console statement. (no-console)\n66:31 - \'Ember\' is not defined. (no-undef)\n67:31 - \'Ember\' is not defined. (no-undef)\n85:52 - \'Ember\' is not defined. (no-undef)\n93:28 - \'Ember\' is not defined. (no-undef)\n152:11 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/welcome-page.js', function (assert) {
@@ -318,6 +318,16 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('helpers/number-of-mc.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'helpers/number-of-mc.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('initializers/doc.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'initializers/doc.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('initializers/home.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'initializers/home.js should pass ESLint\n\n');
   });
 
   QUnit.test('initializers/responsive.js', function (assert) {
@@ -538,6 +548,16 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('serializers/patient.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'serializers/patient.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('services/doc.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'services/doc.js should pass ESLint\n\n16:7 - \'$document\' is assigned a value but never used. (no-unused-vars)\n17:7 - \'$sortableTables\' is assigned a value but never used. (no-unused-vars)\n23:7 - \'$ui\' is assigned a value but never used. (no-unused-vars)\n26:7 - \'$hideMenu\' is assigned a value but never used. (no-unused-vars)\n27:7 - \'$search\' is assigned a value but never used. (no-unused-vars)\n29:7 - \'$demo\' is assigned a value but never used. (no-unused-vars)\n66:7 - \'$sidebarButton\' is assigned a value but never used. (no-unused-vars)\n143:13 - \'$modal\' is assigned a value but never used. (no-unused-vars)\n155:37 - \'shortcuts\' is not defined. (no-undef)\n156:26 - \'shortcuts\' is not defined. (no-undef)\n193:39 - \'calculations\' is defined but never used. (no-unused-vars)\n228:13 - \'$activeSection\' is assigned a value but never used. (no-unused-vars)\n272:51 - \'$choice\' is defined but never used. (no-unused-vars)\n315:31 - \'event\' is defined but never used. (no-unused-vars)\n387:11 - \'$rail\' is assigned a value but never used. (no-unused-vars)\n401:15 - \'$anchor\' is assigned a value but never used. (no-unused-vars)\n419:21 - \'$anchor\' is assigned a value but never used. (no-unused-vars)\n518:11 - Unexpected console statement. (no-console)\n527:25 - Unexpected constant condition. (no-constant-condition)\n559:23 - Unexpected console statement. (no-console)\n580:13 - \'states\' is assigned a value but never used. (no-unused-vars)\n584:13 - \'html\' is assigned a value but never used. (no-unused-vars)\n624:45 - \'variation\' is defined but never used. (no-unused-vars)\n628:45 - \'variation\' is defined but never used. (no-unused-vars)\n785:15 - \'Clipboard\' is not defined. (no-undef)\n859:11 - Unexpected console statement. (no-console)\n962:41 - Unnecessary escape character: \\". (no-useless-escape)\n987:32 - Unnecessary escape character: \\". (no-useless-escape)\n987:38 - Unnecessary escape character: \\". (no-useless-escape)\n1029:11 - \'codeSample\' is already defined. (no-redeclare)\n1031:11 - \'existingCode\' is assigned a value but never used. (no-unused-vars)\n1032:11 - \'evaluatedCode\' is assigned a value but never used. (no-unused-vars)\n1036:11 - \'demo\' is assigned a value but never used. (no-unused-vars)\n1049:11 - \'padding\' is assigned a value but never used. (no-unused-vars)\n1054:11 - \'styledCode\' is defined but never used. (no-unused-vars)\n1055:11 - \'$example\' is defined but never used. (no-unused-vars)\n1056:11 - \'$label\' is defined but never used. (no-unused-vars)\n1057:11 - \'codeHeight\' is defined but never used. (no-unused-vars)\n1059:13 - \'entityMap\' is assigned a value but never used. (no-unused-vars)\n1224:5 - \'semantic\' is not defined. (no-undef)');
+  });
+
+  QUnit.test('services/home.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'services/home.js should pass ESLint\n\n8:5 - \'semantic\' is not defined. (no-undef)\n13:7 - \'$ui\' is assigned a value but never used. (no-unused-vars)\n14:7 - \'$phrase\' is assigned a value but never used. (no-unused-vars)\n15:7 - \'$download\' is assigned a value but never used. (no-unused-vars)\n16:7 - \'$library\' is assigned a value but never used. (no-unused-vars)\n17:7 - \'$cursor\' is assigned a value but never used. (no-unused-vars)\n18:7 - \'$version\' is assigned a value but never used. (no-unused-vars)\n101:11 - Unexpected console statement. (no-console)\n116:25 - Unexpected constant condition. (no-constant-condition)\n129:13 - Unexpected console statement. (no-console)\n138:13 - Unexpected console statement. (no-console)\n166:31 - \'semantic\' is not defined. (no-undef)\n171:25 - \'semantic\' is not defined. (no-undef)\n177:40 - \'text\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('transitions.js', function (assert) {
@@ -2471,6 +2491,16 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/controllers/rehabplans-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/initializers/doc-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/initializers/doc-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/initializers/home-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/initializers/home-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/mixins/table-common-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/mixins/table-common-test.js should pass ESLint\n\n');
@@ -2681,6 +2711,16 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/serializers/patient-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/services/doc-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/services/doc-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/services/home-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/services/home-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/utils/file-object-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/utils/file-object-test.js should pass ESLint\n\n');
@@ -2768,6 +2808,56 @@ define('self-start-front-end/tests/unit/controllers/rehabplans-test', ['ember-qu
   (0, _emberQunit.test)('it exists', function (assert) {
     var controller = this.subject();
     assert.ok(controller);
+  });
+});
+define('self-start-front-end/tests/unit/initializers/doc-test', ['self-start-front-end/initializers/doc', 'qunit', 'self-start-front-end/tests/helpers/destroy-app'], function (_doc, _qunit, _destroyApp) {
+  'use strict';
+
+  (0, _qunit.module)('Unit | Initializer | doc', {
+    beforeEach: function beforeEach() {
+      var _this = this;
+
+      Ember.run(function () {
+        _this.application = Ember.Application.create();
+        _this.application.deferReadiness();
+      });
+    },
+    afterEach: function afterEach() {
+      (0, _destroyApp.default)(this.application);
+    }
+  });
+
+  // Replace this with your real tests.
+  (0, _qunit.test)('it works', function (assert) {
+    (0, _doc.initialize)(this.application);
+
+    // you would normally confirm the results of the initializer here
+    assert.ok(true);
+  });
+});
+define('self-start-front-end/tests/unit/initializers/home-test', ['self-start-front-end/initializers/home', 'qunit', 'self-start-front-end/tests/helpers/destroy-app'], function (_home, _qunit, _destroyApp) {
+  'use strict';
+
+  (0, _qunit.module)('Unit | Initializer | home', {
+    beforeEach: function beforeEach() {
+      var _this = this;
+
+      Ember.run(function () {
+        _this.application = Ember.Application.create();
+        _this.application.deferReadiness();
+      });
+    },
+    afterEach: function afterEach() {
+      (0, _destroyApp.default)(this.application);
+    }
+  });
+
+  // Replace this with your real tests.
+  (0, _qunit.test)('it works', function (assert) {
+    (0, _home.initialize)(this.application);
+
+    // you would normally confirm the results of the initializer here
+    assert.ok(true);
   });
 });
 define('self-start-front-end/tests/unit/mixins/table-common-test', ['self-start-front-end/mixins/table-common', 'qunit'], function (_tableCommon, _qunit) {
@@ -3337,6 +3427,34 @@ define('self-start-front-end/tests/unit/serializers/patient-test', ['ember-qunit
     var serializedRecord = record.serialize();
 
     assert.ok(serializedRecord);
+  });
+});
+define('self-start-front-end/tests/unit/services/doc-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('service:doc', 'Unit | Service | doc', {
+    // Specify the other units that are required for this test.
+    // needs: ['service:foo']
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var service = this.subject();
+    assert.ok(service);
+  });
+});
+define('self-start-front-end/tests/unit/services/home-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('service:home', 'Unit | Service | home', {
+    // Specify the other units that are required for this test.
+    // needs: ['service:foo']
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var service = this.subject();
+    assert.ok(service);
   });
 });
 define('self-start-front-end/tests/unit/utils/file-object-test', ['self-start-front-end/utils/file-object', 'qunit'], function (_fileObject, _qunit) {

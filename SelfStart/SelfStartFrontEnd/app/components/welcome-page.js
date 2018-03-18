@@ -9,7 +9,6 @@ export default Component.extend({
   didRender() {
     this._super(...arguments);
 
-
     $(function() {
       $('a[href*=\\#]:not([href=\\#])').on('click', function(e) {
         e.preventDefault();

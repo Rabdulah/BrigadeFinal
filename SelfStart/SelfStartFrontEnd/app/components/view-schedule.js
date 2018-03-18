@@ -2,293 +2,170 @@ import Component from '@ember/component';
 import { inject } from '@ember/service';
 import { computed } from '@ember/object';
 import $ from 'jquery';
+import moment from 'moment';
 
 export default Component.extend({
+  occurrences: Ember.A(),
   DS: inject('store'),
   routing: inject('-routing'),
+  availableSpot: Ember.A(),
+  removedSpot: Ember.A(),
+
   selectedphysio : null,
-  physios: null,
-  appointments_filter: null,
+  selectedPhysioId: null,
   isEditing: false,
-  event : "event-1",
 
-  availablespot: [],
-
-
-
-  dragFinishText: false,
-  dragStartedText: false,
-  dragEndedText: false,
-  myObject:{id:1, name:'objectName'},
-
-
-  weekdate: [],
-  init: function() {
-    this._super();
-    let d = new Date();
-    for (let i =0; i < d.getDay(); i++){
-      let result = new Date();
-      result.setDate(result.getDate() + -d.getDay());
-      this.get('weekdate')[i] = result.toDateString();
-    }
-    this.get('weekdate')[d.getDay()] = d.toDateString();
-    for (let i =d.getDay(); i < 6; i++){
-      let result = new Date();
-      result.setDate(d.getDate()+i);
-      this.get('weekdate')[i+1] = result.toDateString();
-    }
-    this.functionA();
-  },
+  // dragFinishText: false,
+  // dragStartedText: false,
+  // dragEndedText: false,
+  // myObject:{id:1, name:'objectName'},
 
   getphysio: computed(function(){
     return this.get('DS').findAll('physiotherapest');
   }),
-  didRender() {
-    this.functionA();
-  },
-  functionA() {
-    var transitionEnd = 'webkitTransitionEnd otransitionend oTransitionEnd msTransitionEnd transitionend';
-    var transitionsSupported = ($('.csstransitions').length > 0);
-
-
-    //if browser does not support transitions - use a different event to trigger them
-    if (!transitionsSupported)
-      transitionEnd = 'noTransition';
-
-    //should add a loding while the events are organized
-
-    function SchedulePlan(element) {
-      this.element = element;
-      this.timeline = this.element.find('.timeline');
-      this.timelineItems = this.timeline.find('li');
-      this.timelineItemsNumber = this.timelineItems.length;
-      this.timelineStart = getScheduleTimestamp(this.timelineItems.eq(0).text());
-      //need to store delta (in our case half hour) timestamp
-      this.timelineUnitDuration = getScheduleTimestamp(this.timelineItems.eq(1).text()) - getScheduleTimestamp(this.timelineItems.eq(0).text());
-
-      this.eventsWrapper = this.element.find('.events');
-      this.eventsGroup = this.eventsWrapper.find('.events-group');
-      this.singleEvents = this.eventsGroup.find('.single-event');
-      this.eventSlotHeight = this.eventsGroup.eq(0).children('.top-info').outerHeight();
-
-      this.animating = false;
-
-      this.initSchedule();
-    }
-
-    SchedulePlan.prototype.initSchedule = function () {
-      this.scheduleReset();
-      //this.initEvents();
-    };
-
-    SchedulePlan.prototype.scheduleReset = function () {
-      var mq = this.mq();
-      if (mq == 'desktop' && !this.element.hasClass('js-full')) {
-        //in this case you are on a desktop version (first load or resize from mobile)
-        this.eventSlotHeight = this.eventsGroup.eq(0).children('.top-info').outerHeight();
-        this.element.addClass('js-full');
-        this.placeEvents();
-        // this.element.hasClass('modal-is-open') && this.checkEventModal();
-      }
-      else if (mq == 'mobile' && this.element.hasClass('js-full')) {
-        //in this case you are on a mobile version (first load or resize from desktop)
-        this.element.removeClass('js-full loading');
-        this.eventsGroup.children('ul').add(this.singleEvents).removeAttr('style');
-        this.eventsWrapper.children('.grid-line').remove();
-      }
-
-      else {
-        this.element.removeClass('loading');
-      }
-    };
-
-    // SchedulePlan.prototype.initEvents = function () {
-    //   var self = this;
-    //     this.singleEvents.each(function () {
-    //       var durationLabel = '<span class="event-date">' + $(this).data('start') + ' - ' + $(this).data('end') + '</span>';
-    //       $(this).children('a').prepend($(durationLabel));
-    //     });
-    //
-    //
-    // };
-
-    SchedulePlan.prototype.placeEvents = function () {
-      var self = this;
-      this.singleEvents.each(function () {
-        //place each event in the grid -> need to set top position and height
-        var start = getScheduleTimestamp($(this).attr('data-start')),
-          duration = getScheduleTimestamp($(this).attr('data-end')) - start;
-
-        var eventTop = self.eventSlotHeight * (start - self.timelineStart) / self.timelineUnitDuration,
-          eventHeight = self.eventSlotHeight * duration / self.timelineUnitDuration;
-
-        $(this).css({
-          top: (eventTop - 1) + 'px',
-          height: (eventHeight + 1) + 'px'
-        });
-      });
-
-      this.element.removeClass('loading');
-    };
-
-    SchedulePlan.prototype.mq = function () {
-      //get MQ value ('desktop' or 'mobile')
-      var self = this;
-      return window.getComputedStyle(this.element.get(0), '::before').getPropertyValue('content').replace(/["']/g, '');
-    };
-
-    var schedules = $('.cd-schedule');
-    var objSchedulesPlan = [],
-      windowResize = false;
-
-    if (schedules.length > 0) {
-      schedules.each(function () {
-        //create SchedulePlan objects
-        objSchedulesPlan.push(new SchedulePlan($(this)));
-      });
-    }
-
-    $(window).on('resize', function () {
-      if (!windowResize) {
-        windowResize = true;
-        (!window.requestAnimationFrame) ? setTimeout(checkResize) : window.requestAnimationFrame(checkResize);
-      }
-    });
-
-    $(window).keyup(function (event) {
-      if (event.keyCode == 27) {
-        objSchedulesPlan.forEach(function (element) {
-          element.closeModal(element.eventsGroup.find('.selected-event'));
-        });
-      }
-    });
-
-    function checkResize() {
-      objSchedulesPlan.forEach(function (element) {
-        element.scheduleReset();
-      });
-      windowResize = false;
-    }
-
-    function getScheduleTimestamp(time) {
-      //accepts hh:mm format - convert hh:mm to timestamp
-      time = time.replace(/ /g, '');
-      var timeArray = time.split(':');
-      var timeStamp = parseInt(timeArray[0]) * 60 + parseInt(timeArray[1]);
-      return timeStamp;
-    }
-
-    function transformElement(element, value) {
-      element.css({
-        '-moz-transform': value,
-        '-webkit-transform': value,
-        '-ms-transform': value,
-        '-o-transform': value,
-        'transform': value
-      });
-    }
-  },
 
 
   actions: {
+    //add delete, update
+    calendarAddOccurrence: function(occurrence) {
+      let container = Ember.Object.create({
+        title: "SetAvailable Spot",
+        startsAt: occurrence.get('startsAt'),
+        endsAt: occurrence.get('endsAt')
+      });
+      this.get('occurrences').pushObject(container);
+      this.get('availableSpot').pushObject(container);
+      console.log(JSON.stringify(this.get('availableSpot')));
+    },
+
+    calendarUpdateOccurrence: function(occurrence, properties, isPreview) {
+      occurrence.setProperties(properties);
+
+      if (!isPreview) {
+        // console.log((properties));
+      }
+      console.log(JSON.stringify(this.get('availableSpot')));
+    },
+
+    calendarRemoveOccurrence: function(occurrence) {
+      if (occurrence.tempid != null){
+        this.get('removedSpot').addObject(occurrence.tempid);
+      }
+      this.get('occurrences').removeObject(occurrence);
+      this.get('availableSpot').removeObject(occurrence);
+      console.log(JSON.stringify(this.get('availableSpot')));
+      console.log(JSON.stringify(this.get('removedSpot')));
+    },
+
+
     viewschedule(){
       this.set('isEditing', true);
     },
 
     updateValue(physio){
-      this.set('physios', physio);
-      this.set('selectedphysio', this.get('DS').peekRecord('physiotherapest', physio));
-      //get associated physiotherapist schedule
-      let container = this.get('selectedphysio').get('appointments').filter(function(item){
-        let cur_time = new Date();
-        cur_time=  cur_time.toISOString();
-        return item.get('date') > cur_time;
+      this.set('occurrences', Ember.A());
+      this.set('removedSpot', Ember.A());
+
+      let home= this;
+      //save physioid
+      this.set('selectedPhysioId', physio);
+      //get record of selected physiotherapist
+      this.get('DS').findRecord('physiotherapest', physio).then(function (phy){
+        //might not need this
+        home.set('selectedphysio', phy);
+        //get each appointment by  physiotherapist appointment
+        phy.get('appointments').forEach( function(obj){
+          let curid = obj.get('id');
+          home.get('DS').findRecord('appointment',curid).then(function (app) {
+            let scheduledDate = moment(app.get('date'));
+            let endDate = moment(app.get('endDate'));
+            //filter out any appointments that is previous to current date
+            if (scheduledDate > moment()) {
+              if (app.get('reason')!= null) {
+                home.get('occurrences').pushObject(Ember.Object.create({
+                  title: "Booked",
+                  startsAt: scheduledDate.toISOString(),
+                  endsAt: endDate.toISOString()
+                }));
+              }
+              else {
+
+                let temp = Ember.Object.create({
+                  title: "SetAvailable Spot",
+                  startsAt: scheduledDate.toISOString(),
+                  endsAt: endDate.toISOString(),
+                  tempid : app.get('id')
+                });
+                home.get('occurrences').pushObject(temp);
+                home.get('availableSpot').pushObject(temp);
+
+              }
+            }
+          });
+        });
       });
-      //set appointment filter to the container
-      this.set('appointments_filter',  container);
-
     },
 
-    getclient(pid){
-      console.log("getlient invoked");
-      this.get('DS').findRecord('patient', pid).then(function (src){
+    // getclient(pid){
+    //   console.log("getlient invoked");
+    //   this.get('DS').findRecord('patient', pid).then(function (src){
+    //
+    //     let a = src.get('familyName');
+    //     let b = src.get('givenName');
+    //     console.log(a.toString());
+    //     console.log(b.toString());
+    //     return '';
+    //   });
+    // },
 
-        let a = src.get('familyName');
-        let b = src.get('givenName');
-        console.log(a.toString());
-        console.log(b.toString());
-        return '';
-      });
-    },
-
-    cancel() {
-      return true;
-    },
-
-    prev() {
-      let newcont =[];
-      let counter =0;
-      this.get('weekdate').forEach(function (e) {
-        let result = new Date(e);
-        result.setDate(result.getDate() - 7);
-        newcont[counter++] = result.toDateString();
-      });
-      this.get('weekdate').replace(0,7,newcont);
-
-    },
-    next() {
-      let newcont =[];
-      let counter =0;
-      this.get('weekdate').forEach(function (e) {
-        let result = new Date(e);
-        result.setDate(result.getDate() + 7);
-        newcont[counter++] = result.toDateString();
-      });
-      this.get('weekdate').replace(0,7,newcont);
-
-    },
-
-    setslot(slot, date){
-      let d = new Date(date);
-      switch (slot){
-        case 1:
-          d.setHours(9,30);
-          break;
-        case 2:
-          d.setHours(12,0);
-          break;
-        case 3:
-          d.setHours(13,30);
-          break;
-        case 4:
-          d.setHours(15,0);
-          break;
-      }
-      let booking = this.get('DS').createRecord('appointment', {
-        date: d.toISOString(),
-      });
-      this.set('event', "event-3");
-
-      this.get('availablespot').push(booking);
-    },
+    // cancel() {
+    //   return true;
+    // },
 
     save(){
       let self = this;
-      let physio = self.get('physios');
-
-      console.log(physio);
+      let physio = self.get('selectedPhysioId');
       this.get('DS').find('physiotherapest',physio).then(function (a) {
-        self.get('availablespot').forEach(function (e) {
-          e.save().then(()=>{
-            a.get('appointments').pushObject(e);
-            a.save();
-          });
+        self.get('availableSpot').forEach(function (e) {
+          if (e.tempid == null) {
+            let appo = self.get('DS').createRecord('appointment', {
+              date: e.startsAt,
+              endDate: e.endsAt
+            });
+            appo.save().then(() => {
+              a.get('appointments').pushObject(appo);
+              a.save().then(() => {
+              });
+            })
+          }
+          else{
+            self.get('DS').findRecord('appointment', e.tempid).then((rec)=>{
+              rec.set('date', e.startsAt);
+              rec.set('endDate', e.endsAt);
+              rec.save().then(()=>{
+              });
+            });
+          }
+        });
 
+        self.get('removedSpot').forEach(function (e) {
+          console.log(e);
+          self.get('DS').findRecord('appointment' , e).then((rec)=>{
+            a.get('appointments').removeObject(rec);
+            a.save().then(()=> {
+              rec.destroyRecord().then(() =>{
+              });
+            })
+
+          })
         });
 
       });
+      self.set('isEditing', false);
 
+      //end of save function
     },
+    //end of actions param
   },
-
+  //end of component
 });

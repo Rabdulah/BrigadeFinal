@@ -40,6 +40,7 @@ router.route('/:appointment_id')
                 appointment.reason = request.body.appointment.reason;
                 appointment.other = request.body.appointment.other;
                 appointment.patient = request.body.appointment.patient;
+                appointment.endDate = request.body.appointment.endDate;
 
                 appointment.save(function (error) {
                     if (error) {

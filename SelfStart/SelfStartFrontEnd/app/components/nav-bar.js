@@ -13,6 +13,7 @@ export default Component.extend({
   temp: false,
 
   authentication() {
+
     if(localStorage.getItem('temp')) {
       return this.get('ajax').request('http://localhost:8082/Authenticate', {
         method: 'POST',
@@ -38,9 +39,35 @@ export default Component.extend({
     // if(localStorage.getItem('loggedIn')){
     //   this.set('loggedOut', false);
     // }
+    var scrollLink = $('.scroll');
+
+    // Smooth scrolling
+    scrollLink.click(function (e) {
+      e.preventDefault();
+      $('body,html').animate({
+        scrollTop: $(this.hash).offset().top
+      }, 1000);
+    });
+
+    // Active link switching
+    $(window).scroll(function () {
+      var scrollbarLocation = $(this).scrollTop();
+
+      scrollLink.each(function () {
+
+        var sectionOffset = $(this.hash).offset().top - 20;
+
+        if (sectionOffset <= scrollbarLocation) {
+          $(this).parent().addClass('active');
+          $(this).parent().siblings().removeClass('active');
+        }
+      })
+
+    });
   },
 
-  init() {
+
+  didInsertElement() {
     this._super(...arguments);
 
     if ($(window).width() > 600) {
@@ -73,46 +100,7 @@ export default Component.extend({
         })
       ;
     }
-    $('.additional.item')
-      .popup({
-        delay: {
-          show: 200,
-          hide: 50
-        },
-        position: 'bottom center'
-      });
 
-    var $menu = $('#toc'),
-      $tocSticky = $('.toc .ui.sticky'),
-      $fullHeightContainer = $('.pusher > .full.height')
-    ;
-
-    // create sidebar sticky
-    requestAnimationFrame(function () {
-        $tocSticky
-          .sticky({
-            silent: true,
-            container: $('html'),
-            context: $fullHeightContainer
-          })
-        ;
-      }
-    )
-    ;
-
-    // main sidebar
-    $menu
-      .sidebar({
-        dimPage: true,
-        transition: 'overlay',
-        mobileTransition: 'uncover'
-      })
-    ;
-
-    // launch buttons
-    $menu
-      .sidebar('attach events', '.launch.button, .view-ui, .launch.item')
-    ;
 
   },
 

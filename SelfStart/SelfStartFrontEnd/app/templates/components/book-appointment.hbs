@@ -1,141 +1,85 @@
-<br><br><br><br><br><br>
-
-<link rel="stylesheet" href="{{rootURL}}assets/css/schedule-style.css">
-{{#if isEditing}}
-  <form class="cd-form floating-labels" {{action "save" on="submit"}}>
-    <br><br>
-    <fieldset>
-      <legend>Book Appointment</legend>
+<form class="cd-form floating-labels" {{action "save" on="submit"}}>
+  <br><br>
+  <fieldset>
+    <legend>Book Appointment</legend>
 
 
-      <label class="cd-label">Select Physiotherapist</label>
-      <p class="cd-select icon">
-        <select class="people" value ={{selectphysio}} onchange={{action "updateValue" value="target.value"}} >
-          <option value=""  selected disabled hidden>Select Physiotherapist</option>
-          {{#each getphysio as |phsio|}}
-            <option value={{phsio.id}}>
-              {{phsio.givenName}}
-            </option>
-          {{/each}}
-        </select>
-      </p>
-
-      <div>
-        <div class="cd-button">
-          <input type="submit" value="Submit">
-        </div>
-
-        <button class="ui fluid negative button" {{action "cancelbookingappointment"}}>Cancel</button>
-      </div>
-    </fieldset>
-
-  </form>
-  <button class="ui fluid negative button" {{action "prev"}}>previous</button>
-  <button class="ui fluid negative button" {{action "next"}}>next</button>
-
-  <div class="cd-schedule">
-    <div class="timeline">
-      <ul>
-        <li><span>09:00</span></li>
-        <li><span>09:30</span></li>
-        <li><span>10:00</span></li>
-        <li><span>10:30</span></li>
-        <li><span>11:00</span></li>
-        <li><span>11:30</span></li>
-        <li><span>12:00</span></li>
-        <li><span>12:30</span></li>
-        <li><span>13:00</span></li>
-        <li><span>13:30</span></li>
-        <li><span>14:00</span></li>
-        <li><span>14:30</span></li>
-        <li><span>15:00</span></li>
-        <li><span>15:30</span></li>
-        <li><span>16:00</span></li>
-        <li><span>16:30</span></li>
-        <li><span>17:00</span></li>
-        <li><span>17:30</span></li>
-        <li><span>18:00</span></li>
-      </ul>
-    </div>
-    <div class="events">
-      <ul>
-
-        {{#each weekdate as |date|}}
-          <li class="events-group">
-            <div class="top-info"><span>{{date}}</span></div>
-
-            <ul>
-              {{#each blocks as |b|}}
-                {{#if (compare date b.date)}}
-                  <li class="single-event" data-start={{b.datastart}} data-end={{b.dataend}} data-content="Open" data-event={{b.dataevent}}>
-                    <a href= '#0'{{action 'openModal' b}}>
-                      <em class="event-name">Open</em>
-                    </a>
-                  </li>
-                {{/if}}
-              {{/each}}
-            </ul>
-          </li>
+    <label class="cd-label">Select Physiotherapist</label>
+    <p class="cd-select icon">
+      <select class="people" value ={{selectphysio}} onchange={{action "updateValue" value="target.value"}} >
+        <option value=""  selected disabled hidden>Select Physiotherapist</option>
+        {{#each getphysio as |phsio|}}
+          <option value={{phsio.id}}>
+            {{phsio.givenName}}
+          </option>
         {{/each}}
+      </select>
+    </p>
+  </fieldset>
+
+</form>
+
+{{as-calendar
+  title="Ember Schedule"
+  occurrences=occurrences
+  defaultTimeZoneQuery="Toronto|New York"
+  dayStartingTime="8:00"
+  dayEndingTime="20:00"
+  timeSlotDuration="00:30"
+  onAddOccurrence=(action "calendarAddOccurrence")
+  onUpdateOccurrence=(action "calendarUpdateOccurrence")
+  onRemoveOccurrence=(action "calendarRemoveOccurrence")}}
 
 
-      </ul>
-    </div>
 
-    <div class="event-modal">
-      <header class="header">
-        <div class="content">
-          <span class="event-date"></span>
-          <h3 class="event-name"></h3>
-        </div>
-
-        <div class="header-bg"></div>
-      </header>
-
-      <div class="body">
-        <div class="event-info"></div>
-        <div class="body-bg"></div>
-      </div>
-
-      <a href="#0" class="close">Close</a>
-    </div>
-  </div>
-{{else}}
-  <button class="ui button" {{action 'bookAppointment'}}>
-    Book appointment
-  </button>
-
-{{/if}}
-
-{{#ui-modal name= modalName class= modalName}}
-  <form class="cd-form floating-labels" {{action "saveappointment" on="submit"}}>
-    <br><br>
+{{#ui-modal name= modalName class= 'bk'}}
+  <form class="cd-form floating-labels">
     <fieldset>
       <legend>Book Appointment</legend>
       <label class="cd-label"> Physiotherapist</label>
-      <p>{{phyidget.familyName}} {{phyidget.givenName}}</p>
+      <p>{{familyName}} {{givenName}}</p>
+      <br>
+
+      <label class="cd-label">Select Type</label>
+      <p class="cd-select icon">
+        <select class="selectedAppointment" value ={{selectAppointmentType}} onchange={{action "updateTime" value="target.value"}}>
+          <option value=""  selected disabled hidden>Select type</option>
+          <option value="i">
+            Initial Assessment
+          </option>
+          <option value="t">
+            Treatment
+          </option>
+
+        </select>
+      </p>
 
 
       <div class="icon">
         <label class="cd-label">Reason</label>
         {{input class="star" type="text" value = Reason}}
       </div>
+
       <div class="icon">
         <label class="cd-label">Other</label>
         {{input  class="user" type="text" value = Other}}
       </div>
 
-      <div class="icon">
-        <label class="cd-label">Date</label>
-        <p>{{selectedappointment.fulldate}}</p>
-      </div>
+      <label class="cd-label">Select Time Slot</label>
+      <p class="cd-select icon">
+        <select class="people" value ={{selectedTime}} onchange={{action "setselectedtime" value="target.value"}} >
+          <option value=""  selected disabled hidden>Select TimeSlot</option>
+          {{#each timeSlots as |timeslot|}}
+            <option value={{timeslot.time}}>
+              {{timeslot.value}}
+            </option>
+          {{/each}}
+        </select>
+      </p>
 
       <div>
-        <div class="cd-button">
-          <input type="submit" value="Submit">
-        </div>
-
-        <button class="ui fluid negative button" >Cancel</button>
+        <button class="ui fluid negative button" {{action "cancel_appointment"}}>Cancel</button>
+        <button class="ui fluid positive button" {{action "book_appointment"}}>Submit</button>
       </div>
     </fieldset>
 
