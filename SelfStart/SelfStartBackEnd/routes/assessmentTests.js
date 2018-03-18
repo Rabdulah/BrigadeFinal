@@ -41,6 +41,7 @@ router.route('/:assessment_id')
                 assessmentTest.form = request.body.assessmentTest.form;
                 assessmentTest.rehabPlan = request.body.assessmentTest.rehabPlan;
                 assessmentTest.answers = request.body.assessmentTest.answers;
+                assessmentTest.completed = request.body.assessmentTest.completed;
 
                 assessmentTest.save(function (error) {
                     if (error) {

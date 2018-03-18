@@ -7453,7 +7453,8 @@ define('self-start-front-end/models/assessment-test', ['exports', 'ember-data'],
         form: _emberData.default.belongsTo("form"),
         questions: _emberData.default.hasMany('question'),
         answers: _emberData.default.attr(),
-        rehabPlan: _emberData.default.belongsTo('rehabilitationplan')
+        rehabPlan: _emberData.default.belongsTo('rehabilitationplan'),
+        completed: _emberData.default.attr()
     });
 });
 define('self-start-front-end/models/city', ['exports', 'ember-data'], function (exports, _emberData) {
