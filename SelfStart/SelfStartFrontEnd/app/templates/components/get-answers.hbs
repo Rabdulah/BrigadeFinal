@@ -1,1 +1,93 @@
-{{qNumber}}
+{{!-- <script type="text/javascript">$(document).ready(function(){$(".rating").rating();});</script> --}}
+
+<div class="ui form">
+    <br>
+    {{#if question.sa}}
+        <label>{{question.questionText}}</label>
+        <br><br>
+        <div class="ui input focus">
+            <li>{{input type="text" value=SAanswer focus-out="saSave"}}</li>
+        </div>
+    {{/if}}
+
+    {{#if question.ra}}
+        <label>{{question.questionText}}</label>
+        <br><br>
+        {{ui-rating
+            class="heart"
+            maxRating=10
+            rating=rateValue
+            onRate=(action "ratingSave")
+        }}
+    {{/if}}
+
+    {{#if question.tf}}
+    <br><br>
+     <li>
+        <div class="inline fields">
+           <label>{{question.questionText}}</label>
+          <div class="field">
+            <div class="ui radio checkbox">
+                <input name="tf" type="radio" value=TFtrue>
+                <label>True</label>
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui radio checkbox">
+               <input name="tf" type="radio" value=TFfalse>
+               <label>False</label>
+            </div>
+          </div>
+        </div>
+      </li>  
+    {{/if}}
+
+    {{#if question.mc}}
+    <br><br>
+        <div class="grouped fields">
+          <label>{{question.questionText}}</label>
+          <div class="field">
+            <div class="ui radio checkbox">
+                <input name="mc" type="radio" value=mcop1>
+                <label>{{mc-display question.optionString 0}}</label>
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui radio checkbox" value=mcop2>
+                <input name="mc" type="radio">
+                <label>{{mc-display question.optionString 1}}</label>
+            </div>
+          </div>
+          <div class="field">
+            <div class="ui radio checkbox">
+                <input name="mc" type="radio" value=mcop3>
+                <label>{{mc-display question.optionString 2}}</label>
+            </div>
+          </div>
+          {{#if (number-of-mc question.optionNumber 3)}}
+          <div class="field">
+            <div class="ui radio checkbox">
+                <input name="mc" type="radio" value=mcop4>
+                <label>{{mc-display question.optionString 3}}</label>
+            </div>
+          </div>
+          {{/if}}
+          {{#if (number-of-mc question.optionNumber 4)}}
+          <div class="field">
+            <div class="ui radio checkbox">
+                <input name="mc" type="radio" value=mcop5>
+                <label>{{mc-display question.optionString 4}}</label>
+            </div>
+          </div>
+          {{/if}}
+          {{#if (number-of-mc question.optionNumber 5)}}
+          <div class="field">
+            <div class="ui radio checkbox">
+                <input name="mc" type="radio" value=mcop6>
+                <label>{{mc-display question.optionString 5}}</label>
+            </div>
+          </div>
+          {{/if}}
+        </div>
+    {{/if}}
+</div>
