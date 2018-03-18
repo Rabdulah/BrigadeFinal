@@ -1342,9 +1342,9 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
         var self = this;
         //temp client until we get token
         //laptop
-        //let client = '5a80e1663ddc7324643209cd';
+        var client = '5a99f669da1c862bd0ac4efb';
         //desktop
-        var client = '5a88738e1f0fdc2b94498e81';
+        // let client = '5a88738e1f0fdc2b94498e81';
         var physio = self.get('selectphysio');
         var booking = this.get('DS').createRecord('appointment', {
           reason: self.get('Reason'),
@@ -9042,6 +9042,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+af1392e2"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+1432a530"});
 }
 //# sourceMappingURL=self-start-front-end.map
