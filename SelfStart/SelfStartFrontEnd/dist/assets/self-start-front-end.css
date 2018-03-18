@@ -2576,7 +2576,7 @@ body {
 #mini-nav a:hover, #mini-nav a:focus {
   border-radius: 6px;
   background: white;
-  color: blue;
+  color: deepskyblue;
   min-width: 200px; }
 
 #mini-nav a:hover span, #mini-nav a:focus span {
@@ -2597,7 +2597,7 @@ a img {
 
 #mini-nav a i {
   border-radius: 6px;
-  color: blue;
+  color: deepskyblue;
   background: white;
   display: block;
   float: left;

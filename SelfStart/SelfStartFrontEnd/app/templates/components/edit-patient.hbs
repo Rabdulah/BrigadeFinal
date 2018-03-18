@@ -1,5 +1,5 @@
 <p style="cursor: pointer; " title="Edit"  {{action 'openModal' }}>
-  <img src="assets/images/pencil.svg">
+  <img src="/assets/images/pencil.svg">
 </p>
 
 
@@ -11,8 +11,7 @@
   <div class="header">Edit Client</div>
     <div class="scrolling content" >
 
-  <form id="edit" class="cd-form floating-labels" {{action "save" on="submit"}}>
-
+  <form id="edit" class="cd-form floating-labels" {{action "submit" on="submit"}}>
 
       <legend>Personal Info</legend>
 
@@ -101,11 +100,11 @@
       </div>
       <div class="column " style="margin: 1em 0;">
         <h4>Province</h4>
-        {{input class="world" type="text" value = province placeholder="Province/State" required = true}}
+        {{input class="world" type="text" value = pateintsData.province placeholder="Province/State" required = true}}
       </div>
       <div class="column " style="margin: 1em 0;">
         <h4>City</h4>
-        {{input class="world" type="text" value = city placeholder="City" required = true}}
+        {{input class="world" type="text" value = pateintsData.city placeholder="City" required = true}}
       </div>
     </div>
 
@@ -129,24 +128,14 @@
 
       </div>
 
-            <!--<div class="ok cd-button">-->
-        <!--<input type="submit" value="Submit">-->
-      <!--</div>-->
+    <div class="field">
+      <button class="fluid ui blue button" style="max-width: 100%; height: 50px;">
+        Submit
+      </button>
+    </div>
 
   </form>
 
-
-      <!--<div class="actions">-->
-        <!--<div class="ok cd-button">-->
-          <!--<input type="submit" value="Submit">-->
-        <!--</div>-->
-      <!--</div>-->
-  </div>
-
-  <div class="actions" style="height: 75px">
-    <div class="ui primary approve button" style="float: right;">
-      Submit
-    </div>
   </div>
 
 {{/ui-modal}}

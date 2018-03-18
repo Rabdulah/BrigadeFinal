@@ -4,7 +4,6 @@ import { inject } from '@ember/service';
 export default Component.extend({
     DS: inject('store'),
 
-    isEditing: false,
     shortAns: false,
     multipleChoice:false,
     rating: false,
@@ -17,7 +16,7 @@ export default Component.extend({
     oNumber:1,
     removable: false,
     addable:true,
-  
+
     actions: {
 
       multipleChoice (){
@@ -38,7 +37,7 @@ export default Component.extend({
           this.set('option3', true);
           this.oNumber++;
           return;
-        }     
+        }
         if(this.option4 == false){
           this.set('option4', true);
           this.oNumber++;
@@ -68,7 +67,7 @@ export default Component.extend({
           this.set('option5', false);
           this.oNumber--;
           return;
-        }     
+        }
         if(this.option4 == true){
           this.set('option4', false);
           this.oNumber--;
@@ -78,13 +77,13 @@ export default Component.extend({
           this.set('option3', false);
           this.oNumber--;
           return;
-        }  
+        }
         if(this.option2 == true){
           this.set('option2', false);
           this.set('removable', false);
           this.oNumber--;
           return;
-        }  
+        }
       },
 
       shortAns (){
@@ -109,15 +108,18 @@ export default Component.extend({
       },
 
       addQuestion (){
-        this.set('isEditing', true);
+        this.set('shortAns', false);
+        this.set('multipleChoice', false);
+        this.set('rating', false);
+        this.set('trueFalse', false);
       },
-  
-      cancel: function () {
-        this.set('isEditing', false);
-      },
-  
+
+      // cancel: function () {
+      //   this.set('isEditing', false);
+      // },
+
       submit: function () {
-  
+
         var question, help, qtype, optStr = '';
 
         let self = this;
@@ -150,7 +152,7 @@ export default Component.extend({
         }
 
         let newQuestion = this.get('DS').createRecord('question', {
-         
+
             helpDescription: help,
             questionText: question,
             type: qtype,
@@ -161,13 +163,19 @@ export default Component.extend({
             ra: this.rating,
             sa: this.shortAns
         });
-  
+
         newQuestion.save().then(function() {
-          this.set('isEditing', false);
+          self.set('shortAns', false);
+          self.set('multipleChoice', false);
+          self.set('rating', false);
+          self.set('trueFalse', false);
           return true;
         });
 
-        this.set('isEditing', false);
+        this.set('shortAns', false);
+        this.set('multipleChoice', false);
+        this.set('rating', false);
+        this.set('trueFalse', false);
       }
   },
 });

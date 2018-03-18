@@ -1,6 +1,9 @@
-{{#if isEditing}}
 
-<div class="ui fluid raised very padded text container segment">
+<div class="ui centered grid">
+
+
+<div class="ui fluid raised very padded text container segment" style="margin-top: -16em;position: absolute;">
+
 
   <form class="ui form">
         <div class="inline fields">
@@ -114,10 +117,4 @@
 
   </div>
 
-{{else}}
-<div class = "ui centered grid">
-    <button class="ui button" {{action 'addQuestion'}}>
-        Add Question
-    </button>
-    </div>
-{{/if}}
+</div>

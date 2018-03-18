@@ -14,6 +14,8 @@ Router.map(function() {
     this.route('admin-welcome', {path: '/'});
     this.route('manage-accounts');
     this.route('manage-selections');
+    this.route('accounts');
+    this.route('forms');
   });
   this.route('questions');
   this.route('forms');
@@ -34,8 +36,10 @@ Router.map(function() {
   this.route('register');
   this.route('dashboard');
   this.route('message');
-  this.route('practioner', function() {
-    this.route('accounts');
+  this.route('practitioner', function() {
+    this.route('physio-welcome', {path: '/'});
+    this.route('clients');
+    this.route('client-file');
   });
 });
 

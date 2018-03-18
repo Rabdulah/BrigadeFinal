@@ -21,7 +21,7 @@ router.route('/')
             if(err) {
                 response.json({success: false, msg: 'Failed to register client'});
             } else{
-                response.json({admin: admin});
+                response.json({administrator: admin});
             }
         });
         // Administrators.save(function (error) {
@@ -29,11 +29,46 @@ router.route('/')
         //     response.json({admin: admin});
         // });
     })
+
     .get( function (request, response) {
-        Administrators.Model.find(function (error, admins) {
-            if (error) response.send(error);
-            response.json({admin: admins});
-        });
+        let {limit, offset, sort, dir, queryPath, regex} = request.query;
+        if(!limit) {
+            Administrators.Model.find(function (error, admins) {
+                if (error) response.send(error);
+                response.json({administrator: admins});
+            });
+        }
+        else {
+            //  let users = schema.users.all().models;
+            //  let users = Users.Model;
+
+            offset = Number(offset || 0);
+            limit = Number(limit || 10);
+            dir = dir || 'asc';
+            sort = sort || 'id';
+
+            let query = {};
+            if (regex !== '')
+                query[queryPath] = new RegExp(regex, "i");
+
+            var sortOrder = sort;
+            if (sortOrder) {
+                if (dir !== 'asc') {
+                    sortOrder = '-' + sort;
+                }
+            }
+
+            let options = {
+                sort: sortOrder,
+                lean: true,
+                offset: offset,
+                limit: limit
+            };
+            Administrators.Model.paginate(query, options, function (error, admins) {
+                if (error) response.send(error);
+                response.json({administrator: admins.docs});
+            });
+        }
     });
 
 router.route('/:email')
@@ -57,7 +92,7 @@ router.route('/:admin_id')
                 response.send({error: error});
             }
             else {
-                response.json({admin: admin});
+                response.json({administrator: admin});
             }
         });
     })
@@ -75,6 +110,7 @@ router.route('/:admin_id')
                 admin.email = request.body.admin.email;
                 admin.dateHired = request.body.admin.dateHired;
                 admin.dateFired = request.body.admin.dateFired;
+                admin.phoneNumber = request.body.admin.phoneNumber;
                 admin.form = request.body.admin.form;
                 admin.account = request.body.admin.account;
 
@@ -84,7 +120,7 @@ router.route('/:admin_id')
                         response.send({error: error});
                     }
                     else {
-                        response.json({admin: admin});
+                        response.json({administrator: admin});
                     }
                 });
             }
@@ -94,7 +130,7 @@ router.route('/:admin_id')
         Administrators.Model.findByIdAndRemove(request.params.admin_id,
             function (error, deleted) {
                 if (!error) {
-                    response.json({admin: deleted});
+                    response.json({administrator: deleted});
                 }
             }
         );

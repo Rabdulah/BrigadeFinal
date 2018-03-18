@@ -84,6 +84,30 @@ init(){
       this.set('selectedCountry', country);
     },
 
+    submit(){
+      this.get('DS').findRecord('patient', this.get('pateintsData').id).then((rec) =>{
+        rec.set('familyName', this.get('pateintsData.familyName'));
+        rec.set('givenName', this.get('pateintsData.givenName'));
+        rec.set('email', this.get('pateintsData.email'));
+        rec.set('streetName', this.get('pateintsData.streetName'));
+        rec.set('streetNumber', this.get('pateintsData.streetNumber'));
+        rec.set('apartment', this.get('pateintsData.apartment'));
+        rec.set('country', this.get('selectedCountry'));
+        rec.set('province', this.get('pateintsData.province'));
+        rec.set('city', this.get('pateintsData.city'));
+        rec.set('healthCardNumber', this.get('pateintsData.healthCardNumber'));
+        rec.set('gender', this.get('selectedGender'));
+        rec.set('dateOfBirth', new Date(this.get('selectedDate')));
+        rec.set('phoneNumber', this.get('pateintsData.phoneNumber'));
+        rec.set('postalCode', this.get('pateintsData.postalCode'));
+
+        rec.save().then(()=>{
+          return true;
+
+        });
+      });
+    },
+
     openModal: function () {
 
       $('.ui.' + this.get('modalName') + '.modal').modal({
@@ -94,29 +118,7 @@ init(){
         onDeny: () => {
           return true;
         },
-        onApprove: () => {
-          this.get('DS').findRecord('patient', this.get('pateintsData').id).then((rec) =>{
-            rec.set('familyName', this.get('pateintsData.familyName'));
-            rec.set('givenName', this.get('pateintsData.givenName'));
-            rec.set('email', this.get('pateintsData.email'));
-            rec.set('streetName', this.get('pateintsData.streetName'));
-            rec.set('streetNumber', this.get('pateintsData.streetNumber'));
-            rec.set('apartment', this.get('pateintsData.apartment'));
-            rec.set('country', this.get('selectedCountry'));
-            // rec.set('province', this.get('province'));
-            // rec.set('city', this.get('city'));
-            rec.set('healthCardNumber', this.get('pateintsData.healthCardNumber'));
-            rec.set('gender', this.get('selectedGender'));
-            rec.set('dateOfBirth', new Date(this.get('selectedDate')));
-            rec.set('phoneNumber', this.get('pateintsData.phoneNumber'));
-            rec.set('postalCode', this.get('pateintsData.postalCode'));
 
-            rec.save().then(()=>{
-              return true;
-
-            });
-          });
-        }
       })
         .modal('show');
     }

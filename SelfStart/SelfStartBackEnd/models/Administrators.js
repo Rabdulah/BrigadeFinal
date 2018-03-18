@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var mongoosePaginate = require('mongoose-paginate');
 var bcrypt=require('bcrypt');
 
 var administratorsSchema = mongoose.Schema({
@@ -6,6 +7,7 @@ var administratorsSchema = mongoose.Schema({
     familyName: String,
     givenName: String,
     email: String,
+    phoneNumber: String,
     dateHired: Date,
     dateFired: Date,
     form: [{type: mongoose.Schema.ObjectId, ref: 'Forms'}],
@@ -21,6 +23,8 @@ var administratorsSchema = mongoose.Schema({
 
 
 });
+
+administratorsSchema.plugin(mongoosePaginate);
 var AdministratorsSchema = mongoose.model('administrator', administratorsSchema);
 
 const Admin = exports.Model = AdministratorsSchema;

@@ -12,13 +12,13 @@ export default Component.extend({
   dir:'',
   query: null,
   flagDelete: false,
-  modelAttributes:
 
+  modelAttributes:
     [{'key': 'givenName', 'name':'First Name', 'dir' : 'asc', 'class' :'left aligned two wide column'},
-    {'key': 'familyName', 'name':'Last Name', 'dir' : '','class' :'left aligned two wide column'},
-    {'key': 'dateOfBirth', 'name':'Date of Birth', 'dir' : '','class' :'left aligned five wide column'},
-    // {'key': 'address', 'name':'Address'},
-    {'key': 'email', 'name':'Email', 'dir' : '','class' :'left aligned four wide column'}],
+      {'key': 'familyName', 'name':'Last Name', 'dir' : '','class' :'left aligned two wide column'},
+      {'key': 'dateOfBirth', 'name':'Date of Birth', 'dir' : '','class' :'left aligned five wide column'},
+      // {'key': 'address', 'name':'Address'},
+      {'key': 'email', 'name':'Email', 'dir' : '','class' :'left aligned four wide column'}],
     // {'key': 'phoneNumber', 'name':'Phone Number'}],
 
   patientsModel: [],

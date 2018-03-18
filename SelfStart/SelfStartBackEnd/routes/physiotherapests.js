@@ -11,11 +11,45 @@ router.route('/')
         });
     })
 
-    .get(function (request, response) {
-        Physiotherapest.Model.find(function (error, physiotherapest) {
-            if (error) response.send(error);
-            response.json({physiotherapest: physiotherapest});
-        });
+    .get( function (request, response) {
+        let {limit, offset, sort, dir, queryPath, regex} = request.query;
+        if(!limit) {
+            Physiotherapest.Model.find(function (error, physiotherapest) {
+                if (error) response.send(error);
+                response.json({physiotherapest: physiotherapest});
+            });
+        }
+        else {
+            //  let users = schema.users.all().models;
+            //  let users = Users.Model;
+
+            offset = Number(offset || 0);
+            limit = Number(limit || 10);
+            dir = dir || 'asc';
+            sort = sort || 'id';
+
+            let query = {};
+            if (regex !== '')
+                query[queryPath] = new RegExp(regex, "i");
+
+            var sortOrder = sort;
+            if (sortOrder) {
+                if (dir !== 'asc') {
+                    sortOrder = '-' + sort;
+                }
+            }
+
+            let options = {
+                sort: sortOrder,
+                lean: true,
+                offset: offset,
+                limit: limit
+            };
+            Physiotherapest.Model.paginate(query, options, function (error, physiotherapest) {
+                if (error) response.send(error);
+                response.json({physiotherapest: physiotherapest.docs});
+            });
+        }
     });
 
 router.route('/:physiotherapest_id')
@@ -42,6 +76,8 @@ router.route('/:physiotherapest_id')
                 physiotherapest.email = request.body.physiotherapest.email;
                 physiotherapest.dateHired = request.body.physiotherapest.dateHired;
                 physiotherapest.dateFired = request.body.physiotherapest.dateFired;
+                physiotherapest.gender = request.body.physiotherapest.gender;
+                physiotherapest.phoneNumber = request.body.physiotherapest.phoneNumber;
                 physiotherapest.treatment = request.body.physiotherapest.treatment;
                 physiotherapest.account = request.body.physiotherapest.account;
                 physiotherapest.appointments = request.body.physiotherapest.appointments;
