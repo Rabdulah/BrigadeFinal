@@ -4,7 +4,7 @@ import { empty } from '@ember/object/computed';
 export default DS.Model.extend({
     form: DS.belongsTo("form"),
     questions: DS.hasMany('question'),
-    answers: DS.hasMany('answer'),
+    answers: DS.attr(),
     rehabPlan: DS.belongsTo('rehabilitationplan')
 });
 

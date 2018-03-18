@@ -27,16 +27,11 @@
         <div class="inline fields">
            <label>{{question.questionText}}</label>
           <div class="field">
-            <div class="ui radio checkbox">
-                <input name="tf" type="radio" value=TFtrue>
-                <label>True</label>
-            </div>
+            {{ui-radio name="tf" label="True" value="True" current=tf onChange=(action "TFtrue")}}
+    
           </div>
           <div class="field">
-            <div class="ui radio checkbox">
-               <input name="tf" type="radio" value=TFfalse>
-               <label>False</label>
-            </div>
+           {{ui-radio name="tf" label="False" value="False" current=tf onChange=(action "TFfalse")}} 
           </div>
         </div>
       </li>  
@@ -47,27 +42,27 @@
         <div class="grouped fields">
           <label>{{question.questionText}}</label>
           <div class="field">
-            <div class="ui radio checkbox">
-                <input name="mc" type="radio" value=mcop1>
+            <div class="ui radio checkbox" value=mcop2>
+                <input name="mc" type="radio" onchange={{action 'mcop1Save'}}>
                 <label>{{mc-display question.optionString 0}}</label>
             </div>
           </div>
           <div class="field">
-            <div class="ui radio checkbox" value=mcop2>
-                <input name="mc" type="radio">
+            <div class="ui radio checkbox">
+                <input name="mc" type="radio" onchange={{action 'mcop2Save'}}>
                 <label>{{mc-display question.optionString 1}}</label>
             </div>
           </div>
           <div class="field">
             <div class="ui radio checkbox">
-                <input name="mc" type="radio" value=mcop3>
+                <input name="mc" type="radio"  onchange={{action 'mcop3Save'}}>
                 <label>{{mc-display question.optionString 2}}</label>
             </div>
           </div>
           {{#if (number-of-mc question.optionNumber 3)}}
           <div class="field">
             <div class="ui radio checkbox">
-                <input name="mc" type="radio" value=mcop4>
+                <input name="mc" type="radio"  onchange={{action 'mcop4Save'}}>
                 <label>{{mc-display question.optionString 3}}</label>
             </div>
           </div>
@@ -75,7 +70,7 @@
           {{#if (number-of-mc question.optionNumber 4)}}
           <div class="field">
             <div class="ui radio checkbox">
-                <input name="mc" type="radio" value=mcop5>
+                <input name="mc" type="radio"  onchange={{action 'mcop5Save'}}>
                 <label>{{mc-display question.optionString 4}}</label>
             </div>
           </div>
@@ -83,7 +78,7 @@
           {{#if (number-of-mc question.optionNumber 5)}}
           <div class="field">
             <div class="ui radio checkbox">
-                <input name="mc" type="radio" value=mcop6>
+                <input name="mc" type="radio"  onchange={{action 'mcop6Save'}}>
                 <label>{{mc-display question.optionString 5}}</label>
             </div>
           </div>

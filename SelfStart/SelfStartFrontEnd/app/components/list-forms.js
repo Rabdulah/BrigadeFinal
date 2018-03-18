@@ -16,10 +16,16 @@ export default Component.extend({
 
         AddTest(thisForm, thisPlan){
 
+            let temp = [];
+            thisForm.get("questions").forEach(element => {
+                temp.push("!!!!");
+            });
+         
             let newTest = this.get('DS').createRecord('assessment-test', {
               form: thisForm,
               questions: thisForm.get("questions"),
-              rehabPlan: thisPlan,     
+              rehabPlan: thisPlan,  
+              answers: temp   
            });
             newTest.save().then(()=> {
                 return true;

@@ -8,4 +8,11 @@ export default Component.extend({
     assessmentModel: Ember.computed(function(){
         return this.get('DS').find('assessment-test', this.get('id'));
     }),
+
+    actions: {
+        Submit(){
+           var x = this.get('DS').find('assessment-test', this.get('id'));
+            console.log(x.get('questions'));
+        },
+    },
 });
