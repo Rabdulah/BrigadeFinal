@@ -100,6 +100,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(false, 'components/book-appointment.js should pass ESLint\n\n4:16 - \'Ember\' is not defined. (no-undef)\n11:40 - \'Ember\' is not defined. (no-undef)\n17:40 - \'Ember\' is not defined. (no-undef)\n23:40 - \'Ember\' is not defined. (no-undef)\n32:42 - \'Ember\' is not defined. (no-undef)\n38:7 - Unexpected console statement. (no-console)\n45:9 - Unexpected console statement. (no-console)\n51:7 - Unexpected console statement. (no-console)');
   });
 
+  QUnit.test('components/client-file.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/client-file.js should pass ESLint\n\n');
+  });
+
   QUnit.test('components/config-selection.js', function (assert) {
     assert.expect(1);
     assert.ok(false, 'components/config-selection.js should pass ESLint\n\n73:5 - Unexpected console statement. (no-console)\n91:8 - Unexpected console statement. (no-console)');
@@ -1230,6 +1235,35 @@ define('self-start-front-end/tests/integration/components/book-appointment-test'
     this.render(Ember.HTMLBars.template({
       "id": "I23GB3If",
       "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"book-appointment\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/client-file-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('client-file', 'Integration | Component | client file', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "xTG3N09F",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"client-file\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "LtvuQsZw",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"client-file\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
       "meta": {}
     }));
 
@@ -2722,6 +2756,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('integration/components/book-appointment-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/book-appointment-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/client-file-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/client-file-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/config-selection-test.js', function (assert) {

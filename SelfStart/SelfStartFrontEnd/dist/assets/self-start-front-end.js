@@ -1393,6 +1393,14 @@ define('self-start-front-end/components/book-appointment', ['exports'], function
     }
   });
 });
+define('self-start-front-end/components/client-file', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({});
+});
 define('self-start-front-end/components/config-selection', ['exports'], function (exports) {
   'use strict';
 
@@ -6736,7 +6744,7 @@ define('self-start-front-end/router', ['exports', 'self-start-front-end/config/e
 
   Router.map(function () {
     this.route('home', { path: '/' });
-    this.route('patients');
+    //this.route('patients');
     this.route('rehabplans');
     this.route('admin', function () {
       this.route('admin-welcome', { path: '/' });
@@ -6745,20 +6753,20 @@ define('self-start-front-end/router', ['exports', 'self-start-front-end/config/e
       this.route('accounts');
       this.route('forms');
     });
-    this.route('questions');
+    //this.route('questions');
     this.route('forms');
-    this.route('province');
-    this.route('city');
-    this.route('marital-status');
+    //this.route('province');
+    //this.route('city');
+    //this.route('marital-status');
     this.route('new-rehabplans');
-    this.route('physiotherapists');
-    this.route('new-physiotherapist');
-    this.route('update-physiotherapist', { path: 'physiotherapist/:physiotherapest_id' });
+    //this.route('physiotherapists');
+    //this.route('new-physiotherapist');
+    //this.route('update-physiotherapist',{ path: 'physiotherapist/:physiotherapest_id'});
     this.route('formDisplay');
-    this.route('update-patient', { path: 'patient/:patient_id' });
-    this.route('new-patient');
+    //this.route('update-patient', { path: 'patient/:patient_id'});
+    //this.route('new-patient');
     this.route('appointment');
-    this.route('patient-file');
+    //this.route('patient-file');
     this.route('exercises');
     this.route('images');
     this.route('register');
@@ -6767,7 +6775,7 @@ define('self-start-front-end/router', ['exports', 'self-start-front-end/config/e
     this.route('practitioner', function () {
       this.route('physio-welcome', { path: '/' });
       this.route('clients');
-      this.route('client-file');
+      this.route('client-file', { path: 'clients/:patient_id' });
     });
   });
 
@@ -7052,7 +7060,11 @@ define('self-start-front-end/routes/practitioner/client-file', ['exports'], func
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.Route.extend({});
+  exports.default = Ember.Route.extend({
+    // model: function(params){
+    //   return this.store.find('patient', params.patient_id);
+    // }
+  });
 });
 define('self-start-front-end/routes/practitioner/clients', ['exports'], function (exports) {
   'use strict';
@@ -8772,6 +8784,14 @@ define("self-start-front-end/templates/components/book-appointment", ["exports"]
   });
   exports.default = Ember.HTMLBars.template({ "id": "7PX37VG1", "block": "{\"symbols\":[],\"statements\":[[1,[25,\"as-calendar\",null,[[\"title\",\"occurrences\",\"defaultTimeZoneQuery\",\"dayStartingTime\",\"dayEndingTime\",\"timeSlotDuration\",\"onAddOccurrence\",\"onUpdateOccurrence\",\"onRemoveOccurrence\"],[\"Ember Calendar\",[20,[\"occurrences\"]],\"Toronto|New York\",\"9:00\",\"18:00\",\"00:30\",[25,\"action\",[[19,0,[]],\"calendarAddOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarUpdateOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarRemoveOccurrence\"],null]]]],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/book-appointment.hbs" } });
 });
+define("self-start-front-end/templates/components/client-file", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "uGStsrdO", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[1,[20,[\"model\",\"givenName\"]],false],[0,\" \"],[1,[20,[\"model\",\"familyName\"]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"background\"],[9,\"style\",\"padding: 10em\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui vertical pointing menu\"],[7],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"active item\"],[7],[0,\"\\n      Assessment\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Notes\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Photos\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Menu Builder\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-file.hbs" } });
+});
 define("self-start-front-end/templates/components/config-selection", ["exports"], function (exports) {
   "use strict";
 
@@ -9042,7 +9062,7 @@ define("self-start-front-end/templates/components/physio-welcome", ["exports"], 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "BsIy9mLr", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg3\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[7],[0,\"Practitioner Landing Page\"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui center aligned grid\"],[7],[0,\"\\n\\n        \"],[2,\"<a href=\\\"/appointment\\\"  class=\\\"ui large inverted download button\\\" >\"],[0,\"\\n        \"],[2,\"Book Appointment\"],[0,\"\\n        \"],[2,\"</a>\"],[0,\"\\n\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/physio-welcome.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "2D0phoUt", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg3\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[7],[0,\"Practitioner's Page\"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui center aligned grid\"],[7],[0,\"\\n\\n        \"],[2,\"<a href=\\\"/appointment\\\"  class=\\\"ui large inverted download button\\\" >\"],[0,\"\\n        \"],[2,\"Book Appointment\"],[0,\"\\n        \"],[2,\"</a>\"],[0,\"\\n\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/physio-welcome.hbs" } });
 });
 define("self-start-front-end/templates/components/register-user", ["exports"], function (exports) {
   "use strict";
@@ -9074,7 +9094,7 @@ define("self-start-front-end/templates/components/show-patient", ["exports"], fu
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "FoPlBpyL", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[9,\"class\",\"ui container\"],[9,\"style\",\"height: 150px;width: 1000px;padding-top: 50px;\"],[7],[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui cards\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"max-width: 230px;\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Documents\"],[8],[0,\"\\n      \"],[2,\"<div class=\\\"meta\\\">Friend</div>\"],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"max-width: 230px;\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Accounting\"],[8],[0,\"\\n      \"],[2,\"<div class=\\\"meta\\\">Friend</div>\"],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"max-width: 230px;\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Messages\"],[8],[0,\"\\n      \"],[2,\"<div class=\\\"meta\\\">Friend</div>\"],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"max-width: 230px;\"],[7],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"a\"],[9,\"class\",\"header\"],[9,\"href\",\"/practitioner/client-file\"],[7],[0,\"Client's Files\"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"cl\",\"\"],[9,\"ass\",\"meta\"],[7],[1,[20,[\"model\",\"givenName\"]],false],[0,\" \"],[1,[20,[\"model\",\"familyName\"]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/show-patient.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "QMMIqu1p", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[9,\"class\",\"ui container\"],[9,\"style\",\"height: 150px;width: 1000px;padding-top: 50px;\"],[7],[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui cards\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"max-width: 230px;\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Documents\"],[8],[0,\"\\n      \"],[2,\"<div class=\\\"meta\\\">Friend</div>\"],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"max-width: 230px;\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Accounting\"],[8],[0,\"\\n      \"],[2,\"<div class=\\\"meta\\\">Friend</div>\"],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"max-width: 230px;\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Messages\"],[8],[0,\"\\n      \"],[2,\"<div class=\\\"meta\\\">Friend</div>\"],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"max-width: 230px;\"],[7],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"a\"],[9,\"class\",\"header\"],[7],[4,\"link-to\",[\"practitioner.client-file\",[20,[\"model\",\"id\"]]],null,{\"statements\":[[0,\"Client's Files\"]],\"parameters\":[]},null],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"meta\"],[7],[1,[20,[\"model\",\"givenName\"]],false],[0,\" \"],[1,[20,[\"model\",\"familyName\"]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/show-patient.hbs" } });
 });
 define("self-start-front-end/templates/components/simple-example", ["exports"], function (exports) {
   "use strict";
@@ -9402,7 +9422,7 @@ define("self-start-front-end/templates/practitioner/client-file", ["exports"], f
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "08axuzzT", "block": "{\"symbols\":[],\"statements\":[[1,[18,\"outlet\"],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/practitioner/client-file.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "MB3dkWvc", "block": "{\"symbols\":[],\"statements\":[[1,[25,\"client-file\",null,[[\"model\"],[[20,[\"model\"]]]]],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/practitioner/client-file.hbs" } });
 });
 define("self-start-front-end/templates/practitioner/clients", ["exports"], function (exports) {
   "use strict";
