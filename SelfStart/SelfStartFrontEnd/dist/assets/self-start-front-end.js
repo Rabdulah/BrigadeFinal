@@ -1380,6 +1380,7 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
                   //case 2 booked at the start block
                   else if ((0, _moment.default)(usedBlock.startsAt).isSame(bookedTime.time)) {
                       console.log("case 2");
+
                       self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
                         old.set('date', bookedTime.end);
                         old.save().then(function () {
@@ -9042,6 +9043,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+1432a530"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+49c4c188"});
 }
 //# sourceMappingURL=self-start-front-end.map

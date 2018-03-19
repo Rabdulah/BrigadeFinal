@@ -195,6 +195,7 @@ export default Component.extend({
                 //case 2 booked at the start block
                 else if (moment(usedBlock.startsAt).isSame(bookedTime.time)){
                   console.log("case 2");
+
                     self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old){
                       old.set('date', bookedTime.end);
                       old.save().then(() => {
