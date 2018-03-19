@@ -5872,6 +5872,7 @@ define('self-start-front-end/models/patient', ['exports', 'ember-data'], functio
     phoneNumber: _emberData.default.attr(),
     postalCode: _emberData.default.attr(),
     appointments: _emberData.default.hasMany('appointment', { async: true }),
+    rehablink: _emberData.default.hasMany('rehab-linker', { async: true }),
     account: _emberData.default.attr()
 
   });
@@ -5948,7 +5949,7 @@ define('self-start-front-end/models/rehab-linker', ['exports', 'ember-data'], fu
   });
   exports.default = _emberData.default.Model.extend({
     terminated: _emberData.default.attr(),
-    RehabilitationPlan: _emberData.default.belongsTo('patient'),
+    RehabilitationPlan: _emberData.default.belongsTo('rehabilitationplan'),
     Patient: _emberData.default.belongsTo('patient')
   });
 });

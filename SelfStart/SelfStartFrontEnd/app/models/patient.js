@@ -18,6 +18,7 @@ export default DS.Model.extend({
   phoneNumber: DS.attr(),
   postalCode: DS.attr(),
   appointments: DS.hasMany('appointment', { async: true }),
+  rehablink: DS.hasMany('rehab-linker', { async: true }),
   account: DS.attr()
 
 });
