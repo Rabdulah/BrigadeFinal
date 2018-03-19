@@ -62,6 +62,7 @@ var questions = require('./routes/questions');
 var administrators = require('./routes/administrators');
 var physiotherapests = require('./routes/physiotherapests');
 var treatments = require('./routes/treatments');
+var rehabClientLink = require('./routes/rehabClientLinks');
 
 // REGISTER OUR ROUTES -------------------------------
 app.use('/images', photos);
@@ -80,6 +81,7 @@ app.use('/countries', countries);
 app.use('/administrators', administrators);
 app.use('/treatments', treatments);
 app.use('/physiotherapests', physiotherapests);
+app.use('/rehabClientLink', rehabClientLink);
 
 //Routes for our API
 router.route('/authenticate')
