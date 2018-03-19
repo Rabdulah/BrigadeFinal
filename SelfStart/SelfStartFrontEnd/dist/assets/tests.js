@@ -147,7 +147,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/display-assessment.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/display-assessment.js should pass ESLint\n\n4:9 - \'Ember\' is not defined. (no-undef)\n8:22 - \'Ember\' is not defined. (no-undef)\n15:13 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/display-assessment.js should pass ESLint\n\n9:22 - \'Ember\' is not defined. (no-undef)\n10:9 - Unexpected console statement. (no-console)\n18:13 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/display-questions.js', function (assert) {
@@ -197,7 +197,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/get-answers.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/get-answers.js should pass ESLint\n\n18:13 - Unexpected console statement. (no-console)\n34:13 - Unexpected console statement. (no-console)\n51:13 - Unexpected console statement. (no-console)\n69:13 - Unexpected console statement. (no-console)\n72:98 - \'rec\' is defined but never used. (no-unused-vars)\n92:13 - Unexpected console statement. (no-console)\n109:13 - Unexpected console statement. (no-console)\n126:13 - Unexpected console statement. (no-console)\n144:13 - Unexpected console statement. (no-console)\n161:13 - Unexpected console statement. (no-console)\n178:13 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/get-answers.js should pass ESLint\n\n34:13 - Unexpected console statement. (no-console)\n55:13 - Unexpected console statement. (no-console)\n76:13 - Unexpected console statement. (no-console)\n98:13 - Unexpected console statement. (no-console)\n120:13 - Unexpected console statement. (no-console)\n141:13 - Unexpected console statement. (no-console)\n162:13 - Unexpected console statement. (no-console)\n184:13 - Unexpected console statement. (no-console)\n206:13 - Unexpected console statement. (no-console)\n227:13 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/list-forms.js', function (assert) {

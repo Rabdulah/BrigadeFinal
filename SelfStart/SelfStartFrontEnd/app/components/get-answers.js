@@ -14,8 +14,29 @@ export default Component.extend({
     mcop6: 0,
 
     actions: {
-        ratingSave() {
-            console.log(this.get("rateValue"));
+        ratingSave(rv) {
+
+             this.set('rateValue', rv);
+
+            var temp = [];
+            this.get("assessment").get('answers').forEach(element => {
+                temp.push(element);
+            });
+            
+            temp[this.get("qNumber")] = this.get('rateValue');
+            this.get("assessment").get('answers').clear();
+
+            for(var x = 0; x < temp.length; x++){
+                
+                this.get("assessment").get('answers').push(temp[x]);
+            }
+
+            console.log( this.get("assessment").get('answers'));
+
+            this.get('DS').findRecord('assessment-test', this.assessid).then((rec) => {
+                rec.save().then(()=>{
+                });
+            });
         },
 
         TFtrue() {
@@ -33,6 +54,10 @@ export default Component.extend({
 
             console.log( this.get("assessment").get('answers'));
 
+            this.get('DS').findRecord('assessment-test', this.assessid).then((rec) => {
+                rec.save().then(()=>{
+                });
+            });
         },
 
         TFfalse() {
@@ -50,10 +75,14 @@ export default Component.extend({
 
             console.log( this.get("assessment").get('answers'));
 
+            this.get('DS').findRecord('assessment-test', this.assessid).then((rec) => {
+                rec.save().then(()=>{
+                });
+            });
         },
 
         saSave() {
- 
+            
             var temp = [];
             this.get("assessment").get('answers').forEach(element => {
                 temp.push(element);
@@ -68,10 +97,9 @@ export default Component.extend({
 
             console.log( this.get("assessment").get('answers'));
 
-
-            this.get('DS').findRecord('assessment-test', this.get('assessment').get("id")).then((rec) => {
-                // rec.save().then(()=>{
-                // });
+            this.get('DS').findRecord('assessment-test', this.assessid).then((rec) => {
+                rec.save().then(()=>{
+                });
             });
 
         },
@@ -91,6 +119,10 @@ export default Component.extend({
 
             console.log( this.get("assessment").get('answers'));
 
+            this.get('DS').findRecord('assessment-test', this.assessid).then((rec) => {
+                rec.save().then(()=>{
+                });
+            });
         },
 
         mcop2Save() {
@@ -108,6 +140,10 @@ export default Component.extend({
 
             console.log( this.get("assessment").get('answers'));
 
+            this.get('DS').findRecord('assessment-test', this.assessid).then((rec) => {
+                rec.save().then(()=>{
+                });
+            });
         },
 
         mcop3Save() {
@@ -125,6 +161,10 @@ export default Component.extend({
 
             console.log( this.get("assessment").get('answers'));
 
+            this.get('DS').findRecord('assessment-test', this.assessid).then((rec) => {
+                rec.save().then(()=>{
+                });
+            });
         },
 
         mcop4Save() {
@@ -142,6 +182,11 @@ export default Component.extend({
             }
 
             console.log( this.get("assessment").get('answers'));
+
+            this.get('DS').findRecord('assessment-test', this.assessid).then((rec) => {
+                rec.save().then(()=>{
+                });
+            });
         },
 
         mcop5Save() {
@@ -160,6 +205,10 @@ export default Component.extend({
 
             console.log( this.get("assessment").get('answers'));
 
+            this.get('DS').findRecord('assessment-test', this.assessid).then((rec) => {
+                rec.save().then(()=>{
+                });
+            });
         },
 
         mcop6Save() {
@@ -176,6 +225,11 @@ export default Component.extend({
                 this.get("assessment").get('answers').push(temp[x]);
             }
             console.log( this.get("assessment").get('answers'));
+
+            this.get('DS').findRecord('assessment-test', this.assessid).then((rec) => {
+                rec.save().then(()=>{
+                });
+            });
         },
     },
 

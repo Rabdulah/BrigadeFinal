@@ -1,17 +1,20 @@
 import Component from '@ember/component';
+import { inject } from '@ember/service';
 
 export default Component.extend({
-    DS: Ember.inject.service('store'),
+    DS: inject('store'),
 
     qNum:0,
 
     assessmentModel: Ember.computed(function(){
-        return this.get('DS').find('assessment-test', this.get('id'));
+        console.log(this.assessID)
+        return this.get('DS').find('assessment-test', this.assessID);
     }),
 
     actions: {
         Submit(){
-           var x = this.get('DS').find('assessment-test', this.get('id'));
+            
+           var x = this.get('DS').find('assessment-test', this.get('assessid'));
             console.log(x.get('questions'));
         },
     },

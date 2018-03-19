@@ -1,6 +1,6 @@
 <div class="ui form">
 {{#each assessmentModel.questions as |q index|}}
-    {{get-answers question=q qNumber = index assessment=assessmentModel assessid = assessmentModel.id}}
+    {{get-answers question=q assessment=assessmentModel qNumber = index assessid = assessmentModel.id}}
 {{/each}}
 <button {{action "Submit"}}>
     Submit
