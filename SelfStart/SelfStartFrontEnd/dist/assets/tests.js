@@ -410,6 +410,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'models/question.js should pass ESLint\n\n');
   });
 
+  QUnit.test('models/rehab-linker.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'models/rehab-linker.js should pass ESLint\n\n');
+  });
+
   QUnit.test('models/rehabilitationplan.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'models/rehabilitationplan.js should pass ESLint\n\n');
@@ -528,6 +533,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('routes/register.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'routes/register.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('routes/rehab-linker.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/rehab-linker.js should pass ESLint\n\n');
   });
 
   QUnit.test('routes/rehabplans.js', function (assert) {
@@ -2581,6 +2591,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/models/question-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/models/rehab-linker-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/models/rehab-linker-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/models/rehabilitationplan-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/models/rehabilitationplan-test.js should pass ESLint\n\n');
@@ -2689,6 +2704,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('unit/routes/register-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/routes/register-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/routes/rehab-linker-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/rehab-linker-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/routes/rehabplans-test.js', function (assert) {
@@ -3082,6 +3102,20 @@ define('self-start-front-end/tests/unit/models/question-test', ['ember-qunit'], 
     assert.ok(!!model);
   });
 });
+define('self-start-front-end/tests/unit/models/rehab-linker-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForModel)('rehab-linker', 'Unit | Model | rehab linker', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var model = this.subject();
+    // let store = this.store();
+    assert.ok(!!model);
+  });
+});
 define('self-start-front-end/tests/unit/models/rehabilitationplan-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -3360,6 +3394,19 @@ define('self-start-front-end/tests/unit/routes/register-test', ['ember-qunit'], 
   'use strict';
 
   (0, _emberQunit.moduleFor)('route:register', 'Unit | Route | register', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
+define('self-start-front-end/tests/unit/routes/rehab-linker-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:rehab-linker', 'Unit | Route | rehab linker', {
     // Specify the other units that are required for this test.
     // needs: ['controller:foo']
   });

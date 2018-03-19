@@ -5940,6 +5940,18 @@ define('self-start-front-end/models/question', ['exports', 'ember-data'], functi
     forms: _emberData.default.hasMany('form')
   });
 });
+define('self-start-front-end/models/rehab-linker', ['exports', 'ember-data'], function (exports, _emberData) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _emberData.default.Model.extend({
+    terminated: _emberData.default.attr(),
+    RehabilitationPlan: _emberData.default.belongsTo('patient'),
+    Patient: _emberData.default.belongsTo('patient')
+  });
+});
 define('self-start-front-end/models/rehabilitationplan', ['exports', 'ember-data'], function (exports, _emberData) {
   'use strict';
 
@@ -6003,6 +6015,7 @@ define('self-start-front-end/router', ['exports', 'self-start-front-end/config/e
     this.route('register');
     this.route('dashboard');
     this.route('message');
+    this.route('rehabLinker');
   });
 
   exports.default = Router;
@@ -6243,6 +6256,18 @@ define('self-start-front-end/routes/register', ['exports'], function (exports) {
   exports.default = Ember.Route.extend({
     model: function model() {
       return this.store.findAll('patient');
+    }
+  });
+});
+define('self-start-front-end/routes/rehab-linker', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Route.extend({
+    model: function model() {
+      return this.store.findAll('rehabLinker');
     }
   });
 });
@@ -8440,6 +8465,14 @@ define("self-start-front-end/templates/register", ["exports"], function (exports
   });
   exports.default = Ember.HTMLBars.template({ "id": "4DjiPkJ4", "block": "{\"symbols\":[],\"statements\":[[1,[25,\"user-info\",null,[[\"model\"],[[20,[\"model\"]]]]],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/register.hbs" } });
 });
+define("self-start-front-end/templates/rehab-linker", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "Zehu0U0N", "block": "{\"symbols\":[],\"statements\":[[1,[18,\"outlet\"],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/rehab-linker.hbs" } });
+});
 define("self-start-front-end/templates/rehabplans", ["exports"], function (exports) {
   "use strict";
 
@@ -9042,6 +9075,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+1432a530"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+1aecd325"});
 }
 //# sourceMappingURL=self-start-front-end.map

@@ -37,7 +37,8 @@ var patientProfilesSchema = mongoose.Schema(
         //             amount: Number,
         //             note: String
         //         }],
-        // appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],
+        appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],
+        rehabplans: [{type: mongoose.Schema.ObjectId, ref: 'RehabClientLink'}],
         // askAPhysio: [{type: mongoose.Schema.ObjectId, ref: 'AskAPhysio'}],
         // plan: [{type: mongoose.Schema.ObjectId, ref: 'Treatments'}]
     }
