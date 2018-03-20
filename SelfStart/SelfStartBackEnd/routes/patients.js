@@ -22,6 +22,8 @@ router.route('/')
             if(err) {
                 response.json({success: false, msg: 'Failed to register client'});
             } else{
+                console.log("ewae");
+                Patients.sendEmail(patient);
                 response.json({patient: patient});
             }
         });
@@ -111,19 +113,19 @@ router.route('/')
 //     res.json({client: req.user});
 // })
 
-router.route('/:email')
+// router.route('/:email')
 
-    .get( function (request, response) {
+//     .get( function (request, response) {
 
-        Patients.getUserByEmail(request.params.email, function (error, patient) {
-            if (error) {
-                response.send({error: error});
-            }
-            else {
-                response.json({success: true, patient: patient});
-            }
-        });
-    });
+//         Patients.getUserByEmail(request.params.email, function (error, patient) {
+//             if (error) {
+//                 response.send({error: error});
+//             }
+//             else {
+//                 response.json({success: true, patient: patient});
+//             }
+//         });
+//     });
 
 router.route('/:patient_id')
 

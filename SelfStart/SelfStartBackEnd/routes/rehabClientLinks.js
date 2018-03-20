@@ -12,8 +12,11 @@ router.route('/')
     })
     .get( function (request, response) {
         RehabLinker.Model.find(function (error, rehabLinkers) {
-            if (error) response.send(error);
+            if (error) {
+                response.send(error);
+            } else {
             response.json({rehabLinker: rehabLinkers});
+            }
         });
     });
     
