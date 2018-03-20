@@ -4,31 +4,40 @@ import { computed } from '@ember/object';
 import $ from 'jquery';
 
 export default Component.extend({
-
   DS: inject('store'),
-  modalName : computed(function() {
-    return 'Delete-rehabplan' + this.get('ID');
+  flagDelete: null,
+
+  modalName: computed(function () {
+    return 'Delete-plan' + this.get('ID');
+
   }),
 
   actions: {
     openModal: function () {
       $('.ui.' + this.get('modalName') + '.modal').modal({
         closable: false,
-        detachable: false,
+
         transition: 'fly down',
+
         onDeny: () => {
           return true;
         },
-
         onApprove: () => {
-          this.get('DS').find('rehabilitationplan' , this.get('ID')).then((rehabilitationplan)=>{
-            rehabilitationplan.destroyRecord().then(() =>{
-              return true;
-            });
-          })
+
+          let plan = this.get('DS').peekRecord('rehabilitationplan', this.get('ID'));
+
+          plan.destroyRecord().then(()=>{
+            if (this.get('flagDelete')=== true)
+              this.set('flagDelete', false);
+            else
+              this.set('flagDelete', true);
+            return true;
+          });
+
         }
       })
         .modal('show');
     },
   }
 });
+

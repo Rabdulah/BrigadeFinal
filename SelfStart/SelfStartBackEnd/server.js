@@ -50,7 +50,7 @@ require('./config/passportPhysio')(passport);
 var photos = require('./routes/images');
 var patients = require('./routes/patients');
 var cities = require('./routes/cities');
-var assessments = require('./routes/assessments');
+var assessments = require('./routes/assessmentTests');
 var forms = require('./routes/forms');
 var appointments = require('./routes/appointments');
 var askAPhysio = require('./routes/askAPhysio');
@@ -64,14 +64,14 @@ var administrators = require('./routes/administrators');
 var physiotherapests = require('./routes/physiotherapests');
 var treatments = require('./routes/treatments');
 var genders = require('./routes/genders');
-
+var rehabClientLinks = require('./routes/rehabClientLinks');
 
 // REGISTER OUR ROUTES -------------------------------
 app.use('/images', photos);
 app.use('/genders', genders);
 app.use('/patients', patients);
 app.use('/cities', cities);
-app.use('/assessments', assessments);
+app.use('/assessmentTests', assessments);
 app.use('/forms', forms);
 app.use('/questions', questions);
 app.use('/appointments', appointments);
@@ -84,7 +84,7 @@ app.use('/countries', countries);
 app.use('/administrators', administrators);
 app.use('/treatments', treatments);
 app.use('/physiotherapests', physiotherapests);
-
+app.use('/rehabClientLinks', rehabClientLinks);
 //Routes for our API
 router.route('/authenticate')
     .post(function (request, response, next) {

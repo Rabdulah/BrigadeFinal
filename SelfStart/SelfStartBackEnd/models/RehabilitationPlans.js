@@ -1,9 +1,10 @@
 var mongoose = require('mongoose');
+var mongoosePaginate = require('mongoose-paginate');
 
 var rehabilitationPlansSchema = mongoose.Schema({
     planName: String,
     description: String,
-    physioID: String,
+    physioID: {type: mongoose.Schema.ObjectId, ref: 'Physiotherapests'},
     goal: String,
     date: Date,
     timeToComplete: String,
@@ -12,5 +13,7 @@ var rehabilitationPlansSchema = mongoose.Schema({
     exercise: [{type: mongoose.Schema.ObjectId, ref: 'Exercises'}]
 
 });
+
+rehabilitationPlansSchema.plugin(mongoosePaginate);
 var RehabilitationPlansSchema = mongoose.model('rehabilitationPlan', rehabilitationPlansSchema);
 exports.Model = RehabilitationPlansSchema;

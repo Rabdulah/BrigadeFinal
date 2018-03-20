@@ -1,0 +1,91 @@
+<link href='http://fonts.googleapis.com/css?family=Ubuntu:400,700' rel='stylesheet' type='text/css'>
+
+<link integrity="" rel="stylesheet" href="/assets/css/table-style.css"> <!-- Resource style -->
+
+<div class="masthead segment bg2">
+  <div class="ui container">
+    <div class="introduction">
+      <h1 class="ui inverted header">
+        <span class="library" style="font-size: 1.25em">Menu Builder</span>
+      </h1>
+    </div>
+  </div>
+</div>
+
+<div class="background">
+
+  <div id="content">
+
+    <section id="cd-section">
+      <section id="cd-table">
+        <div class="cd-table-container">
+          <ul>
+            <li style="text-align: center; font-size: 1.2rem; text-transform: uppercase;
+                          font-weight: bold; color: white; background-color: #f58b4c;">Rehabilitation Plan</li>
+
+            {{#each model.rehabPlan as |Rehabplan|}}
+
+              <li>
+                {{Rehabplan.planName}}
+                <p style="float: right;  padding-top: .5%;">{{delete-rehabplan ID=Rehabplan.id}}</p>
+                <p style="float: right; padding-right: 2%;  padding-top: .5%;">{{edit-rehabplan ID=Rehabplan.id}}</p>
+                <p style="float: right; padding-right: 30%; ">{{Rehabplan.description}} </p>
+              </li>
+              {{list-forms ID=Rehabplan.id plan=Rehabplan}}
+
+            {{/each}}
+
+          </ul>
+        </div>
+
+      </section> <!-- cd-table -->
+    </section>
+
+    {{#each model.assessmentTest as |assessmentTest|}}
+      <div id="assessmentTest">
+        {{#link-to 'practitioner.assessment-display'(query-params id=assessmentTest.id)}}
+          <button class="ui button">View Assessment Test</button>
+        {{/link-to}}
+      </div>
+    {{/each}}
+
+
+
+    {{!--
+      <!--<table class="ui single line table">-->
+        <!--<thead>-->
+        <!--<tr>-->
+          <!--<th>Name</th>-->
+          <!--<th>Description</th>-->
+          <!--<th></th>-->
+        <!--</tr>-->
+        <!--</thead>-->
+        <!--<tbody>-->
+          <!--{{#each model as |Rehabplan|}}-->
+            <!--<tr>-->
+              <!--<td>{{Rehabplan.planName}}</td>-->
+              <!--<td>{{Rehabplan.description}}</td>-->
+              <!--<td>-->
+                <!--<div class="four wide column right aligned">-->
+                  <!--{{edit-rehabplan ID=Rehabplan.id}}-->
+                <!--</div>-->
+                <!--<div class="four wide column left aligned">-->
+                  <!--{{delete-rehabplan ID=Rehabplan.id}}-->
+                <!--</div>-->
+              <!--</td>-->
+            <!--</tr>-->
+          <!--{{/each}}-->
+        <!--</tbody>-->
+      <!--</table>-->
+    --}}
+  </div>
+
+  <div id="add" class="container">
+    {{#link-to 'practitioner.new-rehabplans'}}
+      <a id="add" class="round-button">
+        <i class="plus icon"></i>
+      </a>
+    {{/link-to}}
+  </div>
+  <br><br><br><br>
+</div>

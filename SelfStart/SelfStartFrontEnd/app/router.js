@@ -40,6 +40,10 @@ Router.map(function() {
     this.route('physio-welcome', {path: '/'});
     this.route('clients');
     this.route('client-file', { path: 'clients/:patient_id'});
+    this.route('rehabplans');
+    this.route('new-rehabplans');
+    this.route('assessment-display');
+    this.route('appointment');
   });
 });
 
