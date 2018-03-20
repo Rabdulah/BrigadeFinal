@@ -8,20 +8,20 @@ const jwt = require('jsonwebtoken');
 
 router.route('/')
     .post( function (request, response) {
-        var admin = new Administrators.Model(request.body.admin);
+        var administrator = new Administrators.Model(request.body.administrator);
 
-        Administrators.getUserByEmail(admin.email, (err, admin) =>{
-            if(admin) {
+        Administrators.getUserByEmail(administrator.email, (err, administrator) =>{
+            if(administrator) {
                 response.json({success: false, msg: 'User already registered'});
             }
         });
 
-        Administrators.addAdmin(admin, (err, admin) => {
+        Administrators.addAdmin(administrator, (err, administrator) => {
             console.log("ASDJKkajsdkjsajkd");
             if(err) {
                 response.json({success: false, msg: 'Failed to register client'});
             } else{
-                response.json({administrator: admin});
+                response.json({administrator: administrator});
             }
         });
         // Administrators.save(function (error) {
@@ -33,9 +33,9 @@ router.route('/')
     .get( function (request, response) {
         let {limit, offset, sort, dir, queryPath, regex} = request.query;
         if(!limit) {
-            Administrators.Model.find(function (error, admins) {
+            Administrators.Model.find(function (error, administrators) {
                 if (error) response.send(error);
-                response.json({administrator: admins});
+                response.json({administrator: administrators});
             });
         }
         else {
@@ -64,9 +64,9 @@ router.route('/')
                 offset: offset,
                 limit: limit
             };
-            Administrators.Model.paginate(query, options, function (error, admins) {
+            Administrators.Model.paginate(query, options, function (error, administrators) {
                 if (error) response.send(error);
-                response.json({administrator: admins.docs});
+                response.json({administrator: administrators.docs});
             });
         }
     });
@@ -75,59 +75,60 @@ router.route('/:email')
 
     .get( function (request, response) {
 
-        Administrators.getUserByEmail(request.params.email, function (error, admin) {
+        Administrators.getUserByEmail(request.params.email, function (error, administrator) {
             if (error) {
                 response.send({error: error});
             }
             else {
-                response.json({success: true, admin: admin});
+                response.json({success: true, administrator: administrator});
             }
         });
     });
 
-router.route('/:admin_id')
+router.route('/:administrator_id')
     .get( function (request, response) {
-        Administrators.Model.findById(request.params.admin_id, function (error, admin) {
+        Administrators.Model.findById(request.params.administrator_id, function (error, administrator) {
             if (error) {
                 response.send({error: error});
             }
             else {
-                response.json({administrator: admin});
+                response.json({administrator: administrator});
             }
         });
     })
     .put( function (request, response) {
-        Administrators.Model.findById(request.params.admin_id, function (error, admin) {
+        Administrators.Model.findById(request.params.administrator_id, function (error, administrator) {
             if (error) {
                 response.send({error: error});
             }
             else {
 
                 // update each attribute
-                admin.ID = request.body.admin.ID;
-                admin.familyName = request.body.admin.familyName;
-                admin.givenName = request.body.admin.givenName;
-                admin.email = request.body.admin.email;
-                admin.dateHired = request.body.admin.dateHired;
-                admin.dateFired = request.body.admin.dateFired;
-                admin.phoneNumber = request.body.admin.phoneNumber;
-                admin.form = request.body.admin.form;
-                admin.account = request.body.admin.account;
+                // admin.ID = request.body.admin.ID;
+                administrator.familyName = request.body.administrator.familyName;
+                administrator.givenName = request.body.administrator.givenName;
+                administrator.email = request.body.administrator.email;
+                administrator.dateHired = request.body.administrator.dateHired;
+                administrator.dateFired = request.body.administrator.dateFired;
+                administrator.phoneNumber = request.body.administrator.phoneNumber;
+                administrator.form = request.body.administrator.form;
+                administrator.account = request.body.administrator.account;
+                administrator.message = request.body.administrator.message;
 
 
-                admin.save(function (error) {
+                administrator.save(function (error) {
                     if (error) {
                         response.send({error: error});
                     }
                     else {
-                        response.json({administrator: admin});
+                        response.json({administrator: administrator});
                     }
                 });
             }
         });
     })
     .delete( function (request, response) {
-        Administrators.Model.findByIdAndRemove(request.params.admin_id,
+        Administrators.Model.findByIdAndRemove(request.params.administrator_id,
             function (error, deleted) {
                 if (!error) {
                     response.json({administrator: deleted});

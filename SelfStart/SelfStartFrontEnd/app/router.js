@@ -45,6 +45,14 @@ Router.map(function() {
     this.route('assessment-display');
     this.route('appointment');
   });
+
+  this.route('client', function() {
+    this.route('welcome-client', {path: '/'});
+    this.route('upload-photos');
+    this.route('exercise-menu');
+    this.route('resources');
+    this.route('appointment');
+  });
 });
 
 export default Router;

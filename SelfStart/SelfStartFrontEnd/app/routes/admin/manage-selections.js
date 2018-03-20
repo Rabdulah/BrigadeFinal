@@ -6,7 +6,8 @@ export default Route.extend({
     return RSVP.hash({
       gender: this.store.findAll('gender'),
       country:  this.store.findAll('country'),
-      province: this.store.findAll('province')
+      province: this.store.findAll('province'),
+      admin: this.store.findAll('administrator')
     })
   },
 });

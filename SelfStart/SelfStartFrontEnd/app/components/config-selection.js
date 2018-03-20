@@ -8,6 +8,7 @@ export default Component.extend({
   genderSelected: false,
   countrySelected: false,
   provinceSelected: false,
+  quoteSelected: false,
   model: null,
 
   limit: 10,
@@ -99,23 +100,39 @@ export default Component.extend({
     //Ember.$("#myWin").unbind('touchmove');
   },
 
+
   actions: {
     genderSelect: function(){
       this.set('genderSelected', true);
       this.set('countrySelected', false);
       this.set('provinceSelected', false);
+      this.set('quoteSelected', false);
     },
     countrySelect: function(){
       this.set('countrySelected', true);
       this.set('genderSelected', false);
       this.set('provinceSelected', false);
-
-
+      this.set('quoteSelected', false);
     },
     provinceSelect: function(){
       this.set('provinceSelected', true);
       this.set('genderSelected', false);
       this.set('countrySelected', false);
+      this.set('quoteSelected', false);
+    },
+    quoteSelect: function(){
+      this.set('provinceSelected', false);
+      this.set('genderSelected', false);
+      this.set('countrySelected', false);
+      this.set('quoteSelected', true);
+    },
+    submit(){
+      this.get('store').findAll('administrator').then((rec) =>{
+        rec.set('message', this.get('message') );
+        rec.save().then(()=>{
+          return true;
+        });
+      });
     },
     sortColumn(columnName, direction) {
 
