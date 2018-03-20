@@ -7,50 +7,49 @@ export default Component.extend({
 
 
   modalName: Ember.computed(function(){
-  return 'Manage-form' + this.get('ID');
-}),
+    return 'Manage-form' + this.get('ID');
+  }),
 
-edit: false,
+  edit: false,
 
-questionsModel: Ember.computed(function(){
-  return this.get('DS').findAll('question');
-}),
+  questionsModel: Ember.computed(function(){
+    return this.get('DS').findAll('question');
+  }),
 
-actions: {
+  actions: {
 
-  addQuestion(thisQuestion, thisForm, qid){
-    thisForm.get('questions').pushObject(thisQuestion);
-    thisQuestion.get('forms').pushObject(thisForm);
+    addQuestion(thisQuestion, thisForm, qid){
+      thisForm.get('questions').pushObject(thisQuestion);
+      thisQuestion.get('forms').pushObject(thisForm);
 
-    this.get('DS').findRecord('form', this.get('ID')).then((rec) => {
-      rec.save().then(()=>{
+      this.get('DS').findRecord('form', this.get('ID')).then((rec) => {
+        rec.save().then(()=>{
+        });
       });
-    });
 
-    this.get('DS').findRecord('question', qid).then((rec) => {
-      rec.save().then(()=>{
+      this.get('DS').findRecord('question', qid).then((rec) => {
+        rec.save().then(()=>{
+        });
       });
-    });
-  },
-  manageForm() {
-    this.set('edit',true);
-  },
-  done(){
-    this.set('edit',false);
-  },
+    },
+    manageForm() {
+      this.set('edit',true);
+    },
+    done(){
+      this.set('edit',false);
+    },
 
-  openModal: function () {
-    Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
-      closeable: false,
-      detachable: false,
-      onDeny: () => {
-        return true;
-      },
-      onApprove: () => {
-        return true;
-      }
-    })
-    .modal('show');
-  },
-}
+    openModal: function () {
+      Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+        closeable: false,
+        onDeny: () => {
+          return true;
+        },
+        onApprove: () => {
+          return true;
+        }
+      })
+        .modal('show');
+    },
+  }
 });

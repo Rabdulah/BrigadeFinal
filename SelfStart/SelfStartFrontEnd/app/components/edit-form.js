@@ -17,7 +17,6 @@ export default Component.extend({
         Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
             closeable: false,
             transaction: 'horizontal flip',
-            detachable: false,
             onDeny: () => {
                 return true;
             },

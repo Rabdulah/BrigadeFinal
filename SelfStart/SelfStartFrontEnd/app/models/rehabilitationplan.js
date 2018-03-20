@@ -3,8 +3,9 @@ import DS from 'ember-data';
 export default DS.Model.extend({
   planName: DS.attr(),
   description: DS.attr(),
-  physioID: DS.belongsTo('physiotherapest'),
+  physioID: DS.attr(),
   goal: DS.attr(),
-  exercises: DS.attr(),
+  timeToComplete: DS.attr(),
+  exercises: DS.hasMany('exercise'),
   assessmentTests: DS.hasMany('assessment-test')
 });

@@ -2,6 +2,9 @@ var mongoose = require('mongoose');
 var mongoosePaginate = require('mongoose-paginate');
 var bcrypt=require('bcrypt');
 
+'use strict';
+const nodemailer = require('nodemailer');
+
 var patientProfilesSchema = mongoose.Schema(
     {
         ID: String,
@@ -81,3 +84,37 @@ exports.comparePassword = function(candidatePass, hash, callback) {
         callback(null, isMatch);
     });
 };
+
+//-------------------------------------------Mail Config-------------------------------------//
+var transport = nodemailer.createTransport({
+    service: 'gmail',
+    auth: {
+        type: 'OAuth2',
+        user: 'mustafadawoud97@gmail.com',
+        clientId: '3636127499-6mon9v4uufa98pj0fpk4748v8nc32i6d.apps.googleusercontent.com',
+        clientSecret: 'RPm9zcqr264TDQZ2qp4Iqvef',
+        refreshToken: '1/Q8sZLXRxnBA6L4LNQB8COzgivKlcjS54xfR4GE5Re5GVv2RsvZqKDbmO-10mmdYX'
+    }
+});
+//--------------------------------Send Mail For Validation------------------------------------//
+exports.sendEmail = function(client){
+    console.log("wdjkasjdas");
+    // var verificationUrl = "https://se3316lab05-mustafadawoud97.c9users.io:8081/users/verify/" + verificationTokenData;
+    var emailBody = '<p>Hey, Marcotte here<p>'
+    // <a href="' + verificationUrl + '" target="_blank"> Click me</a></p>';
+    console.log(client.email);
+    var mailOptions = {
+        from: 'Stephanie <user@domain.com>',
+        to: client.email,
+        subject: 'Marcotte Physiotherapy Email Verification',
+        html: emailBody
+    }
+
+    transport.sendMail(mailOptions, (err, res) => {
+        if(err){
+            console.log(err); return false;
+        } else {
+            console.log("Email sent"); return true;
+        }
+    });
+}

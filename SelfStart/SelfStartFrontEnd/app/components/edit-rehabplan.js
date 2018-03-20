@@ -5,92 +5,49 @@ import $ from 'jquery';
 
 export default Component.extend({
   DS: inject('store'),
-
-  selectedExercise: null,
-  plansData: null,
-
-  tagName: '',
-
-  init(){
-    this._super(...arguments);
-
-  },
-
-  didRender() {
-    this._super(...arguments);
-
-    // let date = this.get('DOB');
-    // this.set('selectedDate', date.toISOString().substring(0, 10));
-
-
-    $(document).ready(function ($) {
-      if ($('.floating-labels').length > 0) floatLabels();
-
-      function floatLabels() {
-        let inputFields = $('.floating-labels .cd-label').next();
-        inputFields.each(function () {
-          let singleInput = $(this);
-          //check if  is filling one of the form fields
-          checkVal(singleInput);
-          singleInput.on('change keyup', function () {
-            checkVal(singleInput);
-          });
-        });
-      }
-
-      function checkVal(inputField) {
-        ( inputField.val() == '' ) ? inputField.prev('.cd-label').removeClass('float') : inputField.prev('.cd-label').addClass('float');
-      }
-
-    });
-  },
-
-
-  exerciseModel: computed(function(){
-    return this.get('DS').findAll('exercise');
-  }),
+  rehabilitationplansData: null,
+  description: computed.oneWay('rehabilitationplansData.description'),
+  physioID: computed.oneWay('rehabilitationplansData.physioID'),
+  goal: computed.oneWay('rehabilitationplansData.goal'),
+  timeToComplete: computed.oneWay('rehabilitationplansData.timeToComplete'),
+  planName: computed.oneWay('rehabilitationplansData.planName'),
+  exercises: computed.oneWay('rehabilitationplansData.exercises'),
+  assessmentTests: computed.oneWay('rehabilitationplansData.assessmentTests'),
 
   modalName: computed(function () {
-    return 'editPlan' + this.get('plansData').id;
+    return 'editRehabilitationplan' + this.get('ID');
   }),
 
   actions: {
-
-    selectExercise (exercise){
-      this.set('selectedExercise', exercise);
-    },
-
-
-    submit(){
-      this.get('DS').findRecord('rehabilitationplan' , this.get('plansData').id).then((rec)=>{
-        rec.set('planName', this.get('plansData.planName'));
-        rec.set('description', this.get('plansData.description'));
-        rec.set('goal', this.get('plansData.goal'));
-        rec.set('timeToComplete', this.get('plansData.timeToComplete'));
-        rec.set('exercises', this.get('selectedExercise'));
-        // rec.set('physioID', "5aae0822aec70d36c8cc12be");
-        // rec.set('assessmentTests', this.get('assessmentTests'));
-        rec.save().then(()=>{
-          $('.ui.' + this.get('modalName') + '.modal').modal('hide');
-          return true;
-        });
-      });
-    },
-
     openModal: function () {
+      this.set('rehabilitationplansData', this.get('DS').peekRecord('rehabilitationplan', this.get('ID')))
 
       $('.ui.' + this.get('modalName') + '.modal').modal({
         closable: false,
         transition: 'horizontal flip',
-        centered: false,
-        dimmerSettings: { opacity: 0.25 },
+        detachable: false,
         onDeny: () => {
           return true;
         },
 
+        onApprove: () => {
+          this.get('DS').findRecord('rehabilitationplan' , this.get('ID')).then((rec)=>{
+            rec.set('planName', this.get('planName'));
+            rec.set('description', this.get('description'));
+            rec.set('physioID', this.get('physioID'));
+            rec.set('goal', this.get('goal'));
+            rec.set('timeToComplete', this.get('timeToComplete'));
+            rec.set('exercises', this.get('exercises'));
+            rec.set('assessmentTests', this.get('assessmentTests'));
+            rec.save().then(()=>{
+              return true;
+            });
+          });
+        }
       })
         .modal('show');
-    }
-  },
+    },
+  }
+
 
 });

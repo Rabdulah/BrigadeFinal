@@ -16,8 +16,7 @@
     {{ui-rating
       class="heart"
       maxRating=10
-      rating=rateValue
-      onRate=(action "ratingSave")
+      onRate=(action "ratingSave" rateValue=value)
     }}
   {{/if}}
 
