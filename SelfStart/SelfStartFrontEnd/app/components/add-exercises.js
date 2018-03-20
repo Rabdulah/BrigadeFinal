@@ -6,6 +6,7 @@ import fileObject from "../utils/file-object";
 
 export default Component.extend({
     DS: inject('store'),
+    cbState: false,
     temp: [],
     queue2:[],
     // ImageName: null,
@@ -127,36 +128,10 @@ export default Component.extend({
 
         cancel() {  
             this.set('isEditing', false);
-            // this.get('DS').find('exercise' , this.tempExercise.get("ID")).then((exercise)=>{
-            //     exercise.destroyRecord().then(() =>{
-            //     return true;
-            // });
-            // this.tempExercise.destroyRecord();
-            // this.get('DS').destroyRecord('exercise', this.tempExercise.get('id'));
         },
 
         addExercise (){
             this.set('isEditing', true);
-            // this.exerciseData = this.get('DS').createRecord('exercise', {
-            //     name:this.get('Name'),
-            //     description:this.get('Description'),
-            //     objectives:this.get('obj'),
-            //     authorName:this.get('AuthName'),
-            //     actionSteps:this.get('actionStep'),
-            //     location:this.get('Location'),
-            //     frequency:this.get('Frequency'),
-            //     duration:this.get('Duration'),
-            //     multimediaURL:this.get('MMURL'),
-            //     targetDate:this.get('TargetDate')
-            // });
-
-            // this.exerciseData.save().then(function(){
-                // id = tempExer._internalModel.id;
-            // });
-            // console.log(this.tempExercise._internalModel);
-            // console.log(this.id);
-            // console.log(this.id);
-            // this.tempExercise.save();
           },
 
         submit: function() {
@@ -259,12 +234,15 @@ export default Component.extend({
                 },
                
               onApprove: () => {
-                  let self = this;
+                
+                let self = this;
                 console.log("asdjaskdjaksdj");
                 console.log(this.temp);
                 this.get('temp').forEach(function(obj) {
                     self.get("queue2").pushObject(obj);
                 })
+
+               
 
                 this.get('temp').clear();
                 return true;
