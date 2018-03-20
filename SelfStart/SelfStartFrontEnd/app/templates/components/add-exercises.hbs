@@ -1,5 +1,40 @@
 {{#if isEditing}}
 
+{{#ui-modal name=modalName class=modalName}}
+ {{!-- <div class="ui fluid raised very padded text container segment"> --}}
+   <table class="ui single line table">
+     <thead>
+    <tr>
+      <th>Image Name</th>
+      <th>Image</th>
+    </tr>
+    </thead>
+
+    <tbody>
+      {{#each Images as |Image|}}
+        <tr>
+          <td>{{Image.name}}</td>
+          <td>
+            <img class = "ui small image" src="{{Image.imageData}}">
+            <br>
+            <div class="ui toggle checkbox">
+                {{input type="checkbox" change=(action "addTempImage" Image) }}
+                <label>Add</label>
+            </div>
+          </td>
+        </tr>
+      {{/each}}
+    </tbody>
+
+  </table>
+    <br><br>
+  <div class="actions">
+        <div class="ui positive button">Save</div>
+        <div class="ui black deny button">Cancel</div>
+    </div>
+{{!-- </div> --}}
+{{/ui-modal}}
+
 <div class="ui fluid raised very padded text container segment">
    <h2 id="exercise" class="ui fluid centered header">Add New Exercise</h2>
 
@@ -104,7 +139,6 @@
         </div>
 
         <div class = "field">
-            
             {{#each queue as |file| }}
                 <div class="ui divided demo items">
                     <div class="item">
@@ -121,7 +155,7 @@
                             <div class="description">
                                 {{#if file.isDisplayableImage}}
                                     <label>Image Name</label>
-                                    {{input type ="text" valueBinding=file.name placeholder="Exercise Name"}}
+                                    {{input type ="text" valueBinding=file.name}}
                                     <button class="ui red basic button" {{action 'deleteFile' file}}>
                                         Delete
                                     </button>
@@ -133,32 +167,37 @@
                         </div>
                     </div>
                 </div>
-            {{!-- {{else}} --}}
             {{/each}}
-             <div class="ui fluid labeled input">
+            {{#each queue2 as |Image| }}
+                <div class="ui divided demo items">
+                    <div class="item">
+                        <div class="image">
+                            <img src="{{Image.imageData}}">
+                        </div>
+                        <div class="middle aligned content">
+                            <div class="description">
+                                <label>Image Name</label>
+                                    {{input type ="text" valueBinding=Image.name}}
+                                    <button class="ui red basic button" {{action 'deleteFile' file}}>
+                                        Delete
+                                    </button>
+                                    <br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            {{/each}}
+                <div class="ui fluid labeled input">
                     <label class="ui fluid huge label" style="{{labelStyle}}">
                         <i class="big cloud upload icon"></i>
-                        Click or Drop files into this area to upload files
+                            Click or Drop images into this area to upload images
                     </label>
                     <input type="file" value="target.value" onchange={{action "selectFile"}} style="{{inputStyle}}"
-                    accept="{{accept}}" multiple={{multiple}}>
+                        accept="{{accept}}" multiple={{multiple}}>
                 </div>
-                <br>
-
-
-            {{!-- {{upload-file 
-                model = 'image'
-                maximumFileSize = 6
-                multiple=true
-                flag = ImageIsAdding
-                ImageName = iName
-                newExerID = id
-                notInAddExercise = false
-            }} --}}
-            {{!-- {{simple-example iName=ImageName}} --}}
-            {{!-- <br><br>
-            {{simple-example exerID = id}} --}}
-            {{!-- <br><br> --}}
+            <br>
+                <button class="ui button" {{action 'openModal'}}>Assign Images from Existing Images</button>
+            <br><br>
         </div>
 
         <div class = "inline">
@@ -167,8 +206,7 @@
         </div>
 
     </form>
-</div>
-
+</div>                 
 {{else}}
   <button class="ui button" {{action 'addExercise'}}>
     Add Exercise

@@ -6,7 +6,8 @@ import fileObject from "../utils/file-object";
 
 export default Component.extend({
     DS: inject('store'),
-
+    temp: [],
+    queue2:[],
     // ImageName: null,
     model: 'image',
     flag: null,
@@ -17,7 +18,11 @@ export default Component.extend({
     savingInProgress: false,
     isEditing: false,
     id: null,
-    
+
+    modalName: Ember.computed(function () {
+        return 'add-exercise' + this.get('id');
+      }),
+
     labelArray: [
         'height: 6.25em',
         'line-height: 5.25em',
@@ -155,52 +160,7 @@ export default Component.extend({
           },
 
         submit: function() {
-            // this.get('DS').findRecord('exercise', this.exerciseData).then((rec)=>{
-            //     rec.set('name', this.get('Name'));
-            //     rec.set('description', this.get('Description'));
-            //     rec.set('authorName', this.get('AuthName'));
-            //     rec.set('objective', this.get('Objective'));
-            //     rec.set('actionStep', this.get('ActionSteps'));
-            //     rec.set('location', this.get('Location'));
-            //     rec.set('frequency', this.get('Frequency'));
-            //     rec.set('duration', this.get('Duration'));
-            //     rec.set('targetDate', this.get('TargetDate'));
-            //     rec.set('MMURL', this.get('MMURL'));
-            //     // rec.set('exercises', this.get('exercises'));
-            //     // rec.set('assessmentTests', this.get('assessmentTests'));
-            //     rec.save().then(()=>{
-            //       return true;
-            //     });
-            // });
-
-            // let saveImage = [];
-            // this.get('queue').forEach(file => {
-            //     // if (file.isDisplayableImage) {
-            //       var newFile = this.get('DS').createRecord(this.get('model'), {
-            //         name: file.name,
-            //         size: file.size,
-            //         type: file.type,
-            //         rawSize: file.rawSize,
-            //         imageData: file.base64Image,
-            //         exercise: null
-            //       });
-            //       console.log(newFile);
-            //       newFile.save();//.then(() => {
-            //         // // counter++;
-            //         // if (this.get('queue').length == counter) {
-            //         //   this.get('queue').clear();
-            //         //   this.set('flag', false);
-            //         //   this.set('savingInProgress', false);
-            //         // }
-            //     //   });
-            //       saveImage.pushObject(newFile);
-            //     // } else{
-            //     //   counter++;
-            //     // }
-            //   });
-
-            // console.log("This is save image");
-            // console.log(saveImage);
+           
             let exercise = this.get('DS').createRecord('exercise', {
                 name:this.get('Name'),
                 description:this.get('Description'),
@@ -218,10 +178,15 @@ export default Component.extend({
             console.log(this.queue);
 
             let secQueue = [];
-            
+            let secQueue2 = [];
+
             this.queue.forEach(file => {
                 secQueue.pushObject(file);
             });
+            console.log("this is q2", this.queue2);
+            this.queue2.forEach(file => {
+                secQueue2.push(file);
+            })
 
             exercise.save().then((exer)=>{
                 var saveImage = [];
@@ -247,11 +212,19 @@ export default Component.extend({
                        rec.save();
                     });
 
-                  });
+                });
+
+                secQueue2.forEach(file => {
+                    this.get('DS').findRecord(this.get('model'), file.get('id')).then((obj) =>{
+                        obj.get('exercise').pushObject(exercise); 
+                        obj.save();
+                        exercise.get('images').pushObject(obj);
+                    })
+                });
             });
 
             this.get('queue').clear();
-            
+            this.get('queue2').clear();
             this.set('Name', "");
             this.set('Description', "");
             this.set('Objective', "");
@@ -266,9 +239,38 @@ export default Component.extend({
             this.set("obj", []);
             this.set('isEditing', false);
 
-            window.location.reload();
+            // window.location.reload();
             // windows.location.reload();
         },
+
+        addTempImage: function(image) {
+            console.log(image);
+            this.temp.push(image);
+            console.log(image.name);
+        },
+
+        openModal: function () {
+            console.log("ajskdaksjd");
+           Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+              onDeny: () => {
+                console.log("sa");
+                this.get('temp').clear();
+                return true;
+                },
+               
+              onApprove: () => {
+                  let self = this;
+                console.log("asdjaskdjaksdj");
+                console.log(this.temp);
+                this.get('temp').forEach(function(obj) {
+                    self.get("queue2").pushObject(obj);
+                })
+
+                this.get('temp').clear();
+                return true;
+              }
+            }).modal('show');
+          }
         
     }
 });

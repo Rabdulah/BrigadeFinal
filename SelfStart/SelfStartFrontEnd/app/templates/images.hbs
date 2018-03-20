@@ -6,26 +6,16 @@
     <tr>
       <th>Image Name</th>
       <th>Image</th>
-      <th>Associated Exercise</th>
       <th>Delete</th>
     </tr>
     </thead>
 
     <tbody>
-      {{#each model as |Image|}}
+      {{#each model.image as |Image|}}
         <tr>
           <td>{{Image.name}}</td>
           <td>
             <img class = "ui small image" src="{{Image.imageData}}">
-          </td>
-          <td>
-            {{!-- <div class="four wide column right aligned"> --}}
-              {{#if Image.exercise}}
-                {{Image.exercise.name}}
-              {{else}}
-                <p>None</p>
-              {{/if}}
-            {{!-- </div> --}}
           </td>
           <td>
             <div class="four wide column right aligned">
