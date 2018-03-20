@@ -6,22 +6,45 @@ import $ from 'jquery';
 export default Component.extend({
   DS: inject('store'),
 
-  routing: inject('-routing'),
-  physiotherapistData: null,
+  selectedGender: null,
+  selectedHiredDate: null,
+  selectedFiredDate: null,
+  physiosData: null,
 
   tagName: '',
 
+  init(){
+    this._super(...arguments);
+
+
+  },
+
   didRender() {
     this._super(...arguments);
+
+    var dateHired = this.get('physiosData').get('dateHired');
+    var dateFired = this.get('physiosData').get('dateFired');
+
+    if (dateHired !== undefined){
+      var dateHiredString = dateHired.toISOString().substring(0, 10);
+      this.set('selectedHiredDate', dateHiredString);
+    }
+    else if (dateFired !== undefined){
+      var dateFiredString = dateFired.toISOString().substring(0, 10);
+      this.set('selectedFiredDate', dateFiredString);
+    }
+    this.set('selectedGender', this.get('physiosData').get('gender'));
+    // let date = this.get('DOB');
+    // this.set('selectedDate', date.toISOString().substring(0, 10));
 
     $(document).ready(function ($) {
       if ($('.floating-labels').length > 0) floatLabels();
 
       function floatLabels() {
-        var inputFields = $('.floating-labels .cd-label').next();
+        let inputFields = $('.floating-labels .cd-label').next();
         inputFields.each(function () {
-          var singleInput = $(this);
-          //check if user is filling one of the form fields
+          let singleInput = $(this);
+          //check if  is filling one of the form fields
           checkVal(singleInput);
           singleInput.on('change keyup', function () {
             checkVal(singleInput);
@@ -36,87 +59,59 @@ export default Component.extend({
     });
   },
 
-
-  conutryModel: computed(function(){
-    return this.get('DS').findAll('country');
-  }),
-
   genderModel: computed(function(){
     return this.get('DS').findAll('gender');
   }),
 
-  maritalStatusModel: computed(function(){
-    return this.get('DS').findAll('maritalStatus');
+  modalName: computed(function () {
+    return 'editPhysio' + this.get('physiosData').id;
   }),
 
-  modalName: computed(function () {
-    return 'edit-physiotherapist' + this.get('ID');
-  }),
 
   actions: {
+    assignHiredDate (date){
+      this.set('selectedHiredDate', date);
+    },
+    assignFiredDate (date){
+      this.set('selectedFiredDate', date);
+    },
+    selectGender (gender){
+      this.set('selectedGender', gender);
+    },
+
+    submit(){
+      this.get('DS').findRecord('physiotherapest', this.get('physiosData').id).then((rec) =>{
+        rec.set('familyName', this.get('physiosData.familyName'));
+        rec.set('givenName', this.get('physiosData.givenName'));
+        rec.set('email', this.get('physiosData.email'));
+        rec.set('gender', this.get('selectedGender'));
+        rec.set('dateHired', new Date(this.get('selectedHiredDate')));
+        rec.set('dateFired', new Date(this.get('selectedFiredDate')));
+        rec.set('phoneNumber', this.get('physiosData.phoneNumber'));
+
+        rec.save().then(()=>{
+          $('.ui.' + this.get('modalName') + '.modal').modal('hide');
+          return true;
+        });
+      });
+    },
+
     openModal: function () {
+
       $('.ui.' + this.get('modalName') + '.modal').modal({
         closable: false,
-        detachable: false,
-        transition: 'fly down',
-
+        transition: 'horizontal flip',
+        centered: false,
+        dimmerSettings: { opacity: 0.25 },
         onDeny: () => {
           return true;
         },
-        onApprove: () => {
 
-          this.get('DS').find('physiotherapest', this.get('ID')).then((physiotherapest) => {
-    
-              physiotherapest.destroyRecord();
-          
-          });
-
-        }
       })
         .modal('show');
-    },
-
-    addPatient(){
-      this.set('isEditing', true);
-    },
-
-    assignDate (date){
-      this.set('selectedDate', date);
-    },
-
-
-    cancel() {
-      return true;
-    },
-
-    save: function () {
-      this.get('DS').findRecord('physiotherapest',this.get('physiotherapistData').id).then((rec)=>{
-        rec.set('familyName', this.get('physiotherapistData.familyName'));
-        rec.set('givenName', this.get('physiotherapistData.givenName'));
-        rec.set('email', this.get('physiotherapistData.email'));
-        rec.set('dateHired', this.get('physiotherapistData.dateHired'));
-        rec.set('datefired', this.get('physiotherapistData.dateFired'));
-        rec.set('treatment', this.get('physiotherapistData.treatment'));
-        rec.set('account', this.get('physiotherapistData.account'));
-      })
-
-      let self = this;
-
-      let physiotherapist = this.get('DS').createRecord('physiotherapest', {
-        familyName: self.get('familyName'),
-        givenName: self.get('givenName'),
-        email: self.get('email'),
-        dateHired: self.get('dateHired'),
-        dateFired: self.get('dateFired'),
-        treatment: self.get('treatment'),
-        account: self.get('account'),
-
-      });
-
-        rec.save().then(()=>{
-          this.get('routing').transitionTo('physiotherapists');
-      });
     }
   },
 
 });
+
+

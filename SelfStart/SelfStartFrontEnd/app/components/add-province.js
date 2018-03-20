@@ -1,5 +1,6 @@
 import Component from '@ember/component';
 import { inject } from '@ember/service';
+import { computed } from '@ember/object';
 import $ from 'jquery';
 
 export default Component.extend({
@@ -7,23 +8,21 @@ export default Component.extend({
   countryId: null,
 
 
-
-  countries: function () {
+  countries: computed(function(){
     return this.get('DS').findAll('country');
-  }.property(),
+  }),
 
 
   actions: {
-
 
     setCountryId: function (comp, id) {
       this.set('countryId', id);
     },
 
     openModal: function () {
-      this.set('name', '');
-      this.set('countryId', null);
-      this.set('city', []);
+      // this.set('name', '');
+      // this.set('countryId', null);
+      // this.set('city', []);
 
       $('.ui.small.newProvince.modal').modal({
         closable: false,

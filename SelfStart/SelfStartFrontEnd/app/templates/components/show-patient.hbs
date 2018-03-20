@@ -1,85 +1,31 @@
-<div class="ui horizontal segment items">
-  <div class = "ui grid">
-    <div class="eight wide column">
-      <div class="ui raised very padded text segment">
-        <div class="ui grid">
-
-          <div class="six wide column" >
-            <br><br>
-            <div class="item">
-              <div class="middle aligned content">
-                <p><img src="assets/images/nav/single-01.svg" class="ui small square image"></p>
-              </div>
-            </div>
-            <br><br><br><br>
-            <div class="item">
-              <div class="middle aligned content">
-                <p style="font-weight: bold;">Client:</p> {{model.givenName}} {{model.familyName}}
-              </div>
-            </div>
-          </div>
-
-          <div class="left aligned eight wide column">
-            <div class="item">
-              <div class="middle aligned content">
-                <p style="font-weight: bold;">Date of Birth:</p> {{dateFormat}}
-              </div>
-            </div>
-            <br>
-            <div class="item">
-              <div class="middle aligned content">
-                <p style="font-weight: bold;">Gender:</p>{{model.gender}}
-              </div>
-            </div>
-            <br>
-            <div class="item">
-              <div class="middle aligned content">
-                <p style="font-weight: bold;">Health Card:</p> {{model.healthCardNumber}}
-              </div>
-            </div>
-            <br>
-            <div class="item">
-              <div class="middle aligned content">
-                <p style="font-weight: bold;">Phone Number:</p>{{model.phoneNumber}}
-              </div>
-            </div>
-            <br>
-            <div class="item">
-              <div class="middle aligned content">
-                <p style="font-weight: bold;">Email:</p>
-                {{model.email}}
-              </div>
-            </div>
-            <br>
-            <div class="item">
-              <div class="middle aligned content">
-                <p style="font-weight: bold;">Address:</p>{{model.streetNumber}} {{model.streetName}}, {{model.postalCode}}
-                <p>{{model.city}}, {{model.province}}, {{model.country}}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    <div class="eight wide column">
-      <div class="fourteen wide row">
-        <div class="ui raised very padded text segment">
-          <div class="item">
-            <div class="middle aligned content">
-              <p style="font-weight: bold;">History:</p>
-              <br><br><br><br><br><br><br><br><br><br><br><br><br><br><br>
-            </div>
-          </div>
-        </div>
-      </div>
-      <br>
-      <div class="two wide row" style="float: right">
-
-        <a href="/patient-file"  id="client" class="ui inverted download button" >
-          Client's file <i class="right arrow icon"></i>
-        </a>
-
-      </div>
+<div class="ui container" style="height: 150px;width: 950px;padding-top: 50px;">
+<div class="ui cards">
+  <div class="card" style="max-width: 230px;">
+    <div class="content">
+      <div class="header">Documents</div>
+      <!--<div class="meta">Friend</div>-->
     </div>
   </div>
+  <div class="card" style="max-width: 230px;">
+    <div class="content">
+      <div class="header">Accounting</div>
+      <!--<div class="meta">Friend</div>-->
+    </div>
+  </div>
+  <div class="card" style="max-width: 230px;">
+    <div class="content">
+      <div class="header">Messages</div>
+      <!--<div class="meta">Friend</div>-->
+    </div>
+  </div>
+
+    <div class="card" style="max-width: 200px;">
+
+      <div class="content">
+        <a class="header">{{#link-to 'practitioner.client-file' model.id}}Client's Files{{/link-to}}</a>
+        <div class="meta">{{model.givenName}} {{model.familyName}}</div>
+      </div>
+    </div>
+
+</div>
 </div>

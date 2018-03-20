@@ -5,8 +5,10 @@ export default DS.Model.extend({
     familyName: DS.attr(),
     givenName: DS.attr(),
     email: DS.attr(),
-    dateHired: DS.attr(),
-    dateFired: DS.attr(),
+    dateHired: DS.attr("Date"),
+    dateFired: DS.attr("Date"),
+    phoneNumber: DS.attr(),
+    gender: DS.attr(),
     treatment: DS.attr(),
     account: DS.attr(),
   appointments: DS.hasMany('appointment' , { async: true })

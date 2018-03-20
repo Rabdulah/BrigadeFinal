@@ -5,12 +5,21 @@ import $ from 'jquery';
 
 export default Component.extend({
   DS: inject('store'),
-  routing: inject('-routing'),
-
+  flagAdd: null,
   tagName: '',
+
+  init(){
+    this._super(...arguments);
+
+
+
+    // this.set('selectedGender', this.get('selectedGender'));
+    // this.set('selectedCountry', this.get('selectedCountry'));
+  },
 
   didRender() {
     this._super(...arguments);
+
 
     $(document).ready(function ($) {
       if ($('.floating-labels').length > 0) floatLabels();
@@ -34,60 +43,71 @@ export default Component.extend({
     });
   },
 
-
-  conutryModel: computed(function(){
-    return this.get('DS').findAll('country');
-  }),
-
   genderModel: computed(function(){
     return this.get('DS').findAll('gender');
   }),
 
-  maritalStatusModel: computed(function(){
-    return this.get('DS').findAll('maritalStatus');
-  }),
 
   actions: {
 
-    addPatient(){
-      this.set('isEditing', true);
+    selectGender (gender){
+      this.set('selectedGender', gender);
     },
 
-    assignDate (date){
-      this.set('selectedDate', date);
+    assignHiredDate (date){
+      this.set('selectedHiredDate', date);
+    },
+    assignFiredDate (date){
+      this.set('selectedFiredDate', date);
     },
 
-
-    cancel() {
-      return true;
-    },
-
-    save: function () {
+    submit () {
 
       let self = this;
+
+      let physioAccount = {};
+        physioAccount['encryptedPassword'] = self.get('encryptedPassword');
 
       let physiotherapist = this.get('DS').createRecord('physiotherapest', {
         familyName: self.get('familyName'),
         givenName: self.get('givenName'),
         email: self.get('email'),
-        dateHired: self.get('dateHired'),
-        dateFired: self.get('dateFired'),
-        treatment: self.get('treatment'),
-        account: self.get('account'),
+        dateHired: new Date(this.get('selectedHiredDate')),
+        dateFired: new Date(this.get('selectedFiredDate')),
+        gender: self.get('selectedGender'),
+        phoneNumber: self.get('phoneNumber'),
+        //treatment: self.get('treatment'),
+        account: physioAccount,
 
       });
       physiotherapist.save().then(() =>{
-        this.get('routing').transitionTo('physiotherapists');
+        $('.ui.newPhysio.modal').modal('hide');
+        this.set('familyName', '');
+        this.set('givenName', '');
+        this.set('email', '');
+        this.set('selectedGender', '');
+        this.set('dateHired', '');
+        this.set('dateFired', '');
+        this.set('phoneNumber', '');
+        this.set('encryptedPassword', '');
+        if (this.get('flagAdd')=== true)
+          this.set('flagAdd', false);
+        else
+          this.set('flagAdd', true);
+        return true;
       });
 
-      this.set('familyName', '');
-      this.set('givenName', '');
-      this.set('email', '');
-      this.set('dateHired','');
-      this.set('dateFired','');
-      this.set('treatment','');
-      this.set('account','')
-    }
-  },
+    },
+    openModal: function ()  {
+      $('.ui.newPhysio.modal').modal({
+        closable: false,
+
+        onDeny: () => {
+          return true;
+        },
+
+      }).modal('show')
+    },
+  }
 
 });

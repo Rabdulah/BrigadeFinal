@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var mongoosePaginate = require('mongoose-paginate');
 var bcrypt=require('bcrypt');
 
 var physiotherapestsSchema = mongoose.Schema({
@@ -6,6 +7,8 @@ var physiotherapestsSchema = mongoose.Schema({
     familyName: String,
     givenName: String,
     email: String,
+    gender: String,
+    phoneNumber: String,
     dateHired: Date,
     dateFired: Date,
     treatment: [{type: mongoose.Schema.ObjectId, ref: 'Treatments'}],
@@ -22,6 +25,8 @@ var physiotherapestsSchema = mongoose.Schema({
     }
 
 });
+
+physiotherapestsSchema.plugin(mongoosePaginate);
 var PhysiotherapestsSchema = mongoose.model('physiotherapest', physiotherapestsSchema);
 const Physio = exports.Model = PhysiotherapestsSchema;
 

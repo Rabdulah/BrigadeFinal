@@ -8,6 +8,7 @@ export default Component.extend({
   routing: inject('-routing'),
 
   tagName: '',
+  flagAdd: null,
 
   init(){
     this._super(...arguments);
@@ -83,17 +84,12 @@ export default Component.extend({
       this.set('selectedGender', gender);
     },
 
-    cancel() {
-      return true;
-    },
-
-    save: function () {
-
+    submit(){
       let self = this;
 
       let patientAccount = {};
       patientAccount['userAccountName'] = self.get('userAccountName');
-      patientAccount['encryptedPassword'] =    self.get('encryptedPassword');
+      patientAccount['encryptedPassword'] = self.get('encryptedPassword');
 
       let patient = this.get('DS').createRecord('patient', {
         familyName: self.get('familyName'),
@@ -113,13 +109,27 @@ export default Component.extend({
         account: patientAccount
       });
 
-        patient.save().then(() =>{
-          this.get('routing').transitionTo('patients');
-        });
+      patient.save().then(() => {
+        $('.ui.newPatient.modal').modal('hide');
+        if (this.get('flagAdd')=== true)
+          this.set('flagAdd', false);
+        else
+          this.set('flagAdd', true);
+        return true;
+      });
+    },
 
-    }
-  },
+    openModal: function ()  {
+      $('.ui.newPatient.modal').modal({
+        closable: false,
 
+        onDeny: () => {
+          return true;
+        },
+
+      }).modal('show')
+    },
+  }
 });
 
 

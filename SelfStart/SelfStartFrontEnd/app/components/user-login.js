@@ -38,6 +38,11 @@ export default Component.extend({
 
   actions: {
 
+
+    goToInfo(){
+
+    },
+
     deny(){
       $('.ui.login.modal').modal('hide');
     },

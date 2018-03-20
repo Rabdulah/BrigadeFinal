@@ -1,147 +1,53 @@
-<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/form-style.css"> <!-- Resource style -->
+<div class="ui button" {{action 'openModal'}}>
+  Add Plan
+</div>
 
-<form class="cd-form floating-labels" {{action "save" on="submit"}}>
-  <br><br>
-  <fieldset>
-    <legend>Rehabilitation Plan</legend>
+{{#ui-modal name="newPlan" class="newPlan"}}
+  <i class="close icon"></i>
+  <link integrity="" rel="stylesheet" href="/assets/css/form-style.css"> <!-- Resource style -->
 
-    <div class="icon">
-      <label class="cd-label">Name</label>
-      {{input class="star" type="text" value = Name required = true}}
-    </div>
-    <div class="icon">
-      <label class="cd-label">Author</label>
-      {{input  class="user" type="text" value = authorName required = true}}
-    </div>
-    <div class="icon">
-      <label class="cd-label" for="cd-textarea">Description</label>
-      {{textarea class="message" name="cd-textarea"  value= description required=true}}
-    </div>
+  <div class="header">
+    Adding new plan
+  </div>
+  <div class="scrolling content">
 
-    <div class="icon">
-      <label class="cd-label">Goal</label>
-      {{input  class="award" type="text" value = goal required = true}}
-    </div>
+    <form id="edit" class="cd-form floating-labels" {{action "submit" on="submit"}}>
 
-
-    <div class="icon">
-      <label class="cd-label" for="cd-name">Time</label>
-      {{input class="video" type="text" value = timeToComplete required = true}}
-    </div>
-
-
-    <div >
-      <h4>Exercises</h4>
-      <p class="cd-select icon">
-        <select class="people" onchange={{action (mut exercise) value="target.value"}}>
-          {{#each exerciseModel as |oneExercise|}}
-            <option value={{oneExercise.name}} selected={{eq exercise.name oneExercise.name}}>
-              {{oneExercise.name}}
-            </option>
-          {{/each}}
-        </select>
-      </p>
-    </div>
-
-
-    <div>
-      <div class="cd-button">
-        <input type="submit" value="Submit">
+      <div class="field" style="margin: 1em 0;">
+        {{input class="star" type="text" value = Name placeholder="Name" required = true}}
       </div>
 
-    </div>
+
+      <div class="field" style="margin: 1em 0;">
+        {{input  class="message" name="cd-textarea" value = description placeholder="Description" required = true}}
+      </div>
+
+      <div class="field" style="margin: 1em 0;">
+        {{input class="award" type="text"  value = goal placeholder="Goal" required = true}}
+      </div>
+
+
+      <div class="column " style="margin: 1em 0;">
+        <p class="cd-select icon">
+          <select class="people" onchange={{action 'selectExercise' value="target.value"}}>
+            {{#each exerciseModel as |oneExercise|}}
+              <option value={{oneExercise.name}} selected={{eq exercise oneExercise.name}}>
+                {{oneExercise.name}}
+              </option>
+            {{/each}}
+          </select>
+        </p>
+      </div>
+
+      <div class="field">
+        <button class="fluid ui blue button" style="max-width: 100%; height: 50px;">
+          Submit
+        </button>
+      </div>
+
+    </form>
+  </div>
 
 
 
-  </fieldset>
-</form>
-
-
-
-
-{{!--
-  <!--<div class="ui fluid raised very padded text container segment">-->
-
-    <!--<h2 id="rehabPlan" class="ui fluid centered header">Add New Rehab Plan</h2>-->
-
-    <!--<form class="ui form">-->
-      <!--<div class="fields">-->
-        <!--<div class="two wide field">-->
-          <!--<i id="icon" class="black large user icon"></i>-->
-        <!--</div>-->
-        <!--<div class="seven wide field">-->
-          <!--{{input type="text" value = Name placeholder="Rehab plan name"}}-->
-        <!--</div>-->
-
-        <!--<div class="seven wide field">-->
-          <!--{{input type="text" value = authorName placeholder="Author Name"}}-->
-        <!--</div>-->
-      <!--</div>-->
-
-      <!--&lt;!&ndash;Description&ndash;&gt;-->
-      <!--<div class="fields">-->
-        <!--<div class="two wide field">-->
-          <!--<i id="icon" class="black large comment icon"></i>-->
-        <!--</div>-->
-        <!--<div class="fourteen wide field">-->
-          <!--{{input type="text" value = description placeholder="Description"}}-->
-        <!--</div>-->
-      <!--</div>-->
-
-      <!--&lt;!&ndash;goal&ndash;&gt;-->
-      <!--<div class="fields">-->
-        <!--<div class="two wide field">-->
-          <!--<i id="icon" class="black large trophy icon"></i>-->
-        <!--</div>-->
-        <!--<div class="fourteen wide field">-->
-          <!--{{input type="text" value = goal placeholder="Goal"}}-->
-        <!--</div>-->
-      <!--</div>-->
-      <!--&lt;!&ndash;Time to complete&ndash;&gt;-->
-      <!--<div class="fields">-->
-        <!--&lt;!&ndash;icon&ndash;&gt;-->
-        <!--<div class="two wide field">-->
-          <!--<i id="icon" class="black large wait icon"></i>-->
-        <!--</div>-->
-        <!--<div class="four wide field">-->
-          <!--<button class="ui button" {{action "decreaseTime"}}> <i class="black  minus icon"></i></button>-->
-        <!--</div>-->
-        <!--<div class="five wide field">-->
-          <!--{{input type="text" value = ttc placeholder="Time"}}-->
-        <!--</div>-->
-        <!--<div class="four wide field">-->
-          <!--<button class="ui  button"{{action "increaseTime"}}><i class="black  plus icon"></i></button>-->
-        <!--</div>-->
-      <!--</div>-->
-
-      <!--&lt;!&ndash;Exercise&ndash;&gt;-->
-      <!--<div class="fields">-->
-        <!--<div class="two wide field">-->
-          <!--<i id="icon" class="black large comment icon"></i>-->
-        <!--</div>-->
-        <!--<div class="fourteen wide field">-->
-          <!--{{input type="text" value = exercises placeholder="Exercise"}}-->
-        <!--</div>-->
-      <!--</div>-->
-
-
-      <!--&lt;!&ndash;assessment Test&ndash;&gt;-->
-      <!--<div class="fields">-->
-        <!--<div class="two wide field">-->
-          <!--<i id="icon" class="black large comment icon"></i>-->
-        <!--</div>-->
-        <!--<div class="fourteen wide field">-->
-          <!--<div class="ui search">-->
-            <!--<div class="ui icon input">-->
-              <!--<input class="prompt" type="text" placeholder="Search Assessment test">-->
-              <!--<i class="search icon"></i>-->
-            <!--</div>-->
-            <!--<div class="results"></div>-->
-          <!--</div>-->
-          <!--{{input type="text" value = assessmentTests placeholder="Assessmenttests"}}-->
-        <!--</div>-->
-      <!--</div>-->
-
-
-
-  <!--</div>-->--}}
+{{/ui-modal}}

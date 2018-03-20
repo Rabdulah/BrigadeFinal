@@ -1,94 +1,62 @@
-<button class="ui mini circular labeled icon green button" {{action 'openModal'}}title="Edit">
-  <i class="edit icon"></i>
-  Edit
-</button>
-
-{{#ui-modal name=modalName class=modalName}}
-
-  <h2 id="rehabPlan" class="ui fluid centered header">Edit Rehabilitation Plan  {{planName}}</h2>
-
-  <form class="ui form" style="padding: 5%">
-    <div class="fields">
-      <div class="two wide field">
-        <i id="icon" class="black large user icon"></i>
-      </div>
-      <div class="seven wide field">
-        {{input type="text" value = planName placeholder="Rehab plan name"}}
-      </div>
-
-      <div class="seven wide field">
-        {{input type="text" value = physioID placeholder="Author Name"}}
-      </div>
-    </div>
-
-    <!--Description-->
-    <div class="fields">
-      <div class="two wide field">
-        <i id="icon" class="black large comment icon"></i>
-      </div>
-      <div class="fourteen wide field">
-        {{input type="text" value = description placeholder="Description"}}
-      </div>
-    </div>
-
-    <!--goal-->
-    <div class="fields">
-      <div class="two wide field">
-        <i id="icon" class="black large trophy icon"></i>
-      </div>
-      <div class="fourteen wide field">
-        {{input type="text" value = goal placeholder="Goal"}}
-      </div>
-    </div>
-    <div class="fields">
-      <!--icon-->
-      <div class="two wide field">
-        <i id="icon" class="black large wait icon"></i>
-      </div>
-      <div class="fourteen wide field">
-        {{input type="text" value = timeToComplete placeholder="Time"}}
-      </div>
-
-    </div>
+<p style="cursor: pointer; " title="Edit"  {{action 'openModal' }}>
+  <img src="/assets/images/pencil.svg">
+</p>
 
 
-    <!--Exercise-->
-    <div class="fields">
-      <div class="two wide field">
-        <i id="icon" class="black large world icon"></i>
-      </div>
-      <div class="fourteen wide field">
-        {{input type="text" value = exercises placeholder="Exercise"}}
+{{#ui-modal name=modalName class=modalName }}
+  <i class="close icon"></i>
+  <link integrity="" rel="stylesheet" href="{{rootURL}}../assets/css/form-style.css"> <!-- Resource style -->
 
-      </div>
+
+  <div class="header">Edit Plan</div>
+  <div class="scrolling content" >
+
+  <form id="edit" class="cd-form floating-labels" {{action "submit" on="submit"}}>
+
+    <div class="ui hidden divider"></div>
+
+    <div class="field " style="margin: 1em 0;">
+      <label class="cd-label">Rehabilitation Name</label>
+      {{input class="star" type="text" value = plansData.planName required = true}}
     </div>
 
 
 
-    <!--assessment Test-->
-    <!--<div class="fields">-->
-    <!--<div class="two wide field">-->
-    <!--<i id="icon" class="black large comment icon"></i>-->
-    <!--</div>-->
-    <!--<div class="fourteen wide field">-->
-    {{!--{{input type="text" value = assessmentTests placeholder="Assessmenttests"}}--}}
-    <!--</div>-->
-    <!--</div>-->
-    <!--<br>-->
-    <!--footer for save / cancel-->
-    <div class="actions">
-      <div class="ui black deny button">
-        Cancel
+    <div class="field" style="margin: 1em 0;">
+      <label class="cd-label">Description</label>
+      {{input class="message" type="cd-textarea" value = plansData.description required = true}}
+    </div>
+
+    <div class="ui two column grid">
+      <div class="column " style="margin: 1em 0;">
+        <label class="cd-label">Goal</label>
+        {{input  class="award" type="text" value = plansData.goal required = true}}
       </div>
-      <div class="ui positive right labeled icon button">
-        Save
-        <i class="checkmark icon"></i>
-      </div>
+
+
+    <div class="column " style="margin: 1em 0;">
+      <h4>Exercises</h4>
+      <p class="cd-select icon">
+        <select class="people" onchange={{action 'selectExercise' value="target.value"}}>
+          {{#each exerciseModel as |oneExercise|}}
+            <option value={{oneExercise.name}} selected={{eq plansData.exercises oneExercise.name}}>
+              {{oneExercise.name}}
+            </option>
+          {{/each}}
+        </select>
+      </p>
+    </div>
+    </div>
+
+    <div class="field">
+      <button class="fluid ui blue button" value="submit" style="max-width: 100%; height: 50px;">
+        Submit
+      </button>
     </div>
 
   </form>
 
 
-
+</div>
 
 {{/ui-modal}}

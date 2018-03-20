@@ -5,15 +5,18 @@ import $ from 'jquery';
 
 export default Component.extend({
   DS: inject('store'),
+  flagDelete: null,
 
   modalName: computed(function () {
-    return 'Delete-physiotherapest' + this.get('ID');
+    return 'Delete-physio' + this.get('ID');
+
   }),
 
   actions: {
     openModal: function () {
       $('.ui.' + this.get('modalName') + '.modal').modal({
         closable: false,
+
         transition: 'fly down',
 
         onDeny: () => {
@@ -21,14 +24,18 @@ export default Component.extend({
         },
         onApprove: () => {
 
-          this.get('DS').find('physiotherapest', this.get('ID')).then((physiotherapest) => {
-    
-            physiotherapest.set('name', '');
-            physiotherapest.save().then(function () {
-              physiotherapest.destroyRecord();
+          let physio = this.get('DS').peekRecord('physiotherapest', this.get('ID'));
+
+          physio.set('appointment', []);
+          physio.save().then(()=>{
+            physio.destroyRecord().then(()=>{
+              if (this.get('flagDelete')=== true)
+                this.set('flagDelete', false);
+              else
+                this.set('flagDelete', true);
+              return true;
             });
           });
-
         }
       })
         .modal('show');

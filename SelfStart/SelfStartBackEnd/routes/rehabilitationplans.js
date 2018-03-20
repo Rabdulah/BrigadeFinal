@@ -11,11 +11,45 @@ router.route('/')
         });
     })
     .get( function (request, response) {
-        console.log("http://localhost:8082/rehabplans GET used");
-        Rehabilitation.Model.find(function (error, rehabilitations) {
-            if (error) response.send(error);
-            response.json({rehabilitationplan: rehabilitations});
-        });
+        let {limit, offset, sort, dir, queryPath, regex} = request.query;
+        if(!limit) {
+            Rehabilitation.Model.find(function (error, rehabilitations) {
+                if (error) response.send(error);
+                response.json({rehabilitationplan: rehabilitations});
+            });
+        }
+        else {
+            //  let users = schema.users.all().models;
+            //  let users = Users.Model;
+
+            offset = Number(offset || 0);
+            limit = Number(limit || 10);
+            dir = dir || 'asc';
+            sort = sort || 'id';
+
+            let query = {};
+            if (regex !== '')
+                query[queryPath] = new RegExp(regex, "i");
+
+            var sortOrder = sort;
+            if (sortOrder) {
+                if (dir !== 'asc') {
+                    sortOrder = '-' + sort;
+                }
+            }
+
+            let options = {
+                sort: sortOrder,
+                lean: true,
+                offset: offset,
+                limit: limit
+            };
+
+            Rehabilitation.Model.paginate(query, options, function (error, rehabilitations) {
+                if (error) response.send(error);
+                response.json({rehabilitationplan: rehabilitations.docs});
+            });
+        }
     });
 
 

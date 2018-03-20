@@ -60,7 +60,6 @@
   height: 100vh;
   content: '';
   background-size: cover;
-
   opacity: 0.95;
 }
 #example.index .masthead.bg1:after {
@@ -76,7 +75,7 @@
   background-image: url("/assets/images/home/bg_gradient1.jpg");
 }
 #example.index .masthead.bg5:after {
-  background-image: url("/images/backgrounds/5.jpg");
+  background-image: url("/assets/images/home/bg_gradient1.jpg");
 }
 #example.index .masthead.bg6:after {
   background-image: url("/images/backgrounds/6.jpg");
@@ -133,7 +132,6 @@
   height: 100vh;
   margin-left: auto !important;
   margin-right: auto !important;
-  min-height: 100vh;
   -webkit-box-align: center;
   -webkit-align-items: center;
   -ms-flex-align: center;
@@ -148,19 +146,24 @@
   justify-content: center;
 }
 #example .masthead.bg1 .container {
-  height: 55vh;
-  min-height: 600px;
-  padding: 20rem 0em;
+    display: table;
 }
 #example .masthead.bg2 .container {
-  padding: 5rem 0em;
+    display: table;
+    height: 300px;
 }
 #example .masthead.bg3 .container {
-  min-height: 600px;
-  padding: 25rem 0em;
+  display: table;
 }
 #example .masthead.bg4 .container {
-  padding: 6rem 0em;
+  display: table;
+  height: 0px;
+  padding-top: 60px;
+}
+#example .masthead.bg5 .container {
+  display: table;
+  height: 380px;
+  /*padding-top: 60px;*/
 }
 #example.index .following.bar iframe.github {
   margin-top: 0px;
@@ -245,7 +248,7 @@
 #example.index .masthead.segment h1 .tagline {
   font-size: 0.75em;
 }
-#example.index .masthead.segment h1 > .library {
+.library {
   display: block;
   font-size: 1.75em;
   font-weight: bold;
@@ -278,8 +281,10 @@
 #example.index .introduction {
   position: relative;
   clear: both;
-  display: block;
+  /*display: block;*/
   text-align: center;
+  display: table-cell;
+  vertical-align: middle;
 }
 #example.index .introduction .buttons {
   margin-top: 3em;

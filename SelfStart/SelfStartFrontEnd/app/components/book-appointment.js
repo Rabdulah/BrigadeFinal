@@ -157,7 +157,7 @@ export default Component.extend({
       let self = this;
       //temp client until we get token
       //laptop
-      let client = '5a99f669da1c862bd0ac4efb';
+      let client = '5a8cea371af849309c3833d4';
       //desktop
       // let client = '5a88738e1f0fdc2b94498e81';
       let physio = self.get('selectphysio');
@@ -195,14 +195,13 @@ export default Component.extend({
                 //case 2 booked at the start block
                 else if (moment(usedBlock.startsAt).isSame(bookedTime.time)){
                   console.log("case 2");
-
-                    self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old){
-                      old.set('date', bookedTime.end);
-                      old.save().then(() => {
-                        $('.ui.bk.modal').modal('hide');
-                        window.location.reload();
-                      });
+                  self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old){
+                    old.set('date', bookedTime.end);
+                    old.save().then(() => {
+                      $('.ui.bk.modal').modal('hide');
+                      window.location.reload();
                     });
+                  });
                 }
                 //case 3 booked at the end block
                 else if (moment(usedBlock.endsAt).isSame(bookedTime.end)){

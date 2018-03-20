@@ -27,7 +27,7 @@ export default Component.extend({
     this.set('phoneNumber', '');
     this.set('postalCode', '');
     // this.set('userAccountName', '');
-    // this.set('encryptedPassword', '');
+    this.set('encryptedPassword', '');
 
     // this.set('selectedGender', this.get('selectedGender'));
     // this.set('selectedCountry', this.get('selectedCountry'));
@@ -36,7 +36,6 @@ export default Component.extend({
   didRender() {
     this._super(...arguments);
 
-    $(document).ready(function ($) {
       if ($('.floating-labels').length > 0) floatLabels();
 
       function floatLabels() {
@@ -54,8 +53,6 @@ export default Component.extend({
       function checkVal(inputField) {
         ( inputField.val() == '' ) ? inputField.prev('.cd-label').removeClass('float') : inputField.prev('.cd-label').addClass('float');
       }
-
-    });
   },
 
 
@@ -67,62 +64,112 @@ export default Component.extend({
     return this.get('DS').findAll('gender');
   }),
 
+  accountValue: "active",
+  introValue: "disabled",
+  appointmentValue: "disabled",
+  paymentValue: "disabled",
+  confirmValue: "disabled",
 
+  account: true,
+  intro: false,
+  appointment: false,
+  payment: false,
+  confirm: false,
 
   actions: {
-
-    assignDate (date){
+    assignDate(date) {
       this.set('selectedDate', date);
     },
 
-    selectCountry (country){
+    selectCountry(country) {
       this.set('selectedCountry', country);
     },
 
-    selectGender (gender){
+    selectGender(gender) {
       this.set('selectedGender', gender);
     },
 
-    cancel() {
-      return true;
+    goToIntro() {
+      this.set('accountValue', "completed");
+      this.set('introValue', "active");
+      this.set('intro', true);
+      this.set('account', false);
+
+      // let self = this;
+      //
+      // let patientAccount = {};
+      // // patientAccount['userAccountName'] = localStorage.getItem('UName');
+      // patientAccount['encryptedPassword'] = self.get('encryptedPassword');
+      //
+      // let patient = this.get('DS').createRecord('patient', {
+      //   familyName: self.get('familyName'),
+      //   givenName: self.get('givenName'),
+      //   email: self.get('email'),
+      //   streetName: self.get('streetName'),
+      //   streetNumber: self.get('streetNumber'),
+      //   apartment: self.get('apartment'),
+      //   country: self.get('selectedCountry'),
+      //   province: self.get('province'),
+      //   city: self.get('city'),
+      //   dateOfBirth: new Date(this.get('selectedDate')),
+      //   healthCardNumber: self.get('healthCardNumber'),
+      //   gender: self.get('selectedGender'),
+      //   phoneNumber: self.get('phoneNumber'),
+      //   postalCode: self.get('postalCode'),
+      //   account: patientAccount
+      // });
+      //
+      // patient.save().then((patient) =>{
+      //   localStorage.clear();
+      //   // localStorage.setItem('loggedIn', false);
+      // });
     },
+    backToAccount() {
+      this.set('accountValue', "active");
+      this.set('introValue', "");
+      this.set('intro', false);
+      this.set('account', true);
+    },
+    goToAppointment() {
+      this.set('introValue', "completed");
+      this.set('appointmentValue', "active");
+      this.set('appointment', true);
+      this.set('intro', false);
+    },
+    backToIntro() {
+      this.set('introValue', "active");
+      this.set('appointmentValue', "");
+      this.set('intro', true);
+      this.set('appointment', false);
+    },
+    goToPayment() {
+      this.set('paymentValue', "active");
+      this.set('appointmentValue', "completed");
+      this.set('appointment', false);
+      this.set('payment', true);
+    },
+    backToAppointment() {
+      this.set('appointmentValue', "active");
+      this.set('paymentValue', "");
+      this.set('payment', false);
+      this.set('appointment', true);
+    },
+    goToConfirm() {
+      this.set('confirmValue', "active");
+      this.set('paymentValue', "completed");
+      this.set('payment', false);
+      this.set('confirm', true);
+    },
+    backToPayment() {
+      this.set('paymentValue', "active");
+      this.set('confirmValue', "");
+      this.set('payment', true);
+      this.set('confirm', false);
+    },
+    goToPaypal() {
 
-    save: function () {
-
-      let self = this;
-
-      let patientAccount = {};
-      patientAccount['userAccountName'] = localStorage.getItem('UName');
-      patientAccount['encryptedPassword'] = localStorage.getItem('Pass');
-
-      let patient = this.get('DS').createRecord('patient', {
-        familyName: self.get('familyName'),
-        givenName: self.get('givenName'),
-        email: localStorage.getItem('Email'),
-        streetName: self.get('streetName'),
-        streetNumber: self.get('streetNumber'),
-        apartment: self.get('apartment'),
-        country: self.get('selectedCountry'),
-        province: self.get('province'),
-        city: self.get('city'),
-        dateOfBirth: new Date(this.get('selectedDate')),
-        healthCardNumber: self.get('healthCardNumber'),
-        gender: self.get('selectedGender'),
-        phoneNumber: self.get('phoneNumber'),
-        postalCode: self.get('postalCode'),
-        account: patientAccount
-      });
-
-      patient.save().then((patient) =>{
-        localStorage.clear();
-        // localStorage.setItem('loggedIn', false);
-      });
-      $('.ui.register.modal').modal('hide');
-      this.get('router').transitionTo('message');
-
-    }
-  },
-
+    },
+  }
 });
 
 

@@ -1,4 +1,9 @@
-<form class="cd-form floating-labels" {{action "save" on="submit"}}>
+
+<link integrity="" rel="stylesheet" href="/assets/css/form-style.css"> <!-- Resource style -->
+
+
+<form class="cd-form floating-labels" {{action "save" on="submit"}} style="padding-right: 10em; padding-left: 10em">
+
   <br><br>
   <fieldset>
     <legend>Book Appointment</legend>
@@ -34,6 +39,8 @@
 
 {{#ui-modal name= modalName class= 'bk'}}
   <form class="cd-form floating-labels">
+    <div class="scrolling content" >
+
     <fieldset>
       <legend>Book Appointment</legend>
       <label class="cd-label"> Physiotherapist</label>
@@ -82,6 +89,6 @@
         <button class="ui fluid positive button" {{action "book_appointment"}}>Submit</button>
       </div>
     </fieldset>
-
+    </div>
   </form>
 {{/ui-modal}}

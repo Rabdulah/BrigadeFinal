@@ -2513,4 +2513,113 @@
 .as-calendar-occurrence:hover .as-calendar-occurrence__remove {
   opacity: .65; }
 
+/*.following.bar .ui.container {*/
+/*width: 1400px;*/
+/*}*/
+body {
+  font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif !important; }
+
+.ui.divider {
+  margin: 0.8rem 0rem !important; }
+
+#login {
+  background: #efd469;
+  color: darkslategrey !important;
+  width: 100px;
+  text-align: center; }
+
+#login:hover {
+  background: #F0E68C;
+  color: darkslategrey !important;
+  width: 100px;
+  text-align: center; }
+
+#client {
+  background: #efd469;
+  color: darkslategrey !important;
+  text-align: center; }
+
+#client:hover {
+  background: #F0E68C;
+  color: darkslategrey !important;
+  text-align: center; }
+
+.background {
+  background-color: #e9ebee; }
+
+.scrolling.undetached.dimmable .ui.scrolling.modal {
+  position: relative;
+  left: 0; }
+
+.login.tiny.ui.modal {
+  position: fixed !important;
+  top: 7.7em !important; }
+
+.ui.grid > .column:not(.row) {
+  padding-top: 0;
+  padding-bottom: 0; }
+
+.ui.grid + .grid {
+  margin-top: 0; }
+
+#mini-nav a {
+  display: block;
+  font-size: 1em;
+  line-height: 50px;
+  overflow: hidden;
+  position: relative;
+  -webkit-transition: all 0.4s;
+  -moz-transition: all 0.4s;
+  -o-transition: all 0.4s;
+  transition: all 0.4s; }
+
+#mini-nav a:hover, #mini-nav a:focus {
+  border-radius: 6px;
+  background: white;
+  color: deepskyblue;
+  min-width: 200px; }
+
+#mini-nav a:hover span, #mini-nav a:focus span {
+  display: block; }
+
+#mini-nav img {
+  float: left; }
+
+a img {
+  border: none; }
+
+#mini-nav a span {
+  display: none;
+  height: 50px;
+  left: 0;
+  position: absolute;
+  top: 0; }
+
+#mini-nav a i {
+  border-radius: 6px;
+  color: deepskyblue;
+  background: white;
+  display: block;
+  float: left;
+  font-size: 1.2em;
+  height: 50px;
+  line-height: 50px;
+  text-align: center;
+  width: 50px; }
+
+#top:before {
+  position: absolute;
+  z-index: -1;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 75px;
+  content: "";
+  background-color: #dd6a58; }
+
+#top {
+  position: relative;
+  z-index: 1;
+  margin: 50px auto; }
+
 /*# sourceMappingURL=self-start-front-end.css.map */

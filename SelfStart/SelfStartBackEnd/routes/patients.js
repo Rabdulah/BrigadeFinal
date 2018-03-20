@@ -130,6 +130,7 @@ router.route('/')
 router.route('/:patient_id')
 
     .get( function (request, response) {
+
         Patients.Model.findById(request.params.patient_id, function (error, patient) {
             if (error) {
                 response.send({error: error});
@@ -154,8 +155,6 @@ router.route('/:patient_id')
                 patient.dateOfBirth = request.body.patient.dateOfBirth;
                 patient.phoneNumber = request.body.patient.phoneNumber;
                 patient.healthCardNumber = request.body.patient.healthCardNumber;
-                patient.occupation = request.body.patient.occupation;
-                patient.maritalStatus = request.body.patient.maritalStatus;
                 patient.gender = request.body.patient.gender;
                 patient.country = request.body.patient.country;
                 patient.province = request.body.patient.province;
@@ -163,6 +162,8 @@ router.route('/:patient_id')
                 patient.apartment = request.body.patient.apartment;
                 patient.streetNumber = request.body.patient.streetNumber;
                 patient.postalCode = request.body.patient.postalCode;
+                patient.appointments = request.body.patient.appointments;
+                patient.rehablink = request.body.patient.rehablink;
 
                 patient.answer = request.body.patient.answer;
                 // patient.account = request.body.patient.account;

@@ -1,123 +1,336 @@
-{{#nav-bar}}
-<div class="masthead segment bg4">
-  <div class="ui container">
-    <div class="introduction">
-      <h1 class="ui inverted header">
-      <span class="tagline">
-         Complete Registration
-      </span>
-      </h1>
-      <div class="ui hidden divider"></div>
+<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/home-style.css">
+
+<div id="example" class="index pushable">
+
+  <div class="full height">
+    <div class="following bar">
+      <div class="ui container">
+
+        <div class="ui large secondary network menu inverted" id="mini-nav">
+          <div class="item">
+            <div class="ui logo shape">
+              <div class="sides">
+                <div class="active ui side">
+                  <a href="/">
+                    <img src="assets/images/mini-logo2.png">
+                    <span>
+                      <i class="angle left icon"></i>
+                      Go back to home page
+                    </span>
+                  </a>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <div class="masthead segment bg4">
+      <div class="ui container">
+        <div class="introduction">
+          <h1 class="ui inverted header">
+            <span class="library" style="font-size: 1.25em">Registration</span>
+          </h1>
+          <div class="ui hidden divider"></div>
+
+        </div>
+      </div>
 
     </div>
+
+
+      <br>
+
+      <div class = "ui centered very padded segment container" style="border: none; box-shadow: none; background-color: white;margin-top: -320px;position: relative;z-index:  2;">
+        <link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/form-style.css"> <!-- Resource style -->
+
+
+        <div class="ui five tablet stackable top attached steps">
+          <a class="{{accountValue}} step">
+            <i class="user plus icon"></i>
+            <div class="content">
+              <div class="title">Create Account</div>
+            </div>
+          </a>
+
+          <a class="{{introValue}} step">
+            <i class="wpforms icon"></i>
+            <div class="content">
+              <div class="title">Introduction</div>
+            </div>
+          </a>
+
+          <a class="{{appointmentValue}} step">
+            <i class="bookmark icon"></i>
+            <div class="content">
+              <div class="title">Book appointment</div>
+            </div>
+          </a>
+          <a class="{{paymentValue}} step">
+            <i class="payment icon"></i>
+            <div class="content">
+              <div class="title">Payment plan</div>
+            </div>
+          </a>
+          <a class="{{confirmValue}} step">
+            <i class="check circle icon"></i>
+            <div class="content">
+              <div class="title">Confirmation</div>
+            </div>
+          </a>
+
+        </div>
+        <div class="ui attached segment">
+          <br><br>
+          {{#if account}}
+          <form class="cd-form floating-labels" style="margin: 0 0; padding-right: 15%; padding-left: 15%" {{action "goToIntro" on="submit"}}>
+            <legend>Account Information</legend>
+            <div class="ui hidden divider"></div>
+            <div class="field" style="margin: 1em 0;">
+              {{input class="email" type="email" value = email placeholder="email" required = true}}
+            </div>
+            <div class="field" style="margin: 1em 0;">
+              {{input class="lock" type ="password" value=encryptedPassword placeholder="Password" required = true}}
+            </div>
+
+            <div class="ui hidden divider"></div>
+            <div class="ui hidden divider"></div>
+
+            <legend>Personal Information</legend>
+            <div class="ui hidden divider"></div>
+            <div class="ui two column grid">
+                <div class="column " style="margin: 1em 0;">
+                  {{input class="user" type="text" value = givenName placeholder="First Name" required = true}}
+                </div>
+                <div class="column " style="margin: 1em 0;">
+                  {{input class="user" type="text" value = givenName placeholder="Last Name" required = true}}
+                </div>
+            </div>
+
+            <div class="ui two column grid">
+              <div class="column " style="margin: 1em 0;">
+                <input class="date" type="date" value={{selectedDate}}  onchange={{action 'assignDate' value="target.value"}} required>
+              </div>
+              <div class="column " style="margin: 1em 0;">
+                <p class="cd-select icon">
+                  <select class="people" onchange={{action 'selectGender' value="target.value"}} required=true>
+                    <option selected="selected">
+                      Select Gender
+                    </option>
+                    {{#each genderModel as |oneGender|}}
+                      <option value={{oneGender.name}} selected={{eq gender oneGender.name}}>
+                        {{oneGender.name}}
+                      </option>
+                    {{/each}}
+                  </select>
+                </p>
+              </div>
+            </div>
+
+            <div class="field" style="margin: 1em 0;">
+              {{input class="phone" type="text" value = phoneNumber placeholder="Phone Number" required = true}}
+            </div>
+
+            <div class="field" style="margin: 1em 0;">
+              {{input class="card" type="text" value = healthCardNumber placeholder="Health Card Number" required = true}}
+            </div>
+
+            <div class="ui hidden divider"></div>
+            <div class="ui hidden divider"></div>
+
+            <legend>Address</legend>
+            <div class="ui hidden divider"></div>
+
+            <div class="ui two column grid">
+              <div class="column " style="margin: 1em 0;">
+                {{input class="home" type="text" value = streetNumber placeholder="Street Number" required = true}}
+              </div>
+              <div class="column " style="margin: 1em 0;">
+                {{input class="home" type="text" value = streetName placeholder="Street Name" required = true}}
+              </div>
+            </div>
+
+            <div class="ui two column grid">
+              <div class="column " style="margin: 1em 0;">
+                {{input class="home" type="text" placeholder="Unit Number" value = apartment}}
+              </div>
+              <div class="column " style="margin: 1em 0;">
+                {{input class="flag" type="text" value = postalCode placeholder="Postal/Zip Code" required = true}}
+              </div>
+            </div>
+
+            <div class="ui three column grid" id="grid">
+              <div class="column " style="margin: 1em 0;">
+                <p class="cd-select icon">
+                  <select class="world" onchange={{action 'selectCountry' value="target.value"}} required=true>
+                    <option selected="selected">
+                      Select Country
+                    </option>
+                    {{#each conutryModel as |oneCountry|}}
+                      <option value={{oneCountry.name}} selected={{eq country oneCountry.name}}>
+                        {{oneCountry.name}}
+                      </option>
+                    {{/each}}
+                  </select>
+                </p>
+              </div>
+              <div class="column " style="margin: 1em 0;">
+                {{input class="world" type="text" value = province placeholder="Province/State" required = true}}
+              </div>
+              <div class="column " style="margin: 1em 0;">
+                {{input class="world" type="text" value = city placeholder="City" required = true}}
+              </div>
+            </div>
+
+            <div class="field">
+              <p>By creating an account you agree to our <a style="color: blue; cursor: pointer; text-decoration: underline;">Terms & Privacy.</a></p>
+              <br>
+            </div>
+
+            <div class="field">
+              <div class="ui centered grid">
+                <button class="ui blue button" style="height: 50px;" value="Submit">Next</button>
+              </div>
+            </div>
+
+          </form>
+          {{/if}}
+
+          {{#if intro}}
+            <p>Introduction Form Goes Here!!</p>
+            <div class="field">
+              <div class="ui centered grid">
+                <button class="ui blue button" style="height: 50px;" {{action "backToAccount"}}>Back</button>
+                <button class="ui blue button" style="height: 50px;" {{action "goToAppointment"}}>Next</button>
+              </div>
+            </div>
+          {{/if}}
+
+          {{#if appointment}}
+            <p>Appointment Calender Goes Here!!</p>
+            <div class="field">
+              <div class="ui centered grid">
+                <button class="ui blue button" style="height: 50px;" {{action "backToIntro"}}>Back</button>
+                <button class="ui blue button" style="height: 50px;" {{action "goToPayment"}}>Next</button>
+              </div>
+            </div>
+          {{/if}}
+
+          {{#if payment}}
+
+            <link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/payment-style.css"> <!-- Resource style -->
+
+            <div class="cd-pricing-container cd-has-margins">
+
+              <ul class="cd-pricing-list">
+                <li class = "package">
+                  <header class="cd-pricing-header">
+                    <h2>Basic</h2>
+
+                    <div class="cd-price">
+                      <span class="cd-currency">$</span>
+                      <span class="cd-value">95</span>
+                    </div>
+                  </header> <!-- .cd-pricing-header -->
+
+                  <div class="cd-pricing-body">
+                    <ul class="cd-pricing-features">
+                      <li>Video conference / email</li>
+                      <li>Professional assessments</li>
+                      <li>Physiotherapy diagnosis</li>
+                      <li>Personal treatment plan</li>
+                      <li>Education, exercises, advice</li>
+                      <li>Includes only one appointment</li>
+                    </ul>
+                  </div> <!-- .cd-pricing-body -->
+
+                  <footer class="cd-pricing-footer">
+                    <a class="cd-option" href="">Select</a>
+                  </footer> <!-- .cd-pricing-footer -->
+                </li>
+                <li class="cd-popular package">
+                  <header class="cd-pricing-header">
+                    <h2>Popular</h2>
+
+                    <div class="cd-price">
+                      <span class="cd-currency">$</span>
+                      <span class="cd-value">245</span>
+                      <span class="cd-duration">mo</span>
+                    </div>
+                  </header> <!-- .cd-pricing-header -->
+
+                  <div class="cd-pricing-body">
+                    <ul class="cd-pricing-features">
+                      <li>Video conference / email</li>
+                      <li>Professional assessments</li>
+                      <li>Physiotherapy diagnosis</li>
+                      <li>Personal treatment plan</li>
+                      <li>Education, exercises, advice</li>
+                      <li><em>unlimited</em> appointments for a month</li>
+                    </ul>
+                  </div> <!-- .cd-pricing-body -->
+
+                  <footer class="cd-pricing-footer">
+                    <a class="cd-option" href="">Select</a>
+                  </footer> <!-- .cd-pricing-footer -->
+                </li>
+                <li class = "package">
+                  <header class="cd-pricing-header">
+                    <h2>Premier</h2>
+
+                    <div class="cd-price">
+                      <span class="cd-currency">$</span>
+                      <span class="cd-value">395</span>
+                      <span class="cd-duration">3 mo</span>
+                    </div>
+                  </header> <!-- .cd-pricing-header -->
+
+                  <div class="cd-pricing-body">
+                    <ul class="cd-pricing-features">
+                      <li>Video conference / email</li>
+                      <li>Professional assessments</li>
+                      <li>Physiotherapy diagnosis</li>
+                      <li>Personal treatment plan</li>
+                      <li>Education, exercises, advice</li>
+                      <li><em>unlimited</em> appointments for three month</li>
+                    </ul>
+                  </div> <!-- .cd-pricing-body -->
+
+                  <footer class="cd-pricing-footer">
+                    <a class="cd-option" href="">Select</a>
+                  </footer>  <!-- .cd-pricing-footer -->
+                </li>
+              </ul> <!-- .cd-pricing-list -->
+            </div> <!-- .cd-pricing-container -->
+
+            <div class="ui hidden divider"></div>
+            <div class="ui hidden divider"></div>
+
+            <div class="field">
+              <div class="ui centered grid">
+                <button class="ui blue button" style="height: 50px;" {{action "backToAppointment"}}>Back</button>
+                <button class="ui blue button" style="height: 50px;" {{action "goToConfirm"}}>Next</button>
+              </div>
+            </div>
+            <div class="ui hidden divider"></div>
+            <div class="ui hidden divider"></div>
+          {{/if}}
+
+          {{#if confirm}}
+            <p>Confirmation Page Goes Here!!</p>
+            <div class="field">
+              <div class="ui centered grid">
+                <button class="ui blue button" style="height: 50px;" {{action "backToPayment"}}>Back</button>
+                <button class="ui blue button" style="height: 50px;" {{action "goToPaypal"}}>Next</button>
+              </div>
+            </div>
+          {{/if}}
+
+        </div>
+      </div>
+      <br><br><br><br>
+
   </div>
 </div>
-
-<div class="background">
-
-  <br>
-
-  <div class = "ui centered very padded raised segment container" style="background-color: white">
-    <link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/form-style.css"> <!-- Resource style -->
-
-    <form class="cd-form floating-labels" {{action "save" on="submit"}}>
-
-     <fieldset>
-        <legend>Personal Info</legend>
-
-        <div class="icon">
-          <label class="cd-label">First Name</label>
-          {{input class="user" type="text" value = givenName required = true}}
-        </div>
-        <div class="icon">
-          <label class="cd-label">Last Name</label>
-          {{input class="user" type="text" value = familyName required = true}}
-        </div>
-        <div class="icon">
-          <label class="cd-label">Date of Birth</label>
-          <input class="date" type="date" value={{selectedDate}}  onchange={{action 'assignDate' value="target.value"}} required>
-        </div>
-
-        <div >
-          <h4>Gender</h4>
-          <p class="cd-select icon">
-            <select class="people" onchange={{action 'selectGender' value="target.value"}} required=true>
-              <option selected="selected">
-                Select Gender
-              </option>
-              {{#each genderModel as |oneGender|}}
-                <option value={{oneGender.name}} selected={{eq gender oneGender.name}}>
-                  {{oneGender.name}}
-                </option>
-              {{/each}}
-            </select>
-          </p>
-        </div>
-
-
-        <div class="icon">
-          <label class="cd-label">Health Card Number</label>
-          {{input class="card" type="text" value = healthCardNumber required = true}}
-        </div>
-      </fieldset>
-
-
-      <fieldset>
-        <legend>Address</legend>
-
-        <div class="icon">
-          <label class="cd-label">Number</label>
-          {{input class="home" type="text" value = streetNumber required = true}}
-        </div>
-        <div class="icon">
-          <label class="cd-label">Street Name</label>
-          {{input class="home" type="text" value = streetName required = true}}
-        </div>
-        <div class="icon">
-          <label class="cd-label" for="cd-name">Unit</label>
-          {{input class="bookmark" type="text" value = apartment}}
-        </div>
-
-        <div class="icon">
-          <label class="cd-label" for="cd-name">Postal/ZIP Code</label>
-          {{input class="flag" type="text" value = postalCode required = true}}
-        </div>
-
-
-        <div >
-          <h4>Country</h4>
-          <p class="cd-select icon">
-            <select class="world" onchange={{action 'selectCountry' value="target.value"}} required=true>
-              <option selected="selected">
-                Select Country
-              </option>
-              {{#each conutryModel as |oneCountry|}}
-                <option value={{oneCountry.name}} selected={{eq country oneCountry.name}}>
-                  {{oneCountry.name}}
-                </option>
-              {{/each}}
-            </select>
-          </p>
-        </div>
-
-      </fieldset>
-
-
-      <fieldset>
-        <legend>Contact Info</legend>
-
-        <div class="icon">
-          <label class="cd-label" for="cd-name">Phone Number</label>
-          {{input class="phone" type="text" value = phoneNumber required = true}}
-        </div>
-
-        <div class="cd-button" style="float: left">
-          <input type="submit" value="Submit">
-        </div>
-      </fieldset>
-
-    </form>
-  </div>
-</div>
-
-{{/nav-bar}}

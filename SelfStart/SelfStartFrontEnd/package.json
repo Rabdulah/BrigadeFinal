@@ -59,7 +59,6 @@
   },
   "dependencies": {
     "is-integer": "^1.0.7",
-    "snapsvg": "^0.5.1",
     "ui-slider": "^2.0.0-5"
   }
 }
