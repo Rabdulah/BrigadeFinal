@@ -962,10 +962,10 @@ define('self-start-front-end/components/add-question', ['exports'], function (ex
         this.set('rating', false);
       },
       rating: function rating() {
-        this.set('trueFalse', false);
-        this.set('shortAns', false);
-        this.set('multipleChoice', false);
-        this.set('rating', true);
+        // this.set('trueFalse', false);
+        // this.set('shortAns', false);
+        // this.set('multipleChoice', false);
+        // this.set('rating',true);
       },
       addQuestion: function addQuestion() {
         this.set('shortAns', false);
@@ -1061,6 +1061,9 @@ define('self-start-front-end/components/add-rehabplan', ['exports'], function (e
     isEditing: false,
 
     actions: {
+      selectExercise: function selectExercise(exercise) {
+        this.set('selectedExercise', exercise);
+      },
       addRehabPlan: function addRehabPlan() {
         this.set('isEditing', true);
       },
@@ -1083,8 +1086,8 @@ define('self-start-front-end/components/add-rehabplan', ['exports'], function (e
           physioID: self.get('authorName'),
           description: self.get('description'),
           goal: self.get('goal'),
-          timeToComplete: self.get('timeToComplete')
-          //exercises: self.get('exercises'),
+          timeToComplete: self.get('timeToComplete'),
+          exercises: self.get('selectedExercise')
           //assessmentTests: self.get('assessmentTests'),
         });
         //when save is successfull close form
@@ -1378,7 +1381,7 @@ define('self-start-front-end/components/assign-rehabplan', ['exports'], function
             return true;
           },
           onApprove: function onApprove() {
-
+            var self = _this;
             var link = _this.get('store').createRecord('rehab-client-link', {
               terminated: _this.get('plansData.terminated'),
               RehabilitationPlan: _this.get('plansData'),
@@ -1410,6 +1413,9 @@ define('self-start-front-end/components/assign-rehabplan', ['exports'], function
                 Ember.$('.ui.' + _this.get('modalName') + '.modal').modal('hide');
                 return true;
               } else {
+                link.destroyRecord().then(function (o) {
+                  console.log(o);
+                });
                 alert("This Rehab Plan is already assigned to this patient");
               }
             });
@@ -1649,7 +1655,7 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
         var self = this;
         //temp client until we get token
         //laptop
-        var client = '5a8cea371af849309c3833d4';
+        var client = '5ab139a05d43320acc0e49df';
         //desktop
         // let client = '5a88738e1f0fdc2b94498e81';
         var physio = self.get('selectphysio');
@@ -2204,7 +2210,7 @@ define('self-start-front-end/components/client-nav', ['exports'], function (expo
       }();
 
       Skype.ui({
-        "name": "chat",
+        "name": "dropdown",
         "element": "SkypeButton_Call",
         "participants": ["ramzi_abdullahi"],
         "imageSize": 24,
@@ -2968,37 +2974,7 @@ define('self-start-front-end/components/display-questions', ['exports'], functio
 
         formModel: Ember.computed(function () {
             return this.get('DS').find('form', this.get('id'));
-        }),
-
-        actions: {
-            Submit: function Submit() {
-
-                var question = this.get('aa');
-                console.log(question);
-
-                // let arr = [];
-                // let form = this.get('DS').find('form', this.get('id')).then((frm) =>{
-                //     frm.get('questions').forEach(function(element) {
-                //         arr.pushObject(element.get('questionText'));
-                //     });
-                // });
-                // console.log(arr);
-                // arr.forEach(function(q) {
-                //     console.log("dvsd");
-                // });
-                //  console.log(arr.objectAt(1));
-
-                // let answer = this.get('DS').createRecord('answer', {
-                //      answer: "d",
-                // patient:this.get(''),
-                // question: element,
-                //  form: frm,
-                //    });
-
-                //  answer.save().then(() =>{});
-            }
-        }
-
+        })
     });
 });
 define('self-start-front-end/components/edit-admin', ['exports'], function (exports) {
@@ -3763,224 +3739,224 @@ define('self-start-front-end/components/edit-status', ['exports'], function (exp
   });
 });
 define('self-start-front-end/components/get-answers', ['exports'], function (exports) {
-  'use strict';
+      'use strict';
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = Ember.Component.extend({
+      Object.defineProperty(exports, "__esModule", {
+            value: true
+      });
+      exports.default = Ember.Component.extend({
 
-    DS: Ember.inject.service('store'),
-    SAanswer: "",
-    rateValue: 0,
-    mcop1: 0,
-    mcop2: 0,
-    mcop3: 0,
-    mcop4: 0,
-    mcop5: 0,
-    mcop6: 0,
+            DS: Ember.inject.service('store'),
+            SAanswer: "",
+            rateValue: 0,
+            mcop1: 0,
+            mcop2: 0,
+            mcop3: 0,
+            mcop4: 0,
+            mcop5: 0,
+            mcop6: 0,
 
-    actions: {
-      ratingSave: function ratingSave(rv) {
+            actions: {
+                  ratingSave: function ratingSave(rv) {
 
-        this.set('rateValue', rv);
+                        this.set('rateValue', rv);
 
-        var temp = [];
-        this.get("assessment").get('answers').forEach(function (element) {
-          temp.push(element);
-        });
+                        var temp = [];
+                        this.get("assessment").get('answers').forEach(function (element) {
+                              temp.push(element);
+                        });
 
-        temp[this.get("qNumber")] = this.get('rateValue');
-        this.get("assessment").get('answers').clear();
+                        temp[this.get("qNumber")] = this.get('rateValue');
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
 
-        console.log(this.get("assessment").get('answers'));
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      },
-      TFtrue: function TFtrue() {
-        var temp = [];
-        this.get("assessment").get('answers').forEach(function (element) {
-          temp.push(element);
-        });
-        temp[this.get("qNumber")] = "True";
-        this.get("assessment").get('answers').clear();
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  },
+                  TFtrue: function TFtrue() {
+                        var temp = [];
+                        this.get("assessment").get('answers').forEach(function (element) {
+                              temp.push(element);
+                        });
+                        temp[this.get("qNumber")] = "True";
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
 
-        console.log(this.get("assessment").get('answers'));
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      },
-      TFfalse: function TFfalse() {
-        var temp = [];
-        this.get("assessment").get('answers').forEach(function (element) {
-          temp.push(element);
-        });
-        temp[this.get("qNumber")] = "False";
-        this.get("assessment").get('answers').clear();
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  },
+                  TFfalse: function TFfalse() {
+                        var temp = [];
+                        this.get("assessment").get('answers').forEach(function (element) {
+                              temp.push(element);
+                        });
+                        temp[this.get("qNumber")] = "False";
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
 
-        console.log(this.get("assessment").get('answers'));
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      },
-      saSave: function saSave() {
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  },
+                  saSave: function saSave() {
 
-        var temp = [];
-        this.get("assessment").get('answers').forEach(function (element) {
-          temp.push(element);
-        });
-        temp[this.get("qNumber")] = this.get("SAanswer");
-        this.get("assessment").get('answers').clear();
+                        var temp = [];
+                        this.get("assessment").get('answers').forEach(function (element) {
+                              temp.push(element);
+                        });
+                        temp[this.get("qNumber")] = this.get("SAanswer");
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
 
-        console.log(this.get("assessment").get('answers'));
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      },
-      mcop1Save: function mcop1Save() {
-        var temp = [];
-        this.get("assessment").get('answers').forEach(function (element) {
-          temp.push(element);
-        });
-        temp[this.get("qNumber")] = "0";
-        this.get("assessment").get('answers').clear();
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  },
+                  mcop1Save: function mcop1Save() {
+                        var temp = [];
+                        this.get("assessment").get('answers').forEach(function (element) {
+                              temp.push(element);
+                        });
+                        temp[this.get("qNumber")] = "0";
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
 
-        console.log(this.get("assessment").get('answers'));
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      },
-      mcop2Save: function mcop2Save() {
-        var temp = [];
-        this.get("assessment").get('answers').forEach(function (element) {
-          temp.push(element);
-        });
-        temp[this.get("qNumber")] = "1";
-        this.get("assessment").get('answers').clear();
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  },
+                  mcop2Save: function mcop2Save() {
+                        var temp = [];
+                        this.get("assessment").get('answers').forEach(function (element) {
+                              temp.push(element);
+                        });
+                        temp[this.get("qNumber")] = "1";
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
 
-        console.log(this.get("assessment").get('answers'));
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      },
-      mcop3Save: function mcop3Save() {
-        var temp = [];
-        this.get("assessment").get('answers').forEach(function (element) {
-          temp.push(element);
-        });
-        temp[this.get("qNumber")] = "2";
-        this.get("assessment").get('answers').clear();
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  },
+                  mcop3Save: function mcop3Save() {
+                        var temp = [];
+                        this.get("assessment").get('answers').forEach(function (element) {
+                              temp.push(element);
+                        });
+                        temp[this.get("qNumber")] = "2";
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
 
-        console.log(this.get("assessment").get('answers'));
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      },
-      mcop4Save: function mcop4Save() {
-        var temp = [];
-        this.get("assessment").get('answers').forEach(function (element) {
-          temp.push(element);
-        });
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  },
+                  mcop4Save: function mcop4Save() {
+                        var temp = [];
+                        this.get("assessment").get('answers').forEach(function (element) {
+                              temp.push(element);
+                        });
 
-        temp[this.get("qNumber")] = "3";
-        this.get("assessment").get('answers').clear();
+                        temp[this.get("qNumber")] = "3";
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
 
-        console.log(this.get("assessment").get('answers'));
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      },
-      mcop5Save: function mcop5Save() {
-        var temp = [];
-        this.get("assessment").get('4').forEach(function (element) {
-          temp.push(element);
-        });
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  },
+                  mcop5Save: function mcop5Save() {
+                        var temp = [];
+                        this.get("assessment").get('4').forEach(function (element) {
+                              temp.push(element);
+                        });
 
-        temp[this.get("qNumber")] = "True";
-        this.get("assessment").get('answers').clear();
+                        temp[this.get("qNumber")] = "True";
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
 
-        console.log(this.get("assessment").get('answers'));
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      },
-      mcop6Save: function mcop6Save() {
-        var temp = [];
-        this.get("assessment").get('answers').forEach(function (element) {
-          temp.push(element);
-        });
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  },
+                  mcop6Save: function mcop6Save() {
+                        var temp = [];
+                        this.get("assessment").get('answers').forEach(function (element) {
+                              temp.push(element);
+                        });
 
-        temp[this.get("qNumber")] = "5";
-        this.get("assessment").get('answers').clear();
+                        temp[this.get("qNumber")] = "5";
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
-        console.log(this.get("assessment").get('answers'));
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      }
-    }
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  }
+            }
 
-  });
+      });
 });
 define("self-start-front-end/components/illiquid-model", ["exports", "liquid-fire/components/illiquid-model"], function (exports, _illiquidModel) {
   "use strict";
@@ -5383,6 +5359,9 @@ define('self-start-front-end/components/show-form-questions', ['exports'], funct
         initialized: false,
         order: [],
         arr: [],
+        modalName: Ember.computed(function () {
+            return 'Show-Questions' + this.get('ID');
+        }),
         actions: {
             removeQuestion: function removeQuestion(q, f, qid, fid) {
                 f.get('questions').removeObject(q);
@@ -5447,7 +5426,18 @@ define('self-start-front-end/components/show-form-questions', ['exports'], funct
                 this.get('DS').findRecord('form', fid).then(function (rec) {
                     rec.save().then(function () {});
                 });
-                window.location.reload();
+            },
+
+            openModal: function openModal() {
+                Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+                    closeable: false,
+                    onDeny: function onDeny() {
+                        return true;
+                    },
+                    onApprove: function onApprove() {
+                        return true;
+                    }
+                }).modal('show');
             }
         }
     });
@@ -9914,7 +9904,7 @@ define("self-start-front-end/templates/components/add-form", ["exports"], functi
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "ybNrcv4i", "block": "{\"symbols\":[],\"statements\":[[4,\"if\",[[20,[\"isEditing\"]]],null,{\"statements\":[[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui fluid raised very padded text container segment\"],[7],[0,\"\\n    \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"sixteen wide field\"],[7],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"fName\"]],\"Name of form\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"sixteen wide field\"],[7],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"fDescription\"]],\"Description of form\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui fluid positive button\"],[3,\"action\",[[19,0,[]],\"submit\"]],[7],[0,\"Submit\"],[8],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"cancel\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"    \"],[6,\"button\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"addForm\"]],[7],[0,\"\\n        Add Form\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/add-form.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "wVJyifr2", "block": "{\"symbols\":[],\"statements\":[[4,\"if\",[[20,[\"isEditing\"]]],null,{\"statements\":[[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui fluid raised very padded text container segment\"],[7],[0,\"\\n    \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"sixteen wide field\"],[7],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"fName\"]],\"Name of form\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"sixteen wide field\"],[7],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"fDescription\"]],\"Description of form\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui fluid positive button\"],[3,\"action\",[[19,0,[]],\"submit\"]],[7],[0,\"Submit\"],[8],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"cancel\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},{\"statements\":[[6,\"br\"],[7],[8],[0,\"\\n \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"max-width: 20%; height: 50px;\"],[3,\"action\",[[19,0,[]],\"addForm\"]],[7],[0,\"\\n    Add Form\\n\"],[8],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/add-form.hbs" } });
 });
 define("self-start-front-end/templates/components/add-gender", ["exports"], function (exports) {
   "use strict";
@@ -10242,7 +10232,7 @@ define("self-start-front-end/templates/components/display-forms", ["exports"], f
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "cRS3Lqq1", "block": "{\"symbols\":[\"form\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Manage Forms\"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"style\",\"padding-left: 2em;padding-right: 15em;padding-top: 10em;\"],[7],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui vertical pointing menu\"],[9,\"style\",\"width: 12rem;\"],[7],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"formState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"form\"]],[7],[0,\"\\n      Forms\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"questionState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"question\"]],[7],[0,\"\\n      Questinos\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"formView\"]]],null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"style\",\"margin-top: -18em;z-index:  2;position: relative;margin-left: 200px !important;\"],[7],[0,\"\\n\\n    \"],[6,\"h2\"],[7],[0,\" Forms \"],[8],[0,\"\\n\\n\"],[4,\"ui-accordion\",null,null,{\"statements\":[[4,\"each\",[[20,[\"formModel\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"twelve wide column\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"\\n              \"],[6,\"i\"],[9,\"class\",\"ui dropdown blue icon\"],[7],[8],[0,\"\\n              \"],[1,[19,1,[\"name\"]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[1,[25,\"show-form-questions\",null,[[\"questions\",\"thisForm\"],[[19,1,[\"questions\"]],[19,1,[]]]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"six wide column right aligned\"],[7],[0,\"\\n            \"],[1,[25,\"manage-form\",null,[[\"ID\",\"questions\",\"form\",\"fName\"],[[19,1,[\"id\"]],[19,1,[\"questions\"]],[19,1,[]],[19,1,[\"name\"]]]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"a\"],[9,\"id\",\"questions\"],[7],[0,\"\\n\"],[4,\"link-to\",[\"formDisplay\",[25,\"query-params\",null,[[\"id\"],[[19,1,[\"id\"]]]]]],null,{\"statements\":[[0,\"              \"],[6,\"button\"],[9,\"class\",\"ui button\"],[7],[0,\"View Form\"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"two wide column right aligned\"],[7],[0,\"\\n            \"],[1,[25,\"edit-form\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"two wide column left aligned\"],[7],[0,\"\\n            \"],[1,[25,\"delete-form\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null]],\"parameters\":[]},null],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[1,[18,\"add-form\"],false],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"questionView\"]]],null,{\"statements\":[[0,\"    \"],[1,[25,\"manage-questions\",null,[[\"model\"],[[20,[\"questionModel\"]]]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/display-forms.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "Epgzlx5h", "block": "{\"symbols\":[\"form\"],\"statements\":[[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Manage Forms\"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"div\"],[9,\"style\",\"padding-left: 2em;padding-right: 15em;padding-top: 10em;\"],[7],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui vertical pointing menu\"],[9,\"style\",\"width: 12rem;\"],[7],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"formState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"form\"]],[7],[0,\"\\n      Forms\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"questionState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"question\"]],[7],[0,\"\\n      Questions\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"formView\"]]],null,{\"statements\":[[0,\"  \"],[1,[18,\"add-form\"],false],[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[9,\"style\",\"margin-top: 18em;z-index:  2;position: relative;margin-left: 200px !important;\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -10px;\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"left thirteen wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n      \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"Forms\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"right two wide column\"],[9,\"style\",\"padding-left: 50px;\"],[7],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n    \"],[6,\"tbody\"],[7],[0,\"\\n    \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n      \"],[6,\"td\"],[9,\"class\",\"left aligned seven wide column\"],[7],[0,\"Name\"],[8],[0,\"\\n      \"],[6,\"td\"],[9,\"class\",\"left aligned seven wide column\"],[7],[0,\"Description\"],[8],[0,\"\\n      \"],[6,\"td\"],[9,\"class\",\"center aligned two wide column\"],[7],[0,\"Actions\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n  \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n    \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"formModel\"]]],null,{\"statements\":[[0,\"      \"],[6,\"tr\"],[7],[0,\"\\n        \"],[6,\"td\"],[9,\"class\",\"left aligned seven wide column\"],[7],[0,\"\\n          \"],[1,[19,1,[\"name\"]],false],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"td\"],[9,\"class\",\"left aligned seven wide column\"],[7],[0,\"\\n          \"],[1,[19,1,[\"description\"]],false],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"td\"],[9,\"class\",\"right aligned two wide column\"],[7],[0,\"\\n          \"],[6,\"p\"],[7],[1,[25,\"edit-form\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"td\"],[9,\"class\",\"left aligned two wide column\"],[7],[0,\"\\n          \"],[6,\"p\"],[7],[1,[25,\"delete-form\",null,[[\"ID\"],[[19,1,[\"id\"]]]]],false],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"td\"],[9,\"class\",\"left aligned five wide column\"],[7],[0,\"\\n\"],[4,\"link-to\",[\"formDisplay\",[25,\"query-params\",null,[[\"id\"],[[19,1,[\"id\"]]]]]],null,{\"statements\":[[0,\"              \"],[6,\"button\"],[9,\"class\",\"ui mini circular labeled icon green button\"],[7],[0,\"View Form\"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"        \"],[8],[0,\"\\n        \"],[6,\"td\"],[9,\"class\",\"left aligned five wide column\"],[7],[0,\"\\n          \"],[6,\"p\"],[7],[1,[25,\"manage-form\",null,[[\"ID\",\"questions\",\"form\",\"fName\"],[[19,1,[\"id\"]],[19,1,[\"questions\"]],[19,1,[]],[19,1,[\"name\"]]]]],false],[0,\"  \"],[8],[0,\"  \\n        \"],[8],[0,\"\\n        \"],[6,\"td\"],[9,\"class\",\"left aligned five wide column\"],[7],[0,\"\\n          \"],[6,\"p\"],[7],[1,[25,\"show-form-questions\",null,[[\"ID\",\"questions\",\"thisForm\"],[[19,1,[\"id\"]],[19,1,[\"questions\"]],[19,1,[]]]]],false],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"questionView\"]]],null,{\"statements\":[[0,\"    \"],[1,[25,\"manage-questions\",null,[[\"model\"],[[20,[\"questionModel\"]]]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/display-forms.hbs" } });
 });
 define("self-start-front-end/templates/components/display-questions", ["exports"], function (exports) {
   "use strict";
@@ -10250,7 +10240,7 @@ define("self-start-front-end/templates/components/display-questions", ["exports"
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "NGZTFNTU", "block": "{\"symbols\":[\"q\"],\"statements\":[[6,\"script\"],[9,\"type\",\"text/javascript\"],[7],[0,\"$(document).ready(function(){$(\\\".rating\\\").rating();});\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\"],[6,\"ol\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"formModel\",\"questions\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"if\",[[19,1,[\"sa\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui input focus\"],[7],[0,\"\\n            \"],[6,\"li\"],[7],[1,[25,\"input\",null,[[\"type\",\"value\"],[\"text\",[20,[\"the\"]]]]],false],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[19,1,[\"ra\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n         \"],[6,\"li\"],[7],[6,\"div\"],[9,\"class\",\"ui large heart rating\"],[9,\"data-max-rating\",\"10\"],[7],[8],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[19,1,[\"tf\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n     \"],[6,\"li\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"inline fields\"],[7],[0,\"\\n           \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"tf\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[0,\"True\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n               \"],[6,\"input\"],[9,\"name\",\"tf\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n               \"],[6,\"label\"],[7],[0,\"False\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"  \\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[19,1,[\"mc\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"grouped fields\"],[7],[0,\"\\n          \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],0],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],1],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],2],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"],[4,\"if\",[[25,\"number-of-mc\",[[19,1,[\"optionNumber\"]],3],null]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],3],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"number-of-mc\",[[19,1,[\"optionNumber\"]],4],null]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],4],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"number-of-mc\",[[19,1,[\"optionNumber\"]],5],null]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],5],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[1]},null],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"button\"],[3,\"action\",[[19,0,[]],\"Submit\"]],[7],[0,\"Submit\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/display-questions.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "QtiAV6X/", "block": "{\"symbols\":[\"q\"],\"statements\":[[6,\"script\"],[9,\"type\",\"text/javascript\"],[7],[0,\"$(document).ready(function(){$(\\\".rating\\\").rating();});\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\"],[6,\"ol\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"formModel\",\"questions\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"if\",[[19,1,[\"sa\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui input focus\"],[7],[0,\"\\n            \"],[6,\"li\"],[7],[1,[25,\"input\",null,[[\"type\",\"value\"],[\"text\",[20,[\"the\"]]]]],false],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[19,1,[\"ra\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n         \"],[6,\"li\"],[7],[6,\"div\"],[9,\"class\",\"ui large heart rating\"],[9,\"data-max-rating\",\"10\"],[7],[8],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[19,1,[\"tf\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n     \"],[6,\"li\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"inline fields\"],[7],[0,\"\\n           \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"tf\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[0,\"True\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n               \"],[6,\"input\"],[9,\"name\",\"tf\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n               \"],[6,\"label\"],[7],[0,\"False\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"  \\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[19,1,[\"mc\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"grouped fields\"],[7],[0,\"\\n          \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],0],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],1],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],2],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"],[4,\"if\",[[25,\"number-of-mc\",[[19,1,[\"optionNumber\"]],3],null]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],3],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"number-of-mc\",[[19,1,[\"optionNumber\"]],4],null]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],4],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"number-of-mc\",[[19,1,[\"optionNumber\"]],5],null]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],5],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[1]},null],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/display-questions.hbs" } });
 });
 define("self-start-front-end/templates/components/edit-admin", ["exports"], function (exports) {
   "use strict";
@@ -10354,7 +10344,7 @@ define("self-start-front-end/templates/components/manage-form", ["exports"], fun
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "P7kKRbvU", "block": "{\"symbols\":[\"question\"],\"statements\":[[0,\"\\n\"],[6,\"button\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\nManage Form Questions\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n           \"],[6,\"h2\"],[7],[0,\" \"],[1,[18,\"fName\"],false],[0,\" \"],[8],[0,\"\\n           \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"questionsModel\"]]],null,{\"statements\":[[0,\"                        \"],[6,\"div\"],[9,\"class\",\"four wide column\"],[7],[0,\"\\n                         \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n                        \"],[8],[0,\"\\n\\n                        \"],[6,\"div\"],[9,\"class\",\"four wide column\"],[7],[0,\"\\n                         \"],[6,\"button\"],[3,\"action\",[[19,0,[]],\"addQuestion\",[19,1,[]],[20,[\"form\"]],[19,1,[\"id\"]]]],[7],[0,\" Add \"],[8],[0,\"\\n                        \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"           \"],[8],[0,\"\\n           \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n         \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n         \"],[6,\"div\"],[9,\"class\",\"ui positive right labeled icon button\"],[7],[0,\"\\n         Done\\n         \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/manage-form.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "swhm66rc", "block": "{\"symbols\":[\"question\"],\"statements\":[[0,\"\\n\"],[6,\"button\"],[9,\"class\",\"ui mini circular labeled icon green button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\nAdd Questions\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n           \"],[6,\"h2\"],[7],[0,\" \"],[1,[18,\"fName\"],false],[0,\" \"],[8],[0,\"\\n           \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"questionsModel\"]]],null,{\"statements\":[[0,\"                        \"],[6,\"div\"],[9,\"class\",\"four wide column\"],[7],[0,\"\\n                         \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n                        \"],[8],[0,\"\\n\\n                        \"],[6,\"div\"],[9,\"class\",\"four wide column\"],[7],[0,\"\\n                         \"],[6,\"button\"],[3,\"action\",[[19,0,[]],\"addQuestion\",[19,1,[]],[20,[\"form\"]],[19,1,[\"id\"]]]],[7],[0,\" Add \"],[8],[0,\"\\n                        \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"           \"],[8],[0,\"\\n           \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n         \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n         \"],[6,\"div\"],[9,\"class\",\"ui positive right labeled icon button\"],[7],[0,\"\\n         Done\\n         \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/manage-form.hbs" } });
 });
 define("self-start-front-end/templates/components/manage-patients", ["exports"], function (exports) {
   "use strict";
@@ -10442,7 +10432,7 @@ define("self-start-front-end/templates/components/show-form-questions", ["export
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "JLCVeDTJ", "block": "{\"symbols\":[\"oneQuestion\",\"q\",\"index\"],\"statements\":[[6,\"div\"],[9,\"class\",\"ui segment\"],[7],[0,\"\\n  \"],[6,\"h3\"],[7],[0,\"Questions: \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"questions\"]]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"fourteen wide column\"],[7],[0,\"\\n        \"],[6,\"li\"],[7],[0,\"  \"],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"two wide column right aligned\"],[7],[0,\"\\n          \"],[6,\"button\"],[3,\"action\",[[19,0,[]],\"removeQuestion\",[19,1,[]],[20,[\"thisForm\"]],[19,1,[\"id\"]],[20,[\"thisForm\",\"id\"]]]],[7],[0,\"Remove\"],[8],[0,\"\\n              \"],[6,\"div\"],[7],[0,\"\\n      \"],[6,\"h4\"],[7],[0,\"Order\"],[8],[0,\"\\n      \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n        \"],[6,\"select\"],[9,\"class\",\"world\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"orderChange\",[19,1,[]],[20,[\"thisForm\"]],[20,[\"thisForm\",\"id\"]]],null],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"questions\"]]],null,{\"statements\":[[0,\"           \\n              \"],[6,\"option\"],[10,\"value\",[19,3,[]],null],[10,\"selected\",[25,\"is-equal\",[[19,1,[]],[19,2,[]]],null],null],[7],[0,\"\\n              \"],[1,[25,\"index-plus-one\",[[19,3,[]]],null],false],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[2,3]},null],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"     \"],[6,\"div\"],[9,\"class\",\"two wide column right aligned\"],[7],[0,\"\\n          \"],[6,\"button\"],[3,\"action\",[[19,0,[]],\"save\",[20,[\"thisForm\"]],[20,[\"thisForm\",\"id\"]]]],[7],[0,\"Save\"],[8],[0,\"\\n     \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/show-form-questions.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "qi6oow7x", "block": "{\"symbols\":[\"oneQuestion\",\"q\",\"index\"],\"statements\":[[6,\"button\"],[9,\"class\",\"ui mini circular labeled icon green button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\nChange Order\\n\"],[8],[0,\"\\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"h3\"],[7],[0,\"Questions: \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"questions\"]]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"fourteen wide column\"],[7],[0,\"\\n        \"],[6,\"li\"],[7],[0,\"  \"],[1,[19,1,[\"questionText\"]],false],[0,\" \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"two wide column right aligned\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui mini circular labeled icon red button\"],[3,\"action\",[[19,0,[]],\"removeQuestion\",[19,1,[]],[20,[\"thisForm\"]],[19,1,[\"id\"]],[20,[\"thisForm\",\"id\"]]]],[7],[6,\"i\"],[9,\"class\",\"remove icon\"],[7],[8],[0,\"Remove\"],[8],[0,\"\\n        \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n          \"],[6,\"select\"],[9,\"class\",\"world\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"orderChange\",[19,1,[]],[20,[\"thisForm\"]],[20,[\"thisForm\",\"id\"]]],null],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"questions\"]]],null,{\"statements\":[[0,\"              \"],[6,\"option\"],[10,\"value\",[19,3,[]],null],[10,\"selected\",[25,\"is-equal\",[[19,1,[]],[19,2,[]]],null],null],[7],[0,\"\\n                \"],[1,[25,\"index-plus-one\",[[19,3,[]]],null],false],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[2,3]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n     \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"  \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui positive right labeled icon button\"],[3,\"action\",[[19,0,[]],\"save\",[20,[\"thisForm\"]],[20,[\"thisForm\",\"id\"]]]],[7],[0,\"\\n      Done\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/show-form-questions.hbs" } });
 });
 define("self-start-front-end/templates/components/show-patient", ["exports"], function (exports) {
   "use strict";
@@ -10594,7 +10584,7 @@ define("self-start-front-end/templates/components/user-info", ["exports"], funct
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "nOapkrA0", "block": "{\"symbols\":[\"oneCountry\",\"oneGender\"],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/home-style.css\"]]],[7],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index pushable\"],[7],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"following bar\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[9,\"id\",\"mini-nav\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n                  \"],[6,\"a\"],[9,\"href\",\"/\"],[7],[0,\"\\n                    \"],[6,\"img\"],[9,\"src\",\"assets/images/mini-logo2.png\"],[7],[8],[0,\"\\n                    \"],[6,\"span\"],[7],[0,\"\\n                      \"],[6,\"i\"],[9,\"class\",\"angle left icon\"],[7],[8],[0,\"\\n                      Go back to home page\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n    \"],[6,\"div\"],[9,\"class\",\"masthead segment bg4\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n          \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n            \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Registration\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n\\n\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui centered very padded segment container\"],[9,\"style\",\"border: none; box-shadow: none; background-color: white;margin-top: -320px;position: relative;z-index:  2;\"],[7],[0,\"\\n        \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui five tablet stackable top attached steps\"],[7],[0,\"\\n          \"],[6,\"a\"],[10,\"class\",[26,[[18,\"accountValue\"],\" step\"]]],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"user plus icon\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Create Account\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"a\"],[10,\"class\",[26,[[18,\"introValue\"],\" step\"]]],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"wpforms icon\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Introduction\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"a\"],[10,\"class\",[26,[[18,\"appointmentValue\"],\" step\"]]],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"bookmark icon\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Book appointment\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"a\"],[10,\"class\",[26,[[18,\"paymentValue\"],\" step\"]]],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"payment icon\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Payment plan\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"a\"],[10,\"class\",[26,[[18,\"confirmValue\"],\" step\"]]],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"check circle icon\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Confirmation\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui attached segment\"],[7],[0,\"\\n          \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"account\"]]],null,{\"statements\":[[0,\"          \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"margin: 0 0; padding-right: 15%; padding-left: 15%\"],[3,\"action\",[[19,0,[]],\"goToIntro\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n            \"],[6,\"legend\"],[7],[0,\"Account Information\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"email\",\"email\",[20,[\"email\"]],\"email\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"lock\",\"password\",[20,[\"encryptedPassword\"]],\"Password\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n            \"],[6,\"legend\"],[7],[0,\"Personal Information\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                  \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"user\",\"text\",[20,[\"givenName\"]],\"First Name\",true]]],false],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                  \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"user\",\"text\",[20,[\"givenName\"]],\"Last Name\",true]]],false],[0,\"\\n                \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"class\",\"date\"],[9,\"type\",\"date\"],[10,\"value\",[18,\"selectedDate\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"assignDate\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n                  \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectGender\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"true\"],[7],[0,\"\\n                    \"],[6,\"option\"],[9,\"selected\",\"selected\"],[7],[0,\"\\n                      Select Gender\\n                    \"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"genderModel\"]]],null,{\"statements\":[[0,\"                      \"],[6,\"option\"],[10,\"value\",[19,2,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"gender\"]],[19,2,[\"name\"]]],null],null],[7],[0,\"\\n                        \"],[1,[19,2,[\"name\"]],false],[0,\"\\n                      \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"phone\",\"text\",[20,[\"phoneNumber\"]],\"Phone Number\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"card\",\"text\",[20,[\"healthCardNumber\"]],\"Health Card Number\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n            \"],[6,\"legend\"],[7],[0,\"Address\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"home\",\"text\",[20,[\"streetNumber\"]],\"Street Number\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"home\",\"text\",[20,[\"streetName\"]],\"Street Name\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"placeholder\",\"value\"],[\"home\",\"text\",\"Unit Number\",[20,[\"apartment\"]]]]],false],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"flag\",\"text\",[20,[\"postalCode\"]],\"Postal/Zip Code\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui three column grid\"],[9,\"id\",\"grid\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n                  \"],[6,\"select\"],[9,\"class\",\"world\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectCountry\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"true\"],[7],[0,\"\\n                    \"],[6,\"option\"],[9,\"selected\",\"selected\"],[7],[0,\"\\n                      Select Country\\n                    \"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"conutryModel\"]]],null,{\"statements\":[[0,\"                      \"],[6,\"option\"],[10,\"value\",[19,1,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"country\"]],[19,1,[\"name\"]]],null],null],[7],[0,\"\\n                        \"],[1,[19,1,[\"name\"]],false],[0,\"\\n                      \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"world\",\"text\",[20,[\"province\"]],\"Province/State\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"world\",\"text\",[20,[\"city\"]],\"City\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"p\"],[7],[0,\"By creating an account you agree to our \"],[6,\"a\"],[9,\"style\",\"color: blue; cursor: pointer; text-decoration: underline;\"],[7],[0,\"Terms & Privacy.\"],[8],[8],[0,\"\\n              \"],[6,\"br\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[9,\"value\",\"Submit\"],[7],[0,\"Next\"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"intro\"]]],null,{\"statements\":[[0,\"            \"],[6,\"p\"],[7],[0,\"Introduction Form Goes Here!!\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToAccount\"]],[7],[0,\"Back\"],[8],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToAppointment\"]],[7],[0,\"Next\"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"appointment\"]]],null,{\"statements\":[[0,\"            \"],[6,\"p\"],[7],[0,\"Appointment Calender Goes Here!!\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\\n              \"],[1,[18,\"book-appointment\"],false],[0,\"\\n\\n\\n              \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToIntro\"]],[7],[0,\"Back\"],[8],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToPayment\"]],[7],[0,\"Next\"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"payment\"]]],null,{\"statements\":[[0,\"\\n            \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/payment-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"cd-pricing-container cd-has-margins\"],[7],[0,\"\\n\\n              \"],[6,\"ul\"],[9,\"class\",\"cd-pricing-list\"],[7],[0,\"\\n                \"],[6,\"li\"],[9,\"class\",\"package\"],[7],[0,\"\\n                  \"],[6,\"header\"],[9,\"class\",\"cd-pricing-header\"],[7],[0,\"\\n                    \"],[6,\"h2\"],[7],[0,\"Basic\"],[8],[0,\"\\n\\n                    \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"95\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-header \"],[0,\"\\n\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-pricing-body\"],[7],[0,\"\\n                    \"],[6,\"ul\"],[9,\"class\",\"cd-pricing-features\"],[7],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Professional assessments\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Physiotherapy diagnosis\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Personal treatment plan\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Education, exercises, advice\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Includes only one appointment\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-body \"],[0,\"\\n\\n                  \"],[6,\"footer\"],[9,\"class\",\"cd-pricing-footer\"],[7],[0,\"\\n                    \"],[6,\"a\"],[9,\"class\",\"cd-option\"],[9,\"href\",\"\"],[7],[0,\"Select\"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-footer \"],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"li\"],[9,\"class\",\"cd-popular package\"],[7],[0,\"\\n                  \"],[6,\"header\"],[9,\"class\",\"cd-pricing-header\"],[7],[0,\"\\n                    \"],[6,\"h2\"],[7],[0,\"Popular\"],[8],[0,\"\\n\\n                    \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"245\"],[8],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-duration\"],[7],[0,\"mo\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-header \"],[0,\"\\n\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-pricing-body\"],[7],[0,\"\\n                    \"],[6,\"ul\"],[9,\"class\",\"cd-pricing-features\"],[7],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Professional assessments\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Physiotherapy diagnosis\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Personal treatment plan\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Education, exercises, advice\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[6,\"em\"],[7],[0,\"unlimited\"],[8],[0,\" appointments for a month\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-body \"],[0,\"\\n\\n                  \"],[6,\"footer\"],[9,\"class\",\"cd-pricing-footer\"],[7],[0,\"\\n                    \"],[6,\"a\"],[9,\"class\",\"cd-option\"],[9,\"href\",\"\"],[7],[0,\"Select\"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-footer \"],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"li\"],[9,\"class\",\"package\"],[7],[0,\"\\n                  \"],[6,\"header\"],[9,\"class\",\"cd-pricing-header\"],[7],[0,\"\\n                    \"],[6,\"h2\"],[7],[0,\"Premier\"],[8],[0,\"\\n\\n                    \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"395\"],[8],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-duration\"],[7],[0,\"3 mo\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-header \"],[0,\"\\n\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-pricing-body\"],[7],[0,\"\\n                    \"],[6,\"ul\"],[9,\"class\",\"cd-pricing-features\"],[7],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Professional assessments\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Physiotherapy diagnosis\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Personal treatment plan\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Education, exercises, advice\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[6,\"em\"],[7],[0,\"unlimited\"],[8],[0,\" appointments for three month\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-body \"],[0,\"\\n\\n                  \"],[6,\"footer\"],[9,\"class\",\"cd-pricing-footer\"],[7],[0,\"\\n                    \"],[6,\"a\"],[9,\"class\",\"cd-option\"],[9,\"href\",\"\"],[7],[0,\"Select\"],[8],[0,\"\\n                  \"],[8],[0,\"  \"],[2,\" .cd-pricing-footer \"],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\" \"],[2,\" .cd-pricing-list \"],[0,\"\\n            \"],[8],[0,\" \"],[2,\" .cd-pricing-container \"],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToAppointment\"]],[7],[0,\"Back\"],[8],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToConfirm\"]],[7],[0,\"Next\"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"confirm\"]]],null,{\"statements\":[[0,\"            \"],[6,\"p\"],[7],[0,\"Confirmation Page Goes Here!!\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToPayment\"]],[7],[0,\"Back\"],[8],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToPaypal\"]],[7],[0,\"Next\"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/user-info.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "HsQkx1n1", "block": "{\"symbols\":[\"oneCountry\",\"oneGender\"],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/home-style.css\"]]],[7],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index pushable\"],[7],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"following bar\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[9,\"id\",\"mini-nav\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n                  \"],[6,\"a\"],[9,\"href\",\"/\"],[7],[0,\"\\n                    \"],[6,\"img\"],[9,\"src\",\"assets/images/mini-logo2.png\"],[7],[8],[0,\"\\n                    \"],[6,\"span\"],[7],[0,\"\\n                      \"],[6,\"i\"],[9,\"class\",\"angle left icon\"],[7],[8],[0,\"\\n                      Go back to home page\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n    \"],[6,\"div\"],[9,\"class\",\"masthead segment bg4\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n          \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n            \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Registration\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n\\n\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui centered very padded segment container\"],[9,\"style\",\"border: none; box-shadow: none; background-color: white;margin-top: -320px;position: relative;z-index:  2;\"],[7],[0,\"\\n        \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui five tablet stackable top attached steps\"],[7],[0,\"\\n          \"],[6,\"a\"],[10,\"class\",[26,[[18,\"accountValue\"],\" step\"]]],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"user plus icon\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Create Account\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"a\"],[10,\"class\",[26,[[18,\"introValue\"],\" step\"]]],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"wpforms icon\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Introduction\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"a\"],[10,\"class\",[26,[[18,\"appointmentValue\"],\" step\"]]],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"bookmark icon\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Book appointment\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"a\"],[10,\"class\",[26,[[18,\"paymentValue\"],\" step\"]]],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"payment icon\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Payment plan\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"a\"],[10,\"class\",[26,[[18,\"confirmValue\"],\" step\"]]],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"check circle icon\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Confirmation\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui attached segment\"],[7],[0,\"\\n          \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"account\"]]],null,{\"statements\":[[0,\"          \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"margin: 0 0; padding-right: 15%; padding-left: 15%\"],[3,\"action\",[[19,0,[]],\"goToIntro\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n            \"],[6,\"legend\"],[7],[0,\"Account Information\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"email\",\"email\",[20,[\"email\"]],\"email\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"lock\",\"password\",[20,[\"encryptedPassword\"]],\"Password\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n            \"],[6,\"legend\"],[7],[0,\"Personal Information\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                  \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"user\",\"text\",[20,[\"givenName\"]],\"First Name\",true]]],false],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                  \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"user\",\"text\",[20,[\"familyName\"]],\"Last Name\",true]]],false],[0,\"\\n                \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"class\",\"date\"],[9,\"type\",\"date\"],[10,\"value\",[18,\"selectedDate\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"assignDate\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n                  \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectGender\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"true\"],[7],[0,\"\\n                    \"],[6,\"option\"],[9,\"selected\",\"selected\"],[7],[0,\"\\n                      Select Gender\\n                    \"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"genderModel\"]]],null,{\"statements\":[[0,\"                      \"],[6,\"option\"],[10,\"value\",[19,2,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"gender\"]],[19,2,[\"name\"]]],null],null],[7],[0,\"\\n                        \"],[1,[19,2,[\"name\"]],false],[0,\"\\n                      \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"phone\",\"text\",[20,[\"phoneNumber\"]],\"Phone Number\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"card\",\"text\",[20,[\"healthCardNumber\"]],\"Health Card Number\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n            \"],[6,\"legend\"],[7],[0,\"Address\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"home\",\"text\",[20,[\"streetNumber\"]],\"Street Number\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"home\",\"text\",[20,[\"streetName\"]],\"Street Name\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"placeholder\",\"value\"],[\"home\",\"text\",\"Unit Number\",[20,[\"apartment\"]]]]],false],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"flag\",\"text\",[20,[\"postalCode\"]],\"Postal/Zip Code\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui three column grid\"],[9,\"id\",\"grid\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n                  \"],[6,\"select\"],[9,\"class\",\"world\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectCountry\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"true\"],[7],[0,\"\\n                    \"],[6,\"option\"],[9,\"selected\",\"selected\"],[7],[0,\"\\n                      Select Country\\n                    \"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"conutryModel\"]]],null,{\"statements\":[[0,\"                      \"],[6,\"option\"],[10,\"value\",[19,1,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"country\"]],[19,1,[\"name\"]]],null],null],[7],[0,\"\\n                        \"],[1,[19,1,[\"name\"]],false],[0,\"\\n                      \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"world\",\"text\",[20,[\"province\"]],\"Province/State\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"world\",\"text\",[20,[\"city\"]],\"City\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"p\"],[7],[0,\"By creating an account you agree to our \"],[6,\"a\"],[9,\"style\",\"color: blue; cursor: pointer; text-decoration: underline;\"],[7],[0,\"Terms & Privacy.\"],[8],[8],[0,\"\\n              \"],[6,\"br\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[9,\"value\",\"Submit\"],[7],[0,\"Next\"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"intro\"]]],null,{\"statements\":[[0,\"            \"],[6,\"p\"],[7],[0,\"Introduction Form Goes Here!!\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToAccount\"]],[7],[0,\"Back\"],[8],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToAppointment\"]],[7],[0,\"Next\"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"appointment\"]]],null,{\"statements\":[[0,\"            \"],[6,\"p\"],[7],[0,\"Appointment Calender Goes Here!!\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\\n              \"],[1,[18,\"book-appointment\"],false],[0,\"\\n\\n\\n              \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToIntro\"]],[7],[0,\"Back\"],[8],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToPayment\"]],[7],[0,\"Next\"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"payment\"]]],null,{\"statements\":[[0,\"\\n            \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/payment-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"cd-pricing-container cd-has-margins\"],[7],[0,\"\\n\\n              \"],[6,\"ul\"],[9,\"class\",\"cd-pricing-list\"],[7],[0,\"\\n                \"],[6,\"li\"],[9,\"class\",\"package\"],[7],[0,\"\\n                  \"],[6,\"header\"],[9,\"class\",\"cd-pricing-header\"],[7],[0,\"\\n                    \"],[6,\"h2\"],[7],[0,\"Basic\"],[8],[0,\"\\n\\n                    \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"95\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-header \"],[0,\"\\n\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-pricing-body\"],[7],[0,\"\\n                    \"],[6,\"ul\"],[9,\"class\",\"cd-pricing-features\"],[7],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Professional assessments\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Physiotherapy diagnosis\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Personal treatment plan\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Education, exercises, advice\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Includes only one appointment\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-body \"],[0,\"\\n\\n                  \"],[6,\"footer\"],[9,\"class\",\"cd-pricing-footer\"],[7],[0,\"\\n                    \"],[6,\"a\"],[9,\"class\",\"cd-option\"],[9,\"href\",\"\"],[7],[0,\"Select\"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-footer \"],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"li\"],[9,\"class\",\"cd-popular package\"],[7],[0,\"\\n                  \"],[6,\"header\"],[9,\"class\",\"cd-pricing-header\"],[7],[0,\"\\n                    \"],[6,\"h2\"],[7],[0,\"Popular\"],[8],[0,\"\\n\\n                    \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"245\"],[8],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-duration\"],[7],[0,\"mo\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-header \"],[0,\"\\n\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-pricing-body\"],[7],[0,\"\\n                    \"],[6,\"ul\"],[9,\"class\",\"cd-pricing-features\"],[7],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Professional assessments\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Physiotherapy diagnosis\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Personal treatment plan\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Education, exercises, advice\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[6,\"em\"],[7],[0,\"unlimited\"],[8],[0,\" appointments for a month\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-body \"],[0,\"\\n\\n                  \"],[6,\"footer\"],[9,\"class\",\"cd-pricing-footer\"],[7],[0,\"\\n                    \"],[6,\"a\"],[9,\"class\",\"cd-option\"],[9,\"href\",\"\"],[7],[0,\"Select\"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-footer \"],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"li\"],[9,\"class\",\"package\"],[7],[0,\"\\n                  \"],[6,\"header\"],[9,\"class\",\"cd-pricing-header\"],[7],[0,\"\\n                    \"],[6,\"h2\"],[7],[0,\"Premier\"],[8],[0,\"\\n\\n                    \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"395\"],[8],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-duration\"],[7],[0,\"3 mo\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-header \"],[0,\"\\n\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-pricing-body\"],[7],[0,\"\\n                    \"],[6,\"ul\"],[9,\"class\",\"cd-pricing-features\"],[7],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Professional assessments\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Physiotherapy diagnosis\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Personal treatment plan\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Education, exercises, advice\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[6,\"em\"],[7],[0,\"unlimited\"],[8],[0,\" appointments for three month\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-body \"],[0,\"\\n\\n                  \"],[6,\"footer\"],[9,\"class\",\"cd-pricing-footer\"],[7],[0,\"\\n                    \"],[6,\"a\"],[9,\"class\",\"cd-option\"],[9,\"href\",\"\"],[7],[0,\"Select\"],[8],[0,\"\\n                  \"],[8],[0,\"  \"],[2,\" .cd-pricing-footer \"],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\" \"],[2,\" .cd-pricing-list \"],[0,\"\\n            \"],[8],[0,\" \"],[2,\" .cd-pricing-container \"],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToAppointment\"]],[7],[0,\"Back\"],[8],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToConfirm\"]],[7],[0,\"Next\"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"confirm\"]]],null,{\"statements\":[[0,\"            \"],[6,\"p\"],[7],[0,\"Confirmation Page Goes Here!!\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToPayment\"]],[7],[0,\"Back\"],[8],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToPaypal\"]],[7],[0,\"Next\"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/user-info.hbs" } });
 });
 define("self-start-front-end/templates/components/user-login", ["exports"], function (exports) {
   "use strict";
@@ -11454,6 +11444,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+4afe42f7"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+b750e976"});
 }
 //# sourceMappingURL=self-start-front-end.map

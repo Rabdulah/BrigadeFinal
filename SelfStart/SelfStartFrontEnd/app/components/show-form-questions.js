@@ -7,6 +7,9 @@ export default Component.extend({
     initialized:false,
     order:[],
     arr: [],
+    modalName: Ember.computed(function(){
+        return 'Show-Questions' + this.get('ID');
+      }),
     actions:{
         removeQuestion(q, f, qid, fid){
             f.get('questions').removeObject(q);
@@ -76,7 +79,18 @@ export default Component.extend({
                 rec.save().then(()=>{
                 });
             });
-            window.location.reload();
-        }
+        },
+        openModal: function () {
+            Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+              closeable: false,
+              onDeny: () => {
+                return true;
+              },
+              onApprove: () => {
+                return true;
+              }
+            })
+              .modal('show');
+          },
     },
 });

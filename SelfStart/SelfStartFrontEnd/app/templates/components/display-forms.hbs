@@ -1,3 +1,4 @@
+
 <div class="masthead segment bg2">
   <div class="ui container">
     <div class="introduction">
@@ -8,55 +9,75 @@
     </div>
   </div>
 </div>
-
 <div style="padding-left: 2em;padding-right: 15em;padding-top: 10em;">
-
+    <br><br>
   <div class="ui vertical pointing menu" style="width: 12rem;">
     <a class="{{formState}} item" {{action "form"}}>
       Forms
     </a>
     <a class="{{questionState}} item" {{action "question"}}>
-      Questinos
+      Questions
     </a>
   </div>
 
   <br><br>
   {{#if formView}}
-  <div class="ui very padded container segment" style="margin-top: -18em;z-index:  2;position: relative;margin-left: 200px !important;">
+  {{add-form}}
+<div class="ui very padded container segment" id="top" style="margin-top: 18em;z-index:  2;position: relative;margin-left: 200px !important;">
+  <div class="ui grid" style="margin-top: -10px;">
+    <div class="left thirteen wide column" style="margin-top: -5px;">
+      <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">Forms</p>
+    </div>
+    <div class="right two wide column" style="padding-left: 50px;">
 
-    <h2> Forms </h2>
-
-    {{#ui-accordion }}
-      {{#each formModel as |form|}}
-        <div class="ui grid">
-          <div class="twelve wide column">
-            <div class="title">
-              <i class="ui dropdown blue icon"></i>
-              {{form.name}}
-            </div>
-            {{show-form-questions questions=form.questions thisForm = form}}
-          </div>
-          <div class="six wide column right aligned">
-            {{manage-form ID=form.id questions=form.questions  form=form fName=form.name}}
-          </div>
-          <a id="questions">
-            {{#link-to 'formDisplay' (query-params id=form.id)}}
-              <button class="ui button">View Form</button>
-            {{/link-to}}
-          </a>
-          <div class="two wide column right aligned">
-            {{edit-form ID=form.id}}
-          </div>
-          <div class="two wide column left aligned">
-            {{delete-form ID=form.id}}
-          </div>
-        </div>
-      {{/each}}
-    {{/ui-accordion}}
-
-    <br><br>
-    {{add-form}}
+    </div>
   </div>
+  <br><br><br><br>
+
+  <table class="ui fixed table" id="tb" style="border: none;border-color: white;">
+    <tbody>
+    <tr style="font-weight: bold;">
+      <td class="left aligned seven wide column">Name</td>
+      <td class="left aligned seven wide column">Description</td>
+      <td class="center aligned two wide column">Actions</td>
+    </tr>
+    </tbody>
+  </table>
+
+  <div class="ui divider"></div>
+
+  <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
+    <tbody>
+    {{#each formModel as |form|}}
+      <tr>
+        <td class="left aligned seven wide column">
+          {{form.name}}
+        </td>
+        <td class="left aligned seven wide column">
+          {{form.description}}
+        </td>
+        <td class="right aligned two wide column">
+          <p>{{edit-form ID=form.id}}</p>
+        </td>
+        <td class="left aligned two wide column">
+          <p>{{delete-form ID=form.id}}</p>
+        </td>
+        <td class="left aligned five wide column">
+          {{#link-to 'formDisplay' (query-params id=form.id)}}
+              <button class="ui mini circular labeled icon green button">View Form</button>
+            {{/link-to}}
+        </td>
+        <td class="left aligned five wide column">
+          <p>{{manage-form ID=form.id questions=form.questions  form=form fName=form.name}}  </p>  
+        </td>
+        <td class="left aligned five wide column">
+          <p>{{show-form-questions ID=form.id questions=form.questions thisForm = form}}</p>
+        </td>
+      </tr>
+    {{/each}}
+    </tbody>
+  </table>
+</div>
   {{/if}}
   {{#if questionView}}
     {{manage-questions model=questionModel}}

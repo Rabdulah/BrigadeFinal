@@ -25,7 +25,7 @@ export default Component.extend({
           return true;
         },
         onApprove: () => {
-
+          let self = this;
           let link = this.get('store').createRecord('rehab-client-link', {
             terminated: this.get('plansData.terminated'),
             RehabilitationPlan: this.get('plansData'),
@@ -57,6 +57,9 @@ export default Component.extend({
               $('.ui.' + this.get('modalName') + '.modal').modal('hide');
               return true;
             } else {
+              link.destroyRecord().then(o => {
+                console.log(o);
+              });
               alert("This Rehab Plan is already assigned to this patient");
             }
           });
