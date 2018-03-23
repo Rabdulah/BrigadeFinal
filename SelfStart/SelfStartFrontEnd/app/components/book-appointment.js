@@ -5,6 +5,7 @@ import $ from 'jquery';
 import moment from 'moment';
 
 
+
 export default Component.extend({
   occurrences: Ember.A(),
   availableSpot: Ember.A(),
