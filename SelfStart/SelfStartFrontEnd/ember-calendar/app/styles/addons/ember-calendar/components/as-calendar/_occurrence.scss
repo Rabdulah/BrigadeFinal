@@ -1,6 +1,6 @@
 @include bem-block(as-calendar(occurrence, selector)) {
-  background-color: rgba(color(alert), .8);
-  border-left: 2px solid color(alert, dark);
+  background-color: rgba(46, 183, 255, 0.8);
+  border-left: 2px solid #0000ff;
   color: color(white);
   left: 0;
   padding: 0 $column-gutter / 4;

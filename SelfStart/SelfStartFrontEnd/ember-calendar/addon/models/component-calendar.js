@@ -12,6 +12,8 @@ export default Calendar.extend({
   dayStartingTime: computedDuration('component.dayStartingTime'),
   dayEndingTime: computedDuration('component.dayEndingTime'),
   timeSlotDuration: computedDuration('component.timeSlotDuration'),
+  startTime: null,
+  endTime: null,
 
   defaultOccurrenceTitle: Ember.computed.oneWay(
     'component.defaultOccurrenceTitle'
