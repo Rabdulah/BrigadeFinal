@@ -24,16 +24,21 @@
 
 </form>
 
+
+
 {{as-calendar
-  title="Ember Schedule"
+  title="Schedule"
   occurrences=occurrences
   defaultTimeZoneQuery="Toronto|New York"
+  showTimeZoneSearch=false
   dayStartingTime="8:00"
   dayEndingTime="20:00"
   timeSlotDuration="00:30"
   onAddOccurrence=(action "calendarAddOccurrence")
   onUpdateOccurrence=(action "calendarUpdateOccurrence")
-  onRemoveOccurrence=(action "calendarRemoveOccurrence")}}
+  onRemoveOccurrence=(action "calendarRemoveOccurrence")
+  onClickOccurrence = (action "calendarUpdateOccurrence")
+}}
 
 
 

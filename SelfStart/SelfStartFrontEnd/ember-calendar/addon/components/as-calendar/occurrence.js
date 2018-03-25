@@ -21,11 +21,15 @@ export default Ember.Component.extend({
     return Ember.String.htmlSafe(`line-height: ${this.get('timeSlotHeight')}px;`);
   }),
 
+  startingTime: null,
+  dayEndingTime: null,
+
   _duration: Ember.computed.oneWay('model.duration'),
   _startingTime: Ember.computed('model.startingTime', function() {
     let time = get(this, 'model.startingTime');
+    this.set('startingTime', moment(time).format('hh:mm A'));
+    this.set('dayEndingTime', moment(time).add(this.get('_occupiedTimeSlots')*30, 'minute').format('hh:mm A'));
     let zone = get(this, 'model.calendar.timeZone');
-
     return moment(time).tz(zone);
   }),
 
