@@ -48,13 +48,13 @@
 
     <fieldset>
       <legend>Book Appointment</legend>
-      <label class="cd-label"> Physiotherapist</label>
-      <p>{{familyName}} {{givenName}}</p>
+      <label class="cd-label"> practitioner </label>
+      <h2>{{familyName}} {{givenName}}</h2>
       <br>
 
       <label class="cd-label">Select Type</label>
       <p class="cd-select icon">
-        <select class="selectedAppointment" value ={{selectAppointmentType}} onchange={{action "updateTime" value="target.value"}}>
+        <select class="selectedAppointment" value ={{selectAppointmentType}} onchange={{action "updateTime" value="target.value"}} required = true>
           <option value=""  selected disabled hidden>Select type</option>
           <option value="i">
             Initial Assessment
@@ -69,7 +69,7 @@
 
       <div class="icon">
         <label class="cd-label">Reason</label>
-        {{input class="star" type="text" value = Reason}}
+        {{input class="star" type="text" value = Reason required = true}}
       </div>
 
       <div class="icon">
@@ -79,7 +79,7 @@
 
       <label class="cd-label">Select Time Slot</label>
       <p class="cd-select icon">
-        <select class="people" value ={{selectedTime}} onchange={{action "setselectedtime" value="target.value"}} >
+        <select class="calendar alternate outline icon" value ={{selectedTime}} onchange={{action "setselectedtime" value="target.value"}} required = true>
           <option value=""  selected disabled hidden>Select TimeSlot</option>
           {{#each timeSlots as |timeslot|}}
             <option value={{timeslot.time}}>

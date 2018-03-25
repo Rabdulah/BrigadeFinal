@@ -39,6 +39,29 @@ export default Component.extend({
     this._super(...arguments);
   },
 
+  didRender() {
+    this._super(...arguments);
+
+    if ($('.floating-labels').length > 0) floatLabels();
+
+    function floatLabels() {
+      var inputFields = $('.floating-labels .cd-label').next();
+      inputFields.each(function () {
+        var singleInput = $(this);
+        //check if  is filling one of the form fields
+        checkVal(singleInput);
+        singleInput.on('change keyup', function () {
+          checkVal(singleInput);
+        });
+      });
+    }
+
+    function checkVal(inputField) {
+      ( inputField.val() == '' ) ? inputField.prev('.cd-label').removeClass('float') : inputField.prev('.cd-label').addClass('float');
+    }
+  },
+
+
   actions: {
     calendarAddOccurrence: function(occurrence) {
       // this.get('occurrences').pushObject(Ember.Object.create({
@@ -113,6 +136,7 @@ export default Component.extend({
       // }));
       this.set('timeSlots', Ember.A());
 
+
       let selected = this.get('selectedappointmentBlock');
       let start_time = selected.startsAt;
       let end_time = selected.endsAt;
@@ -158,7 +182,7 @@ export default Component.extend({
       let self = this;
       //temp client until we get token
       //laptop
-      let client = '5a8cea371af849309c3833d4';
+      let client = '5a99f669da1c862bd0ac4efb';
       //desktop
       // let client = '5a88738e1f0fdc2b94498e81';
       let physio = self.get('selectphysio');
