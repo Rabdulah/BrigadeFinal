@@ -7640,7 +7640,7 @@ define('self-start-front-end/models/assessment-test', ['exports', 'ember-data'],
     form: _emberData.default.belongsTo("form"),
     questions: _emberData.default.hasMany('question'),
     answers: _emberData.default.attr(),
-    rehabPlan: _emberData.default.belongsTo('rehabilitationplan'),
+    rehabLink: _emberData.default.belongsTo('rehab-client-link'),
     completed: _emberData.default.attr()
   });
 });
@@ -7848,7 +7848,8 @@ define('self-start-front-end/models/rehab-client-link', ['exports', 'ember-data'
     terminated: _emberData.default.attr('boolean'),
     RehabilitationPlan: _emberData.default.belongsTo('rehabilitationplan'),
     Patient: _emberData.default.belongsTo('patient'),
-    assigned: _emberData.default.attr('boolean')
+    assigned: _emberData.default.attr('boolean'),
+    AssessmentTests: _emberData.default.hasMany('assessment-test')
   });
 });
 define('self-start-front-end/models/rehabilitationplan', ['exports', 'ember-data'], function (exports, _emberData) {
