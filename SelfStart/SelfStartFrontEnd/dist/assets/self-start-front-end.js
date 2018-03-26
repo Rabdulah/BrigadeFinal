@@ -11390,6 +11390,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+6c40bbf6"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+b7d464c9"});
 }
 //# sourceMappingURL=self-start-front-end.map
