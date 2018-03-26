@@ -182,9 +182,9 @@ export default Component.extend({
       let self = this;
       //temp client until we get token
       //laptop
-      let client = '5a99f669da1c862bd0ac4efb';
+      // let client = '5a99f669da1c862bd0ac4efb';
       //desktop
-      // let client = '5a88738e1f0fdc2b94498e81';
+      let client = '5a88738e1f0fdc2b94498e81';
       let physio = self.get('selectphysio');
       let booking = this.get('DS').createRecord('appointment', {
         reason: self.get('Reason'),

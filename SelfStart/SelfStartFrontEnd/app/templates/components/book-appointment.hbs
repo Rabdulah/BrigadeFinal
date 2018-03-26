@@ -54,7 +54,7 @@
 
       <label class="cd-label">Select Type</label>
       <p class="cd-select icon">
-        <select class="selectedAppointment" value ={{selectAppointmentType}} onchange={{action "updateTime" value="target.value"}} required = true>
+        <select class="layer" value ={{selectAppointmentType}} onchange={{action "updateTime" value="target.value"}} required = true>
           <option value=""  selected disabled hidden>Select type</option>
           <option value="i">
             Initial Assessment
@@ -79,7 +79,7 @@
 
       <label class="cd-label">Select Time Slot</label>
       <p class="cd-select icon">
-        <select class="calendar alternate outline icon" value ={{selectedTime}} onchange={{action "setselectedtime" value="target.value"}} required = true>
+        <select class="date" value ={{selectedTime}} onchange={{action "setselectedtime" value="target.value"}} required = true>
           <option value=""  selected disabled hidden>Select TimeSlot</option>
           {{#each timeSlots as |timeslot|}}
             <option value={{timeslot.time}}>
