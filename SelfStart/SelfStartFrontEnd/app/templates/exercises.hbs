@@ -2,42 +2,23 @@
     {{add-exercises Images=model.image}}    
 
     <br><br><br><br>
-    {{!-- <table class="ui single line table"> --}}
+
+    <div class="ui form" >
+      <div class="fields" >
+        <div class="ui search">
+           {{input type="text" placeholder="Search..." }}
+        </div>
+      </div>
+    </div>
   
-    {{!-- <thead>
-    <tr>
-      <th>Exercise Name</th>
-      <th>Description</th>
-      <th></th>
-    </tr>
-    </thead> --}}
-
-    {{!-- <tbody> --}}
-      {{!-- {{#each model.exercise as |Exercise|}} --}}
-        {{!-- <tr>
-          <td>{{Exercise.name}}</td>
-          <td>{{Exercise.description}}</td>
-          <td>
-            <div class="four wide column right aligned">
-              {{edit-exercises ID=Exercise.id images=Exercise.images}}
-            </div>
-            <div class="four wide column left aligned">
-              {{delete-exercises ID=Exercise.id}} 
-            </div>
-          </td>
-        </tr> --}}
-      {{!-- {{/each}} --}}
-    {{!-- </tbody> --}}
-
-  {{!-- </table> --}}
 
 <div class ="ui five column grid">
   {{#each model.exercise as |Exercise|}}
     <div class="column">
-    <div class="ui fluid card" style="max-height:300px;min-height:300px"> 
-      <div class = "image" style="max-height:105px;">
+    <div class="ui fluid card" style="max-height:300px;min-height:300px;"> 
+      <div class = "image" style="max-height:105px; min-width:141.63px;">
       {{#if Exercise.images}}
-        {{#slick-slider autoplay=true arrows=false}}
+        {{#slick-slider autoplay=true arrows=false pauseOnHover=true}}
             {{#each Exercise.images as |Image|}}
               <div class ="box">
                 <img style="max-height:105px;" src="{{Image.imageData}}">
@@ -45,7 +26,7 @@
             {{/each}}
         {{/slick-slider}}
           {{else}}
-            <img style="max-height:105px;" src="assets/images/NoImagesSaved.jpg">
+            <img style="max-height:105px;min-width:141.63px;" src="assets/images/NoImagesSaved.jpg">
           {{/if}}
     </div> 
     <div class="content">

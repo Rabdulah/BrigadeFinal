@@ -1,38 +1,55 @@
 {{#if isEditing}}
 
 {{#ui-modal name=modalName class=modalName}}
- {{!-- <div class="ui fluid raised very padded text container segment"> --}}
-   <table class="ui single line table">
-     <thead>
-    <tr>
-      <th>Image Name</th>
-      <th>Image</th>
-    </tr>
-    </thead>
+    
+    <div class="scrolling content">
+        <div class ="ui center alligned five column grid">
+            {{#each Images as |Image|}}
+                <div class ="column">
+                <div class="ui fluid card" style="max-height:221px;min-height:221px;">
+                    <div class="content">
+                         <div class ="sidebar-box" style="max-height:50px;min-height:50px;">
+                            <p class ="sidebar-box">{{Image.name}}</p>
+                        </div>
+                    </div>
+                    <div class = "content" style="min-height:105px;">
+                        <div class="image">
+                            <img style="max-height:105px;" class = "ui small image" src="{{Image.imageData}}">
+                        </div>
+                    </div>
+                    <div class="extra content">
+                        <div class="ui toggle checkbox">
+                            {{input type="checkbox" checked=cbState change=(action "addTempImage" Image) }}
+                            <label>Add</label>
+                        </div>
+                    </div>
+                </div>
+                </div>
+                {{!-- <div class ="column" style="max-height:160px; min-height:160px;">
+                    <div class="ui toggle checkbox">
+                        {{input type="checkbox" checked=cbState change=(action "addTempImage" Image) }}
+                        <label style="max-width:50px;">{{Image.name}}</label>
+                    </div>
+                    <br><br>
+                    <img style="max-height:105px;" class = "ui small image" src="{{Image.imageData}}">
+                </div>
+                <br><br><br> --}}
+            {{/each}}
+        </div>
+    </div>
 
-    <tbody>
-      {{#each Images as |Image|}}
-        <tr>
-          <td>{{Image.name}}</td>
-          <td>
-            <img class = "ui small image" src="{{Image.imageData}}">
-            <br>
-            <div class="ui toggle checkbox">
-                {{input type="checkbox" checked=cbState change=(action "addTempImage" Image) }}
-                <label>Add</label>
-            </div>
-          </td>
-        </tr>
-      {{/each}}
-    </tbody>
-
-  </table>
-    <br><br>
-  <div class="actions">
+    <div class="actions">
         <div class="ui positive button">Save</div>
         <div class="ui black deny button">Cancel</div>
+        <div class="ui form" >
+            <div class="fields" >
+                <div class="ui fluid search">{{input type="text" placeholder="Search..." }}</div>
+            </div>
+        </div>
     </div>
-{{!-- </div> --}}
+
+
+    <br><br>
 {{/ui-modal}}
 
 <div class="ui fluid raised very padded text container segment">
@@ -197,9 +214,9 @@
                 </div>
             <br>
                 <button class="ui button" {{action 'openModal'}}>Assign Images from Existing Images</button>
-            <br><br>
-        </div>
+            <br><br><br><br>
 
+</div>
         <div class = "inline">
             <button class="ui button" type="submit" {{action "submit"}}>Submit</button>
             <button class="ui button" type="submit" {{action "cancel"}}>Cancel</button>
