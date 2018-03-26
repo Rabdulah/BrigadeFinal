@@ -30,9 +30,14 @@ footer, header, hgroup, menu, nav, section, main {
 body {
   line-height: 1;
 }
-ol, ul {
+
+ul {
   list-style: none;
 }
+//original
+/* ol, ul {
+  list-style: none;
+} */
 blockquote, q {
   quotes: none;
 }

@@ -19,15 +19,6 @@ export default Component.extend({
   exerID: null,
   secQueue: [],
   removeImages: [],
-  init: function() {
-    this._super();
-
-    // console.log(this.images)
-    // // var secQ = []
-    // this.images.forEach(file => {
-    //   this.secQueue.pushObject(file);
-    // });
-  },
 
   labelArray: [
     'height: 6.25em',
@@ -89,10 +80,10 @@ export default Component.extend({
   Duration: Ember.computed.oneWay('exerciseData.duration'),
   TargetedDate: Ember.computed.oneWay('exerciseData.targetDate'),
   MMURL: Ember.computed.oneWay('exerciseData.multimediaURL'),
-
+  tempObj: [],
   Imgs: Ember.computed.oneWay('exerciseData.images'),
 
-
+  
   modalName: Ember.computed(function () {
     return 'editExercise' + this.get('ID');
   }),
@@ -145,6 +136,15 @@ export default Component.extend({
     },
 
     openModal: function () {
+
+      let self = this;
+      self.set('tempObj',[]);
+      this.set('exerciseData', this.get('DS').peekRecord('exercise', this.get('ID')));
+      this.get('obj').forEach(function(o) {
+          self.get('tempObj').pushObject(Ember.Object.create({
+          obj: o,
+          }));
+      })
       // window.location.reload();
       this.secQueue.clear();
       console.log(this.images);
@@ -152,7 +152,7 @@ export default Component.extend({
         this.secQueue.pushObject(file);
       });
 
-      this.set('exerciseData', this.get('DS').peekRecord('exercise', this.get('ID')));
+      
 
 
       Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
@@ -210,12 +210,17 @@ export default Component.extend({
           // this.get('DS').findRecord('image', this.get('ID')).then((rec) => {
           //   rec.save();
           // });
+          let temp = [];
+          this.get('tempObj').forEach(function(o) {
+            temp.pushObject(o.obj);
+          })
 
           this.get('DS').findRecord('exercise' , this.get('ID')).then((rec)=>{
+            console.log(temp);
             rec.set('name', this.get('Name'));
             rec.set('description', this.get('Description'));
             rec.set('authorName', this.get('AuthName'));
-            rec.set('objective', this.get('Objective'));
+            rec.set('objectives', temp);
             rec.set('actionStep', this.get('ActionSteps'));
             rec.set('location', this.get('Location'));
             rec.set('frequency', this.get('Frequency'));
@@ -230,7 +235,7 @@ export default Component.extend({
           });
 
 
-          window.location.reload();
+          // window.location.reload();
 
           this.secQueue.clear();
           this.removeImages.clear();
@@ -242,9 +247,11 @@ export default Component.extend({
     },
 
 
-    addObjective: function(){
-      let newObj = this.get('Objective');
-      this.get('obj').pushObject(newObj);
+    addObjective: function(index){
+      let newObj = Ember.Object.create({
+        obj: this.get('Objective'),
+      })
+      this.get('tempObj').pushObject(newObj);
       this.set('Objective', "");
     },
 
@@ -254,12 +261,25 @@ export default Component.extend({
       this.set('ActionSteps', "");
     },
 
+    editObjective(name){
+      // let tracklistTable = document.getElementById(name);
+      // tracklistTable.innerHTML +=  '<div class="ui input"> <input type="text" value=' + name+'></div>';
+
+    },
+
     deleteNewFile(file){
       this.get('queue').removeObject(file);
       if (Ember.isEmpty(this.get('queue'))) {
         this.set('flag', false);
       }
-    }
+    },
 
+    deleteObjective(o) {
+      this.get('tempObj').removeObject(o);
+    },
+    
+    deleteActionStep(aS) {
+      this.get('actionStep').removeObject(aS);
+    },
   }
 });

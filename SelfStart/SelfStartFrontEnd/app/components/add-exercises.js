@@ -82,7 +82,7 @@ export default Component.extend({
             maximumFileSize: 6
           });
 
-          console.log(file);
+          (file);
 
           // var newFile = this.get('DS').createRecord(this.get('model'), {
           //     name: this.ImageName,
@@ -117,8 +117,12 @@ export default Component.extend({
       this.set('ActionSteps', "");
     },
 
-    addObjective(){
-      let newObj = this.get('Objective');
+    addObjective(index){
+      let newObj = Ember.Object.create({
+        obj: this.get('Objective'),
+        id: index
+      })
+      
       this.get('obj').pushObject(newObj);
       this.set('Objective', "");
     },
@@ -154,9 +158,9 @@ export default Component.extend({
       // this.exerciseData.save().then(function(){
       // id = tempExer._internalModel.id;
       // });
-      // console.log(this.tempExercise._internalModel);
-      // console.log(this.id);
-      // console.log(this.id);
+      // (this.tempExercise._internalModel);
+      // (this.id);
+      // (this.id);
       // this.tempExercise.save();
     },
 
@@ -190,7 +194,7 @@ export default Component.extend({
       //         imageData: file.base64Image,
       //         exercise: null
       //       });
-      //       console.log(newFile);
+      //       (newFile);
       //       newFile.save();//.then(() => {
       //         // // counter++;
       //         // if (this.get('queue').length == counter) {
@@ -205,8 +209,8 @@ export default Component.extend({
       //     // }
       //   });
 
-      // console.log("This is save image");
-      // console.log(saveImage);
+      // ("This is save image");
+      // (saveImage);
 
       let exercise = this.get('DS').createRecord('exercise', {
         name:this.get('Name'),
@@ -223,7 +227,7 @@ export default Component.extend({
         images: []
       });
 
-      console.log(this.queue);
+      (this.queue);
 
       let secQueue = [];
 
@@ -233,11 +237,11 @@ export default Component.extend({
 
       exercise.save().then((exer)=>{
         var saveImage = [];
-        console.log(exer.id);
-        console.log(this.queue);
-        console.log(secQueue);
+        (exer.id);
+        (this.queue);
+        (secQueue);
         secQueue.forEach(file => {
-          console.log("akjdajsdkasjd");
+          ("akjdajsdkasjd");
           var newFile = this.get('DS').createRecord(this.get('model'), {
             name: file.name,
             size: file.size,
