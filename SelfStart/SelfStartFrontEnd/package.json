@@ -44,6 +44,7 @@
     "ember-radio-button": "^1.2.1",
     "ember-resolver": "^4.0.0",
     "ember-responsive": "^2.0.5",
+    "ember-sortable": "^1.11.2",
     "ember-source": "~2.16.0",
     "ember-stylish-buttons": "0.0.17",
     "ember-truth-helpers": "^2.0.0",

@@ -65,6 +65,8 @@ var physiotherapests = require('./routes/physiotherapests');
 var treatments = require('./routes/treatments');
 var genders = require('./routes/genders');
 var rehabClientLinks = require('./routes/rehabClientLinks');
+var exerciseList = require('./routes/exerciseList');
+
 
 // REGISTER OUR ROUTES -------------------------------
 app.use('/images', photos);
@@ -85,6 +87,8 @@ app.use('/administrators', administrators);
 app.use('/treatments', treatments);
 app.use('/physiotherapests', physiotherapests);
 app.use('/rehabClientLinks', rehabClientLinks);
+app.use('/exerciseLists', exerciseList);
+
 //Routes for our API
 router.route('/authenticate')
     .post(function (request, response, next) {

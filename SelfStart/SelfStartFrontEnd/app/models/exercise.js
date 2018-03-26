@@ -7,13 +7,13 @@ export default DS.Model.extend({
   authorName:DS.attr(),
   actionSteps:DS.attr(),
   location:DS.attr(),
-  frequency:DS.attr(),
+  sets:DS.attr('Number'),
+  reps:DS.attr('Number'),
   duration:DS.attr(),
   multimediaURL:DS.attr(),
   targetDate:DS.attr(),
-
-  images:DS.hasMany('image')
-  // rehabilitationPlan:DS.belongsTo('rehabilitationplan',{ async: true })
+  images:DS.hasMany('image'),
+  exerciseList:DS.hasMany('exercise-list')
   // images:DS.attr()
 
 });

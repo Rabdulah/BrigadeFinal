@@ -55,7 +55,7 @@ router.route('/')
 
 router.route('/:rehabilitation_id')
     .get( function (request, response) {
-        Rehabilitation.Model.findById(request.params.rehabilitations_id, function (error, rehabilitations) {
+        Rehabilitation.Model.findById(request.params.rehabilitation_id, function (error, rehabilitations) {
             if (error) {
                 response.send({error: error});
             }
@@ -78,12 +78,10 @@ router.route('/:rehabilitation_id')
                 rehabilitation.planName = request.body.rehabilitationplan.planName;
                 rehabilitation.description = request.body.rehabilitationplan.description;
                 rehabilitation.physioID = request.body.rehabilitationplan.physioID;
-                rehabilitation.goal = request.body.rehabilitationplan.goal;
                 rehabilitation.date = request.body.rehabilitationplan.date;
-                rehabilitation.timeToComplete = request.body.rehabilitationplan.timeToComplete;
-                rehabilitation.plan = request.body.rehabilitationplan.plan;
-                rehabilitation.test = request.body.rehabilitationplan.test;
-                rehabilitation.exercise = request.body.rehabilitationplan.exercise;
+                //rehabilitation.plan = request.body.rehabilitationplan.plan;
+                rehabilitation.assessmentTests = request.body.rehabilitationplan.assessmentTests;
+                rehabilitation.exerciseList = request.body.rehabilitationplan.exerciseList;
 
 
 

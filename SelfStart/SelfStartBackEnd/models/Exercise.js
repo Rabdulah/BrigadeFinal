@@ -1,20 +1,19 @@
 var mongoose = require('mongoose');
+var mongoosePaginate = require('mongoose-paginate');
 
 var exercisesSchema = mongoose.Schema({
     name: String,
     description: String,
-    objectives: [String],
     authorName: String,
     actionSteps: [String],
-    location: String,
-    frequency: Number,
-    duration: Number,
+    sets: Number,
+    reps: Number,
+    duration: String,
     multimediaURL: String,
-    targetDate: Date,
-
     images: [{type: mongoose.Schema.ObjectId, ref: 'Images'}],
-
-    rehabilitationPlan: {type: mongoose.Schema.ObjectId, ref: 'RehabilitationPlans'},
+    exerciseList: [{type: mongoose.Schema.ObjectId, ref: 'ExerciseList'}],
 });
+
+exercisesSchema.plugin(mongoosePaginate);
 var ExercisesSchema = mongoose.model('exercise', exercisesSchema);
 exports.Model = ExercisesSchema;

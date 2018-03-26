@@ -54,7 +54,7 @@ router.route('/:treatments_id')
         })
         
         .delete(function (request, response) {
-            Treatment.Model.findByIdAndRemove(request.params.recommendations_id, function (error, deleted) {
+            Treatment.Model.findByIdAndRemove(request.params.treatments_id, function (error, deleted) {
                 if (!error) {
                     response.json({recommendation: deleted});
                 }

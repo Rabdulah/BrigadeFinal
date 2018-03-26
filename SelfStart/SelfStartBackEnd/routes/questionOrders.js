@@ -18,9 +18,9 @@ router.route('/')
             });
         });
 
-router.route('/:QuestionOrder_id')
+router.route('/:questionOrders_id')
         .get(function (request, response) {
-            QuestionOrder.Model.findById(request.params.questionOrder_id, function (error, questionOrder) {
+            QuestionOrder.Model.findById(request.params.questionOrders_id, function (error, questionOrder) {
                 if (error) {
                     response.send({error: error});
                 }
@@ -31,7 +31,7 @@ router.route('/:QuestionOrder_id')
         })
         
         .put(function (request, response) {
-            QuestionOrder.Model.findById(request.params.question_id, function (error, questionOrder) {
+            QuestionOrder.Model.findById(request.params.questionOrders_id, function (error, questionOrder) {
                 if (error) {
                     response.send({error: error});
                 }
@@ -55,7 +55,7 @@ router.route('/:QuestionOrder_id')
         })
         
         .delete(function (request, response) {
-            QuestionOrder.Model.findByIdAndRemove(request.params.questionOrder_id, function (error, deleted) {
+            QuestionOrder.Model.findByIdAndRemove(request.params.questionOrders_id, function (error, deleted) {
                 if (!error) {
                     response.json({questionOrder: deleted});
                 }

@@ -20,7 +20,7 @@ router.route('/')
 
 router.route('/:assessment_id')
     .get( function (request, response) {
-        AssessmentTests.Model.findById(request.params.assess_id, function (error, assessmentTest) {
+        AssessmentTests.Model.findById(request.params.assessment_id, function (error, assessmentTest) {
             if (error) {
                 response.send({error: error});
             }
@@ -30,7 +30,7 @@ router.route('/:assessment_id')
         });
     })
     .put( function (request, response) {
-        AssessmentTests.Model.findById(request.params.city_id, function (error, assessmentTest) {
+        AssessmentTests.Model.findById(request.params.assessment_id, function (error, assessmentTest) {
             if (error) {
                 response.send({error: error});
             }
@@ -55,7 +55,7 @@ router.route('/:assessment_id')
         });
     })
     .delete( function (request, response) {
-        AssessmentTests.Model.findByIdAndRemove(request.params.city_id,
+        AssessmentTests.Model.findByIdAndRemove(request.params.assessment_id,
             function (error, deleted) {
                 if (!error) {
                     response.json({assessmentTest: deleted});
