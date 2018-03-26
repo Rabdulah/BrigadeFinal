@@ -1,6 +1,9 @@
-<button class = "ui mini circular icon green button" {{action 'openModal'}} title="Edit">
-  <i class=" pencil icon"> </i>
-</button>
+{{!-- <button class = "ui green button" {{action 'openModal'}} title="Edit">
+  Edit
+</button> --}}
+
+<button style="min-width:1px" class="ui positive button" {{action 'openModal'}}>Edit</button>
+ {{!-- <div class="ui green button" {{action 'openModal'}}>Edit</div> --}}
 
 {{#ui-modal name=modalName class=modalName}}
    <div class="ui fluid raised very padded text container segment">

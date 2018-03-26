@@ -134,6 +134,7 @@ export default Component.extend({
 
                 newFile.save();
             });
+            this.queue.clear();
 
             // window.location.reload();
             // windows.location.reload();

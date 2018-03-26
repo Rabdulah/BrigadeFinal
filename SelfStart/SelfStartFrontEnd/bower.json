@@ -1,6 +1,8 @@
 {
   "name": "self-start-front-end",
   "dependencies": {
-    "semantic-ui": "^2.2.13"
+    "semantic-ui": "^2.2.13",
+    "moment": "^2.21.0",
+    "slick-carousel": "^1.8.1"
   }
 }

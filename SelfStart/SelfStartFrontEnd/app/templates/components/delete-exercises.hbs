@@ -1,6 +1,12 @@
-<button class = "ui mini circular icon red button" {{action 'openModal'}} title="Delete">
-  <i class=" remove icon"> </i>
-</button>
+{{!-- <div class = "ui button" {{action 'openModal'}} title="Delete"> --}}
+  {{!-- <i class=" remove icon"> </i> --}}
+  {{!-- Delete --}}
+{{!-- </div> --}}
+
+  <button style="min-width:1px" class="ui button" {{action 'openModal'}}>Delete</button>
+
+{{!-- <div class="ui basic red button" {{action 'openModal'}}>Delete</div> --}}
+
 
 {{#ui-modal name=modalName class=modalName}}
   <div class="ui icon header">

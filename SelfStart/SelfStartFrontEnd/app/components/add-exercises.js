@@ -3,6 +3,7 @@ import Component from '@ember/component';
 import { inject } from '@ember/service';
 import Ember from 'ember';
 import fileObject from "../utils/file-object";
+import moment from 'moment';
 
 export default Component.extend({
     DS: inject('store'),
@@ -135,7 +136,7 @@ export default Component.extend({
           },
 
         submit: function() {
-           
+            let date = moment().format("MMM Do YY");
             let exercise = this.get('DS').createRecord('exercise', {
                 name:this.get('Name'),
                 description:this.get('Description'),
@@ -147,7 +148,8 @@ export default Component.extend({
                 duration:this.get('Duration'),
                 multimediaURL:this.get('MMURL'),
                 targetDate:this.get('TargetDate'),
-                images: []
+                images: [],
+                dateCreated: date
             });
 
             console.log(this.queue);

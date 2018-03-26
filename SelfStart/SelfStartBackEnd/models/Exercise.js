@@ -13,6 +13,9 @@ var exercisesSchema = mongoose.Schema({
     targetDate: Date,
     images: [{type: mongoose.Schema.ObjectId, ref: 'Images'}],
     rehabilitationPlan: {type: mongoose.Schema.ObjectId, ref: 'RehabilitationPlans'},
+    dateCreated: {
+        type: String
+    }
 });
 var ExercisesSchema = mongoose.model('exercise', exercisesSchema);
 exports.Model = ExercisesSchema;

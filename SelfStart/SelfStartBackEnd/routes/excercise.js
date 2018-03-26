@@ -5,9 +5,11 @@ var Exercise = require('../models/Exercise');
 router.route('/')
     .post( function (request, response) {
         var exercise = new Exercise.Model(request.body.exercise);
-        exercise.save(function (error) {
+        exercise.save(function (error, exercise) {
             if (error) response.send(error);
-            response.json({exercise: exercise});
+            else{
+                response.json({exercise: exercise});
+            }
         });
     })
     .get( function (request, response) {

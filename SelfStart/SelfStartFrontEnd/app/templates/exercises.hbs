@@ -1,19 +1,20 @@
 <div id="content">
     {{add-exercises Images=model.image}}    
-    <br><br>
-    <table class="ui single line table">
+
+    <br><br><br><br>
+    {{!-- <table class="ui single line table"> --}}
   
-    <thead>
+    {{!-- <thead>
     <tr>
       <th>Exercise Name</th>
       <th>Description</th>
       <th></th>
     </tr>
-    </thead>
+    </thead> --}}
 
-    <tbody>
-      {{#each model.exercise as |Exercise|}}
-        <tr>
+    {{!-- <tbody> --}}
+      {{!-- {{#each model.exercise as |Exercise|}} --}}
+        {{!-- <tr>
           <td>{{Exercise.name}}</td>
           <td>{{Exercise.description}}</td>
           <td>
@@ -24,10 +25,57 @@
               {{delete-exercises ID=Exercise.id}} 
             </div>
           </td>
-        </tr>
-      {{/each}}
-    </tbody>
+        </tr> --}}
+      {{!-- {{/each}} --}}
+    {{!-- </tbody> --}}
 
-  </table>
+  {{!-- </table> --}}
+
+<div class ="ui five column grid">
+  {{#each model.exercise as |Exercise|}}
+    <div class="column">
+    <div class="ui fluid card" style="max-height:300px;min-height:300px"> 
+      <div class = "image" style="max-height:105px;">
+      {{#if Exercise.images}}
+        {{#slick-slider autoplay=true arrows=false}}
+            {{#each Exercise.images as |Image|}}
+              <div class ="box">
+                <img style="max-height:105px;" src="{{Image.imageData}}">
+              </div>
+            {{/each}}
+        {{/slick-slider}}
+          {{else}}
+            <img style="max-height:105px;" src="assets/images/NoImagesSaved.jpg">
+          {{/if}}
+    </div> 
+    <div class="content">
+      <a>{{Exercise.name}}</a>
+    </div>
+    <div class="extra content" >
+      <div class ="sidebar-box" style="max-height:50px;min-height:50px;">
+        {{#if Exercise.description}}
+        <p class ="sidebar-box">Description: {{Exercise.description}}</p>
+        <p class="read-more"></p> 
+        {{else}}
+        <p class ="sidebar-box">No Description</p>
+        {{/if}}
+      </div>
+    </div>
+    <div class="extra content" style="padding-left:21px;">
+      <div Style="background-color: white;margin-left: -12px;" class="mini ui buttons">
+        {{edit-exercises ID=Exercise.id images=Exercise.images}}
+        <div class="or"></div>
+        {{delete-exercises ID=Exercise.id}}
+      </div>
+    </div>
+    <div class="extra content">
+      <a>
+        <span class="date">{{Exercise.dateCreated}}</span>
+      </a>
+    </div>
+  </div>
+  </div>
+  {{/each}}
+  </div>
 
 </div>

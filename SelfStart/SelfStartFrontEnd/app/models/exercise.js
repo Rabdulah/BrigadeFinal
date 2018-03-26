@@ -11,7 +11,8 @@ export default DS.Model.extend({
     duration:DS.attr(),
     multimediaURL:DS.attr(),
     targetDate:DS.attr(),
-    images:DS.hasMany('image')
+    images:DS.hasMany('image'),
+    dateCreated:DS.attr()
     // rehabilitationPlan:DS.belongsTo('rehabilitationplan',{ async: true })
     // images:DS.attr()
 });
