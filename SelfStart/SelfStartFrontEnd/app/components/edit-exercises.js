@@ -4,6 +4,8 @@ import fileObject from "../utils/file-object";
 
 export default Component.extend({
     DS: Ember.inject.service('store'),
+    cbState: false,
+    temp: [],
      // ImageName: null,
      images: null,
      model: 'image',
@@ -117,27 +119,17 @@ export default Component.extend({
 
       this.secQueue.removeObject(image);
       this.removeImages.pushObject(image);
-     
-      // this.get('DS').findRecord('image' , image.id).then((im)=>{
-      //   im.destroyRecord();//.then(() =>{
-      //     // return true;
-      //   // });
-      //   this.secQueue.removeObject(image);
-      //   this.get('DS').findRecord('image', image.id).then((rec) => {
-      //     rec.save();
-      //   });
-        // this.set(this.images, null);
-        // this.get('DS').findRecord('exercise' , this.exerID).then((im)=>{
-          // this.set(this.images, im.images);
-        // });
-
-      // });
-      // this.images.removeObject(image);
     },
 
     done: function () {
         this.get('queue').clear();
         this.set('flag', false);
+    },
+
+    addTempImage: function(image) {
+      console.log(image);
+      this.temp.push(image);
+      console.log(image.name);
     },
 
       openModal: function () {
@@ -153,7 +145,8 @@ export default Component.extend({
         Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
           closable: false,
           transition: 'horizontal flip',
-          detachable: false,
+          centered: false,
+          // dimmerSettings: { opacity: 0.25 },
           onDeny: () => {
             this.secQueue.clear();
             this.removeImages.clear();
@@ -170,6 +163,13 @@ export default Component.extend({
                 rec.save();
               });
             });
+            let secQueue2 = [];
+            let self = this;
+            this.get('temp').forEach(function(obj) {
+              secQueue2.push(obj);
+            })
+
+            this.get('temp').clear();
 
             this.queue.forEach(file => {
             
@@ -200,9 +200,15 @@ export default Component.extend({
             });
             });
 
-            // this.get('DS').findRecord('image', this.get('ID')).then((rec) => {
-            //   rec.save();
-            // });
+            this.get('DS').findRecord('exercise', this.get('ID')).then((rec)=>{
+              secQueue2.forEach(file => {
+                this.get('DS').findRecord(this.get('model'), file.get('id')).then((obj) =>{
+                    obj.get('exercise').pushObject(rec); 
+                    obj.save();
+                    rec.get('images').pushObject(obj);
+              })
+            });
+            });
 
             this.get('DS').findRecord('exercise' , this.get('ID')).then((rec)=>{
               rec.set('name', this.get('Name'));

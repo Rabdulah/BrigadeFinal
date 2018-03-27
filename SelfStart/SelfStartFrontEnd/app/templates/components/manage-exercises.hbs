@@ -1,0 +1,96 @@
+<div class="ui form" >
+
+    <div class="inline fields" >
+        <div class = "field">
+            <div class="ui search">
+                {{input type="text" placeholder="Search..." }}
+            </div>
+        </div>
+
+        <div class="field">
+            <div class="ui radio checkbox">
+                {{input type="checkbox" checked=tableView change=(action "tableView") }}
+                <label>Table View</label>
+            </div>
+        </div>
+    
+        <div class="field">
+            <div class="ui radio checkbox">
+                {{input type="checkbox" checked=cardView change=(action "cardView") }}
+                <label>Card View</label>
+            </div>
+        </div>
+
+    </div>
+</div>
+
+
+{{#if cardView}}
+<div class ="ui five column grid">
+  {{#each model.exercise as |Exercise index|}}
+    <div class="column">
+        <div class="ui fluid card" style="max-height:240px;min-height:240px;"> 
+            <div class = "image" style="max-height:105px;min-height:105px;min-width:141.63px;">
+                {{#if Exercise.images}}
+                    {{#slick-slider autoplay=true arrows=false id=index}}
+                        {{#each Exercise.images as |Image|}}
+                            <div class ="box">
+                                <img style="max-height:105px;" src="{{Image.imageData}}">
+                            </div>
+                        {{/each}}
+                    {{/slick-slider}}
+                {{else}}
+                    <img src="assets/images/NoImagesSaved.jpg">
+                {{/if}}
+            </div> 
+            
+            <div class="content" style="max-height:50px;min-height:50px;">
+                <p>{{Exercise.name}}</p>
+            </div>
+    
+            <div class="extra content" style="padding-left:21px;">
+                <div Style="background-color: white;margin-left: -12px;" class="mini ui buttons">
+                    {{edit-exercises ID=Exercise.id images=Exercise.images Im=model.image}}
+                    <div class="or"></div>
+                    {{delete-exercises ID=Exercise.id}}
+                </div>
+            </div>
+            
+            <div class="extra content">
+                <a><span class="date">{{Exercise.dateCreated}}</span></a>
+            </div>
+        </div>
+    </div>
+  {{/each}}
+</div>
+
+{{else}}
+    <table class="ui single line table">
+
+    <thead>
+    <tr>
+      <th>Exercise Name</th>
+      <th>Description</th>
+      <th></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {{#each model.exercise as |Exercise|}}
+      <tr>
+        <td>{{Exercise.name}}</td>
+        <td>{{Exercise.description}}</td>
+        <td>
+          <div class="four wide column right aligned">
+            {{edit-exercises ID=Exercise.id images=Exercise.images}}
+          </div>
+          <div class="four wide column left aligned">
+            {{delete-exercises ID=Exercise.id}}
+          </div>
+        </td>
+      </tr>
+    {{/each}}
+    </tbody>
+
+  </table>
+{{/if}}

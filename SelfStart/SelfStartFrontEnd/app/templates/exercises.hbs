@@ -3,60 +3,6 @@
 
     <br><br><br><br>
 
-    <div class="ui form" >
-      <div class="fields" >
-        <div class="ui search">
-           {{input type="text" placeholder="Search..." }}
-        </div>
-      </div>
-    </div>
-  
-
-<div class ="ui five column grid">
-  {{#each model.exercise as |Exercise|}}
-    <div class="column">
-    <div class="ui fluid card" style="max-height:300px;min-height:300px;"> 
-      <div class = "image" style="max-height:105px; min-width:141.63px;">
-      {{#if Exercise.images}}
-        {{#slick-slider autoplay=true arrows=false pauseOnHover=true}}
-            {{#each Exercise.images as |Image|}}
-              <div class ="box">
-                <img style="max-height:105px;" src="{{Image.imageData}}">
-              </div>
-            {{/each}}
-        {{/slick-slider}}
-          {{else}}
-            <img style="max-height:105px;min-width:141.63px;" src="assets/images/NoImagesSaved.jpg">
-          {{/if}}
-    </div> 
-    <div class="content">
-      <a>{{Exercise.name}}</a>
-    </div>
-    <div class="extra content" >
-      <div class ="sidebar-box" style="max-height:50px;min-height:50px;">
-        {{#if Exercise.description}}
-        <p class ="sidebar-box">Description: {{Exercise.description}}</p>
-        <p class="read-more"></p> 
-        {{else}}
-        <p class ="sidebar-box">No Description</p>
-        {{/if}}
-      </div>
-    </div>
-    <div class="extra content" style="padding-left:21px;">
-      <div Style="background-color: white;margin-left: -12px;" class="mini ui buttons">
-        {{edit-exercises ID=Exercise.id images=Exercise.images}}
-        <div class="or"></div>
-        {{delete-exercises ID=Exercise.id}}
-      </div>
-    </div>
-    <div class="extra content">
-      <a>
-        <span class="date">{{Exercise.dateCreated}}</span>
-      </a>
-    </div>
-  </div>
-  </div>
-  {{/each}}
-  </div>
+    {{manage-exercises model=model}}
 
 </div>

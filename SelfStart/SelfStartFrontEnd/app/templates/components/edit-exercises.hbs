@@ -1,11 +1,7 @@
-{{!-- <button class = "ui green button" {{action 'openModal'}} title="Edit">
-  Edit
-</button> --}}
-
 <button style="min-width:1px" class="ui positive button" {{action 'openModal'}}>Edit</button>
- {{!-- <div class="ui green button" {{action 'openModal'}}>Edit</div> --}}
 
 {{#ui-modal name=modalName class=modalName}}
+     <div class="scrolling content">
    <div class="ui fluid raised very padded text container segment">
 
     <h2 id="rehabPlan" class="ui fluid centered header">Edit Exercise {{Name}}</h2>
@@ -16,7 +12,6 @@
             {{input type="text" value=Name placeholder="Exercise Name"}}
         </div>
         
-        <!--Description-->
         <div class="field">
             <label>Description</label>
             {{textarea type="text" value=Description placeholder="Description"}}
@@ -185,15 +180,45 @@
         </div>
                 
         <br><br>
-    </div>
 
+          
+                <div class ="ui center alligned three column grid" style="border:0.5px solid black;overflow-y:scroll;max-height:300px;">
+                    {{#each Im as |Image|}}
+                        <div class ="column">
+                <div class="ui fluid card" style="max-height:221px;min-height:221px;">
+                    <div class="content">
+                         <div class ="sidebar-box" style="max-height:50px;min-height:50px;">
+                            <p class ="sidebar-box">{{Image.name}}</p>
+                        </div>
+                    </div>
+                    <div class = "content" style="min-height:105px;">
+                        <div class="image">
+                            <img style="max-height:105px;" class = "ui small image" src="{{Image.imageData}}">
+                        </div>
+                    </div>
+                    <div class="extra content">
+                        <div class="ui toggle checkbox">
+                            {{input type="checkbox" checked=cbState change=(action "addTempImage" Image) }}
+                            <label>Add</label>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            {{/each}}
+        </div>
+
+
+    </div>
+    
     <!--footer for save / cancel-->
     <div class="actions">
+        <br><br>
         <div class="ui positive button">Save</div>
         <div class="ui black deny button">Cancel</div>
     </div>
 
     </form>
+  </div>
   </div>
 
 {{/ui-modal}}

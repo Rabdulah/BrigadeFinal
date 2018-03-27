@@ -153,17 +153,23 @@ export default Component.extend({
             });
 
             console.log(this.queue);
-
+            let self = this;
             let secQueue = [];
             let secQueue2 = [];
 
             this.queue.forEach(file => {
                 secQueue.pushObject(file);
             });
-            console.log("this is q2", this.queue2);
+            
             this.queue2.forEach(file => {
                 secQueue2.push(file);
             })
+
+            this.get('temp').forEach(function(obj) {
+                secQueue2.push(obj);
+            })
+
+            this.get('temp').clear();
 
             exercise.save().then((exer)=>{
                 var saveImage = [];
