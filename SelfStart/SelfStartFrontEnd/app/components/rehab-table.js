@@ -38,6 +38,8 @@ export default Component.extend({
   }),
 
   filterplans: Ember.observer('query', 'queryPath', function () {
+    let self = this;
+
     let queryText = this.get('query');
     if (queryText !== null && queryText.length > 0) {
       this.set('regex', "^"+queryText);
@@ -58,15 +60,23 @@ export default Component.extend({
     this.set('pageSize', 10);
     let self = this;
 
+
+
+ //   self.get('store').findAll('exercise-list');
+  //  self.get('store').findAll('assessment-test');
+
     this.get('store').query('rehabilitationplan', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
+
+
+
+
+
       self.set('plansModel', records.toArray());
+
+
     });
 
-    // this.get('plansModel').forEach(function (gph) {
-    //   self.get('store').findRecord('physiotherapest', gph.get('id')).then(()=>{
-    //
-    //   })
-    // });
+
 
   },
 

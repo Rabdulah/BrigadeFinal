@@ -7,9 +7,7 @@ export default Component.extend({
   store: Ember.inject.service(),
   router: inject('-routing'),
 
-  limit: 200,
-  offset: 0,
-  pageSize: 200,
+
   sort: 'name',
   dir:'',
   query: null,
@@ -29,11 +27,9 @@ export default Component.extend({
 
   exercisesModel: [],
   sortBy: ['name'],
+  sortByDesc: ['name:desc'],
   sortedNames: Ember.computed.sort('exercisesModel','sortBy'),
-
-  currentExercises: Ember.observer('exercisesModel','listModel', function(){
-//    return Ember.computed.sort('exercisesModel','sortBy');
-  }),
+  sortedNamesDesc: Ember.computed.sort('exercisesModel','sortByDesc'),
 
   listModel: [],
   INDEX: null,
@@ -41,43 +37,19 @@ export default Component.extend({
   scrolledLines: 0,
   flagAdd: false,
   flagDelete: false,
+  asc: true,
 
 
-
-  activeModel: Ember.observer('offset', 'limit', 'sort', 'dir', function () {
-    var self = this;
-    var a = [], diff = [];
-
-    this.get('store').query('exercise', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
-
-    //  self.set('exercisesModel', records.toArray());
-
-      function arr_diff (a1, a2) {
-
-        for (var i = 0; i < a1.length; i++) {
-          a[a1[i]] = true;
-        }
-
-        for (var j = 0; j < a2.length; j++) {
-          if (a[a2[j]]) {
-            delete a[a2[j]];
-          } else {
-            a[a2[j]] = true;
-          }
-        }
-
-        for (var k in a) {
-          diff.push(k);
-        }
-
-        return diff;
-      }
-
-      arr_diff(records.toArray(), self.get('listModel'));
-
-    });
-
-  }),
+  // activeModel: Ember.observer('offset', 'limit', 'sort', 'dir', function () {
+  //   var self = this;
+  //
+  //
+  //   this.get('store').query('exercise', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
+  //     self.set('sortedNames', records.toArray());
+  //
+  //   });
+  //
+  // }),
 
   // activeAdd: Ember.observer('flagAdd', function () {
   //   this.get('listModel').forEach((rec) => {
@@ -99,37 +71,15 @@ export default Component.extend({
       this.set('regex', '');
     }
 
-    // this.get('store').query('exercise', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then((records) => {
+    // this.get('store').query('exercise', this.getProperties(['sort', 'dir', 'queryPath', 'regex'])).then((records) => {
     //   this.set('exercisesModel', records.toArray());
     // });
 
     var self = this;
-    var a = [];
 
-    this.get('store').query('exercise', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
 
-      //  self.set('exercisesModel', records.toArray());
-
-      function arr_diff(a1, a2) {
-        for (var i = 0; i < a1.length; i++) {
-          a[a1[i]] = true;
-        }
-        for (var j = 0; j < a2.length; j++) {
-          if (a[a2[j]]) {
-            delete a[a2[j]];
-          } else {
-            a[a2[j]] = true;
-          }
-        }
-        for (var k in a) {
-          self.get('exercisesModel').pushObject(k);
-        }
-
-        console.log(self.get('exercisesModel'));
-        return self.get('exercisesModel');
-      }
-
-      arr_diff(records.toArray(), self.get('listModel'));
+    this.get('store').query('exercise', this.getProperties(['sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
+        self.set('exercisesModel', records.toArray());
     });
   }),
 
@@ -160,12 +110,10 @@ export default Component.extend({
 
   init() {
     this._super(...arguments);
-    this.set('limit', 200);
-    this.set('offset', 0);
-    this.set('pageSize', 200);
+
     let self = this;
 
-    this.get('store').query('exercise', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
+    this.get('store').query('exercise', this.getProperties(['sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
       self.set('exercisesModel', records.toArray());
 
 
@@ -178,56 +126,6 @@ export default Component.extend({
 
   },
 
-  didInsertElement: function() {
-    this._super(...arguments);
-    this.bindScrolling();
-    this.bindScrolling2();
-  },
-  willRemoveElement: function() {
-    this._super(...arguments);
-    this.unbindScrolling();
-    this.unbindScrolling2();
-  },
-  scrolled: function() {
-    if (this.get('scrolledLines') < Ember.$("#exerciseWin").scrollTop()) {
-      this.set('scrolledLines', Ember.$("#exerciseWin").scrollTop());
-      this.set('limit', this.get('limit') + 10);
-    }
-  },
-  scrolled2: function() {
-    if (this.get('scrolledLines') < Ember.$("#listWin").scrollTop()) {
-      this.set('scrolledLines', Ember.$("#listWin").scrollTop());
-      this.set('limit', this.get('limit') + 10);
-    }
-  },
-
-  bindScrolling: function() {
-    var self = this;
-    var onScroll = function() {
-      Ember.run.debounce(self, self.scrolled, 500);
-    };
-    Ember.$("#exerciseWin").bind('touchmove', onScroll);
-    Ember.$("#exerciseWin").bind('scroll', onScroll);
-  },
-
-  bindScrolling2: function() {
-    var self = this;
-    var onScroll2 = function() {
-      Ember.run.debounce(self, self.scrolled2, 500);
-    };
-    Ember.$("#listWin").bind('touchmove', onScroll2);
-    Ember.$("#listWin").bind('scroll', onScroll2);
-  },
-
-  unbindScrolling: function() {
-    Ember.$("#exerciseWin").unbind('scroll');
-    Ember.$("#exerciseWin").unbind('touchmove');
-  },
-
-  unbindScrolling2: function() {
-    Ember.$("#listWin").unbind('scroll');
-    Ember.$("#listWin").unbind('touchmove');
-  },
 
   actions:{
     sortColumn(columnName, direction) {
@@ -237,13 +135,16 @@ export default Component.extend({
           if (direction === 'asc') {
             Ember.set(element, 'dir', 'desc');
             this.set('dir', 'desc');
+            this.set('asc', false);
           }
           else if (direction === 'desc') {
             Ember.set(element, 'dir', 'asc');
             this.set('dir', 'asc');
+            this.set('asc', true);
           } else {
             Ember.set(element, 'dir', 'asc');
             this.set('dir', 'asc');
+            this.set('asc', true);
           }
         }
         else

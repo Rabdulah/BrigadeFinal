@@ -11,10 +11,21 @@ router.route('/')
         });
     })
     .get( function (request, response) {
-        ExerciseList.Model.find(function (error, exerciseLists) {
-            if (error) response.send(error);
-            response.json({exerciseList: exerciseLists});
-        });
+        var list =  request.query.filter;
+        if (!list){
+            ExerciseList.Model.find(function (error, exerciseLists) {
+                if (error) response.send(error);
+                response.json({exerciseList: exerciseLists});
+            });
+        }
+        else{
+            ExerciseList.Model.find({"rehabilitationPlan": list.rehabilitationPlan}, function (error, exerciseLists) {
+                if (error) response.send(error);
+
+console.log(exerciseLists);
+                response.json({exerciseList: exerciseLists});
+            });
+        }
     });
 
 router.route('/:exerciseList_id')

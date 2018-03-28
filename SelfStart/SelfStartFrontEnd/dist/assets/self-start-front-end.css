@@ -2621,4 +2621,15 @@ a img {
   position: relative;
   z-index: 1; }
 
+.slick-prev {
+  left: -22px;
+  z-index: 1; }
+
+.slick-next {
+  right: -22px;
+  z-index: 1; }
+
+.slick-prev:before, .slick-next:before {
+  color: dimgrey; }
+
 /*# sourceMappingURL=self-start-front-end.css.map */

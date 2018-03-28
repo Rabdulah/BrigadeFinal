@@ -1,36 +1,35 @@
 import Component from '@ember/component';
 import Ember from "ember";
-import { inject } from '@ember/service';
+import {inject} from '@ember/service';
 import $ from 'jquery';
 
 export default Component.extend({
   store: Ember.inject.service(),
   router: inject('-routing'),
 
-  limit: 200,
-  offset: 0,
   pageSize: 200,
   sort: 'name',
-  dir:'',
+  dir: '',
   query: null,
 
   exerciseAttributes:
-    [{'key': 'name', 'name':'Name', 'dir' : 'asc', 'class' :'left aligned eleven wide column'}],
-
+    [{'key': 'name', 'name': 'Name', 'dir': 'asc', 'class': 'left aligned eleven wide column'}],
 
 
   menuAttributes:
 
-    [{'key': 'exercise.sets', 'name':'Sets', 'dir' : 'asc', 'class' :'left aligned two wide column'},
-      {'key': 'exercise.reps', 'name':'Reps', 'dir' : '','class' :'left aligned two wide column'},
-      {'key': 'exercise.duration', 'name':'Duration', 'dir' : '','class' :'left aligned three wide column'},
-      {'key': 'exercise.name', 'name':'Exercise', 'dir' : '','class' :'left aligned five wide column'}],
+    [{'key': 'exercise.sets', 'name': 'Sets', 'dir': 'asc', 'class': 'left aligned two wide column'},
+      {'key': 'exercise.reps', 'name': 'Reps', 'dir': '', 'class': 'left aligned two wide column'},
+      {'key': 'exercise.duration', 'name': 'Duration', 'dir': '', 'class': 'left aligned three wide column'},
+      {'key': 'exercise.name', 'name': 'Exercise', 'dir': '', 'class': 'left aligned five wide column'}],
 
   exercisesModel: [],
   sortBy: ['name'],
+  sortByDesc: ['name:desc'],
   sortedNames: Ember.computed.sort('exercisesModel','sortBy'),
+  sortedNamesDesc: Ember.computed.sort('exercisesModel','sortByDesc'),
 
-  currentExercises: Ember.observer('exercisesModel','listModel', function(){
+  currentExercises: Ember.observer('exercisesModel', 'listModel', function () {
 //    return Ember.computed.sort('exercisesModel','sortBy');
   }),
 
@@ -40,37 +39,25 @@ export default Component.extend({
   scrolledLines: 0,
   flagAdd: false,
   flagDelete: false,
+  asc: true,
 
-
-
-  activeModel: Ember.observer('offset', 'limit', 'sort', 'dir', function () {
-    var self = this;
-    var a = [], diff = [];
-
-    this.get('store').query('exercise', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
-
-      //  self.set('exercisesModel', records.toArray());
-
-    });
-
-  }),
-
-  // activeAdd: Ember.observer('flagAdd', function () {
-  //   this.get('listModel').forEach((rec) => {
-  //     rec.set('selectedList', false);
-  //   });
-  // }),
+  // activeModel: Ember.observer('offset', 'limit', 'sort', 'dir', function () {
+  //   var self = this;
+  //   var a = [], diff = [];
   //
-  // activeRemove: Ember.observer('flagDelete', function () {
-  //   this.get('exercisesModel').forEach((rec) => {
-  //     rec.set('selected', false);
+  //   this.get('store').query('exercise', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
+  //
+  //     //  self.set('exercisesModel', records.toArray());
+  //
   //   });
+  //
   // }),
+
 
   filterexercises: Ember.observer('query', 'queryPath', function () {
     let queryText = this.get('query');
     if (queryText !== null && queryText.length > 0) {
-      this.set('regex', "^"+queryText);
+      this.set('regex', "^" + queryText);
     } else {
       this.set('regex', '');
     }
@@ -82,30 +69,30 @@ export default Component.extend({
     var self = this;
     var a = [];
 
-    this.get('store').query('exercise', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
+    this.get('store').query('exercise', this.getProperties(['sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
 
-      //  self.set('exercisesModel', records.toArray());
+      self.set('exercisesModel', records.toArray());
 
-      function arr_diff(a1, a2) {
-        for (var i = 0; i < a1.length; i++) {
-          a[a1[i]] = true;
-        }
-        for (var j = 0; j < a2.length; j++) {
-          if (a[a2[j]]) {
-            delete a[a2[j]];
-          } else {
-            a[a2[j]] = true;
-          }
-        }
-        for (var k in a) {
-          self.get('exercisesModel').pushObject(k);
-        }
+      // function arr_diff(a1, a2) {
+      //   for (var i = 0; i < a1.length; i++) {
+      //     a[a1[i]] = true;
+      //   }
+      //   for (var j = 0; j < a2.length; j++) {
+      //     if (a[a2[j]]) {
+      //       delete a[a2[j]];
+      //     } else {
+      //       a[a2[j]] = true;
+      //     }
+      //   }
+      //   for (var k in a) {
+      //     self.get('exercisesModel').pushObject(k);
+      //   }
+      //
+      //   console.log(self.get('exercisesModel'));
+      //   return self.get('exercisesModel');
+      // }
 
-        console.log(self.get('exercisesModel'));
-        return self.get('exercisesModel');
-      }
-
-      arr_diff(records.toArray(), self.get('listModel'));
+      //arr_diff(records.toArray(), self.get('listModel'));
     });
   }),
 
@@ -136,80 +123,37 @@ export default Component.extend({
 
   init() {
     this._super(...arguments);
-    this.set('limit', 200);
-    this.set('offset', 0);
-    this.set('pageSize', 200);
     let self = this;
 
-    this.get('store').query('exercise', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
+    this.get('store').query('exercise', this.getProperties(['sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
       self.set('exercisesModel', records.toArray());
 
 
       //console.log(self.get('exercisesModel'));
 
-      self.get('exercisesModel').forEach((rec)=>{
-        rec['selected']  = false;
+      self.get('exercisesModel').forEach((rec) => {
+        rec.set('selected', false);
       })
     });
 
 
-    this.get('store').findAll('exercise-list');
+    // this.get('model').get((rec) => {
+    //   console.log(rec.id);
+    self.get('store').query('exercise-list', {filter: {'rehabilitationPlan': this.get('model').id}}).then((exercises) => {
+      self.set('listModel', exercises)
 
-    self.set('listModel', self.get('model.exercise-list'));
-  },
 
-  didInsertElement: function() {
-    this._super(...arguments);
-    this.bindScrolling();
-    this.bindScrolling2();
-  },
-  willRemoveElement: function() {
-    this._super(...arguments);
-    this.unbindScrolling();
-    this.unbindScrolling2();
-  },
-  scrolled: function() {
-    if (this.get('scrolledLines') < Ember.$("#exerciseWin").scrollTop()) {
-      this.set('scrolledLines', Ember.$("#exerciseWin").scrollTop());
-      this.set('limit', this.get('limit') + 10);
-    }
-  },
-  scrolled2: function() {
-    if (this.get('scrolledLines') < Ember.$("#listWin").scrollTop()) {
-      this.set('scrolledLines', Ember.$("#listWin").scrollTop());
-      this.set('limit', this.get('limit') + 10);
-    }
+    });
+    // });
+
+    //   this.get('store').findAll('exercise-list');
+
+    //   self.set('listModel', 'model');
   },
 
-  bindScrolling: function() {
-    var self = this;
-    var onScroll = function() {
-      Ember.run.debounce(self, self.scrolled, 500);
-    };
-    Ember.$("#exerciseWin").bind('touchmove', onScroll);
-    Ember.$("#exerciseWin").bind('scroll', onScroll);
-  },
 
-  bindScrolling2: function() {
-    var self = this;
-    var onScroll2 = function() {
-      Ember.run.debounce(self, self.scrolled2, 500);
-    };
-    Ember.$("#listWin").bind('touchmove', onScroll2);
-    Ember.$("#listWin").bind('scroll', onScroll2);
-  },
 
-  unbindScrolling: function() {
-    Ember.$("#exerciseWin").unbind('scroll');
-    Ember.$("#exerciseWin").unbind('touchmove');
-  },
-
-  unbindScrolling2: function() {
-    Ember.$("#listWin").unbind('scroll');
-    Ember.$("#listWin").unbind('touchmove');
-  },
-
-  actions:{
+  actions: {
     sortColumn(columnName, direction) {
 
       this.get('exerciseAttributes').forEach((element)=>{
@@ -217,13 +161,16 @@ export default Component.extend({
           if (direction === 'asc') {
             Ember.set(element, 'dir', 'desc');
             this.set('dir', 'desc');
+            this.set('asc', false);
           }
           else if (direction === 'desc') {
             Ember.set(element, 'dir', 'asc');
             this.set('dir', 'asc');
+            this.set('asc', true);
           } else {
             Ember.set(element, 'dir', 'asc');
             this.set('dir', 'asc');
+            this.set('asc', true);
           }
         }
         else
@@ -231,19 +178,19 @@ export default Component.extend({
       });
       this.set('sort', columnName);
     },
-    add(){
-      let self= this;
+    add() {
+      let self = this;
       let temp = [];
       let count = 0;
 
-      this.get('exercisesModel').forEach((rec)=>{
+      this.get('exercisesModel').forEach((rec) => {
         if (rec['selected']) {
           temp.pushObject(rec);
         }
-        count ++;
+        count++;
       });
       if (count === this.get('exercisesModel').length) {
-        temp.forEach((rec)=>{
+        temp.forEach((rec) => {
           rec.set('selectedList', false);
           self.get('listModel').pushObject(rec);
           self.get('exercisesModel').removeObject(rec);
@@ -252,19 +199,19 @@ export default Component.extend({
 
 
     },
-    remove(){
-      let self= this;
+    remove() {
+      let self = this;
       let temp = [];
       let count = 0;
 
-      this.get('listModel').forEach((rec)=>{
+      this.get('listModel').forEach((rec) => {
         if (rec['selectedList']) {
           temp.pushObject(rec);
         }
-        count ++;
+        count++;
       });
       if (count === this.get('listModel').length) {
-        temp.forEach((rec)=>{
+        temp.forEach((rec) => {
           rec.set('selected', false);
           self.get('exercisesModel').pushObject(rec);
           self.get('listModel').removeObject(rec);
@@ -278,28 +225,46 @@ export default Component.extend({
     },
 
 
-    submit(){
+    submit() {
       let self = this;
 
-      this.get('store').findRecord('rehabilitationplan', this.get('model.id')).then((rec) =>{
-        rec.set('planName', this.get('planName') );
-        rec.set('description', this.get('description') );
+      //   this.get('store').findRecord('rehabilitationplan', this.get('model.id')).then((rec) =>{
+      //     rec.set('planName', this.get('planName') );
+      //     rec.set('description', this.get('description') );
 
+      //  });
+      // delete the existing exercise-list then assign the new list
+
+      self.get('store').query('exercise-list', {filter: {'rehabilitationPlan': this.get('model').id}}).then((exercises) => {
+        exercises.forEach((exercise) => {
+          exercise.destroyRecord();
+        })
       });
 
-      // rehabilitationplan.save().then((plan) => {
-      //   this.get('listModel').forEach((rec, i)=>{
-      //     let list = this.get('store').createRecord('exercise-list', {
-      //       order: i+1,
-      //       exercise: rec,
-      //       rehabilitationPlan: plan
-      //     });
-      //     console.log(i);
-      //     list.save();
-      //   });
-      //   //route back
-      //   this.get('router').transitionTo('practitioner.rehabplans');
-      // });
+      var rehabilitationplan = self.get('store').peekRecord('rehabilitationplan', this.get('model').id);
+      rehabilitationplan.set('planName', this.get('planName'));
+      rehabilitationplan.set('description', this.get('description'));
+
+      rehabilitationplan.save().then((plan) => {
+
+            this.get('listModel').forEach((rec, i) => {
+              let list = this.get('store').createRecord('exercise-list', {
+                order: i + 1,
+                exercise: rec,
+                rehabilitationPlan: plan
+              });
+
+              list.save();
+            });
+            //route back
+            this.get('router').transitionTo('practitioner.rehabplans');
+
+
+
+
+
+
+      });
     },
   }
 });

@@ -45,6 +45,7 @@ Router.map(function() {
     this.route('assessment-display');
     this.route('appointment');
     this.route('edit-menu', { path: 'rehabplans/:rehabilitationplan_id'});
+    this.route('exercises');
   });
 });
 

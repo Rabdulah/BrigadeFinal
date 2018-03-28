@@ -1,5 +1,45 @@
 {{#if isEditing}}
 
+{{!-- {{#ui-modal name=modalName class=modalName}}
+
+    <div class="scrolling content">
+        <div class ="ui center alligned five column grid">
+            {{#each Images as |Image|}}
+                <div class ="column">
+                <div class="ui fluid card" style="max-height:221px;min-height:221px;">
+                    <div class="content">
+                         <div class ="sidebar-box" style="max-height:50px;min-height:50px;">
+                            <p class ="sidebar-box">{{Image.name}}</p>
+                        </div>
+                    </div>
+                    <div class = "content" style="min-height:105px;">
+                        <div class="image">
+                            <img style="max-height:105px;" class = "ui small image" src="{{Image.imageData}}">
+                        </div>
+                    </div>
+                    <div class="extra content">
+                        <div class="ui toggle checkbox">
+                            {{input type="checkbox" checked=cbState change=(action "addTempImage" Image) }}
+                            <label>Add</label>
+                        </div>
+                    </div>
+                </div>
+                </div>
+            {{/each}}
+        </div>
+    </div>
+    <div class="actions">
+        <div class="ui positive button">Save</div>
+        <div class="ui black deny button">Cancel</div>
+        <div class="ui form" >
+            <div class="fields" >
+                <div class="ui fluid search">{{input type="text" placeholder="Search..." }}</div>
+            </div>
+        </div>
+    </div>
+    <br><br>
+{{/ui-modal}} --}}
+
   <div class="ui fluid raised very padded text container segment">
     <h2 id="exercise" class="ui fluid centered header">Add New Exercise</h2>
 
@@ -104,7 +144,6 @@
       </div>
 
       <div class = "field">
-
         {{#each queue as |file| }}
           <div class="ui divided demo items">
             <div class="item">
@@ -121,7 +160,7 @@
                 <div class="description">
                   {{#if file.isDisplayableImage}}
                     <label>Image Name</label>
-                    {{input type ="text" valueBinding=file.name placeholder="Exercise Name"}}
+                    {{input type ="text" valueBinding=file.name}}
                     <button class="ui red basic button" {{action 'deleteFile' file}}>
                       Delete
                     </button>
@@ -133,42 +172,85 @@
               </div>
             </div>
           </div>
-        {{!-- {{else}} --}}
+        {{/each}}
+        {{#each queue2 as |Image| }}
+          <div class="ui divided demo items">
+            <div class="item">
+              <div class="image">
+                <img src="{{Image.imageData}}">
+              </div>
+              <div class="middle aligned content">
+                <div class="description">
+                  <label>Image Name</label>
+                  {{input type ="text" valueBinding=Image.name}}
+                  <button class="ui red basic button" {{action 'deleteFile' file}}>
+                    Delete
+                  </button>
+                  <br>
+                </div>
+              </div>
+            </div>
+          </div>
         {{/each}}
         <div class="ui fluid labeled input">
           <label class="ui fluid huge label" style="{{labelStyle}}">
             <i class="big cloud upload icon"></i>
-            Click or Drop files into this area to upload files
+            Click or Drop images into this area to upload images
           </label>
           <input type="file" value="target.value" onchange={{action "selectFile"}} style="{{inputStyle}}"
                  accept="{{accept}}" multiple={{multiple}}>
         </div>
-        <br>
+        <br><br><br><br>
+        {{!-- <button class="ui button" {{action 'openModal'}}>Assign Images from Existing Images</button> --}}
+
+        {{!-- <div class="ui block header">{{input type="text" placeholder="Search..." }}</div> --}}
 
 
-        {{!-- {{upload-file
-            model = 'image'
-            maximumFileSize = 6
-            multiple=true
-            flag = ImageIsAdding
-            ImageName = iName
-            newExerID = id
-            notInAddExercise = false
-        }} --}}
-        {{!-- {{simple-example iName=ImageName}} --}}
-        {{!-- <br><br>
-        {{simple-example exerID = id}} --}}
-        {{!-- <br><br> --}}
+        <div class ="ui center alligned three column grid" style="border:0.5px solid black;overflow-y:scroll;max-height:300px;">
+          {{#each Images as |Image|}}
+            <div class ="column">
+              <div class="ui fluid card" style="max-height:221px;min-height:221px;">
+                <div class="content">
+                  <div class ="sidebar-box" style="max-height:50px;min-height:50px;">
+                    <p class ="sidebar-box">{{Image.name}}</p>
+                  </div>
+                </div>
+                <div class = "content" style="min-height:105px;">
+                  <div class="image">
+                    <img style="max-height:105px;" class = "ui small image" src="{{Image.imageData}}">
+                  </div>
+                </div>
+                <div class="extra content">
+                  <div class="ui toggle checkbox">
+                    {{input type="checkbox" checked=cbState change=(action "addTempImage" Image) }}
+                    <label>Add</label>
+                  </div>
+                </div>
+              </div>
+            </div>
+          {{/each}}
+        </div>
+
+
+        {{!-- <div class="actions">
+            <div class="ui positive button">Save</div>
+            <div class="ui black deny button">Cancel</div> --}}
+        {{!-- <div class="ui form" >
+            <div class="fields" >
+                <div class="ui fluid search">{{input type="text" placeholder="Search..." }}</div>
+            </div>
+        </div> --}}
+        {{!-- </div> --}}
+
       </div>
-
       <div class = "inline">
+        <br><br><br>
         <button class="ui button" type="submit" {{action "submit"}}>Submit</button>
         <button class="ui button" type="submit" {{action "cancel"}}>Cancel</button>
       </div>
 
     </form>
   </div>
-
 {{else}}
   <button class="ui button" {{action 'addExercise'}}>
     Add Exercise

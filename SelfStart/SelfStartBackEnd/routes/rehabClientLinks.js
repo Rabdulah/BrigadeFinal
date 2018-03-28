@@ -5,14 +5,16 @@ var RehabClientLink = require('../models/RehabClientLink');
 router.route('/')
     .post( function (request, response) {
         var rehabClientLink = new RehabClientLink.Model(request.body.rehabClientLink);
-        console.log()
+        // console.log()
         RehabClientLink.getLinkByPatientAndPlan(rehabClientLink.Patient, rehabClientLink.RehabilitationPlan, (err, rCL) => {
-
+            console.log(rCL);
+            console.log(err);
             if(rCL){
-                response.json({rehabClientLink: rCL, success: false});
+                // rehabClientLink.save();
+                response.json({rehabClientLink: rehabClientLink, success: false});
             } else {
-                rehabClientLink.save();
-                response.json({rehabClientLink: rCL, success: true});
+                // rehabClientLink.save();
+                response.json({rehabClientLink: rehabClientLink, success: true});
             }
         });
         //

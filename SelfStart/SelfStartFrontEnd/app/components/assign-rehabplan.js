@@ -52,7 +52,7 @@ export default Component.extend({
             //       }
             //     }
             //   });
-
+            console.log(res);
             if (res.success) {
               $('.ui.' + this.get('modalName') + '.modal').modal('hide');
               return true;
