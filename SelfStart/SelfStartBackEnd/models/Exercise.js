@@ -15,6 +15,10 @@ var exercisesSchema = mongoose.Schema({
     rehabilitationPlan: {type: mongoose.Schema.ObjectId, ref: 'RehabilitationPlans'},
     dateCreated: {
         type: String
+    },
+    play: {
+        type:Boolean,
+        deafault:false
     }
 });
 var ExercisesSchema = mongoose.model('exercise', exercisesSchema);

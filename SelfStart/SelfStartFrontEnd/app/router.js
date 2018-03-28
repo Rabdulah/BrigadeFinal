@@ -14,6 +14,7 @@ Router.map(function() {
   this.route('create-client-account');
   this.route('account');
   this.route('login');
+  this.route('new-exercise');
 });
 
 export default Router;
