@@ -21,6 +21,9 @@ export default OccurrenceComponent.extend({
   _dragVerticalOffset: null,
   _preview: Ember.computed.oneWay('_calendar.occurrencePreview'),
 
+  startingTime: null,
+  dayEndingTime: null,
+
   _setupInteractable: Ember.on('didInsertElement', function() {
     var interactable = interact(this.$()[0]).on('mouseup', (event) => {
       Ember.run(this, this._mouseUp, event);
@@ -84,8 +87,10 @@ export default OccurrenceComponent.extend({
   },
 
   _resizeEnd: function() {
+    this.set('dayEndingTime', moment(this.get('_preview.content.endsAt')).format('hh:mm A'));
+
     this.attrs.onUpdate(this.get('content'), {
-      endsAt: this.get('_preview.content.endsAt')
+      endsAt: this.get('_preview.content.endsAt'),
     }, false);
 
     this.set('isInteracting', false);

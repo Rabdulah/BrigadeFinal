@@ -84,14 +84,15 @@ export default Component.extend({
               if (app.get('reason')!= null) {
                 home.get('occurrences').pushObject(Ember.Object.create({
                   title: "Booked",
+                  isFilled: true,
                   startsAt: scheduledDate.toISOString(),
                   endsAt: endDate.toISOString()
                 }));
               }
               else {
-
                 let temp = Ember.Object.create({
                   title: "SetAvailable Spot",
+                  isFilled: false,
                   startsAt: scheduledDate.toISOString(),
                   endsAt: endDate.toISOString(),
                   tempid : app.get('id')

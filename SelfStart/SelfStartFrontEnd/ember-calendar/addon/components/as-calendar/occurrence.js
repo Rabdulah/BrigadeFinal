@@ -18,11 +18,9 @@ export default Ember.Component.extend({
   computedTimeSlotDuration: computedDuration('timeSlotDuration'),
 
   titleStyle: Ember.computed('timeSlotHeight', function() {
+    this.get('25');
     return Ember.String.htmlSafe(`line-height: ${this.get('timeSlotHeight')}px;`);
   }),
-
-  startingTime: null,
-  dayEndingTime: null,
 
   _duration: Ember.computed.oneWay('model.duration'),
   _startingTime: Ember.computed('model.startingTime', function() {
@@ -38,11 +36,13 @@ export default Ember.Component.extend({
   _occupiedTimeSlots: Ember.computed(
     '_duration',
     'computedTimeSlotDuration', function() {
+      this.get('24');
       return this.get('_duration').as('ms') /
              this.get('computedTimeSlotDuration').as('ms');
   }),
 
   _height: Ember.computed('_occupiedTimeSlots', function() {
+    this.get('23');
     return this.get('timeSlotHeight') * this.get('_occupiedTimeSlots');
   }),
 
@@ -51,17 +51,20 @@ export default Ember.Component.extend({
     '_dayStartingTime',
     'computedTimeSlotDuration',
     'timeSlotHeight', function() {
+      this.get('20');
     return ((this.get('_startingTime').diff(this.get('_dayStartingTime')) % (24*3600000)) /
             this.get('computedTimeSlotDuration').as('ms')) *
             this.get('timeSlotHeight');
   }),
 
   _style: Ember.computed('_height', '_top', function() {
+    this.get('21');
     return Ember.String.htmlSafe(`top: ${this.get('_top')}px;
             height: ${this.get('_height')}px;`);
   }),
 
   _stopPropagation: Ember.on('click', function(event) {
+    this.get('22');
     event.stopPropagation();
   }),
 });
