@@ -83,12 +83,11 @@ export default Component.extend({
     Description: Ember.computed.oneWay('exerciseData.description'),
     Name: Ember.computed.oneWay('exerciseData.name'),
     AuthName: Ember.computed.oneWay('exerciseData.authorName'),
-    obj: Ember.computed.oneWay('exerciseData.objectives'),
     actionStep: Ember.computed.oneWay('exerciseData.actionSteps'),
-    Location: Ember.computed.oneWay('exerciseData.location'),
-    Frequency: Ember.computed.oneWay('exerciseData.frequency'),
-    Duration: Ember.computed.oneWay('exerciseData.duration'),
-    TargetedDate: Ember.computed.oneWay('exerciseData.targetDate'),
+    Sets: Ember.computed.oneWay('exerciseData.sets'),
+    Reps: Ember.computed.oneWay('exerciseData.reps'),
+    DurationMinute: Ember.computed.oneWay('exerciseData.durationMinute'),
+    DurationSecond: Ember.computed.oneWay('exerciseData.durationSecond'),
     MMURL: Ember.computed.oneWay('exerciseData.multimediaURL'),
     Imgs: Ember.computed.oneWay('exerciseData.images'),
 
@@ -136,6 +135,8 @@ export default Component.extend({
         // window.location.reload();
         this.secQueue.clear();
         console.log(this.images);
+        console.log(this.Duration);
+               
         this.images.forEach(file => {
           this.secQueue.pushObject(file);
       });
@@ -209,17 +210,22 @@ export default Component.extend({
               })
             });
             });
+            
+            let duration = [];
+            duration.push(this.get("DurationMinute"));
+            duration.push(this.get("DurationSecond"));
 
             this.get('DS').findRecord('exercise' , this.get('ID')).then((rec)=>{
               rec.set('name', this.get('Name'));
               rec.set('description', this.get('Description'));
               rec.set('authorName', this.get('AuthName'));
-              rec.set('objective', this.get('Objective'));
+              rec.set('notes', this.get('Notes'));
               rec.set('actionStep', this.get('ActionSteps'));
               rec.set('location', this.get('Location'));
-              rec.set('frequency', this.get('Frequency'));
-              rec.set('duration', this.get('Duration'));
-              rec.set('targetDate', this.get('TargetDate'));
+              rec.set('sets', this.get('Sets'));
+              rec.set('reps', this.get("Reps"))
+              rec.set('durationMinute', this.get("DurationMinute"));
+              rec.set('durationSecond', this.get("DurationSecond"));
               rec.set('MMURL', this.get('MMURL'));
               // rec.set('exercises', this.get('exercises'));
               // rec.set('assessmentTests', this.get('assessmentTests'));

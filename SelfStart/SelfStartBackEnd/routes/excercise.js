@@ -41,15 +41,15 @@ router.route('/:exercise_id')
                 // update each attribute
                 exercise.name = request.body.exercise.name;
                 exercise.description = request.body.exercise.description;
-                exercise.objectives = request.body.exercise.objectives;
+                exercise.sets = request.body.exercise.sets;
                 exercise.actionSteps = request.body.exercise.actionSteps;
                 exercise.authorName = request.body.exercise.authorName;
-                exercise.location = request.body.exercise.location;
-                exercise.frequency = request.body.exercise.frequency;
-                exercise.duration = request.body.exercise.duration;
+                exercise.reps = request.body.exercise.reps;
+                exercise.notes = request.body.exercise.notes;
                 exercise.multimediaURL = request.body.exercise.multimediaURL;
-                exercise.targetDate = request.body.exercise.targetDate;
                 exercise.image = request.body.exercise.image;
+                exercise.durationMinute = request.body.exercise.durationMinute;
+                exercise.durationSecond = request.body.exercise.durationSecond;
                 exercise.rehabilitationPlan = request.body.exercise.rehabilitationPlan;
 
                 exercise.save(function (error) {

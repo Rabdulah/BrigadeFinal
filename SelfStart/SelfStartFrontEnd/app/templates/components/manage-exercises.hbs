@@ -30,14 +30,14 @@
   {{#each model.exercise as |Exercise index|}}
     <div class="column">
         <div class="ui fluid card" style="max-height:240px;min-height:240px;"> 
-            <div class = "image" style="max-height:105px;min-height:105px;min-width:141.63px;" onmouseleave={{action "pause" Exercise}} onmouseover={{action "play" Exercise}}>
+            <div class = "image" style="max-height:105px;min-height:105px;min-width:159.73px;max-width:159.73px">
                 {{#if Exercise.images}}
 
                     {{#if Exercise.play}}
-                        {{#slick-slider speed=200 autoplay=true arrows=false id=index pauseOnHover=false}}
+                        {{#slick-slider autoplay=true arrows=false id=index pauseOnHover=false}}
                             {{#each Exercise.images as |Image|}}
                                 <div class ="box">
-                                    <img style="max-height:105px;" src="{{Image.imageData}}">
+                                    <img style="max-height:105px;min-height:105px;min-width:159.73px;max-width:159.73px" src="{{Image.imageData}}">
                                 </div>
                             {{/each}}
                         {{/slick-slider}}
@@ -45,7 +45,7 @@
                         {{#slick-slider autoplay=false arrows=false id=index pauseOnHover=false}}
                             {{#each Exercise.images as |Image|}}
                                 <div class ="box">
-                                    <img style="max-height:105px;" src="{{Image.imageData}}">
+                                    <img style="max-height:105px;min-height:105px;min-width:159.73px;max-width:159.73px" src="{{Image.imageData}}">
                                 </div>
                             {{/each}}
                         {{/slick-slider}}
