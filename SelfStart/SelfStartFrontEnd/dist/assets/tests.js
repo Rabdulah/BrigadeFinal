@@ -310,6 +310,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'components/parse-question.js should pass ESLint\n\n');
   });
 
+  QUnit.test('components/payment-button.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/payment-button.js should pass ESLint\n\n5:1 - \'paypal\' is not defined. (no-undef)');
+  });
+
   QUnit.test('components/physio-nav.js', function (assert) {
     assert.expect(1);
     assert.ok(false, 'components/physio-nav.js should pass ESLint\n\n15:431 - \'SkypeButton\' is not defined. (no-undef)\n15:472 - \'SkypeButton\' is not defined. (no-undef)');
@@ -2496,6 +2501,35 @@ define('self-start-front-end/tests/integration/components/parse-question-test', 
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/payment-button-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('payment-button', 'Integration | Component | payment button', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "fuA0Ifyl",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"payment-button\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "OGck4LIP",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"payment-button\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/physio-nav-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -3332,6 +3366,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('integration/components/parse-question-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/parse-question-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/payment-button-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/payment-button-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/physio-nav-test.js', function (assert) {
