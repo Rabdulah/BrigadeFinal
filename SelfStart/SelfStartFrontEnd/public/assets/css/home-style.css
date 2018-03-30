@@ -72,8 +72,11 @@
   background-image: url("/assets/images/home/1920x1080-data_out_75_4169836-color-gradient-wallpaper.jpg");
 }
 #example.index .masthead.bg4:after {
-  background-image: url("/assets/images/home/bg_gradient1.jpg");
+  background-image: url("/assets/images/home/1.jpg");
+  margin-top: -79px;
 }
+
+
 #example.index .masthead.bg5:after {
   background-image: url("/assets/images/home/bg_gradient1.jpg");
 }
@@ -491,8 +494,23 @@
 }
 
 /* Alternate */
+#example .alternated.striped {
+  background: url('/assets/images/home/PhysiotherapyAdelaide.jpg') no-repeat center fixed whitesmoke ;
+}
+
 #example .alternate.stripe {
   background-color: #F2F3F5;
+}
+
+#example .alternated.striped:before {
+  content: '';
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  left: 0;
+  background-image: linear-gradient(to bottom right, #002f4b, #6c95c2);
+  opacity: .6;
 }
 
 /* Inverted */
@@ -512,7 +530,7 @@
 #example .solid,
 #example .stripe {
   background-color: #FFFFFF;
-  padding: 10em 0px;
+  padding: 2em 0px;
   border-radius: 0em;
   margin: 0em;
   -webkit-transform: translate3d(0, 0, 0);

@@ -18,20 +18,16 @@ export default Component.extend({
 
   menuAttributes:
 
-    [{'key': 'exercise.sets', 'name': 'Sets', 'dir': 'asc', 'class': 'left aligned two wide column'},
-      {'key': 'exercise.reps', 'name': 'Reps', 'dir': '', 'class': 'left aligned two wide column'},
-      {'key': 'exercise.duration', 'name': 'Duration', 'dir': '', 'class': 'left aligned three wide column'},
-      {'key': 'exercise.name', 'name': 'Exercise', 'dir': '', 'class': 'left aligned five wide column'}],
+    [{'key': 'sets', 'name': 'Sets', 'dir': 'asc', 'class': 'left aligned two wide column'},
+      {'key': 'reps', 'name': 'Reps', 'dir': '', 'class': 'left aligned two wide column'},
+      {'key': 'duration', 'name': 'Duration', 'dir': '', 'class': 'left aligned three wide column'},
+      {'key': 'name', 'name': 'Exercise', 'dir': '', 'class': 'left aligned five wide column'}],
 
   exercisesModel: [],
   sortBy: ['name'],
   sortByDesc: ['name:desc'],
   sortedNames: Ember.computed.sort('exercisesModel','sortBy'),
   sortedNamesDesc: Ember.computed.sort('exercisesModel','sortByDesc'),
-
-  currentExercises: Ember.observer('exercisesModel', 'listModel', function () {
-//    return Ember.computed.sort('exercisesModel','sortBy');
-  }),
 
   listModel: [],
   INDEX: null,
@@ -140,8 +136,11 @@ export default Component.extend({
     // this.get('model').get((rec) => {
     //   console.log(rec.id);
     self.get('store').query('exercise-list', {filter: {'rehabilitationPlan': this.get('model').id}}).then((exercises) => {
-      self.set('listModel', exercises)
 
+      exercises.forEach((exe)=>{
+        // console.log(exe.get('exercise'));
+        this.get('listModel').pushObject(exe.get('exercise'));
+      });
 
     });
     // });
@@ -178,10 +177,15 @@ export default Component.extend({
       });
       this.set('sort', columnName);
     },
+
     add() {
       let self = this;
       let temp = [];
       let count = 0;
+
+      // this.get('listModel').forEach((rec) => {
+      //   self.get('listModel').removeObject(rec) ;
+      // });
 
       this.get('exercisesModel').forEach((rec) => {
         if (rec['selected']) {
@@ -237,27 +241,38 @@ export default Component.extend({
 
       self.get('store').query('exercise-list', {filter: {'rehabilitationPlan': this.get('model').id}}).then((exercises) => {
         exercises.forEach((exercise) => {
-          exercise.destroyRecord();
+          exercise.set('rehabilitationPlan', null);
+          exercise.save().then((rec)=>{
+            rec.destroyRecord();
+          })
+
         })
       });
 
-      var rehabilitationplan = self.get('store').peekRecord('rehabilitationplan', this.get('model').id);
-      rehabilitationplan.set('planName', this.get('planName'));
-      rehabilitationplan.set('description', this.get('description'));
+     self.get('store').findRecord('rehabilitationplan', this.get('model').id).then((rehabilitationplan)=>{
+       rehabilitationplan.set('planName', this.get('model.planName'));
+       rehabilitationplan.set('description', this.get('model.description'));
 
-      rehabilitationplan.save().then((plan) => {
+       console.log(this.get('model.planName'));
 
-            this.get('listModel').forEach((rec, i) => {
-              let list = this.get('store').createRecord('exercise-list', {
-                order: i + 1,
-                exercise: rec,
-                rehabilitationPlan: plan
-              });
+       rehabilitationplan.save().then((plan) => {
 
-              list.save();
-            });
-            //route back
-            this.get('router').transitionTo('practitioner.rehabplans');
+         this.get('listModel').forEach((rec, i) => {
+
+           let list = this.get('store').createRecord('exercise-list', {
+             order: i + 1,
+             exercise: rec.get('exercise'),
+             rehabilitationPlan: plan
+           });
+
+           list.save().then(()=>{
+             //route back
+             this.get('router').transitionTo('practitioner.rehabplans');
+           });
+         });
+
+
+       })
 
 
 

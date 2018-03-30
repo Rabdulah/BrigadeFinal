@@ -171,6 +171,7 @@
 
         {{#sortable-group tagName="tbody" onChange="reorderItems" as |group|}}
           {{#each listModel as |list|}}
+
             {{#sortable-item tagName="tr" model=list group=group spacing=15 handle=".handle"}}
 
               {{#each menuAttributes as |column|}}

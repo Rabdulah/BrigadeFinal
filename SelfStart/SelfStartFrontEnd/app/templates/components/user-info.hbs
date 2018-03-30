@@ -1,6 +1,6 @@
 <link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/home-style.css">
 
-<div id="example" class="index pushable">
+<div id="example" class="index">
 
   <div class="full height">
     <div class="following bar">
@@ -47,45 +47,45 @@
         <link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/form-style.css"> <!-- Resource style -->
 
 
-        <div class="ui five tablet stackable top attached steps">
-          <a class="{{accountValue}} step">
-            <i class="user plus icon"></i>
-            <div class="content">
-              <div class="title">Create Account</div>
-            </div>
-          </a>
+        {{!--<div class="ui five tablet stackable top attached steps">-->
+          <!--<a class="{{accountValue}} step">-->
+            <!--<i class="user plus icon"></i>-->
+            <!--<div class="content">-->
+              <!--<div class="title">Create Account</div>-->
+            <!--</div>-->
+          <!--</a>-->
 
-          <a class="{{introValue}} step">
-            <i class="wpforms icon"></i>
-            <div class="content">
-              <div class="title">Introduction</div>
-            </div>
-          </a>
+          <!--<a class="{{introValue}} step">-->
+            <!--<i class="wpforms icon"></i>-->
+            <!--<div class="content">-->
+              <!--<div class="title">Introduction</div>-->
+            <!--</div>-->
+          <!--</a>-->
 
-          <a class="{{appointmentValue}} step">
-            <i class="bookmark icon"></i>
-            <div class="content">
-              <div class="title">Book appointment</div>
-            </div>
-          </a>
-          <a class="{{paymentValue}} step">
-            <i class="payment icon"></i>
-            <div class="content">
-              <div class="title">Payment plan</div>
-            </div>
-          </a>
-          <a class="{{confirmValue}} step">
-            <i class="check circle icon"></i>
-            <div class="content">
-              <div class="title">Confirmation</div>
-            </div>
-          </a>
+          <!--<a class="{{appointmentValue}} step">-->
+            <!--<i class="bookmark icon"></i>-->
+            <!--<div class="content">-->
+              <!--<div class="title">Book appointment</div>-->
+            <!--</div>-->
+          <!--</a>-->
+          <!--<a class="{{paymentValue}} step">-->
+            <!--<i class="payment icon"></i>-->
+            <!--<div class="content">-->
+              <!--<div class="title">Payment plan</div>-->
+            <!--</div>-->
+          <!--</a>-->
+          <!--<a class="{{confirmValue}} step">-->
+            <!--<i class="check circle icon"></i>-->
+            <!--<div class="content">-->
+              <!--<div class="title">Confirmation</div>-->
+            <!--</div>-->
+          <!--</a>--}}
 
-        </div>
-        <div class="ui attached segment">
+
+        <!--<div class="ui attached segment">-->
           <br><br>
-          {{#if account}}
-          <form class="cd-form floating-labels" style="margin: 0 0; padding-right: 15%; padding-left: 15%" {{action "goToIntro" on="submit"}}>
+          {{!--{{#if account}}--}}
+          <form class="cd-form floating-labels" style="margin: 0 0; padding-right: 15%; padding-left: 15%" {{action "submit" on="submit"}}>
             <legend>Account Information</legend>
             <div class="ui hidden divider"></div>
             <div class="field" style="margin: 1em 0;">
@@ -131,10 +131,6 @@
 
             <div class="field" style="margin: 1em 0;">
               {{input class="phone" type="text" value = phoneNumber placeholder="Phone Number" required = true}}
-            </div>
-
-            <div class="field" style="margin: 1em 0;">
-              {{input class="card" type="text" value = healthCardNumber placeholder="Health Card Number" required = true}}
             </div>
 
             <div class="ui hidden divider"></div>
@@ -191,14 +187,14 @@
 
             <div class="field">
               <div class="ui centered grid">
-                <button class="ui blue button" style="height: 50px;" value="Submit">Next</button>
+                <button class="ui blue button" style="height: 50px;" value="Submit">Submit</button>
               </div>
             </div>
 
           </form>
-          {{/if}}
+          {{!--{{/if}}--}}
 
-          {{#if intro}}
+{{!--{{#if intro}}
             <p>Introduction Form Goes Here!!</p>
             <div class="field">
               <div class="ui centered grid">
@@ -326,9 +322,9 @@
                 <button class="ui blue button" style="height: 50px;" {{action "goToPaypal"}}>Next</button>
               </div>
             </div>
-          {{/if}}
+          {{/if}}--}}
 
-        </div>
+        <!--</div>-->
       </div>
       <br><br><br><br>
 

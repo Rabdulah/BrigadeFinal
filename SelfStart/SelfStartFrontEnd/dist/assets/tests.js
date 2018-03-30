@@ -232,7 +232,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/edit-rehabplan.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/edit-rehabplan.js should pass ESLint\n\n70:9 - \'a\' is assigned a value but never used. (no-unused-vars)');
+    assert.ok(false, 'components/edit-rehabplan.js should pass ESLint\n\n66:9 - \'a\' is assigned a value but never used. (no-unused-vars)\n256:8 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/edit-status.js', function (assert) {
@@ -342,7 +342,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/user-info.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'components/user-info.js should pass ESLint\n\n');
+    assert.ok(false, 'components/user-info.js should pass ESLint\n\n121:28 - \'patient\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/user-login.js', function (assert) {
