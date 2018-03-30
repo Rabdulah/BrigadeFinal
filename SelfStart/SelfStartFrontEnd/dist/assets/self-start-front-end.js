@@ -1549,6 +1549,9 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
                 if (app.get('reason') == null) {
                   home.get('occurrences').pushObject(Ember.Object.create({
                     title: "Book Appointment",
+                    isDraggable: true,
+                    isResizable: false,
+                    isRemovable: false,
                     startsAt: scheduledDate.toISOString(),
                     endsAt: endDate.toISOString(),
                     tempid: app.get('id')
@@ -1605,9 +1608,9 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
         var self = this;
         //temp client until we get token
         //laptop
-        // let client = '5a99f669da1c862bd0ac4efb';
+        var client = '5ab9649cc7f3c62814754951';
         //desktop
-        var client = '5a88738e1f0fdc2b94498e81';
+        // let client = '5a88738e1f0fdc2b94498e81';
         var physio = self.get('selectphysio');
         var booking = this.get('DS').createRecord('appointment', {
           reason: self.get('Reason'),
@@ -1636,7 +1639,7 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
                     self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
                       old.destroyRecord().then(function () {
                         Ember.$('.ui.bk.modal').modal('hide');
-                        window.location.reload();
+                        // window.location.reload();
                       });
                     });
                   }
@@ -1647,7 +1650,7 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
                         old.set('date', bookedTime.end);
                         old.save().then(function () {
                           Ember.$('.ui.bk.modal').modal('hide');
-                          window.location.reload();
+                          // window.location.reload();
                         });
                       });
                     }
@@ -1658,7 +1661,7 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
                           old.set('endDate', bookedTime.time);
                           old.save().then(function () {
                             Ember.$('.ui.bk.modal').modal('hide');
-                            window.location.reload();
+                            // window.location.reload();
                           });
                         });
                       }
@@ -1684,7 +1687,7 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
                                   a.save().then(function () {
                                     rec.destroyRecord().then(function () {
                                       Ember.$('.ui.bk.modal').modal('hide');
-                                      window.location.reload();
+                                      // window.location.reload();
                                     });
                                   });
                                 });
@@ -6081,6 +6084,9 @@ define('self-start-front-end/components/view-schedule', ['exports', 'moment'], f
         var container = Ember.Object.create({
           title: "SetAvailable Spot",
           startsAt: occurrence.get('startsAt'),
+          isDraggable: true,
+          isResizable: true,
+          isRemovable: true,
           endsAt: occurrence.get('endsAt')
         });
         this.get('occurrences').pushObject(container);
@@ -6133,6 +6139,9 @@ define('self-start-front-end/components/view-schedule', ['exports', 'moment'], f
                   home.get('occurrences').pushObject(Ember.Object.create({
                     title: "Booked",
                     isFilled: true,
+                    isDraggable: false,
+                    isResizable: false,
+                    isRemovable: false,
                     startsAt: scheduledDate.toISOString(),
                     endsAt: endDate.toISOString()
                   }));
@@ -6140,6 +6149,9 @@ define('self-start-front-end/components/view-schedule', ['exports', 'moment'], f
                   var temp = Ember.Object.create({
                     title: "SetAvailable Spot",
                     isFilled: false,
+                    isDraggable: true,
+                    isResizable: true,
+                    isRemovable: true,
                     startsAt: scheduledDate.toISOString(),
                     endsAt: endDate.toISOString(),
                     tempid: app.get('id')
@@ -9963,7 +9975,7 @@ define("self-start-front-end/templates/components/as-calendar/occurrence", ["exp
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "cit7gvM4", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"div\"],[9,\"class\",\"as-calendar-occurrence__container\"],[7],[0,\"\\n\"],[4,\"if\",[[22,1]],null,{\"statements\":[[0,\"    \"],[11,1],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"    \"],[6,\"h1\"],[9,\"class\",\"as-calendar-occurrence__title\"],[10,\"style\",[18,\"titleStyle\"],null],[7],[1,[18,\"title\"],false],[8],[0,\"\\n    \"],[6,\"h1\"],[7],[0,\" \"],[1,[18,\"startingTime\"],false],[0,\" - \"],[1,[18,\"dayEndingTime\"],false],[8],[0,\"\\n\"]],\"parameters\":[]}],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/as-calendar/occurrence.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "vkg6Js31", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"div\"],[9,\"class\",\"as-calendar-occurrence__container\"],[7],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"isBooked\"]]],null,{\"statements\":[[4,\"if\",[[22,1]],null,{\"statements\":[[0,\"      \"],[11,1],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"      \"],[6,\"h1\"],[9,\"class\",\"as-calendar-occurrence__title\"],[10,\"style\",[18,\"titleStyle\"],null],[7],[1,[18,\"title\"],false],[8],[0,\"\\n      \"],[6,\"h1\"],[7],[0,\" \"],[1,[18,\"startingTime\"],false],[0,\" - \"],[1,[18,\"dayEndingTime\"],false],[8],[0,\"\\n      \"],[6,\"h1\"],[7],[0,\"testing true isBooked\"],[8],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[]},{\"statements\":[[4,\"if\",[[22,1]],null,{\"statements\":[[0,\"      \"],[11,1],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"      \"],[6,\"h1\"],[9,\"class\",\"as-calendar-occurrence__title\"],[10,\"style\",[18,\"titleStyle\"],null],[7],[1,[18,\"title\"],false],[8],[0,\"\\n      \"],[6,\"h1\"],[7],[0,\" \"],[1,[18,\"startingTime\"],false],[0,\" - \"],[1,[18,\"dayEndingTime\"],false],[8],[0,\"\\n\"]],\"parameters\":[]}]],\"parameters\":[]}],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/as-calendar/occurrence.hbs" } });
 });
 define("self-start-front-end/templates/components/as-calendar/time-zone-option", ["exports"], function (exports) {
   "use strict";
@@ -10003,7 +10015,7 @@ define("self-start-front-end/templates/components/as-calendar/timetable/occurren
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "wEOwTg4v", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"div\"],[9,\"class\",\"as-calendar-occurrence__container\"],[7],[0,\"\\n\"],[4,\"if\",[[22,1]],null,{\"statements\":[[0,\"    \"],[11,1],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"    \"],[6,\"h1\"],[9,\"class\",\"as-calendar-occurrence__title\"],[10,\"style\",[18,\"titleStyle\"],null],[7],[1,[18,\"title\"],false],[8],[0,\"\\n    \"],[6,\"h1\"],[7],[0,\" \"],[1,[18,\"startingTime\"],false],[0,\" - \"],[1,[18,\"dayEndingTime\"],false],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n\"],[4,\"unless\",[[20,[\"isInteracting\"]]],null,{\"statements\":[[4,\"if\",[[20,[\"isRemovable\"]]],null,{\"statements\":[[0,\"      \"],[6,\"a\"],[9,\"class\",\"as-calendar-occurrence__remove\"],[3,\"action\",[[19,0,[]],\"remove\"],[[\"bubbles\"],[false]]],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"isResizable\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"as-calendar-occurrence__resize-handle\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[]},null],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/as-calendar/timetable/occurrence.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "9RzR5UGU", "block": "{\"symbols\":[\"&default\"],\"statements\":[[4,\"if\",[[20,[\"isBooked\"]]],null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"as-calendar-occurrence__container1\"],[7],[0,\"\\n\"],[4,\"if\",[[22,1]],null,{\"statements\":[[0,\"    \"],[11,1],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"    \"],[6,\"h1\"],[9,\"class\",\"as-calendar-occurrence__title\"],[10,\"style\",[18,\"titleStyle\"],null],[7],[1,[18,\"title\"],false],[8],[0,\"\\n    \"],[6,\"h1\"],[7],[0,\" \"],[1,[18,\"startingTime\"],false],[0,\" - \"],[1,[18,\"dayEndingTime\"],false],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n\"],[4,\"unless\",[[20,[\"isInteracting\"]]],null,{\"statements\":[[4,\"if\",[[20,[\"isRemovable\"]]],null,{\"statements\":[[0,\"      \"],[6,\"a\"],[9,\"class\",\"as-calendar-occurrence__remove\"],[3,\"action\",[[19,0,[]],\"remove\"],[[\"bubbles\"],[false]]],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"isResizable\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"as-calendar-occurrence__resize-handle\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[]},null],[0,\"  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"as-calendar-occurrence__container\"],[7],[0,\"\\n\"],[4,\"if\",[[22,1]],null,{\"statements\":[[0,\"    \"],[11,1],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"    \"],[6,\"h1\"],[9,\"class\",\"as-calendar-occurrence__title\"],[10,\"style\",[18,\"titleStyle\"],null],[7],[1,[18,\"title\"],false],[8],[0,\"\\n    \"],[6,\"h1\"],[7],[0,\" \"],[1,[18,\"startingTime\"],false],[0,\" - \"],[1,[18,\"dayEndingTime\"],false],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n\"],[4,\"unless\",[[20,[\"isInteracting\"]]],null,{\"statements\":[[4,\"if\",[[20,[\"isRemovable\"]]],null,{\"statements\":[[0,\"      \"],[6,\"a\"],[9,\"class\",\"as-calendar-occurrence__remove\"],[3,\"action\",[[19,0,[]],\"remove\"],[[\"bubbles\"],[false]]],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"isResizable\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"as-calendar-occurrence__resize-handle\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[]},null],[0,\"  \"],[8],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/as-calendar/timetable/occurrence.hbs" } });
 });
 define("self-start-front-end/templates/components/assign-rehabplan", ["exports"], function (exports) {
   "use strict";
@@ -11391,6 +11403,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+d792f7a2"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+6314f1bc"});
 }
 //# sourceMappingURL=self-start-front-end.map

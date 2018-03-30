@@ -31,6 +31,9 @@ export default Component.extend({
       let container = Ember.Object.create({
         title: "SetAvailable Spot",
         startsAt: occurrence.get('startsAt'),
+        isDraggable: true,
+        isResizable: true,
+        isRemovable: true,
         endsAt: occurrence.get('endsAt')
       });
       this.get('occurrences').pushObject(container);
@@ -85,6 +88,9 @@ export default Component.extend({
                 home.get('occurrences').pushObject(Ember.Object.create({
                   title: "Booked",
                   isFilled: true,
+                  isDraggable: false,
+                  isResizable: false,
+                  isRemovable: false,
                   startsAt: scheduledDate.toISOString(),
                   endsAt: endDate.toISOString()
                 }));
@@ -93,6 +99,9 @@ export default Component.extend({
                 let temp = Ember.Object.create({
                   title: "SetAvailable Spot",
                   isFilled: false,
+                  isDraggable: true,
+                  isResizable: true,
+                  isRemovable: true,
                   startsAt: scheduledDate.toISOString(),
                   endsAt: endDate.toISOString(),
                   tempid : app.get('id')

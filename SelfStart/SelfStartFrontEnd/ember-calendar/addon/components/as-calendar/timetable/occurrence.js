@@ -4,13 +4,15 @@ import interact from 'interact';
 import OccurrenceComponent from '../occurrence';
 
 export default OccurrenceComponent.extend({
-  classNameBindings: [':as-calendar-occurrence--timetable'],
+
 
   timetable: null,
   isInteracting: false,
-  isDraggable: true,
-  isResizable: true,
-  isRemovable: true,
+  isDraggable: Ember.computed.oneWay('model.content.isDraggable'),
+  isResizable: Ember.computed.oneWay('model.content.isResizable'),
+  isRemovable: Ember.computed.oneWay('model.content.isRemovable'),
+  isBooked: Ember.computed.oneWay('model.content.isFilled'),
+
   dayWidth: Ember.computed.oneWay('timetable.dayWidth'),
   referenceElement: Ember.computed.oneWay('timetable.referenceElement'),
 
@@ -23,6 +25,8 @@ export default OccurrenceComponent.extend({
 
   startingTime: null,
   dayEndingTime: null,
+
+  classNameBindings: [':as-calendar-occurrence--timetable'],
 
   _setupInteractable: Ember.on('didInsertElement', function() {
     var interactable = interact(this.$()[0]).on('mouseup', (event) => {

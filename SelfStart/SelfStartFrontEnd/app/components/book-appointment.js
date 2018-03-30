@@ -117,6 +117,9 @@ export default Component.extend({
               if (app.get('reason')==null) {
                 home.get('occurrences').pushObject(Ember.Object.create({
                   title: "Book Appointment",
+                  isDraggable: true,
+                  isResizable: false,
+                  isRemovable: false,
                   startsAt: scheduledDate.toISOString(),
                   endsAt: endDate.toISOString(),
                   tempid : app.get('id')
@@ -182,9 +185,9 @@ export default Component.extend({
       let self = this;
       //temp client until we get token
       //laptop
-      // let client = '5a99f669da1c862bd0ac4efb';
+      let client = '5ab9649cc7f3c62814754951';
       //desktop
-      let client = '5a88738e1f0fdc2b94498e81';
+      // let client = '5a88738e1f0fdc2b94498e81';
       let physio = self.get('selectphysio');
       let booking = this.get('DS').createRecord('appointment', {
         reason: self.get('Reason'),
@@ -213,7 +216,7 @@ export default Component.extend({
                   self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old){
                     old.destroyRecord().then(() =>{
                       $('.ui.bk.modal').modal('hide');
-                      window.location.reload();
+                      // window.location.reload();
                     });
                   });
                 }
@@ -224,7 +227,7 @@ export default Component.extend({
                     old.set('date', bookedTime.end);
                     old.save().then(() => {
                       $('.ui.bk.modal').modal('hide');
-                      window.location.reload();
+                      // window.location.reload();
                     });
                   });
                 }
@@ -235,7 +238,7 @@ export default Component.extend({
                     old.set('endDate', bookedTime.time);
                     old.save().then(() => {
                       $('.ui.bk.modal').modal('hide');
-                      window.location.reload();
+                      // window.location.reload();
                     });
                   });
                 }
@@ -261,7 +264,7 @@ export default Component.extend({
                           a.save().then(()=> {
                             rec.destroyRecord().then(() =>{
                               $('.ui.bk.modal').modal('hide');
-                              window.location.reload();
+                              // window.location.reload();
                             });
                           })
                         })

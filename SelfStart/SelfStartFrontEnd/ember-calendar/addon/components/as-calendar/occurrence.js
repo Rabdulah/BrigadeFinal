@@ -15,6 +15,7 @@ export default Ember.Component.extend({
   title: Ember.computed.oneWay('model.title'),
   content: Ember.computed.oneWay('model.content'),
   day: Ember.computed.oneWay('model.day'),
+  isBooked: Ember.computed.oneWay('model.content.isFilled'),
   computedTimeSlotDuration: computedDuration('timeSlotDuration'),
 
   titleStyle: Ember.computed('timeSlotHeight', function() {
@@ -24,6 +25,7 @@ export default Ember.Component.extend({
 
   _duration: Ember.computed.oneWay('model.duration'),
   _startingTime: Ember.computed('model.startingTime', function() {
+    console.log(this.get('model.content'));
     let time = get(this, 'model.startingTime');
     this.set('startingTime', moment(time).format('hh:mm A'));
     this.set('dayEndingTime', moment(time).add(this.get('_occupiedTimeSlots')*30, 'minute').format('hh:mm A'));
@@ -58,6 +60,11 @@ export default Ember.Component.extend({
   }),
 
   _style: Ember.computed('_height', '_top', function() {
+    if (this.get('isBooked')){
+      this.get('21');
+      return Ember.String.htmlSafe(`top: ${this.get('_top')}px;
+            height: ${this.get('_height')}px; background-color: rgba(255, 0, 0, 0.5); border-left: 2px solid #ff0000;`);
+    }
     this.get('21');
     return Ember.String.htmlSafe(`top: ${this.get('_top')}px;
             height: ${this.get('_height')}px;`);
