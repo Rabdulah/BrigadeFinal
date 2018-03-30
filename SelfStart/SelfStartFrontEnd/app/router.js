@@ -15,6 +15,7 @@ Router.map(function() {
   this.route('account');
   this.route('login');
   this.route('new-exercise');
+  this.route('video-uploader');
 });
 
 export default Router;

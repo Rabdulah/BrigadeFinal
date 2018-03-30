@@ -205,7 +205,18 @@ export default Component.extend({
             console.log(image);
             this.temp.push(image);
             console.log(image.name);
-        }
+        },
+
+        openModal: function ()  {
+            $('.ui.newExercise.modal').modal({
+              closable: false,
+      
+              onDeny: () => {
+                return true;
+              },
+      
+            }).modal('show')
+          },
         
     }
 });
