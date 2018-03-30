@@ -29,7 +29,6 @@ export default Component.extend({
     this.set('postalCode', '');
     this.set('userAccountName', '');
     this.set('encryptedPassword', '');
-
     // this.set('selectedGender', this.get('selectedGender'));
     // this.set('selectedCountry', this.get('selectedCountry'));
   },
@@ -59,6 +58,9 @@ export default Component.extend({
     });
   },
 
+  introModel: computed( function() {
+    return this.get('DS').findRecord('form', '5aac10411eac5942040e581f');
+  }),
 
   conutryModel: computed(function(){
     return this.get('DS').findAll('country');
@@ -76,7 +78,7 @@ export default Component.extend({
       this.set('selectedDate', date);
     },
 
-    selectCountry (country){
+    selectCountry (country) {
       this.set('selectedCountry', country);
     },
 
@@ -87,9 +89,27 @@ export default Component.extend({
     submit(){
       let self = this;
 
+      
       let patientAccount = {};
       patientAccount['userAccountName'] = self.get('userAccountName');
       patientAccount['encryptedPassword'] = self.get('encryptedPassword');
+
+      let tForm = this.get('DS').findRecord('form', '5aac10411eac5942040e581f');
+      console.log(tForm);
+      let temp = [];
+      tForm.get("questions").forEach(element => {
+        temp.push("!!!!");
+      });
+
+      let introTest = this.get('DS').createRecord('assessment-test', {
+        form: tForm,
+        questions: tForm.get("questions"),
+        answers: temp
+      });
+      introTest.save().then(()=> {
+        return true;
+      });
+
 
       let patient = this.get('DS').createRecord('patient', {
         familyName: self.get('familyName'),
@@ -106,7 +126,8 @@ export default Component.extend({
         gender: self.get('selectedGender'),
         phoneNumber: self.get('phoneNumber'),
         postalCode: self.get('postalCode'),
-        account: patientAccount
+        account: patientAccount,
+        introTest: introTest
       });
 
       patient.save().then(() => {

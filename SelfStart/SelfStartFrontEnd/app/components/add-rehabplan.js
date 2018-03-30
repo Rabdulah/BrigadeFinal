@@ -13,6 +13,9 @@ export default Component.extend({
   isEditing: false,
 
   actions: {
+    selectExercise (exercise) {
+      this.set('selectedExercise', exercise);
+    },
     addRehabPlan (){
       this.set('isEditing', true);
     },

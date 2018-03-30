@@ -48,7 +48,7 @@ router.route('/:rehabilitation_id')
                 rehabilitation.date = request.body.rehabilitationplan.date;
                 rehabilitation.timeToComplete = request.body.rehabilitationplan.timeToComplete;
                 rehabilitation.plan = request.body.rehabilitationplan.plan;
-                rehabilitation.assessmentTests = request.body.rehabilitationplan.assessmentTests;
+                rehabilitation.rehabLink = request.body.rehabilitationplan.rehabLink;
                 rehabilitation.exercise = request.body.rehabilitationplan.exercise;
 
                 rehabilitation.save(function (error) {

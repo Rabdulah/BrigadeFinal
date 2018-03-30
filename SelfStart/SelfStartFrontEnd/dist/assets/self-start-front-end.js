@@ -609,7 +609,6 @@ define('self-start-front-end/components/add-patient', ['exports'], function (exp
       this.set('postalCode', '');
       this.set('userAccountName', '');
       this.set('encryptedPassword', '');
-
       // this.set('selectedGender', this.get('selectedGender'));
       // this.set('selectedCountry', this.get('selectedCountry'));
     },
@@ -638,6 +637,10 @@ define('self-start-front-end/components/add-patient', ['exports'], function (exp
     },
 
 
+    introModel: Ember.computed(function () {
+      return this.get('DS').findRecord('form', '5aac10411eac5942040e581f');
+    }),
+
     conutryModel: Ember.computed(function () {
       return this.get('DS').findAll('country');
     }),
@@ -665,6 +668,22 @@ define('self-start-front-end/components/add-patient', ['exports'], function (exp
         patientAccount['userAccountName'] = self.get('userAccountName');
         patientAccount['encryptedPassword'] = self.get('encryptedPassword');
 
+        var tForm = this.get('DS').findRecord('form', '5aac10411eac5942040e581f');
+        console.log(tForm);
+        var temp = [];
+        tForm.get("questions").forEach(function (element) {
+          temp.push("!!!!");
+        });
+
+        var introTest = this.get('DS').createRecord('assessment-test', {
+          form: tForm,
+          questions: tForm.get("questions"),
+          answers: temp
+        });
+        introTest.save().then(function () {
+          return true;
+        });
+
         var patient = this.get('DS').createRecord('patient', {
           familyName: self.get('familyName'),
           givenName: self.get('givenName'),
@@ -680,7 +699,8 @@ define('self-start-front-end/components/add-patient', ['exports'], function (exp
           gender: self.get('selectedGender'),
           phoneNumber: self.get('phoneNumber'),
           postalCode: self.get('postalCode'),
-          account: patientAccount
+          account: patientAccount,
+          introTest: introTest
         });
 
         patient.save().then(function () {
@@ -1061,6 +1081,9 @@ define('self-start-front-end/components/add-rehabplan', ['exports'], function (e
     isEditing: false,
 
     actions: {
+      selectExercise: function selectExercise(exercise) {
+        this.set('selectedExercise', exercise);
+      },
       addRehabPlan: function addRehabPlan() {
         this.set('isEditing', true);
       },
@@ -1385,26 +1408,38 @@ define('self-start-front-end/components/assign-rehabplan', ['exports'], function
               Patient: _this.get('model'),
               assigned: true
             });
+
+            var tests = _this.get('store').findAll('assessment-test');
+            console.log(tests);
+            tests.forEach(function (test) {
+              console.log(test.get('rehabLink'));
+              if (test.get('rehabLink') === null) {
+                var thisLink = _this.get('store').findRecord('rehab-client-link', "5ab930d8e13ebe423412e083");
+                console.log(thisLink);
+                test.set('rehabLink', thisLink);
+                console.log(test);
+              }
+            });
             link.save().then(function (res) {
-              //   this.get('ajax').request('http://localhost:8082/rehabClientLinks', {
-              //     method: 'POST',
-              //     data: {
-              //       rehabClientLink: {
-              //         terminated: this.get('plansData.terminated'),
-              //         RehabilitationPlan: this.get('plansData'),
-              //         Patient: this.get('model'),
-              //         assigned: true
-              //       }
-              //     },
-              //     success: function(res) {
-              //       if(res.success) {
-              //         $('.ui.' + this.get('modalName') + '.modal').modal('hide');
-              //         return true;
-              //       } else {
-              //         alert("This Rehab Plan is already assigned to this patient");
-              //       }
-              //     }
-              //   });
+              _this.get('ajax').request('http://localhost:8082/rehabClientLinks', {
+                method: 'POST',
+                data: {
+                  rehabClientLink: {
+                    terminated: _this.get('plansData.terminated'),
+                    RehabilitationPlan: _this.get('plansData'),
+                    Patient: _this.get('model'),
+                    assigned: true
+                  }
+                },
+                success: function success(res) {
+                  if (res.success) {
+                    Ember.$('.ui.' + this.get('modalName') + '.modal').modal('hide');
+                    return true;
+                  } else {
+                    alert("This Rehab Plan is already assigned to this patient");
+                  }
+                }
+              });
 
               if (res.success) {
                 Ember.$('.ui.' + _this.get('modalName') + '.modal').modal('hide');
@@ -4172,7 +4207,6 @@ define('self-start-front-end/components/list-forms', ['exports'], function (expo
         var newTest = this.get('DS').createRecord('assessment-test', {
           form: thisForm,
           questions: thisForm.get("questions"),
-          rehabPlan: thisPlan,
           answers: temp
         });
         newTest.save().then(function () {
@@ -8275,9 +8309,12 @@ define('self-start-front-end/routes/practitioner/client-file', ['exports'], func
     value: true
   });
   exports.default = Ember.Route.extend({
-    // model(){
-    //   return this.store.findAll('rehab-client-link');
-    // }
+    model: function model() {
+      return Ember.RSVP.hash({
+        rehabLink: this.store.findAll('rehab-client-link'),
+        assessmentTest: this.store.findAll('assessment-test')
+      });
+    }
   });
 });
 define('self-start-front-end/routes/practitioner/clients', ['exports'], function (exports) {
@@ -10067,7 +10104,7 @@ define("self-start-front-end/templates/components/assign-rehabplan", ["exports"]
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "PWBdjOaP", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  Assign\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[9,\"href\",\"/assets/css/form-style.css\"],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Assign \"],[1,[20,[\"plansData\",\"planName\"]],false],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you want to assign this rehabilitation plan?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/assign-rehabplan.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "07sRyAZy", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  Assign\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[9,\"href\",\"/assets/css/form-style.css\"],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Assign \"],[1,[20,[\"plansData\",\"planName\"]],false],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"div\"],[7],[0,\"\\n      \"],[1,[25,\"list-forms\",null,[[\"ID\",\"plan\"],[[20,[\"plansData\",\"id\"]],[20,[\"plansData\"]]]]],false],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you want to assign this rehabilitation plan?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/assign-rehabplan.hbs" } });
 });
 define("self-start-front-end/templates/components/back-to-top", ["exports"], function (exports) {
   "use strict";
@@ -10339,7 +10376,7 @@ define("self-start-front-end/templates/components/list-forms", ["exports"], func
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "hrA53tgW", "block": "{\"symbols\":[\"form\"],\"statements\":[[6,\"button\"],[9,\"class\",\"ui mini circular labeled icon red button\"],[9,\"title\",\"Delete\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"i\"],[9,\"class\",\"remove icon\"],[7],[8],[0,\"\\n  Add Assessment Test\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\"],[0,\"      \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"formsModel\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"four wide column\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[1,[19,1,[\"name\"]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"four wide column\"],[7],[0,\"\\n            \"],[6,\"button\"],[3,\"action\",[[19,0,[]],\"AddTest\",[19,1,[]],[20,[\"plan\"]]]],[7],[0,\"Add \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui positive right labeled icon button\"],[7],[0,\"\\n      Done\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/list-forms.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "oBrzjewq", "block": "{\"symbols\":[\"form\"],\"statements\":[[0,\"\\n\"],[0,\"  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\"],[0,\"      \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"formsModel\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"four wide column\"],[7],[0,\"\\n            \"],[6,\"label\"],[7],[1,[19,1,[\"name\"]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"four wide column\"],[7],[0,\"\\n            \"],[6,\"button\"],[3,\"action\",[[19,0,[]],\"AddTest\",[19,1,[]],[20,[\"plan\"]]]],[7],[0,\"Add \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[0,\"  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/list-forms.hbs" } });
 });
 define("self-start-front-end/templates/components/manage-admin-accounts", ["exports"], function (exports) {
   "use strict";
