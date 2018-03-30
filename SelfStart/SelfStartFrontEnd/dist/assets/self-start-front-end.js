@@ -1844,6 +1844,19 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
     }
   });
 });
+define('self-start-front-end/components/color-palette/component', ['exports', 'ember-palette/components/color-palette/component'], function (exports, _component) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _component.default;
+    }
+  });
+});
 define('self-start-front-end/components/config-selection', ['exports'], function (exports) {
   'use strict';
 
@@ -2540,6 +2553,22 @@ define('self-start-front-end/components/display-questions', ['exports'], functio
         }
 
     });
+});
+define('self-start-front-end/components/draggable-object-target', ['exports', 'ember-drag-drop/components/draggable-object-target'], function (exports, _draggableObjectTarget) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _draggableObjectTarget.default;
+});
+define('self-start-front-end/components/draggable-object', ['exports', 'ember-drag-drop/components/draggable-object'], function (exports, _draggableObject) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _draggableObject.default;
 });
 define('self-start-front-end/components/edit-admin', ['exports'], function (exports) {
   'use strict';
@@ -3512,6 +3541,162 @@ define('self-start-front-end/components/edit-status', ['exports'], function (exp
     }
   });
 });
+define('self-start-front-end/components/ember-palette-selected/component', ['exports', 'ember-palette/components/ember-palette-selected/component'], function (exports, _component) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _component.default;
+    }
+  });
+});
+define('self-start-front-end/components/ember-wormhole', ['exports', 'ember-wormhole/components/ember-wormhole'], function (exports, _emberWormhole) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _emberWormhole.default;
+    }
+  });
+});
+define('self-start-front-end/components/g-map-address-marker', ['exports', 'ember-g-map/components/g-map-address-marker'], function (exports, _gMapAddressMarker) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _gMapAddressMarker.default;
+    }
+  });
+});
+define('self-start-front-end/components/g-map-address-route', ['exports', 'ember-g-map/components/g-map-address-route'], function (exports, _gMapAddressRoute) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _gMapAddressRoute.default;
+    }
+  });
+});
+define('self-start-front-end/components/g-map-infowindow', ['exports', 'ember-g-map/components/g-map-infowindow'], function (exports, _gMapInfowindow) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _gMapInfowindow.default;
+    }
+  });
+});
+define('self-start-front-end/components/g-map-marker', ['exports', 'ember-g-map/components/g-map-marker'], function (exports, _gMapMarker) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _gMapMarker.default;
+    }
+  });
+});
+define('self-start-front-end/components/g-map-polyline-coordinate', ['exports', 'ember-g-map/components/g-map-polyline-coordinate'], function (exports, _gMapPolylineCoordinate) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _gMapPolylineCoordinate.default;
+    }
+  });
+});
+define('self-start-front-end/components/g-map-polyline', ['exports', 'ember-g-map/components/g-map-polyline'], function (exports, _gMapPolyline) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _gMapPolyline.default;
+    }
+  });
+});
+define('self-start-front-end/components/g-map-route-address-waypoint', ['exports', 'ember-g-map/components/g-map-route-address-waypoint'], function (exports, _gMapRouteAddressWaypoint) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _gMapRouteAddressWaypoint.default;
+    }
+  });
+});
+define('self-start-front-end/components/g-map-route-waypoint', ['exports', 'ember-g-map/components/g-map-route-waypoint'], function (exports, _gMapRouteWaypoint) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _gMapRouteWaypoint.default;
+    }
+  });
+});
+define('self-start-front-end/components/g-map-route', ['exports', 'ember-g-map/components/g-map-route'], function (exports, _gMapRoute) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _gMapRoute.default;
+    }
+  });
+});
+define('self-start-front-end/components/g-map', ['exports', 'ember-g-map/components/g-map'], function (exports, _gMap) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _gMap.default;
+    }
+  });
+});
 define('self-start-front-end/components/get-answers', ['exports'], function (exports) {
       'use strict';
 
@@ -3680,6 +3865,45 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
             }
 
       });
+});
+define('self-start-front-end/components/gmm-markup-results/component', ['exports', 'google-maps-markup/components/gmm-markup-results/component'], function (exports, _component) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _component.default;
+    }
+  });
+});
+define('self-start-front-end/components/gmm-tool-options/component', ['exports', 'google-maps-markup/components/gmm-tool-options/component'], function (exports, _component) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _component.default;
+    }
+  });
+});
+define('self-start-front-end/components/google-maps-markup/component', ['exports', 'google-maps-markup/components/google-maps-markup/component'], function (exports, _component) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _component.default;
+    }
+  });
 });
 define("self-start-front-end/components/illiquid-model", ["exports", "liquid-fire/components/illiquid-model"], function (exports, _illiquidModel) {
   "use strict";
@@ -4324,6 +4548,19 @@ define('self-start-front-end/components/manage-questions', ['exports'], function
   });
   exports.default = Ember.Component.extend({});
 });
+define('self-start-front-end/components/markup-result-item/component', ['exports', 'google-maps-markup/components/markup-result-item/component'], function (exports, _component) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _component.default;
+    }
+  });
+});
 define('self-start-front-end/components/modify-question', ['exports'], function (exports) {
   'use strict';
 
@@ -4596,6 +4833,14 @@ define('self-start-front-end/components/nav-bar', ['exports'], function (exports
       }
     }
   });
+});
+define('self-start-front-end/components/object-bin', ['exports', 'ember-drag-drop/components/object-bin'], function (exports, _objectBin) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _objectBin.default;
 });
 define('self-start-front-end/components/parse-question', ['exports'], function (exports) {
     'use strict';
@@ -5627,6 +5872,14 @@ define('self-start-front-end/components/sortable-item', ['exports', 'ember-sorta
     value: true
   });
   exports.default = _sortableItem.default;
+});
+define('self-start-front-end/components/sortable-objects', ['exports', 'ember-drag-drop/components/sortable-objects'], function (exports, _sortableObjects) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _sortableObjects.default;
 });
 define('self-start-front-end/components/stylish-button', ['exports', 'ember-stylish-buttons/components/stylish-button', 'self-start-front-end/config/environment'], function (exports, _stylishButton, _environment) {
   'use strict';
@@ -7390,6 +7643,25 @@ define('self-start-front-end/helpers/pluralize', ['exports', 'ember-inflector/li
   });
   exports.default = _pluralize.default;
 });
+define('self-start-front-end/helpers/present', ['exports', 'google-maps-markup/helpers/present'], function (exports, _present) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _present.default;
+    }
+  });
+  Object.defineProperty(exports, 'present', {
+    enumerable: true,
+    get: function () {
+      return _present.present;
+    }
+  });
+});
 define('self-start-front-end/helpers/singularize', ['exports', 'ember-inflector/lib/helpers/singularize'], function (exports, _singularize) {
   'use strict';
 
@@ -7431,6 +7703,25 @@ define('self-start-front-end/helpers/task', ['exports'], function (exports) {
 
   exports.default = Ember.Helper.helper(taskHelper);
 });
+define('self-start-front-end/helpers/tool-id', ['exports', 'google-maps-markup/helpers/tool-id'], function (exports, _toolId) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _toolId.default;
+    }
+  });
+  Object.defineProperty(exports, 'toolId', {
+    enumerable: true,
+    get: function () {
+      return _toolId.toolId;
+    }
+  });
+});
 define('self-start-front-end/helpers/unix', ['exports', 'ember-moment/helpers/unix'], function (exports, _unix) {
   'use strict';
 
@@ -7469,6 +7760,37 @@ define('self-start-front-end/helpers/xor', ['exports', 'ember-truth-helpers/help
     }
   });
 });
+define('self-start-front-end/index', ['exports', 'ember-uuid'], function (exports, _emberUuid) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'v4', {
+    enumerable: true,
+    get: function () {
+      return _emberUuid.v4;
+    }
+  });
+  Object.defineProperty(exports, 'v1', {
+    enumerable: true,
+    get: function () {
+      return _emberUuid.v1;
+    }
+  });
+  Object.defineProperty(exports, 'parse', {
+    enumerable: true,
+    get: function () {
+      return _emberUuid.parse;
+    }
+  });
+  Object.defineProperty(exports, 'unparse', {
+    enumerable: true,
+    get: function () {
+      return _emberUuid.unparse;
+    }
+  });
+});
 define('self-start-front-end/initializers/app-version', ['exports', 'ember-cli-app-version/initializer-factory', 'self-start-front-end/config/environment'], function (exports, _initializerFactory, _environment) {
   'use strict';
 
@@ -7503,6 +7825,22 @@ define('self-start-front-end/initializers/container-debug-adapter', ['exports', 
 
       app.register('container-debug-adapter:main', _containerDebugAdapter.default);
       app.inject('container-debug-adapter:main', 'namespace', 'application:main');
+    }
+  };
+});
+define("self-start-front-end/initializers/coordinator-setup", ["exports", "self-start-front-end/models/coordinator"], function (exports, _coordinator) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = {
+    name: "setup coordinator",
+
+    initialize: function initialize() {
+      var app = arguments[1] || arguments[0];
+      app.register("drag:coordinator", _coordinator.default);
+      app.inject("component", "coordinator", "drag:coordinator");
     }
   };
 });
@@ -7791,6 +8129,40 @@ define('self-start-front-end/models/city', ['exports', 'ember-data'], function (
     provinces: _emberData.default.belongsTo('province', { async: true }) //1 to 1
   });
 });
+define('self-start-front-end/models/coordinator', ['exports', 'self-start-front-end/models/obj-hash'], function (exports, _objHash) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Object.extend(Ember.Evented, {
+    objectMap: Ember.computed(function () {
+      return _objHash.default.create();
+    }),
+
+    getObject: function getObject(id, ops) {
+      ops = ops || {};
+      var payload = this.get('objectMap').getObj(id);
+
+      if (payload.ops.source) {
+        payload.ops.source.sendAction('action', payload.obj);
+      }
+
+      if (payload.ops.target) {
+        payload.ops.target.sendAction('action', payload.obj);
+      }
+
+      this.trigger("objectMoved", { obj: payload.obj, source: payload.ops.source, target: ops.target });
+
+      return payload.obj;
+    },
+
+    setObject: function setObject(obj, ops) {
+      ops = ops || {};
+      return this.get('objectMap').add({ obj: obj, ops: ops });
+    }
+  });
+});
 define('self-start-front-end/models/country', ['exports', 'ember-data'], function (exports, _emberData) {
   'use strict';
 
@@ -7895,6 +8267,49 @@ define('self-start-front-end/models/marital-status', ['exports', 'ember-data'], 
     // status
 
     name: _emberData.default.attr()
+  });
+});
+define('self-start-front-end/models/obj-hash', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Object.extend({
+    content: {},
+    contentLength: 0,
+    length: Ember.computed.alias('contentLength'),
+
+    add: function add(obj) {
+      var id = this.generateId();
+      this.get('content')[id] = obj;
+      this.incrementProperty("contentLength");
+      return id;
+    },
+
+    getObj: function getObj(key) {
+      var res = this.get('content')[key];
+      if (!res) {
+        throw "no obj for key " + key;
+      }
+      return res;
+    },
+
+    generateId: function generateId() {
+      var num = Math.random() * 1000000000000.0;
+      num = parseInt(num);
+      num = "" + num;
+      return num;
+    },
+
+    keys: function keys() {
+      var res = [];
+      for (var key in this.get('content')) {
+        res.push(key);
+      }
+      return Ember.A(res);
+    }
+
   });
 });
 define('self-start-front-end/models/patient', ['exports', 'ember-data'], function (exports, _emberData) {
@@ -9604,6 +10019,14 @@ define('self-start-front-end/services/doc', ['exports'], function (exports) {
     }
   });
 });
+define('self-start-front-end/services/drag-coordinator', ['exports', 'ember-drag-drop/services/drag-coordinator'], function (exports, _dragCoordinator) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _dragCoordinator.default;
+});
 define('self-start-front-end/services/home', ['exports'], function (exports) {
   'use strict';
 
@@ -9849,6 +10272,19 @@ define("self-start-front-end/services/liquid-fire-transitions", ["exports", "liq
     value: true
   });
   exports.default = _transitionMap.default;
+});
+define('self-start-front-end/services/markup-data', ['exports', 'google-maps-markup/services/markup-data'], function (exports, _markupData) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _markupData.default;
+    }
+  });
 });
 define('self-start-front-end/services/media', ['exports', 'ember-responsive/media'], function (exports, _media) {
   'use strict';
@@ -10281,6 +10717,22 @@ define("self-start-front-end/templates/components/display-questions", ["exports"
   });
   exports.default = Ember.HTMLBars.template({ "id": "NGZTFNTU", "block": "{\"symbols\":[\"q\"],\"statements\":[[6,\"script\"],[9,\"type\",\"text/javascript\"],[7],[0,\"$(document).ready(function(){$(\\\".rating\\\").rating();});\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\"],[6,\"ol\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"formModel\",\"questions\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"if\",[[19,1,[\"sa\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui input focus\"],[7],[0,\"\\n            \"],[6,\"li\"],[7],[1,[25,\"input\",null,[[\"type\",\"value\"],[\"text\",[20,[\"the\"]]]]],false],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[19,1,[\"ra\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n         \"],[6,\"li\"],[7],[6,\"div\"],[9,\"class\",\"ui large heart rating\"],[9,\"data-max-rating\",\"10\"],[7],[8],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[19,1,[\"tf\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n     \"],[6,\"li\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"inline fields\"],[7],[0,\"\\n           \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"tf\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[0,\"True\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n               \"],[6,\"input\"],[9,\"name\",\"tf\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n               \"],[6,\"label\"],[7],[0,\"False\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"  \\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[19,1,[\"mc\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"grouped fields\"],[7],[0,\"\\n          \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],0],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],1],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],2],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"],[4,\"if\",[[25,\"number-of-mc\",[[19,1,[\"optionNumber\"]],3],null]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],3],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"number-of-mc\",[[19,1,[\"optionNumber\"]],4],null]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],4],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"number-of-mc\",[[19,1,[\"optionNumber\"]],5],null]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[7],[8],[0,\"\\n                \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[19,1,[\"optionString\"]],5],null],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[1]},null],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"button\"],[3,\"action\",[[19,0,[]],\"Submit\"]],[7],[0,\"Submit\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/display-questions.hbs" } });
 });
+define("self-start-front-end/templates/components/draggable-object-target", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "ojpyI/OM", "block": "{\"symbols\":[\"&default\"],\"statements\":[[4,\"if\",[[20,[\"enableClicking\"]]],null,{\"statements\":[[0,\"  \"],[6,\"a\"],[9,\"href\",\"#\"],[3,\"action\",[[19,0,[]],\"acceptForDrop\"]],[7],[0,\"\\n    \"],[11,1],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[11,1],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/draggable-object-target.hbs" } });
+});
+define("self-start-front-end/templates/components/draggable-object", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "+rQudvjt", "block": "{\"symbols\":[\"&default\"],\"statements\":[[4,\"if\",[[20,[\"enableClicking\"]]],null,{\"statements\":[[0,\"  \"],[6,\"a\"],[9,\"href\",\"#\"],[3,\"action\",[[19,0,[]],\"selectForDrag\"]],[7],[0,\"\\n    \"],[11,1],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[11,1],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/draggable-object.hbs" } });
+});
 define("self-start-front-end/templates/components/edit-admin", ["exports"], function (exports) {
   "use strict";
 
@@ -10423,7 +10875,15 @@ define("self-start-front-end/templates/components/nav-bar", ["exports"], functio
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "exNkoxQR", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"div\"],[9,\"id\",\"window\"],[7],[0,\"\\n\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/home-style.css\"]]],[7],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",[26,[\"following bar \",[18,\"stickyValue\"]]]],[9,\"id\",\"header\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[9,\"id\",\"menu\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                  \"],[6,\"a\"],[9,\"class\",\"active ui side\"],[9,\"href\",\"#home\"],[7],[0,\"\\n                    \"],[6,\"img\"],[9,\"class\",\"ui image selfStart\"],[9,\"src\",\"assets/images/home/Header.png\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n\\n            \"],[6,\"div\"],[10,\"class\",[26,[\"right menu \",[18,\"invertedValue\"]]]],[7],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item scroll\"],[9,\"href\",\"#about\"],[7],[0,\"About\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#howItWorks\"],[7],[0,\"How it Works\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#services\"],[7],[0,\"Services\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#FAQs\"],[7],[0,\"FAQ's\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Contact\"],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"loggedOut\"]]],null,{\"statements\":[[0,\"                \"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"Log in\"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                \"],[6,\"a\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"logout\"]],[7],[0,\"Logout\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[11,1],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"login\",\"login tiny\"]],{\"statements\":[[0,\"\\n\"],[4,\"if\",[[20,[\"loggingIn\"]]],null,{\"statements\":[[0,\"\\n    \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"class\",\"ui fluid centered header\"],[9,\"style\",\"border-radius: 0.28571429rem;\"],[7],[0,\"Sign in\"],[8],[0,\"\\n\\n\\n    \"],[6,\"div\"],[9,\"id\",\"ui container\"],[9,\"style\",\"height: 355px; padding-left:5%; padding-right: 5%; padding-top: 2%\"],[7],[0,\"\\n      \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"email\",\"email\",[20,[\"Email\"]],\"Email\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"lock\",\"password\",[20,[\"PWord\"]],\"Password\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"input\"],[9,\"type\",\"checkbox\"],[9,\"id\",\"cd-checkbox-1\"],[7],[8],[0,\"\\n          \"],[6,\"label\"],[9,\"for\",\"cd-checkbox-1\"],[7],[0,\"Remember me\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"max-width: 100%; height: 50px;\"],[7],[0,\"Login\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"cursor: pointer; text-align: center;  text-decoration: underline; padding-top: 65px\"],[3,\"action\",[[19,0,[]],\"forgotPassword\"]],[7],[0,\"forgot your password?\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"    \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"class\",\"ui fluid centered header\"],[9,\"style\",\"border-radius: 0.28571429rem;\"],[7],[0,\"Sign in\"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"id\",\"ui container\"],[9,\"style\",\"height: 260px; padding-left:5%; padding-right: 5%; padding-top: 3%\"],[7],[0,\"\\n    \"],[6,\"p\"],[9,\"style\",\"text-align: center;\"],[7],[0,\"Lost your password? Please enter your email address. You will receive a link to create a new password.\"],[8],[0,\"\\n      \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"email\",\"email\",[20,[\"Email\"]],\"Email\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"max-width: 100%; height: 50px;\"],[9,\"value\",\"Submit\"],[7],[0,\"Reset Password\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"cursor: pointer; text-align: center;  text-decoration: underline; padding-top: 65px\"],[3,\"action\",[[19,0,[]],\"login\"]],[7],[0,\"Back to log-in\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/nav-bar.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "2zzy7C6a", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"div\"],[9,\"id\",\"window\"],[7],[0,\"\\n\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/home-style.css\"]]],[7],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",[26,[\"following bar \",[18,\"stickyValue\"]]]],[9,\"id\",\"header\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[9,\"id\",\"menu\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                  \"],[6,\"a\"],[9,\"class\",\"active ui side\"],[9,\"href\",\"#home\"],[7],[0,\"\\n                    \"],[6,\"img\"],[9,\"class\",\"ui image selfStart\"],[9,\"src\",\"assets/images/home/Header.png\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n\\n            \"],[6,\"div\"],[10,\"class\",[26,[\"right menu \",[18,\"invertedValue\"]]]],[7],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item scroll\"],[9,\"href\",\"#about\"],[7],[0,\"About\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#howItWorks\"],[7],[0,\"How it Works\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#services\"],[7],[0,\"Services\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#FAQs\"],[7],[0,\"FAQs\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#contact\"],[7],[0,\"Contact\"],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"loggedOut\"]]],null,{\"statements\":[[0,\"                \"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"Log in\"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                \"],[6,\"a\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"logout\"]],[7],[0,\"Logout\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[11,1],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"login\",\"login tiny\"]],{\"statements\":[[0,\"\\n\"],[4,\"if\",[[20,[\"loggingIn\"]]],null,{\"statements\":[[0,\"\\n    \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"class\",\"ui fluid centered header\"],[9,\"style\",\"border-radius: 0.28571429rem;\"],[7],[0,\"Sign in\"],[8],[0,\"\\n\\n\\n    \"],[6,\"div\"],[9,\"id\",\"ui container\"],[9,\"style\",\"height: 355px; padding-left:5%; padding-right: 5%; padding-top: 2%\"],[7],[0,\"\\n      \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"email\",\"email\",[20,[\"Email\"]],\"Email\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"lock\",\"password\",[20,[\"PWord\"]],\"Password\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"input\"],[9,\"type\",\"checkbox\"],[9,\"id\",\"cd-checkbox-1\"],[7],[8],[0,\"\\n          \"],[6,\"label\"],[9,\"for\",\"cd-checkbox-1\"],[7],[0,\"Remember me\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"max-width: 100%; height: 50px;\"],[7],[0,\"Login\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"cursor: pointer; text-align: center;  text-decoration: underline; padding-top: 65px\"],[3,\"action\",[[19,0,[]],\"forgotPassword\"]],[7],[0,\"forgot your password?\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"    \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"class\",\"ui fluid centered header\"],[9,\"style\",\"border-radius: 0.28571429rem;\"],[7],[0,\"Sign in\"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"id\",\"ui container\"],[9,\"style\",\"height: 260px; padding-left:5%; padding-right: 5%; padding-top: 3%\"],[7],[0,\"\\n    \"],[6,\"p\"],[9,\"style\",\"text-align: center;\"],[7],[0,\"Lost your password? Please enter your email address. You will receive a link to create a new password.\"],[8],[0,\"\\n      \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"email\",\"email\",[20,[\"Email\"]],\"Email\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"max-width: 100%; height: 50px;\"],[9,\"value\",\"Submit\"],[7],[0,\"Reset Password\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"cursor: pointer; text-align: center;  text-decoration: underline; padding-top: 65px\"],[3,\"action\",[[19,0,[]],\"login\"]],[7],[0,\"Back to log-in\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/nav-bar.hbs" } });
+});
+define("self-start-front-end/templates/components/object-bin", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "5bZjN9Ry", "block": "{\"symbols\":[\"obj\",\"&default\"],\"statements\":[[4,\"draggable-object-target\",null,[[\"action\"],[\"handleObjectDropped\"]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"object-bin-title\"],[7],[1,[18,\"name\"],false],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[4,\"draggable-object\",null,[[\"action\",\"content\"],[\"handleObjectDragged\",[19,1,[]]]],{\"statements\":[[0,\"      \"],[11,2,[[19,1,[]]]],[0,\"\\n\"]],\"parameters\":[]},null]],\"parameters\":[1]},null]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/object-bin.hbs" } });
 });
 define("self-start-front-end/templates/components/parse-question", ["exports"], function (exports) {
   "use strict";
@@ -10512,6 +10972,14 @@ define("self-start-front-end/templates/components/simple-example", ["exports"], 
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "Iev+6fac", "block": "{\"symbols\":[\"image\"],\"statements\":[[4,\"if\",[[20,[\"ImageIsAdding\"]]],null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[1,[25,\"upload-file\",null,[[\"model\",\"maximumFileSize\",\"multiple\",\"flag\"],[\"image\",6,true,[20,[\"ImageIsAdding\"]]]]],false],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[9,\"class\",\"ui items\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui small image\"],[7],[0,\"\\n          \"],[6,\"img\"],[10,\"src\",[26,[[19,1,[\"imageData\"]]]]],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[1,[19,1,[\"name\"]],false],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"meta\"],[7],[0,\"\\n            \"],[6,\"span\"],[7],[0,\"Size: \"],[1,[19,1,[\"size\"]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n            \"],[6,\"span\"],[7],[0,\"Type: \"],[1,[19,1,[\"type\"]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"extra\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui icon red basic button\"],[3,\"action\",[[19,0,[]],\"deleteImage\",[19,1,[]]]],[7],[0,\"\\n              \"],[6,\"i\"],[9,\"class\",\"remove icon\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[3,\"action\",[[19,0,[]],\"addNewImage\"]],[7],[0,\"\\n    Add New Image\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]}],[0,\"\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/simple-example.hbs" } });
+});
+define("self-start-front-end/templates/components/sortable-objects", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "ichA3L0A", "block": "{\"symbols\":[\"&default\"],\"statements\":[[11,1]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/sortable-objects.hbs" } });
 });
 define("self-start-front-end/templates/components/ui-accordion", ["exports"], function (exports) {
   "use strict";
@@ -10679,7 +11147,7 @@ define("self-start-front-end/templates/components/welcome-page", ["exports"], fu
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "1nlVThLB", "block": "{\"symbols\":[],\"statements\":[[2,\"&lt;!&ndash; PRELOADER &ndash;&gt;\"],[0,\"\\n\"],[2,\"<div id=\\\"preloader\\\"><div><em></em><em></em><em></em><em></em></div></div>\"],[0,\"\\n\"],[2,\"&lt;!&ndash; //PRELOADER &ndash;&gt;\"],[0,\"\\n\"],[4,\"nav-bar\",null,null,{\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"masthead segment bg1\"],[9,\"id\",\"home\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n        \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"library\"],[7],[0,\"Self Start\"],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"tagline\"],[7],[0,\"\\n            Guiding your health and well–being\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui center aligned grid\"],[7],[0,\"\\n\\n          \"],[2,\"<a href=\\\"/appointment\\\"  class=\\\"ui large inverted download button\\\" >\"],[0,\"\\n            \"],[2,\"Book Appointment\"],[0,\"\\n          \"],[2,\"</a>\"],[0,\"\\n          \"],[6,\"a\"],[9,\"href\",\"/register\"],[9,\"class\",\"ui large inverted download button\"],[7],[0,\"\\n            Register\\n          \"],[8],[0,\"\\n          \"],[6,\"a\"],[9,\"href\",\"/#\"],[9,\"class\",\"ui large inverted basic button\"],[7],[0,\"Ask a Physio\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui vertical stripe intro segment\"],[9,\"id\",\"about\"],[9,\"style\",\"border-bottom: 10px dotted whitesmoke; padding-top: 10em\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui stackable very relaxed stacked aligned grid container\"],[7],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ten wide column\"],[9,\"style\",\"margin-top: -80px\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 4em;position: relative;\"],[7],[0,\"About Us\"],[8],[0,\"\\n          \"],[6,\"br\"],[7],[8],[0,\"\\n          \"],[6,\"h1\"],[9,\"class\",\"ui header\"],[7],[0,\"Stephanie Marcotte\"],[8],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"color: grey;font-size: 1.4em;margin-top: -15px;\"],[7],[0,\"\\n            Practitioner\\n          \"],[8],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"font-size: 20px;color: black;\"],[7],[0,\"\\n\\n          \"],[6,\"p\"],[7],[0,\"As a physiotherapist, Stephanie Marcotte has dedicated herself to helping others discover a pain-free life by tapping into the power of their own body. Now, to help reach more people, Stephanie has developed a unique online platform that allows her to share her expertise in a convenient, effective, and personalized way.\"],[8],[0,\"\\n          \"],[6,\"br\"],[7],[8],[0,\"\\n          \"],[6,\"p\"],[7],[0,\"With over three decades of professional experience, Stephanie inspires her clients to move towards a better life, giving them the tools they need to feel better. Stephanie has studied and observed thousands of bodies in injury and pain over the years. When in pain, whether physical or emotional - we stop moving. The body bears the burdens in life, both mentally and physically.\"],[8],[0,\"\\n          \"],[6,\"br\"],[7],[8],[0,\"\\n          \"],[6,\"p\"],[7],[0,\"A keen observer of how the human body moves and works as a whole, Stephanie is dedicated to helping others discover the ease of living a pain-free life.\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"six wide column\"],[7],[0,\"\\n          \"],[6,\"img\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/Steph-4491-1200x1800.jpg\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui vertical stripe intro segment\"],[9,\"style\",\"border-bottom: 10px dotted whitesmoke; padding-top: 10em;padding-top: 5em\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui stackable very relaxed stacked aligned grid container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"six wide column\"],[9,\"style\",\"margin-top: 90px\"],[7],[0,\"\\n          \"],[6,\"img\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/cF8DR95V.png\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ten wide column\"],[9,\"style\",\"margin-top: -50px\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 2.5em;position: relative;\"],[7],[0,\"Her treatment method is simple:\"],[6,\"br\"],[7],[8],[0,\" A little way with a little movement.\"],[8],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"font-size: 20px\"],[7],[0,\"\\n          \"],[6,\"p\"],[7],[0,\"By utilizing movement from within your own body, Stephanie will help you return to a state of well-being. Her custom-tailored work, which uses simple movement patterns without any force, reminds your body of its proper design function.\"],[8],[0,\"\\n          \"],[6,\"br\"],[7],[8],[0,\"\\n          \"],[6,\"p\"],[7],[0,\"Once you start moving again, you’ll be inspired to keep going.\"],[8],[0,\"\\n          \"],[6,\"br\"],[7],[8],[0,\"\\n          \"],[6,\"p\"],[7],[0,\"A leader in the self-care movement, Stephanie’s expertise in the field of pain relief will give you the knowledge and confidence you need to step into a better life.\"],[8],[0,\"\\n          \"],[6,\"br\"],[7],[8],[0,\"\\n          \"],[6,\"p\"],[7],[0,\"Through individualized consultation sessions, Stephanie works alongside you to help you achieve your best health. She believes that your body knows how to heal itself and that you already have everything you need to feel better about your body and your life.\"],[8],[0,\"\\n          \"],[6,\"br\"],[7],[8],[0,\"\\n          \"],[6,\"p\"],[7],[0,\"A little way with a little movement really will help you enjoy a life you never thought possible. Discover how Stephanie can help you today!\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui vertical stripe intro segment\"],[9,\"style\",\"padding-top: 5em\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui stackable very relaxed stacked aligned grid container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ten wide column\"],[9,\"style\",\"margin-top: -50px\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 2.5em;position: relative;\"],[7],[0,\"What I Believe\"],[8],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"font-size: 20px\"],[7],[0,\"\\n            I believe movement is life.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe you can heal your body with functional movement patterns.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe it is never to late to create change in a body & it can happen fast.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe your body knows what it needs.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe every system in your body relies on a functional musculoskeletal system.\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n            All systems in the body work on movement:\"],[6,\"br\"],[7],[8],[0,\"\\n            \"],[6,\"ul\"],[7],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the heart beats\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the lungs breath\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the stomach grinds\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the colon transports\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the blood flows\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the nerves conduct\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the muscles contract\"],[8],[0,\"\\n            \"],[8],[6,\"br\"],[7],[8],[0,\"\\n            Dis-ease in the body begins when movement is impaired. Restore your proper design for movement and your pain will cease. No fancy machinery or magic pills required; your body already has everything it needs to heal.\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n            I believe you need to trust yourself.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe you need to take responsibility for your present state of health.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe you can become free of your pain.\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"six wide column\"],[9,\"style\",\"margin-top: 90px\"],[7],[0,\"\\n          \"],[6,\"img\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/runner_angle.png\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n  \"],[2,\"<div class=\\\"feature alternate ui stripe vertical segment\\\" id=\\\"howItWorks\\\" style=\\\"padding-top: 10em\\\">\"],[0,\"\\n    \"],[2,\"<div class=\\\"ui container\\\">\"],[0,\"\\n      \"],[2,\"<span class=\\\"library\\\" style=\\\"font-size: 4em;position: relative;\\\">How it Works</span>\"],[0,\"\\n    \"],[2,\"</div>\"],[0,\"\\n  \"],[2,\"</div>\"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"feature alternated ui striped vertical segment\"],[9,\"id\",\"howItWorks\"],[9,\"style\",\"padding-top: 10em\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui three column doubling grid container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"sphere centered\"],[7],[6,\"img\"],[9,\"style\",\"margin-top: 1.7em;width: 80px;margin-left: 2.1em;position: absolute;\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/icons/calendar-60.svg\"],[7],[8],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"number\"],[9,\"style\",\"text-align: center\"],[7],[0,\"1\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"text-align: center;margin-left:15%;margin-right:15%;line-height: 1.5em;font-size: 1.1em;color:  white;\"],[7],[0,\"Book an appointment by loging in or creating an account\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"sphere centered\"],[7],[6,\"img\"],[9,\"style\",\"margin-top: 1.7em;width: 80px;margin-left: 2.1em;position: absolute;\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/icons/widget.svg\"],[7],[8],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"number\"],[9,\"style\",\"text-align: center\"],[7],[0,\"2\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"text-align: center;margin-left:15%;margin-right:15%;line-height: 1.5em;font-size: 1.1em;color:  white;padding-bottom: 2em\"],[7],[0,\"You will be asked to complete an initial intake form, submit posture photos & perform a simple movement assessment\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"sphere centered\"],[7],[6,\"img\"],[9,\"style\",\"margin-top: 1.7em;width: 80px;margin-left: 2.1em;position: absolute;\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/icons/video-66.svg\"],[7],[8],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"number\"],[9,\"style\",\"text-align: center\"],[7],[0,\"3\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"text-align: center;margin-left:15%;margin-right:15%;line-height: 1.5em;font-size: 1.1em;color:  white;\"],[7],[0,\"The 90-minute initial video conference takes place in a similar fashion as if you were in a therapy center\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"sphere centered\"],[7],[6,\"img\"],[9,\"style\",\"margin-top: 1.7em;width: 80px;margin-left: 2.1em;position: absolute;\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/icons/chat-46.svg\"],[7],[8],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"number\"],[9,\"style\",\"text-align: center\"],[7],[0,\"4\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"text-align: center;margin-left:15%;margin-right:15%;line-height: 1.5em;font-size: 1.1em;color:  white;\"],[7],[0,\"During the consultation phase we will review your therapy goals, discuss your condition in greater detail, and perform some simple movements\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"sphere centered\"],[7],[6,\"img\"],[9,\"style\",\"margin-top: 1.7em;width: 80px;margin-left: 2.1em;position: absolute;\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/icons/notes.svg\"],[7],[8],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"number\"],[9,\"style\",\"text-align: center\"],[7],[0,\"5\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"text-align: center;margin-left:15%;margin-right:15%;line-height: 1.5em;font-size: 1.1em;color:  white;padding-bottom: 2em\"],[7],[0,\"A movement sequence will be uploaded to your account, where you can view and perform your sequence every day\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"sphere centered\"],[7],[6,\"img\"],[9,\"style\",\"margin-top: 1.7em;width: 80px;margin-left: 2.1em;position: absolute;\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/icons/calendar-60.svg\"],[7],[8],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"number\"],[9,\"style\",\"text-align: center\"],[7],[0,\"6\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"text-align: center;margin-left:15%;margin-right:15%;line-height: 1.5em;font-size: 1.1em;color:  white;\"],[7],[0,\"Follow–up appointments are then arranged with your therapist depending on the consultation package purchased\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"alternate ui stripe vertical segment\"],[9,\"id\",\"services\"],[9,\"style\",\"padding-top: 10em\"],[7],[0,\"\\n    \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/payment-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui three column doubling stackable grid container\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 4em;position: relative;left:2.4%\"],[7],[0,\"Services\"],[8],[6,\"br\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui payment card\"],[9,\"style\",\"box-shadow: none;left: 50%;transform: translate(-50%);\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n                  \"],[6,\"h3\"],[9,\"style\",\"font-weight: bold; text-transform: uppercase;\"],[7],[0,\"Assessment Package\"],[8],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"150\"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"padding: 0 0 25px 0;\"],[7],[0,\"\\n                  \"],[6,\"table\"],[9,\"class\",\"ui striped table\"],[9,\"style\",\"border: none; text-align: center\"],[7],[0,\"\\n                    \"],[6,\"thead\"],[7],[0,\"\\n                      \"],[6,\"tr\"],[7],[0,\"\\n                        \"],[6,\"th\"],[9,\"style\",\"font-weight: 500\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                      \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tbody\"],[7],[0,\"\\n                      \"],[6,\"tr\"],[7],[0,\"\\n                        \"],[6,\"td\"],[7],[0,\"Personal therapy plan\"],[8],[0,\"\\n                      \"],[8],[0,\"\\n                      \"],[6,\"tr\"],[7],[0,\"\\n                        \"],[6,\"td\"],[7],[0,\"Education & advice\"],[8],[0,\"\\n                      \"],[8],[0,\"\\n                      \"],[6,\"tr\"],[7],[0,\"\\n                        \"],[6,\"td\"],[9,\"style\",\"height: 42px\"],[7],[8],[0,\"\\n                      \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\"\\n\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"extra content footer\"],[9,\"style\",\"padding: 0 0 0 0;background-color: #2c3452;height: 55px;border-radius: 3px !important;\"],[7],[0,\"\\n                  \"],[6,\"p\"],[9,\"style\",\"text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;\"],[7],[0,\"SELECT\"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n\\n              \"],[6,\"div\"],[9,\"class\",\"ui payment card\"],[9,\"style\",\"box-shadow: none;left: 50%;transform: translate(-50%);\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n                  \"],[6,\"h3\"],[9,\"style\",\"font-weight: bold; text-transform: uppercase;\"],[7],[0,\"Assessment + 3 sessions\"],[8],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"350\"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"padding: 0 0 25px 0;\"],[7],[0,\"\\n                  \"],[6,\"table\"],[9,\"class\",\"ui striped table\"],[9,\"style\",\"border: none; text-align: center\"],[7],[0,\"\\n                    \"],[6,\"thead\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"th\"],[9,\"style\",\"font-weight: 500\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tbody\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"3 extra conference / email sessions\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Personal therapy plan\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Education & advice\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\"\\n\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"extra content footer\"],[9,\"style\",\"padding: 0 0 0 0;background-color: #2c3452;height: 55px;border-radius: 3px !important;\"],[7],[0,\"\\n                  \"],[6,\"p\"],[9,\"style\",\"text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;\"],[7],[0,\"SELECT\"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\\n            \"],[8],[0,\"\\n\\n\\n            \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n\\n              \"],[6,\"div\"],[9,\"class\",\"ui payment card\"],[9,\"style\",\"box-shadow: none;left: 50%;transform: translate(-50%);\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n                  \"],[6,\"h3\"],[9,\"style\",\"font-weight: bold; text-transform: uppercase;color: #e97d68\"],[7],[0,\"Assessment + 6 sessions\"],[8],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[9,\"style\",\"color: #e97d68\"],[7],[0,\"$\"],[8],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[9,\"style\",\"color: #e97d68\"],[7],[0,\"550\"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"padding: 0 0 25px 0;\"],[7],[0,\"\\n                  \"],[6,\"table\"],[9,\"class\",\"ui striped table\"],[9,\"style\",\"border: none; text-align: center\"],[7],[0,\"\\n                    \"],[6,\"thead\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"th\"],[9,\"style\",\"font-weight: 500\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tbody\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"6 extra conference / email sessions\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Personal therapy plan\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Education & advice\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\"\\n\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"extra content footer\"],[9,\"style\",\"padding: 0 0 0 0;background-color: #e97d68;height: 55px;border-radius: 3px !important;\"],[7],[0,\"\\n                  \"],[6,\"p\"],[9,\"style\",\"text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;\"],[7],[0,\"SELECT\"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"table\"],[9,\"class\",\"ui table\"],[9,\"style\",\"padding-left: 0\"],[7],[0,\"\\n\\n            \"],[6,\"thead\"],[7],[0,\"\\n            \"],[6,\"tr\"],[7],[0,\"\\n              \"],[6,\"th\"],[9,\"style\",\"font-weight: 500;font-size: 20px;padding-left: 60px;\"],[7],[0,\"Single Follow-up Appointments within 3 months of initial consultation\"],[8],[0,\"\\n              \"],[6,\"th\"],[9,\"style\",\"background-color: white; text-align: center\"],[7],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"75\"],[8],[0,\"\\n                \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n              \"],[8],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui vertical stripe intro segment\"],[9,\"id\",\"FAQs\"],[9,\"style\",\"padding-top: 10em\"],[7],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/welcome-page.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "WOkoYNP3", "block": "{\"symbols\":[],\"statements\":[[2,\"&lt;!&ndash; PRELOADER &ndash;&gt;\"],[0,\"\\n\"],[2,\"<div id=\\\"preloader\\\"><div><em></em><em></em><em></em><em></em></div></div>\"],[0,\"\\n\"],[2,\"&lt;!&ndash; //PRELOADER &ndash;&gt;\"],[0,\"\\n\"],[4,\"nav-bar\",null,null,{\"statements\":[[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"masthead segment bg1\"],[9,\"id\",\"home\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n        \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"library\"],[7],[0,\"Self Start\"],[8],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"tagline\"],[7],[0,\"\\n            Guiding your health and well–being\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui center aligned grid\"],[7],[0,\"\\n\\n          \"],[2,\"<a href=\\\"/appointment\\\"  class=\\\"ui large inverted download button\\\" >\"],[0,\"\\n            \"],[2,\"Book Appointment\"],[0,\"\\n          \"],[2,\"</a>\"],[0,\"\\n          \"],[6,\"a\"],[9,\"href\",\"/register\"],[9,\"class\",\"ui large inverted download button\"],[7],[0,\"\\n            Register\\n          \"],[8],[0,\"\\n          \"],[6,\"a\"],[9,\"href\",\"/#\"],[9,\"class\",\"ui large inverted basic button\"],[7],[0,\"Ask a Physio\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui vertical stripe intro segment\"],[9,\"id\",\"about\"],[9,\"style\",\"border-bottom: 10px dotted whitesmoke; padding-top: 10em\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui stackable very relaxed stacked aligned grid container\"],[7],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ten wide column\"],[9,\"style\",\"margin-top: -80px\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 4em;position: relative;\"],[7],[0,\"About Us\"],[8],[0,\"\\n          \"],[6,\"br\"],[7],[8],[0,\"\\n          \"],[6,\"h1\"],[9,\"class\",\"ui header\"],[7],[0,\"Stephanie Marcotte\"],[8],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"color: grey;font-size: 1.4em;margin-top: -15px;\"],[7],[0,\"\\n            Practitioner\\n          \"],[8],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"font-size: 20px;color: black;\"],[7],[0,\"\\n\\n          \"],[6,\"p\"],[7],[0,\"As a physiotherapist, Stephanie Marcotte has dedicated herself to helping others discover a pain-free life by tapping into the power of their own body. Now, to help reach more people, Stephanie has developed a unique online platform that allows her to share her expertise in a convenient, effective, and personalized way.\"],[8],[0,\"\\n          \"],[6,\"br\"],[7],[8],[0,\"\\n          \"],[6,\"p\"],[7],[0,\"With over three decades of professional experience, Stephanie inspires her clients to move towards a better life, giving them the tools they need to feel better. Stephanie has studied and observed thousands of bodies in injury and pain over the years. When in pain, whether physical or emotional - we stop moving. The body bears the burdens in life, both mentally and physically.\"],[8],[0,\"\\n          \"],[6,\"br\"],[7],[8],[0,\"\\n          \"],[6,\"p\"],[7],[0,\"A keen observer of how the human body moves and works as a whole, Stephanie is dedicated to helping others discover the ease of living a pain-free life.\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"six wide column\"],[7],[0,\"\\n          \"],[6,\"img\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/Steph-4491-1200x1800.jpg\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui vertical stripe intro segment\"],[9,\"style\",\"border-bottom: 10px dotted whitesmoke; padding-top: 10em;padding-top: 5em\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui stackable very relaxed stacked aligned grid container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"six wide column\"],[9,\"style\",\"margin-top: 90px\"],[7],[0,\"\\n          \"],[6,\"img\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/cF8DR95V.png\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ten wide column\"],[9,\"style\",\"margin-top: -50px\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 2.5em;position: relative;\"],[7],[0,\"Her treatment method is simple:\"],[6,\"br\"],[7],[8],[0,\" A little way with a little movement.\"],[8],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"font-size: 20px\"],[7],[0,\"\\n          \"],[6,\"p\"],[7],[0,\"By utilizing movement from within your own body, Stephanie will help you return to a state of well-being. Her custom-tailored work, which uses simple movement patterns without any force, reminds your body of its proper design function.\"],[8],[0,\"\\n          \"],[6,\"br\"],[7],[8],[0,\"\\n          \"],[6,\"p\"],[7],[0,\"Once you start moving again, you’ll be inspired to keep going.\"],[8],[0,\"\\n          \"],[6,\"br\"],[7],[8],[0,\"\\n          \"],[6,\"p\"],[7],[0,\"A leader in the self-care movement, Stephanie’s expertise in the field of pain relief will give you the knowledge and confidence you need to step into a better life.\"],[8],[0,\"\\n          \"],[6,\"br\"],[7],[8],[0,\"\\n          \"],[6,\"p\"],[7],[0,\"Through individualized consultation sessions, Stephanie works alongside you to help you achieve your best health. She believes that your body knows how to heal itself and that you already have everything you need to feel better about your body and your life.\"],[8],[0,\"\\n          \"],[6,\"br\"],[7],[8],[0,\"\\n          \"],[6,\"p\"],[7],[0,\"A little way with a little movement really will help you enjoy a life you never thought possible. Discover how Stephanie can help you today!\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui vertical stripe intro segment\"],[9,\"style\",\"padding-top: 5em\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui stackable very relaxed stacked aligned grid container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ten wide column\"],[9,\"style\",\"margin-top: -50px\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 2.5em;position: relative;\"],[7],[0,\"What I Believe\"],[8],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"font-size: 20px\"],[7],[0,\"\\n            I believe movement is life.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe you can heal your body with functional movement patterns.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe it is never to late to create change in a body & it can happen fast.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe your body knows what it needs.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe every system in your body relies on a functional musculoskeletal system.\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n            All systems in the body work on movement:\"],[6,\"br\"],[7],[8],[0,\"\\n            \"],[6,\"ul\"],[7],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the heart beats\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the lungs breath\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the stomach grinds\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the colon transports\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the blood flows\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the nerves conduct\"],[8],[0,\"\\n            \"],[6,\"li\"],[7],[0,\"the muscles contract\"],[8],[0,\"\\n            \"],[8],[6,\"br\"],[7],[8],[0,\"\\n            Dis-ease in the body begins when movement is impaired. Restore your proper design for movement and your pain will cease. No fancy machinery or magic pills required; your body already has everything it needs to heal.\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n            I believe you need to trust yourself.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe you need to take responsibility for your present state of health.\"],[6,\"br\"],[7],[8],[0,\"\\n            I believe you can become free of your pain.\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"six wide column\"],[9,\"style\",\"margin-top: 90px\"],[7],[0,\"\\n          \"],[6,\"img\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/runner_angle.png\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n  \"],[2,\"<div class=\\\"feature alternate ui stripe vertical segment\\\" id=\\\"howItWorks\\\" style=\\\"padding-top: 10em\\\">\"],[0,\"\\n    \"],[2,\"<div class=\\\"ui container\\\">\"],[0,\"\\n      \"],[2,\"<span class=\\\"library\\\" style=\\\"font-size: 4em;position: relative;\\\">How it Works</span>\"],[0,\"\\n    \"],[2,\"</div>\"],[0,\"\\n  \"],[2,\"</div>\"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"feature alternated ui striped vertical segment\"],[9,\"id\",\"howItWorks\"],[9,\"style\",\"padding-top: 10em\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui three column doubling grid container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"sphere centered\"],[7],[6,\"img\"],[9,\"style\",\"margin-top: 1.7em;width: 80px;margin-left: 2.1em;position: absolute;\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/icons/calendar-60.svg\"],[7],[8],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"number\"],[9,\"style\",\"text-align: center\"],[7],[0,\"1\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"text-align: center;margin-left:15%;margin-right:15%;line-height: 1.5em;font-size: 1.1em;color:  white;\"],[7],[0,\"Book an appointment by loging in or creating an account\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"sphere centered\"],[7],[6,\"img\"],[9,\"style\",\"margin-top: 1.7em;width: 80px;margin-left: 2.1em;position: absolute;\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/icons/widget.svg\"],[7],[8],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"number\"],[9,\"style\",\"text-align: center\"],[7],[0,\"2\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"text-align: center;margin-left:15%;margin-right:15%;line-height: 1.5em;font-size: 1.1em;color:  white;padding-bottom: 2em\"],[7],[0,\"You will be asked to complete an initial intake form, submit posture photos & perform a simple movement assessment\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"sphere centered\"],[7],[6,\"img\"],[9,\"style\",\"margin-top: 1.7em;width: 80px;margin-left: 2.1em;position: absolute;\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/icons/video-66.svg\"],[7],[8],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"number\"],[9,\"style\",\"text-align: center\"],[7],[0,\"3\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"text-align: center;margin-left:15%;margin-right:15%;line-height: 1.5em;font-size: 1.1em;color:  white;\"],[7],[0,\"The 90-minute initial video conference takes place in a similar fashion as if you were in a therapy center\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"sphere centered\"],[7],[6,\"img\"],[9,\"style\",\"margin-top: 1.7em;width: 80px;margin-left: 2.1em;position: absolute;\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/icons/chat-46.svg\"],[7],[8],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"number\"],[9,\"style\",\"text-align: center\"],[7],[0,\"4\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"text-align: center;margin-left:15%;margin-right:15%;line-height: 1.5em;font-size: 1.1em;color:  white;\"],[7],[0,\"During the consultation phase we will review your therapy goals, discuss your condition in greater detail, and perform some simple movements\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"sphere centered\"],[7],[6,\"img\"],[9,\"style\",\"margin-top: 1.7em;width: 80px;margin-left: 2.1em;position: absolute;\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/icons/notes.svg\"],[7],[8],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"number\"],[9,\"style\",\"text-align: center\"],[7],[0,\"5\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"text-align: center;margin-left:15%;margin-right:15%;line-height: 1.5em;font-size: 1.1em;color:  white;padding-bottom: 2em\"],[7],[0,\"A movement sequence will be uploaded to your account, where you can view and perform your sequence every day\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"sphere centered\"],[7],[6,\"img\"],[9,\"style\",\"margin-top: 1.7em;width: 80px;margin-left: 2.1em;position: absolute;\"],[9,\"class\",\"ui image\"],[9,\"src\",\"assets/images/home/icons/calendar-60.svg\"],[7],[8],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"number\"],[9,\"style\",\"text-align: center\"],[7],[0,\"6\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"text-align: center;margin-left:15%;margin-right:15%;line-height: 1.5em;font-size: 1.1em;color:  white;\"],[7],[0,\"Follow–up appointments are then arranged with your therapist depending on the consultation package purchased\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"alternate ui stripe vertical segment\"],[9,\"id\",\"services\"],[9,\"style\",\"padding-top: 10em\"],[7],[0,\"\\n    \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/payment-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui three column doubling stackable grid container\"],[7],[0,\"\\n          \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 4em;position: relative;left:2.4%\"],[7],[0,\"Services\"],[8],[6,\"br\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui payment card\"],[9,\"style\",\"box-shadow: none;left: 50%;transform: translate(-50%);\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n                  \"],[6,\"h3\"],[9,\"style\",\"font-weight: bold; text-transform: uppercase;\"],[7],[0,\"Assessment Package\"],[8],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"150\"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"padding: 0 0 25px 0;\"],[7],[0,\"\\n                  \"],[6,\"table\"],[9,\"class\",\"ui striped table\"],[9,\"style\",\"border: none; text-align: center\"],[7],[0,\"\\n                    \"],[6,\"thead\"],[7],[0,\"\\n                      \"],[6,\"tr\"],[7],[0,\"\\n                        \"],[6,\"th\"],[9,\"style\",\"font-weight: 500\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                      \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tbody\"],[7],[0,\"\\n                      \"],[6,\"tr\"],[7],[0,\"\\n                        \"],[6,\"td\"],[7],[0,\"Personal therapy plan\"],[8],[0,\"\\n                      \"],[8],[0,\"\\n                      \"],[6,\"tr\"],[7],[0,\"\\n                        \"],[6,\"td\"],[7],[0,\"Education & advice\"],[8],[0,\"\\n                      \"],[8],[0,\"\\n                      \"],[6,\"tr\"],[7],[0,\"\\n                        \"],[6,\"td\"],[9,\"style\",\"height: 42px\"],[7],[8],[0,\"\\n                      \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\"\\n\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"extra content footer\"],[9,\"style\",\"padding: 0 0 0 0;background-color: #2c3452;height: 55px;border-radius: 3px !important;\"],[7],[0,\"\\n                  \"],[6,\"p\"],[9,\"style\",\"text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;\"],[7],[0,\"SELECT\"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n\\n              \"],[6,\"div\"],[9,\"class\",\"ui payment card\"],[9,\"style\",\"box-shadow: none;left: 50%;transform: translate(-50%);\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n                  \"],[6,\"h3\"],[9,\"style\",\"font-weight: bold; text-transform: uppercase;\"],[7],[0,\"Assessment + 3 sessions\"],[8],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"350\"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"padding: 0 0 25px 0;\"],[7],[0,\"\\n                  \"],[6,\"table\"],[9,\"class\",\"ui striped table\"],[9,\"style\",\"border: none; text-align: center\"],[7],[0,\"\\n                    \"],[6,\"thead\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"th\"],[9,\"style\",\"font-weight: 500\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tbody\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"3 extra conference / email sessions\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Personal therapy plan\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Education & advice\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\"\\n\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"extra content footer\"],[9,\"style\",\"padding: 0 0 0 0;background-color: #2c3452;height: 55px;border-radius: 3px !important;\"],[7],[0,\"\\n                  \"],[6,\"p\"],[9,\"style\",\"text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;\"],[7],[0,\"SELECT\"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\\n            \"],[8],[0,\"\\n\\n\\n            \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n\\n              \"],[6,\"div\"],[9,\"class\",\"ui payment card\"],[9,\"style\",\"box-shadow: none;left: 50%;transform: translate(-50%);\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n                  \"],[6,\"h3\"],[9,\"style\",\"font-weight: bold; text-transform: uppercase;color: #e97d68\"],[7],[0,\"Assessment + 6 sessions\"],[8],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[9,\"style\",\"color: #e97d68\"],[7],[0,\"$\"],[8],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[9,\"style\",\"color: #e97d68\"],[7],[0,\"550\"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"padding: 0 0 25px 0;\"],[7],[0,\"\\n                  \"],[6,\"table\"],[9,\"class\",\"ui striped table\"],[9,\"style\",\"border: none; text-align: center\"],[7],[0,\"\\n                    \"],[6,\"thead\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"th\"],[9,\"style\",\"font-weight: 500\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tbody\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"6 extra conference / email sessions\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Personal therapy plan\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Education & advice\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n\\n                \"],[6,\"div\"],[9,\"class\",\"extra content footer\"],[9,\"style\",\"padding: 0 0 0 0;background-color: #e97d68;height: 55px;border-radius: 3px !important;\"],[7],[0,\"\\n                  \"],[6,\"p\"],[9,\"style\",\"text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;\"],[7],[0,\"SELECT\"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n\\n          \"],[6,\"table\"],[9,\"class\",\"ui table\"],[9,\"style\",\"padding-left: 0\"],[7],[0,\"\\n            \"],[6,\"thead\"],[7],[0,\"\\n            \"],[6,\"tr\"],[7],[0,\"\\n              \"],[6,\"th\"],[9,\"style\",\"font-weight: 500;font-size: 20px;padding-left: 60px;\"],[7],[0,\"Single Follow-up Appointments within 3 months of initial consultation\"],[8],[0,\"\\n              \"],[6,\"th\"],[9,\"style\",\"background-color: white; text-align: center\"],[7],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"75\"],[8],[0,\"\\n                \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n              \"],[8],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui vertical stripe intro segment\"],[9,\"id\",\"FAQs\"],[9,\"style\",\"padding-top: 10em\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui stackable grid container\"],[7],[0,\"\\n      \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 4em;position: relative;left:2.4%\"],[7],[0,\"FAQs\"],[8],[6,\"br\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"row\"],[9,\"style\",\"margin: 0 0;margin-top: 2em\"],[7],[0,\"\\n\"],[4,\"ui-accordion\",null,[[\"class\"],[\"styled\"]],{\"statements\":[[0,\"            \"],[6,\"div\"],[9,\"class\",\"title\"],[9,\"style\",\"color: white;background-color: #ec6060;padding: 1em;\"],[7],[0,\"\\n              How do I set up Video Conferencing:\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"color: white;background-color: rgba(236, 96, 96, 0.6);padding: 1em;line-height: 1.6em;\"],[7],[0,\"\\n              Skype\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"row\"],[9,\"style\",\"margin: 0 0;\"],[7],[0,\"\\n\"],[4,\"ui-accordion\",null,[[\"class\"],[\"styled\"]],{\"statements\":[[0,\"            \"],[6,\"div\"],[9,\"class\",\"title\"],[9,\"style\",\"color: white;background-color: #7e5c8c;padding: 1em;\"],[7],[0,\"\\n              How do I upload Photos:\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"color: white;background-color: #7e5c8c9e;padding: 1em;line-height: 1.6em;\"],[7],[0,\"\\n              The ability for you to stand in front of your webcam for posture analysis\\n              will be important. It is best if you are wearing shorts and a tank top so that\\n              your legs are visible above the knees and your shoulders and arms are\\n              visible. You are in your bare feet. You may choose to upload 4 posture photos prior to the\\n              appointment, as this will expedite the assessment process.\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"row\"],[9,\"style\",\"margin: 0 0;\"],[7],[0,\"\\n\"],[4,\"ui-accordion\",null,[[\"class\"],[\"styled\"]],{\"statements\":[[0,\"            \"],[6,\"div\"],[9,\"class\",\"title\"],[9,\"style\",\"color: white;background-color: #a7587f;padding: 1em;\"],[7],[0,\"\\n              What happens during my 1st appointment:\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"color: white;background-color: #a7587fbd;padding: 1em;line-height: 1.6em;\"],[7],[0,\"\\n              At evaluation we will discuss your symptoms and your general health history\\n              I may ask you to perform several movements during your assessment,\\n              so having the space in front of your webcam for you to stand, sit or lie on the floor\\n              would be excellent.\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n              After the initial evaluation, I will recommend a specific sequence of movements or exercises.\\n              This sequence is called a menu. This menu is designed to relieve your symptoms\\n              and improve your overall joint alignment and body balance. It is designed to be performed\\n              daily for maximum results.\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n              This initial online consultation will be approximately 60-90 minutes.\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"        \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"row\"],[9,\"style\",\"margin: 0 0;\"],[7],[0,\"\\n\"],[4,\"ui-accordion\",null,[[\"class\"],[\"styled\"]],{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"title\"],[9,\"style\",\"color: white;background-color: #51a990;padding: 1em;\"],[7],[0,\"\\n            What is a follow up assessement?\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"color: white;background-color: #51a990a1;padding: 1em;line-height: 1.6em;\"],[7],[0,\"\\n            A followup consultation is scheduled in a week to review your\\n            menu and make changes. Your followup will be approximately 30-45 minutes.\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"row\"],[9,\"style\",\"margin: 0 0;\"],[7],[0,\"\\n\"],[4,\"ui-accordion\",null,[[\"class\"],[\"styled\"]],{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"title\"],[9,\"style\",\"color: white;background-color: #4297b7;padding: 1em;\"],[7],[0,\"\\n            What if you can’t help my problem?\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"color: white;background-color: #4297b7b8;padding: 1em;line-height: 1.6em;\"],[7],[0,\"\\n            If I feel that your condition is not suitable for online treatment, I will refund your money\\n            and suggest a suitable alternative type of treatment for you.\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"alternate ui stripe vertical segment\"],[9,\"id\",\"contact\"],[9,\"style\",\"padding-top: 8em\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui three column doubling stackable grid container\"],[7],[0,\"\\n      \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 4em;position: relative;left:2.4%\"],[7],[0,\"Contact Us\"],[8],[6,\"br\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"phone icon\"],[9,\"style\",\"color: #6ac9c8;left: 46%;position: relative;font-size: 200%;\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"h3\"],[9,\"style\",\"text-align: center\"],[7],[0,\"+12269841252\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"envelope icon\"],[9,\"style\",\"color: #6ac9c8;left: 46%;position: relative;font-size: 200%;\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"h3\"],[9,\"style\",\"text-align: center\"],[7],[0,\"youda@uwo.ca\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"map marker alternate icon\"],[9,\"style\",\"color: #6ac9c8;left: 46%;position: relative;font-size: 200%;\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"h3\"],[9,\"style\",\"text-align: center\"],[7],[0,\"817 Silversmith St\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui vertical stripe intro segment\"],[9,\"style\",\"padding: 0\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n      \"],[6,\"iframe\"],[9,\"width\",\"100%\"],[9,\"height\",\"400px\"],[9,\"frameborder\",\"0\"],[9,\"style\",\"border:0\"],[9,\"src\",\"https://www.google.com/maps/embed/v1/place?q=place_id:ChIJN-4699DCOogRWy1yYa3Hdrc&key=AIzaSyC8E7g5IViDPVpUSV-TTiEd0VRgkNz7EEc\"],[9,\"allowfullscreen\",\"\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui black inverted vertical footer segment\"],[9,\"style\",\"padding-top: 8em;padding-bottom: 4em\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui center aligned container\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui stackable inverted grid\"],[7],[0,\"\\n        \"],[6,\"br\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui inverted section divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui horizontal inverted small divided link list\"],[7],[0,\"\\n          \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Powered By: \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"row\"],[9,\"style\",\"    position: relative;\"],[7],[0,\"\\n        \"],[6,\"img\"],[9,\"src\",\"assets/images/Brigade.png\"],[9,\"class\",\"ui centered mini image\"],[9,\"style\",\"    height: 50px;width: auto;left: 50%;position: absolute;transform: translate(-50%, 20%);\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/welcome-page.hbs" } });
 });
 define("self-start-front-end/templates/country", ["exports"], function (exports) {
   "use strict";
@@ -11154,6 +11622,84 @@ define('self-start-front-end/transitions/wait', ['exports', 'liquid-fire/transit
     }
   });
 });
+define('self-start-front-end/utils/create-circle', ['exports', 'google-maps-markup/utils/create-circle'], function (exports, _createCircle) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _createCircle.default;
+    }
+  });
+});
+define('self-start-front-end/utils/create-feature', ['exports', 'google-maps-markup/utils/create-feature'], function (exports, _createFeature) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _createFeature.default;
+    }
+  });
+});
+define('self-start-front-end/utils/css-color', ['exports', 'ember-palette/utils/css-color'], function (exports, _cssColor) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _cssColor.default;
+    }
+  });
+});
+define('self-start-front-end/utils/distance', ['exports', 'google-maps-markup/utils/distance'], function (exports, _distance) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _distance.default;
+    }
+  });
+});
+define('self-start-front-end/utils/drawing-modes', ['exports', 'google-maps-markup/utils/drawing-modes'], function (exports, _drawingModes) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _drawingModes.default;
+    }
+  });
+});
+define('self-start-front-end/utils/feature-center', ['exports', 'google-maps-markup/utils/feature-center'], function (exports, _featureCenter) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _featureCenter.default;
+    }
+  });
+});
 define('self-start-front-end/utils/file-object', ['exports'], function (exports) {
   'use strict';
 
@@ -11254,6 +11800,19 @@ define('self-start-front-end/utils/file-object', ['exports'], function (exports)
     }
   });
 });
+define('self-start-front-end/utils/get-measurement', ['exports', 'google-maps-markup/utils/get-measurement'], function (exports, _getMeasurement) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _getMeasurement.default;
+    }
+  });
+});
 define('self-start-front-end/utils/get-promise-content', ['exports', 'ember-promise-tools/utils/get-promise-content'], function (exports, _getPromiseContent) {
   'use strict';
 
@@ -11264,6 +11823,32 @@ define('self-start-front-end/utils/get-promise-content', ['exports', 'ember-prom
     enumerable: true,
     get: function () {
       return _getPromiseContent.default;
+    }
+  });
+});
+define('self-start-front-end/utils/guid', ['exports', 'google-maps-markup/utils/guid'], function (exports, _guid) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _guid.default;
+    }
+  });
+});
+define('self-start-front-end/utils/init-measure-label', ['exports', 'google-maps-markup/utils/init-measure-label'], function (exports, _initMeasureLabel) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _initMeasureLabel.default;
     }
   });
 });
@@ -11293,6 +11878,136 @@ define('self-start-front-end/utils/is-promise', ['exports', 'ember-promise-tools
     }
   });
 });
+define('self-start-front-end/utils/label-plotter', ['exports', 'google-maps-markup/utils/label-plotter'], function (exports, _labelPlotter) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _labelPlotter.default;
+    }
+  });
+});
+define('self-start-front-end/utils/map-label', ['exports', 'google-maps-markup/utils/map-label'], function (exports, _mapLabel) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _mapLabel.default;
+    }
+  });
+});
+define('self-start-front-end/utils/measure-type-result', ['exports', 'google-maps-markup/utils/measure-type-result'], function (exports, _measureTypeResult) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _measureTypeResult.default;
+    }
+  });
+});
+define('self-start-front-end/utils/modes', ['exports', 'google-maps-markup/utils/modes'], function (exports, _modes) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _modes.default;
+    }
+  });
+});
+define('self-start-front-end/utils/number-commas', ['exports', 'google-maps-markup/utils/number-commas'], function (exports, _numberCommas) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _numberCommas.default;
+    }
+  });
+});
+define('self-start-front-end/utils/options-data', ['exports', 'google-maps-markup/utils/options-data'], function (exports, _optionsData) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _optionsData.default;
+    }
+  });
+});
+define('self-start-front-end/utils/overlay-to-feature', ['exports', 'google-maps-markup/utils/overlay-to-feature'], function (exports, _overlayToFeature) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _overlayToFeature.default;
+    }
+  });
+});
+define('self-start-front-end/utils/path-distance', ['exports', 'google-maps-markup/utils/path-distance'], function (exports, _pathDistance) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _pathDistance.default;
+    }
+  });
+});
+define('self-start-front-end/utils/paths-to-bounds', ['exports', 'google-maps-markup/utils/paths-to-bounds'], function (exports, _pathsToBounds) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _pathsToBounds.default;
+    }
+  });
+});
+define('self-start-front-end/utils/shape-area', ['exports', 'google-maps-markup/utils/shape-area'], function (exports, _shapeArea) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _shapeArea.default;
+    }
+  });
+});
 define('self-start-front-end/utils/smart-resolve', ['exports', 'ember-promise-tools/utils/smart-resolve'], function (exports, _smartResolve) {
   'use strict';
 
@@ -11303,6 +12018,56 @@ define('self-start-front-end/utils/smart-resolve', ['exports', 'ember-promise-to
     enumerable: true,
     get: function () {
       return _smartResolve.default;
+    }
+  });
+});
+define('self-start-front-end/utils/square-miles', ['exports', 'google-maps-markup/utils/square-miles'], function (exports, _squareMiles) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _squareMiles.default;
+    }
+  });
+});
+define('self-start-front-end/utils/uuid-generator', ['exports', 'ember-uuid/utils/uuid-generator'], function (exports, _uuidGenerator) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _uuidGenerator.default;
+    }
+  });
+  Object.defineProperty(exports, 'v4', {
+    enumerable: true,
+    get: function () {
+      return _uuidGenerator.v4;
+    }
+  });
+  Object.defineProperty(exports, 'v1', {
+    enumerable: true,
+    get: function () {
+      return _uuidGenerator.v1;
+    }
+  });
+  Object.defineProperty(exports, 'parse', {
+    enumerable: true,
+    get: function () {
+      return _uuidGenerator.parse;
+    }
+  });
+  Object.defineProperty(exports, 'unparse', {
+    enumerable: true,
+    get: function () {
+      return _uuidGenerator.unparse;
     }
   });
 });

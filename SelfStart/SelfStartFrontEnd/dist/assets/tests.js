@@ -766,6 +766,62 @@ define('self-start-front-end/tests/helpers/destroy-app', ['exports'], function (
     Ember.run(application, 'destroy');
   }
 });
+define('self-start-front-end/tests/helpers/ember-drag-drop', ['exports', 'self-start-front-end/tests/helpers/data-transfer'], function (exports, _dataTransfer) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.drag = drag;
+
+
+  function drop($dragHandle, dropCssPath, dragEvent) {
+    var $dropTarget = Ember.$(dropCssPath);
+
+    if ($dropTarget.length === 0) {
+      throw 'There are no drop targets by the given selector: \'' + dropCssPath + '\'';
+    }
+
+    Ember.run(function () {
+      triggerEvent($dropTarget, 'dragover', _dataTransfer.default.makeMockEvent());
+    });
+
+    Ember.run(function () {
+      triggerEvent($dropTarget, 'drop', _dataTransfer.default.makeMockEvent(dragEvent.dataTransfer.get('data.payload')));
+    });
+
+    Ember.run(function () {
+      triggerEvent($dragHandle, 'dragend', _dataTransfer.default.makeMockEvent());
+    });
+  }
+
+  function drag(cssPath) {
+    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
+
+    var dragEvent = _dataTransfer.default.makeMockEvent();
+    var $dragHandle = Ember.$(cssPath);
+
+    Ember.run(function () {
+      triggerEvent($dragHandle, 'mouseover');
+    });
+
+    Ember.run(function () {
+      triggerEvent($dragHandle, 'dragstart', dragEvent);
+    });
+
+    andThen(function () {
+      if (options.beforeDrop) {
+        options.beforeDrop.call();
+      }
+    });
+
+    andThen(function () {
+      if (options.drop) {
+        drop($dragHandle, options.drop, dragEvent);
+      }
+    });
+  }
+});
 define('self-start-front-end/tests/helpers/ember-power-select', ['exports', 'ember-power-select/test-support/helpers'], function (exports, _helpers) {
   'use strict';
 

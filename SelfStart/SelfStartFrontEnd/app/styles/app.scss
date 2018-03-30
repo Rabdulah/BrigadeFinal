@@ -184,18 +184,31 @@ a img {
   color: #BB5B86;
 }
 
-.ui.payment.card:hover {
-  transform: scale(1.1);
-  z-index: 100;
-}
+//.ui.payment.card:hover {
+//  transform: scale(1.1);
+//  z-index: 100;
+//}
 
 .extra.content.footer:hover{
   cursor: pointer;
-
-  .p:hover{
-    color: #0d71bb;
-  }
+  color: #0d71bb !important;
 }
 
+.ui.styled.accordion {
+  width: 100%;
+  position: relative;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.2em;
+  border-radius: 0;
+}
 
+.g-map{
+  height: 100%;
+}
+.g-map-canvas {
+  width: 100%;
+  height: 100%;
+}
 
