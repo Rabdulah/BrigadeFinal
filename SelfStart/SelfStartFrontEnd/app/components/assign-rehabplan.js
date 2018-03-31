@@ -9,12 +9,30 @@ export default Component.extend({
   store: inject('store'),
   model: null,
   ajax: Ember.inject.service(),
+  disabled: "",
 
   modalName: computed(function () {
     return 'editAssign' + this.get('plansData').id;
   }),
 
+  init(){
+    this._super(...arguments);
+
+    let client = this.get('model').id;
+    let plan = this.get('plansData').id;
+
+    this.get('store').query('rehab-client-link', {filter: {'RehabilitationPlan': plan, 'Patient': client}}).then((update) => {
+      console.log(update.content.length);
+      if (update.content.length !== 0) {
+        this.set('disabled', "disabled");
+      } else {
+        this.set('disabled', "");
+      }
+    })
+  },
+
   actions: {
+
     openModal: function () {
       $('.ui.' + this.get('modalName') + '.modal').modal({
         closable: false,
@@ -25,7 +43,6 @@ export default Component.extend({
           return true;
         },
         onApprove: () => {
-
           let link = this.get('store').createRecord('rehab-client-link', {
             terminated: this.get('plansData.terminated'),
             RehabilitationPlan: this.get('plansData'),
@@ -33,32 +50,8 @@ export default Component.extend({
             assigned: true
           });
           link.save().then((res)=> {
-            //   this.get('ajax').request('http://localhost:8082/rehabClientLinks', {
-            //     method: 'POST',
-            //     data: {
-            //       rehabClientLink: {
-            //         terminated: this.get('plansData.terminated'),
-            //         RehabilitationPlan: this.get('plansData'),
-            //         Patient: this.get('model'),
-            //         assigned: true
-            //       }
-            //     },
-            //     success: function(res) {
-            //       if(res.success) {
-            //         $('.ui.' + this.get('modalName') + '.modal').modal('hide');
-            //         return true;
-            //       } else {
-            //         alert("This Rehab Plan is already assigned to this patient");
-            //       }
-            //     }
-            //   });
-            console.log(res);
-            if (res.success) {
               $('.ui.' + this.get('modalName') + '.modal').modal('hide');
-              return true;
-            } else {
-              alert("This Rehab Plan is already assigned to this patient");
-            }
+              this.set('disabled', "disabled");
           });
         }
       })

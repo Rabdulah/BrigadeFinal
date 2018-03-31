@@ -5,17 +5,9 @@ var RehabClientLink = require('../models/RehabClientLink');
 router.route('/')
     .post( function (request, response) {
         var rehabClientLink = new RehabClientLink.Model(request.body.rehabClientLink);
-        // console.log()
-        RehabClientLink.getLinkByPatientAndPlan(rehabClientLink.Patient, rehabClientLink.RehabilitationPlan, (err, rCL) => {
-            console.log(rCL);
-            console.log(err);
-            if(rCL){
-                // rehabClientLink.save();
-                response.json({rehabClientLink: rehabClientLink, success: false});
-            } else {
-                // rehabClientLink.save();
-                response.json({rehabClientLink: rehabClientLink, success: true});
-            }
+        rehabClientLink.save(function(error) {
+            if(error) response.send(error);
+            response.json({rehabClientLink: rehabClientLink});
         });
         //
         // RehabClientLink.addLinkByPatientAndPlan(rehabClientLink, (err, rehabClientLink) =>{
@@ -32,13 +24,25 @@ router.route('/')
         // });
     })
     .get( function (request, response) {
-        RehabClientLink.Model.find(function (error, rehabClientLinks) {
-            if (error) {
-                response.send(error);
-            } else {
-                response.json({rehabClientLink: rehabClientLinks});
-            }
-        });
+        var assign =  request.query.filter;
+        if (!assign) {
+            RehabClientLink.Model.find(function (error, rehabClientLinks) {
+                if (error) {
+                    response.send(error);
+                } else {
+                    response.json({rehabClientLink: rehabClientLinks});
+                }
+            });
+        }
+        else{
+            RehabClientLink.Model.find({"RehabilitationPlan": assign.RehabilitationPlan, "Patient": assign.Patient}, function (error, rehabClientLinks) {
+                if (error) {
+                    response.send(error);
+                } else {
+                    response.json({rehabClientLink: rehabClientLinks});
+                }
+            });
+        }
     });
 
 router.route('/:rehabClientLink_id')

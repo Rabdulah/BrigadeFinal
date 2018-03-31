@@ -10022,12 +10022,14 @@ define('ember-basic-dropdown/test-support/helpers', ['exports', 'ember-native-do
   exports.default = function () {
     Ember.Test.registerAsyncHelper('clickDropdown', function (app, cssPath) {
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      (true && !(false) && Ember.deprecate('Using the global `clickDropdown` acceptance helper from ember-basic-dropdown is deprecated. Please, explicitly import the `clickTrigger` or just use `click` helper from `@ember/test-helpers`.', false, { until: '1.0.0', id: 'ember-basic-dropdown-click-dropdown' }));
 
       clickTrigger(cssPath, options);
     });
 
     Ember.Test.registerAsyncHelper('tapDropdown', function (app, cssPath) {
       var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
+      (true && !(false) && Ember.deprecate('Using the global `tapDropdown` acceptance helper from ember-basic-dropdown is deprecated. Please, explicitly import the `tapTrigger` or just use `tap` helper from `@ember/test-helpers`.', false, { until: '1.0.0', id: 'ember-basic-dropdown-click-dropdown' }));
 
       tapTrigger(cssPath, options);
     });
@@ -11352,13 +11354,13 @@ define('ember-native-dom-helpers/wait-until', ['exports'], function (exports) {
     });
   }
 });
-define('ember-power-select/test-support/helpers', ['exports', 'ember-test-helpers/wait', 'ember-native-dom-helpers'], function (exports, _wait, _emberNativeDomHelpers) {
+define('ember-power-select/test-support/helpers', ['exports', 'ember-native-dom-helpers', 'ember-power-select/test-support/index'], function (exports, _emberNativeDomHelpers, _index) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.selectChoose = undefined;
+  exports.clearSelected = exports.removeMultipleOption = exports.selectSearch = exports.selectChoose = undefined;
   exports.findContains = findContains;
   exports.nativeMouseDown = nativeMouseDown;
   exports.nativeMouseUp = nativeMouseUp;
@@ -11370,205 +11372,74 @@ define('ember-power-select/test-support/helpers', ['exports', 'ember-test-helper
 
   exports.default = function () {
     Ember.Test.registerAsyncHelper('selectChoose', function (_, cssPathOrTrigger, valueOrSelector, optionIndex) {
-      return selectChoose(cssPathOrTrigger, valueOrSelector, optionIndex);
+      (true && !(true) && Ember.deprecate('Using the implicit global async helper `selectChoose` is deprecated. Please, import it explicitly with `import { selectChoose } from "ember-power-select/test-support"`', true, { id: 'ember-power-select-global-select-choose', until: '2.0.0' }));
+
+      return (0, _index.selectChoose)(cssPathOrTrigger, valueOrSelector, optionIndex);
     });
 
     Ember.Test.registerAsyncHelper('selectSearch', function () {
-      var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(app, cssPathOrTrigger, value) {
-        var trigger, triggerPath, contentId, isMultipleSelect, content, dropdownIsClosed, isDefaultSingleSelect, inputIsInTrigger;
-        return regeneratorRuntime.wrap(function _callee2$(_context2) {
+      var _ref5 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee5(app, cssPathOrTrigger, value) {
+        return regeneratorRuntime.wrap(function _callee5$(_context5) {
           while (1) {
-            switch (_context2.prev = _context2.next) {
+            switch (_context5.prev = _context5.next) {
               case 0:
-                trigger = void 0;
+                (true && !(true) && Ember.deprecate('Using the implicit global async helper `selectSearch` is deprecated. Please, import it explicitly with `import { selectSearch } from "ember-power-select/test-support"`', true, { id: 'ember-power-select-global-select-search', until: '2.0.0' }));
+                return _context5.abrupt('return', (0, _index.selectSearch)(cssPathOrTrigger, value));
 
-                if (!(cssPathOrTrigger instanceof HTMLElement)) {
-                  _context2.next = 5;
-                  break;
-                }
-
-                trigger = cssPathOrTrigger;
-                _context2.next = 10;
-                break;
-
-              case 5:
-                triggerPath = cssPathOrTrigger + ' .ember-power-select-trigger';
-
-                trigger = (0, _emberNativeDomHelpers.find)(triggerPath);
-                if (!trigger) {
-                  triggerPath = cssPathOrTrigger;
-                  trigger = (0, _emberNativeDomHelpers.find)(triggerPath);
-                }
-
-                if (trigger) {
-                  _context2.next = 10;
-                  break;
-                }
-
-                throw new Error('You called "selectSearch(\'' + cssPathOrTrigger + '\', \'' + value + '\')" but no select was found using selector "' + cssPathOrTrigger + '"');
-
-              case 10:
-
-                if (trigger.scrollIntoView) {
-                  trigger.scrollIntoView();
-                }
-
-                contentId = '' + trigger.attributes['aria-owns'].value;
-                isMultipleSelect = !!(0, _emberNativeDomHelpers.find)('.ember-power-select-trigger-multiple-input', trigger);
-                content = (0, _emberNativeDomHelpers.find)('#' + contentId);
-                dropdownIsClosed = !content || content.classList.contains('ember-basic-dropdown-content-placeholder');
-
-                if (!dropdownIsClosed) {
-                  _context2.next = 20;
-                  break;
-                }
-
-                _context2.next = 18;
-                return (0, _emberNativeDomHelpers.click)(trigger);
-
-              case 18:
-                _context2.next = 20;
-                return (0, _wait.default)();
-
-              case 20:
-                isDefaultSingleSelect = !!(0, _emberNativeDomHelpers.find)('.ember-power-select-search-input');
-
-                if (!isMultipleSelect) {
-                  _context2.next = 26;
-                  break;
-                }
-
-                _context2.next = 24;
-                return (0, _emberNativeDomHelpers.fillIn)((0, _emberNativeDomHelpers.find)('.ember-power-select-trigger-multiple-input', trigger), value);
-
-              case 24:
-                _context2.next = 39;
-                break;
-
-              case 26:
-                if (!isDefaultSingleSelect) {
-                  _context2.next = 31;
-                  break;
-                }
-
-                _context2.next = 29;
-                return (0, _emberNativeDomHelpers.fillIn)('.ember-power-select-search-input', value);
-
-              case 29:
-                _context2.next = 39;
-                break;
-
-              case 31:
-                // It's probably a customized version
-                inputIsInTrigger = !!(0, _emberNativeDomHelpers.find)('.ember-power-select-trigger input[type=search]', trigger);
-
-                if (!inputIsInTrigger) {
-                  _context2.next = 37;
-                  break;
-                }
-
-                _context2.next = 35;
-                return (0, _emberNativeDomHelpers.fillIn)((0, _emberNativeDomHelpers.find)('input[type=search]', trigger), value);
-
-              case 35:
-                _context2.next = 39;
-                break;
-
-              case 37:
-                _context2.next = 39;
-                return (0, _emberNativeDomHelpers.fillIn)('#' + contentId + ' .ember-power-select-search-input[type=search]', 'input');
-
-              case 39:
-                return _context2.abrupt('return', (0, _wait.default)());
-
-              case 40:
+              case 2:
               case 'end':
-                return _context2.stop();
+                return _context5.stop();
             }
           }
-        }, _callee2, this);
+        }, _callee5, this);
       }));
 
-      return function (_x5, _x6, _x7) {
-        return _ref2.apply(this, arguments);
+      return function (_x10, _x11, _x12) {
+        return _ref5.apply(this, arguments);
       };
     }());
 
     Ember.Test.registerAsyncHelper('removeMultipleOption', function () {
-      var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(app, cssPath, value) {
-        var elem, items, item;
-        return regeneratorRuntime.wrap(function _callee3$(_context3) {
+      var _ref6 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee6(app, cssPath, value) {
+        return regeneratorRuntime.wrap(function _callee6$(_context6) {
           while (1) {
-            switch (_context3.prev = _context3.next) {
+            switch (_context6.prev = _context6.next) {
               case 0:
-                elem = void 0;
-                items = (0, _emberNativeDomHelpers.findAll)(cssPath + ' .ember-power-select-multiple-options > li');
-                item = items.find(function (el) {
-                  return el.textContent.indexOf(value) > -1;
-                });
+                (true && !(true) && Ember.deprecate('Using the implicit global async helper `removeMultipleOption` is deprecated. Please, import it explicitly with `import { removeMultipleOption } from "ember-power-select/test-support"`', true, { id: 'ember-power-select-global-remove-multiple-option', until: '2.0.0' }));
+                return _context6.abrupt('return', (0, _index.removeMultipleOption)(cssPath, value));
 
-                if (item) {
-                  elem = (0, _emberNativeDomHelpers.find)('.ember-power-select-multiple-remove-btn', item);
-                }
-                _context3.prev = 4;
-                _context3.next = 7;
-                return (0, _emberNativeDomHelpers.click)(elem);
-
-              case 7:
-                return _context3.abrupt('return', (0, _wait.default)());
-
-              case 10:
-                _context3.prev = 10;
-                _context3.t0 = _context3['catch'](4);
-
-                console.warn('css path to remove btn not found');
-                throw _context3.t0;
-
-              case 14:
+              case 2:
               case 'end':
-                return _context3.stop();
+                return _context6.stop();
             }
           }
-        }, _callee3, this, [[4, 10]]);
+        }, _callee6, this);
       }));
 
-      return function (_x8, _x9, _x10) {
-        return _ref3.apply(this, arguments);
+      return function (_x13, _x14, _x15) {
+        return _ref6.apply(this, arguments);
       };
     }());
 
     Ember.Test.registerAsyncHelper('clearSelected', function () {
-      var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(app, cssPath) {
-        var elem;
-        return regeneratorRuntime.wrap(function _callee4$(_context4) {
+      var _ref7 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee7(app, cssPath) {
+        return regeneratorRuntime.wrap(function _callee7$(_context7) {
           while (1) {
-            switch (_context4.prev = _context4.next) {
+            switch (_context7.prev = _context7.next) {
               case 0:
-                elem = (0, _emberNativeDomHelpers.find)(cssPath + ' .ember-power-select-clear-btn');
-                _context4.prev = 1;
-                _context4.next = 4;
-                return (0, _emberNativeDomHelpers.click)(elem);
+                (true && !(true) && Ember.deprecate('Using the implicit global async helper `clearSelected` is deprecated. Please, import it explicitly with `import { clearSelected } from "ember-power-select/test-support"`', true, { id: 'ember-power-select-global-clear-selected', until: '2.0.0' }));
+                return _context7.abrupt('return', (0, _index.clearSelected)(cssPath));
 
-              case 4:
-                return _context4.abrupt('return', (0, _wait.default)());
-
-              case 7:
-                _context4.prev = 7;
-                _context4.t0 = _context4['catch'](1);
-
-                console.warn('css path to clear btn not found');
-                throw _context4.t0;
-
-              case 11:
+              case 2:
               case 'end':
-                return _context4.stop();
+                return _context7.stop();
             }
           }
-        }, _callee4, this, [[1, 7]]);
+        }, _callee7, this);
       }));
 
-      return function (_x11, _x12) {
-        return _ref4.apply(this, arguments);
+      return function (_x16, _x17) {
+        return _ref7.apply(this, arguments);
       };
     }());
   };
@@ -11664,118 +11535,13 @@ define('ember-power-select/test-support/helpers', ['exports', 'ember-test-helper
 
   var selectChoose = exports.selectChoose = function () {
     var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee(cssPathOrTrigger, valueOrSelector, optionIndex) {
-      var trigger, target, contentId, content, options, potentialTargets, matchEq, index, option, filteredTargets;
       return regeneratorRuntime.wrap(function _callee$(_context) {
         while (1) {
           switch (_context.prev = _context.next) {
             case 0:
-              trigger = void 0, target = void 0;
+              return _context.abrupt('return', (0, _index.selectChoose)(cssPathOrTrigger, valueOrSelector, optionIndex));
 
-              if (!(cssPathOrTrigger instanceof HTMLElement)) {
-                _context.next = 5;
-                break;
-              }
-
-              if (cssPathOrTrigger.classList.contains('ember-power-select-trigger')) {
-                trigger = cssPathOrTrigger;
-              } else {
-                trigger = (0, _emberNativeDomHelpers.find)('.ember-power-select-trigger', cssPathOrTrigger);
-              }
-              _context.next = 9;
-              break;
-
-            case 5:
-              trigger = (0, _emberNativeDomHelpers.find)(cssPathOrTrigger + ' .ember-power-select-trigger');
-
-              if (!trigger) {
-                trigger = (0, _emberNativeDomHelpers.find)(cssPathOrTrigger);
-              }
-
-              if (trigger) {
-                _context.next = 9;
-                break;
-              }
-
-              throw new Error('You called "selectChoose(\'' + cssPathOrTrigger + '\', \'' + valueOrSelector + '\')" but no select was found using selector "' + cssPathOrTrigger + '"');
-
-            case 9:
-
-              if (trigger.scrollIntoView) {
-                trigger.scrollIntoView();
-              }
-
-              contentId = '' + trigger.attributes['aria-owns'].value;
-              content = (0, _emberNativeDomHelpers.find)('#' + contentId);
-              // If the dropdown is closed, open it
-
-              if (!(!content || content.classList.contains('ember-basic-dropdown-content-placeholder'))) {
-                _context.next = 17;
-                break;
-              }
-
-              _context.next = 15;
-              return (0, _emberNativeDomHelpers.click)(trigger);
-
-            case 15:
-              _context.next = 17;
-              return (0, _wait.default)();
-
-            case 17:
-
-              // Select the option with the given text
-              options = (0, _emberNativeDomHelpers.findAll)('#' + contentId + ' .ember-power-select-option');
-              potentialTargets = options.filter(function (opt) {
-                return opt.textContent.indexOf(valueOrSelector) > -1;
-              });
-
-              if (potentialTargets.length === 0) {
-                // If treating the value as text doesn't gave use any result, let's try if it's a css selector
-                matchEq = valueOrSelector.slice(-6).match(/:eq\((\d+)\)/);
-
-                if (matchEq) {
-                  index = parseInt(matchEq[1], 10);
-                  option = (0, _emberNativeDomHelpers.findAll)('#' + contentId + ' ' + valueOrSelector.slice(0, -6))[index];
-                  (true && !(true) && Ember.deprecate('Passing selectors with the `:eq()` pseudoselector is deprecated. If you want to select the nth option, pass a number as a third argument. E.g `selectChoose(".language-select", ".ember-power-select-option", 3)`', true, {
-                    id: 'select-choose-no-eq-pseudoselector',
-                    until: '1.8.0'
-                  }));
-
-                  if (option) {
-                    potentialTargets = [option];
-                  }
-                } else {
-                  potentialTargets = (0, _emberNativeDomHelpers.findAll)('#' + contentId + ' ' + valueOrSelector);
-                }
-              }
-              if (potentialTargets.length > 1) {
-                filteredTargets = [].slice.apply(potentialTargets).filter(function (t) {
-                  return t.textContent.trim() === valueOrSelector;
-                });
-
-                if (optionIndex === undefined) {
-                  target = filteredTargets[0] || potentialTargets[0];
-                } else {
-                  target = filteredTargets[optionIndex] || potentialTargets[optionIndex];
-                }
-              } else {
-                target = potentialTargets[0];
-              }
-
-              if (target) {
-                _context.next = 23;
-                break;
-              }
-
-              throw new Error('You called "selectChoose(\'' + cssPathOrTrigger + '\', \'' + valueOrSelector + '\')" but "' + valueOrSelector + '" didn\'t match any option');
-
-            case 23:
-              _context.next = 25;
-              return (0, _emberNativeDomHelpers.click)(target);
-
-            case 25:
-              return _context.abrupt('return', (0, _wait.default)());
-
-            case 26:
+            case 1:
             case 'end':
               return _context.stop();
           }
@@ -11785,6 +11551,69 @@ define('ember-power-select/test-support/helpers', ['exports', 'ember-test-helper
 
     return function selectChoose(_x2, _x3, _x4) {
       return _ref.apply(this, arguments);
+    };
+  }();
+
+  var selectSearch = exports.selectSearch = function () {
+    var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(cssPathOrTrigger, value) {
+      return regeneratorRuntime.wrap(function _callee2$(_context2) {
+        while (1) {
+          switch (_context2.prev = _context2.next) {
+            case 0:
+              return _context2.abrupt('return', (0, _index.selectSearch)(cssPathOrTrigger, value));
+
+            case 1:
+            case 'end':
+              return _context2.stop();
+          }
+        }
+      }, _callee2, this);
+    }));
+
+    return function selectSearch(_x5, _x6) {
+      return _ref2.apply(this, arguments);
+    };
+  }();
+
+  var removeMultipleOption = exports.removeMultipleOption = function () {
+    var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(cssPath, value) {
+      return regeneratorRuntime.wrap(function _callee3$(_context3) {
+        while (1) {
+          switch (_context3.prev = _context3.next) {
+            case 0:
+              return _context3.abrupt('return', (0, _index.removeMultipleOption)(cssPath, value));
+
+            case 1:
+            case 'end':
+              return _context3.stop();
+          }
+        }
+      }, _callee3, this);
+    }));
+
+    return function removeMultipleOption(_x7, _x8) {
+      return _ref3.apply(this, arguments);
+    };
+  }();
+
+  var clearSelected = exports.clearSelected = function () {
+    var _ref4 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee4(cssPath) {
+      return regeneratorRuntime.wrap(function _callee4$(_context4) {
+        while (1) {
+          switch (_context4.prev = _context4.next) {
+            case 0:
+              return _context4.abrupt('return', (0, _index.clearSelected)(cssPath));
+
+            case 1:
+            case 'end':
+              return _context4.stop();
+          }
+        }
+      }, _callee4, this);
+    }));
+
+    return function clearSelected(_x9) {
+      return _ref4.apply(this, arguments);
     };
   }();
 });

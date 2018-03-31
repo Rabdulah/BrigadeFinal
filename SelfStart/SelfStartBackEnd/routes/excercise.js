@@ -10,6 +10,7 @@ router.route('/')
             response.json({exercise: exercise});
         });
     })
+
     .get( function (request, response) {
         let {sort, dir, queryPath, regex} = request.query;
 

@@ -92,7 +92,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/assign-rehabplan.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/assign-rehabplan.js should pass ESLint\n\n55:13 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/assign-rehabplan.js should pass ESLint\n\n25:7 - Unexpected console statement. (no-console)\n52:29 - \'res\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/back-to-top.js', function (assert) {
@@ -107,7 +107,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/client-file.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/client-file.js should pass ESLint\n\n30:5 - Unexpected console statement. (no-console)\n74:5 - Unexpected console statement. (no-console)\n119:11 - \'assign\' is assigned a value but never used. (no-unused-vars)\n125:7 - \'rehabplan\' is not defined. (no-undef)');
+    assert.ok(false, 'components/client-file.js should pass ESLint\n\n30:5 - Unexpected console statement. (no-console)\n74:5 - Unexpected console statement. (no-console)\n121:11 - \'assign\' is assigned a value but never used. (no-unused-vars)\n127:7 - \'rehabplan\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/config-selection.js', function (assert) {
@@ -288,6 +288,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('components/parse-question.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/parse-question.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/personal-menu.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/personal-menu.js should pass ESLint\n\n');
   });
 
   QUnit.test('components/physio-nav.js', function (assert) {
@@ -764,62 +769,6 @@ define('self-start-front-end/tests/helpers/destroy-app', ['exports'], function (
   exports.default = destroyApp;
   function destroyApp(application) {
     Ember.run(application, 'destroy');
-  }
-});
-define('self-start-front-end/tests/helpers/ember-drag-drop', ['exports', 'self-start-front-end/tests/helpers/data-transfer'], function (exports, _dataTransfer) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.drag = drag;
-
-
-  function drop($dragHandle, dropCssPath, dragEvent) {
-    var $dropTarget = Ember.$(dropCssPath);
-
-    if ($dropTarget.length === 0) {
-      throw 'There are no drop targets by the given selector: \'' + dropCssPath + '\'';
-    }
-
-    Ember.run(function () {
-      triggerEvent($dropTarget, 'dragover', _dataTransfer.default.makeMockEvent());
-    });
-
-    Ember.run(function () {
-      triggerEvent($dropTarget, 'drop', _dataTransfer.default.makeMockEvent(dragEvent.dataTransfer.get('data.payload')));
-    });
-
-    Ember.run(function () {
-      triggerEvent($dragHandle, 'dragend', _dataTransfer.default.makeMockEvent());
-    });
-  }
-
-  function drag(cssPath) {
-    var options = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : {};
-
-    var dragEvent = _dataTransfer.default.makeMockEvent();
-    var $dragHandle = Ember.$(cssPath);
-
-    Ember.run(function () {
-      triggerEvent($dragHandle, 'mouseover');
-    });
-
-    Ember.run(function () {
-      triggerEvent($dragHandle, 'dragstart', dragEvent);
-    });
-
-    andThen(function () {
-      if (options.beforeDrop) {
-        options.beforeDrop.call();
-      }
-    });
-
-    andThen(function () {
-      if (options.drop) {
-        drop($dragHandle, options.drop, dragEvent);
-      }
-    });
   }
 });
 define('self-start-front-end/tests/helpers/ember-power-select', ['exports', 'ember-power-select/test-support/helpers'], function (exports, _helpers) {
@@ -2414,6 +2363,35 @@ define('self-start-front-end/tests/integration/components/parse-question-test', 
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/personal-menu-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('personal-menu', 'Integration | Component | personal menu', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "MevxA1qX",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"personal-menu\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "7y9Eig95",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"personal-menu\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/physio-nav-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -3288,6 +3266,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('integration/components/parse-question-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/parse-question-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/personal-menu-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/personal-menu-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/physio-nav-test.js', function (assert) {

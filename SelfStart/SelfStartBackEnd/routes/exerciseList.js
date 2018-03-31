@@ -21,8 +21,6 @@ router.route('/')
         else{
             ExerciseList.Model.find({"rehabilitationPlan": list.rehabilitationPlan}, function (error, exerciseLists) {
                 if (error) response.send(error);
-
-console.log(exerciseLists);
                 response.json({exerciseList: exerciseLists});
             });
         }

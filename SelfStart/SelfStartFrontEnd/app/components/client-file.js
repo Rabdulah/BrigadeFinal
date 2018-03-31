@@ -107,9 +107,11 @@ export default Component.extend({
     Ember.$("#myWindow").unbind('touchmove');
   },
 
-  clientState: "active",
-  practState: "",
-  adminState: "",
+  menusState: "active",
+  personalMenuState: "",
+
+  menus: true,
+  personalMenu: false,
 
   terminated: false,
 
@@ -126,30 +128,21 @@ export default Component.extend({
         return true;
       });
     },
-    client(){
-      this.set('clientView', true);
-      this.set('practView', false);
-      this.set('adminView', false);
-      this.set('clientState', "active");
-      this.set('practState', "");
-      this.set('adminState', "");
+    menusView(){
+      this.set('menus', true);
+      this.set('personalMenu', false);
+
+      this.set('menusState', "active");
+      this.set('personalMenuState', "");
     },
-    pract(){
-      this.set('clientView', false);
-      this.set('practView', true);
-      this.set('adminView', false);
-      this.set('clientState', "");
-      this.set('practState', "active");
-      this.set('adminState', "");
+    personalMenuView(){
+      this.set('menus', false);
+      this.set('personalMenu', true);
+
+      this.set('menusState', "");
+      this.set('personalMenuState', "active");
     },
-    admin(){
-      this.set('clientView', false);
-      this.set('practView', false);
-      this.set('adminView', true);
-      this.set('clientState', "");
-      this.set('practState', "");
-      this.set('adminState', "active");
-    },
+
     toggleDetail(ID) {
 
       if (this.get('isShowing') === ID)

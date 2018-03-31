@@ -9,13 +9,8 @@
   </div>
 </div>
 
-
-<div class="background" style="padding-left: 2em;padding-right: 15em;padding-top: 10em;">
-
-  <div class="ui vertical pointing menu" style="width: 12rem;">
-    <a class="active item">
-      Menu Builder
-    </a>
+<div class="ui container" style="padding-top: 2em">
+  <div class="ui top attached tabular stackable menu" style="padding-left: 150px;">
     <a class="item">
       Assessment
     </a>
@@ -25,11 +20,24 @@
     <a class="item">
       Photos
     </a>
+    <a class="{{menusState}} item" {{action "menusView"}}>
+      Menus
+    </a>
+    <a class="{{personalMenuState}} item" {{action "personalMenuView"}}>
+      Personal Menu
+    </a>
+    <a class="item">
+      Documents
+    </a>
+    <a class="item">
+      Accounting
+    </a>
   </div>
+  <div class="ui segment" style="background: transparent;border: none;box-shadow: none;">
 
-  <br><br>
+    {{#if menus}}
 
-    <div class="ui very padded container segment" id="top" style="margin-top: -18em;z-index:  2;position: relative;margin-left: 200px !important;">
+    <div class="ui very padded container segment" id="top">
       <div class="ui grid" style="margin-top: -30px;">
         <div class="left thirteen wide column" style="margin-top: -5px;">
           <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">
@@ -76,7 +84,6 @@
         <table class="ui fixed table" style="border: none;border-color: white;">
           <tbody >
           <tr style="font-weight: bold;">
-            <th class="left aligned one wide column "> </th>
             {{#each modelAttributes as |column|}}
               <th class={{column.class}} {{action 'sortColumn' column.key column.dir}}>{{column.name}}
                 {{#if (eq column.dir 'asc')}}
@@ -115,14 +122,8 @@
                 </td>
               {{/each}}
 
-              <td class="right aligned three wide column ">
+              <td class="center aligned five wide column">
                   {{assign-rehabplan  plansData=plan model=model}}
-              </td>
-              <td class="right aligned one wide column ">
-                {{!--{{edit-rehabplan  plansData=plan }}--}}
-              </td>
-              <td class="left aligned one wide column ">
-                <p>{{delete-rehabplan ID=plan.id flagDelete=flagDelete}}</p>
               </td>
             </tr>
           {{/each}}
@@ -130,6 +131,10 @@
         </table>
       </div>
     </div>
-
-  <br><br><br><br>
+    {{/if}}
+    {{#if personalMenu}}
+      {{personal-menu}}
+    {{/if}}
+  </div>
 </div>
+  <br><br><br><br>
