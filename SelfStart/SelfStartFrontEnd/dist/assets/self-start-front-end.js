@@ -2981,15 +2981,15 @@ define('self-start-front-end/components/display-answers', ['exports'], function 
                         _this.set("mcop6", breakdown[5]);
                     }
 
-                    if (_this.get('assessment').get('answers')[_this.get('qNumber')] === "1") {
+                    if (_this.get('assessment').get('answers')[_this.get('qNumber')] === "0") {
                         _this.set("checkmcop1", true);
-                    } else if (_this.get('assessment').get('answers')[_this.get('qNumber')] === "2") {
+                    } else if (_this.get('assessment').get('answers')[_this.get('qNumber')] === "1") {
                         _this.set("checkmcop2", true);
-                    } else if (_this.get('assessment').get('answers')[_this.get('qNumber')] === "3") {
+                    } else if (_this.get('assessment').get('answers')[_this.get('qNumber')] === "2") {
                         _this.set("checkmcop3", true);
-                    } else if (_this.get('assessment').get('answers')[_this.get('qNumber')] === "4") {
+                    } else if (_this.get('assessment').get('answers')[_this.get('qNumber')] === "3") {
                         _this.set("checkmcop4", true);
-                    } else if (_this.get('assessment').get('answers')[_this.get('qNumber')] === "5") {
+                    } else if (_this.get('assessment').get('answers')[_this.get('qNumber')] === "4") {
                         _this.set("checkmcop5", true);
                     } else {
                         _this.set("checkmcop6", true);
@@ -4116,7 +4116,7 @@ define('self-start-front-end/components/get-assessment-results', ['exports'], fu
     exports.default = Ember.Component.extend({
 
         DS: Ember.inject.service('store'),
-        ID: "5abebc7102c70211947971e0",
+        ID: "5abfeb9cda17a420b84b2591",
 
         assessmentModel: Ember.computed(function () {
             return this.get('DS').find('assessment-test', this.get('ID'));

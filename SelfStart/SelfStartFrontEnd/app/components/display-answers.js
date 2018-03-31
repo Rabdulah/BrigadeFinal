@@ -39,19 +39,19 @@ init() {
             }
             
 
-            if(this.get('assessment').get('answers')[this.get('qNumber')] === "1"){
+            if(this.get('assessment').get('answers')[this.get('qNumber')] === "0"){
                  this.set("checkmcop1", true);
             }
-            else if(this.get('assessment').get('answers')[this.get('qNumber')] === "2"){
+            else if(this.get('assessment').get('answers')[this.get('qNumber')] === "1"){
                 this.set("checkmcop2", true);
             }
-            else if(this.get('assessment').get('answers')[this.get('qNumber')] === "3"){
+            else if(this.get('assessment').get('answers')[this.get('qNumber')] === "2"){
                 this.set("checkmcop3", true);
             }
-            else if(this.get('assessment').get('answers')[this.get('qNumber')] === "4"){
+            else if(this.get('assessment').get('answers')[this.get('qNumber')] === "3"){
                 this.set("checkmcop4", true);
             }
-            else if(this.get('assessment').get('answers')[this.get('qNumber')] === "5"){
+            else if(this.get('assessment').get('answers')[this.get('qNumber')] === "4"){
                 this.set("checkmcop5", true);
             }
             else{
