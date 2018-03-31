@@ -200,6 +200,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'components/delete-status.js should pass ESLint\n\n');
   });
 
+  QUnit.test('components/display-answers.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/display-answers.js should pass ESLint\n\n8:9 - \'question\' is assigned a value but never used. (no-unused-vars)\n87:9 - Unexpected console statement. (no-console)');
+  });
+
   QUnit.test('components/display-assessment.js', function (assert) {
     assert.expect(1);
     assert.ok(false, 'components/display-assessment.js should pass ESLint\n\n9:20 - \'Ember\' is not defined. (no-undef)\n10:5 - Unexpected console statement. (no-console)\n18:7 - Unexpected console statement. (no-console)');
@@ -268,6 +273,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('components/get-answers.js', function (assert) {
     assert.expect(1);
     assert.ok(false, 'components/get-answers.js should pass ESLint\n\n34:7 - Unexpected console statement. (no-console)\n55:7 - Unexpected console statement. (no-console)\n76:7 - Unexpected console statement. (no-console)\n98:7 - Unexpected console statement. (no-console)\n120:7 - Unexpected console statement. (no-console)\n141:7 - Unexpected console statement. (no-console)\n162:7 - Unexpected console statement. (no-console)\n184:7 - Unexpected console statement. (no-console)\n206:7 - Unexpected console statement. (no-console)\n227:7 - Unexpected console statement. (no-console)');
+  });
+
+  QUnit.test('components/get-assessment-results.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/get-assessment-results.js should pass ESLint\n\n5:9 - \'Ember\' is not defined. (no-undef)\n8:22 - \'Ember\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/list-forms.js', function (assert) {
@@ -1887,6 +1897,35 @@ define('self-start-front-end/tests/integration/components/delete-rehabplan-test'
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/display-answers-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('display-answers', 'Integration | Component | display answers', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "Q/hmsT9i",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"display-answers\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "tXGbp5FE",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"display-answers\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/display-assessment-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -2258,6 +2297,35 @@ define('self-start-front-end/tests/integration/components/get-answers-test', ['e
     this.render(Ember.HTMLBars.template({
       "id": "u6LODeSx",
       "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"get-answers\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/get-assessment-results-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('get-assessment-results', 'Integration | Component | get assessment results', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "duTrzdcH",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"get-assessment-results\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "yP458BS9",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"get-assessment-results\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
       "meta": {}
     }));
 
@@ -3229,6 +3297,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/delete-rehabplan-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('integration/components/display-answers-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/display-answers-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('integration/components/display-assessment-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/display-assessment-test.js should pass ESLint\n\n');
@@ -3292,6 +3365,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('integration/components/get-answers-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/get-answers-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/get-assessment-results-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/get-assessment-results-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/list-forms-test.js', function (assert) {

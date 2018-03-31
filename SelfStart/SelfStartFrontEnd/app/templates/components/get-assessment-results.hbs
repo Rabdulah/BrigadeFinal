@@ -1,0 +1,3 @@
+{{#each assessmentModel.questions as |assess index|}}
+     {{display-answers question=assess qID = assess.id assessment=assessmentModel qNumber = index assessid = assessmentModel.id}}
+{{/each}}
