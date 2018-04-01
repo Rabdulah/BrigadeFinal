@@ -8,7 +8,6 @@ const jwt = require('jsonwebtoken');
 
 router.route('/')
     .post( function (request, response) {
-        console.log(request.body.patient);
         var patient = new Patients.Model(request.body.patient);
 
         Patients.getUserByEmail(patient.email, (err, client) =>{

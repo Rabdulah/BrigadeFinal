@@ -5,7 +5,6 @@ var RehabClientLink = require('../models/RehabClientLink');
 router.route('/')
     .post( function (request, response) {
         var rehabClientLink = new RehabClientLink.Model(request.body.rehabClientLink);
-        console.log()
         RehabClientLink.getLinkByPatientAndPlan(rehabClientLink.Patient, rehabClientLink.RehabilitationPlan, (err, rCL) => {
 
             if(rCL){

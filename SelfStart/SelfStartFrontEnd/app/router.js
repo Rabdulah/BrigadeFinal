@@ -44,6 +44,7 @@ Router.map(function() {
     this.route('new-rehabplans');
     this.route('assessment-display');
     this.route('appointment');
+    this.route('display-reports');
   });
 
   this.route('client', function() {
