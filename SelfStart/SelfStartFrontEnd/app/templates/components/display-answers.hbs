@@ -1,0 +1,68 @@
+<script type="text/javascript">$(document).ready(function(){$(".rating").rating();});</script>
+
+<div class="ui form">
+  <br>
+  {{#if question.sa}}
+    <label>{{question.questionText}}</label>
+    <br><br>
+    <div class="ui disabled input focus">
+      <li>{{input type="text" value=SAanswer}}</li>
+    </div>
+  {{/if}}
+
+  {{#if question.ra}}
+    <label>{{question.questionText}}</label>
+    <br><br>
+    {{ui-rating
+      class="heart"
+      maxRating=10
+      initialRating = Rating
+    }}
+  {{/if}}
+
+  {{#if question.tf}}
+    <br><br>
+    <li>
+      <div class="inline fields">
+        <label>{{question.questionText}}</label>
+        <div class="field">
+            {{ui-checkbox label="True" checked=checkTrue disabled = true}}
+        </div>
+        <div class="field">
+           {{ui-checkbox label="True" checked=checkFalse disabled = true }}
+        </div>
+      </div>
+    </li>
+  {{/if}}
+
+  {{#if question.mc}}
+    <br><br>
+    <div class="grouped fields">
+      <label>{{question.questionText}}</label>
+      <div class="field">
+            {{ui-checkbox label=mcop1 checked=checkmcop1 disabled = true }}
+      </div>
+      <div class="field">
+            {{ui-checkbox label=mcop2 checked=checkmcop2 disabled = true }}
+      </div>
+      <div class="field">
+            {{ui-checkbox label=mcop3 checked=checkmcop3 disabled = true }}
+      </div>
+      {{#if (number-of-mc question.optionNumber 3)}}
+        <div class="field">
+            {{ui-checkbox label=mcop4 checked=checkmcop4 disabled = true }}                 
+        </div>
+      {{/if}}
+      {{#if (number-of-mc question.optionNumber 4)}}
+        <div class="field">
+            {{ui-checkbox label=mcop5 checked=checkmcop5 disabled = true }}
+        </div>
+      {{/if}}
+      {{#if (number-of-mc question.optionNumber 5)}}
+        <div class="field">
+            {{ui-checkbox label=mcop6 checked=checkmcop6 disabled = true }}   
+        </div>
+      {{/if}}
+    </div>
+  {{/if}}
+</div>

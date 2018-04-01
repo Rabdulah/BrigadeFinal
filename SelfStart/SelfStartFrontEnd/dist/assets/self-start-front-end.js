@@ -2937,6 +2937,96 @@ define('self-start-front-end/components/delete-status', ['exports'], function (e
     }
   });
 });
+define('self-start-front-end/components/display-answers', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Component.extend({
+        init: function init() {
+            var _this = this;
+
+            this._super.apply(this, arguments);
+
+            var question = this.get('DS').findRecord('question', this.get('qID')).then(function (rec) {
+                if (rec.get('type') === "Short answer") {
+                    _this.set("SAanswer", _this.get('assessment').get('answers')[_this.get('qNumber')]);
+                }
+                if (rec.get('type') === "Rating") {
+                    _this.set("Rating", _this.get('assessment').get('answers')[_this.get('qNumber')]);
+                }
+                if (rec.get('type') === "True/False") {
+                    if (_this.get('assessment').get('answers')[_this.get('qNumber')] === "True") {
+                        _this.set("checkTrue", true);
+                    } else {
+                        _this.set("checkFalse", true);
+                    }
+                }
+                if (rec.get('type') === "Multiple choice") {
+                    var breakdown = rec.get("optionString").split('+++');
+                    var length = breakdown.length;
+                    _this.set("mcop1", breakdown[0]);
+                    _this.set("mcop2", breakdown[1]);
+                    if (length > 2) {
+                        _this.set("mcop3", breakdown[2]);
+                    }
+                    if (length > 3) {
+                        _this.set("mcop4", breakdown[3]);
+                    }
+                    if (length > 4) {
+                        _this.set("mcop5", breakdown[4]);
+                    }
+                    if (length > 5) {
+                        _this.set("mcop6", breakdown[5]);
+                    }
+
+                    if (_this.get('assessment').get('answers')[_this.get('qNumber')] === "0") {
+                        _this.set("checkmcop1", true);
+                    } else if (_this.get('assessment').get('answers')[_this.get('qNumber')] === "1") {
+                        _this.set("checkmcop2", true);
+                    } else if (_this.get('assessment').get('answers')[_this.get('qNumber')] === "2") {
+                        _this.set("checkmcop3", true);
+                    } else if (_this.get('assessment').get('answers')[_this.get('qNumber')] === "3") {
+                        _this.set("checkmcop4", true);
+                    } else if (_this.get('assessment').get('answers')[_this.get('qNumber')] === "4") {
+                        _this.set("checkmcop5", true);
+                    } else {
+                        _this.set("checkmcop6", true);
+                    }
+                }
+            });
+        },
+
+
+        DS: Ember.inject.service('store'),
+        tf: true,
+        SAanswer: "true",
+        Rating: 4,
+        true: "",
+        checkTrue: false,
+        checkFalse: false,
+        checkmcop1: false,
+        checkmcop2: false,
+        checkmcop3: false,
+        checkmcop4: false,
+        checkmcop5: false,
+        checkmcop6: false,
+        mcop1: "",
+        mcop2: "",
+        mcop3: "",
+        mcop4: "",
+        mcop5: "",
+        mcop6: "",
+
+        actions: {
+            tf: function tf() {
+                console.log("f");
+            }
+        }
+
+    });
+});
 define('self-start-front-end/components/display-assessment', ['exports'], function (exports) {
   'use strict';
 
@@ -3818,224 +3908,241 @@ define('self-start-front-end/components/generate-reports', ['exports'], function
     });
 });
 define('self-start-front-end/components/get-answers', ['exports'], function (exports) {
-  'use strict';
+      'use strict';
 
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = Ember.Component.extend({
+      Object.defineProperty(exports, "__esModule", {
+            value: true
+      });
+      exports.default = Ember.Component.extend({
 
-    DS: Ember.inject.service('store'),
-    SAanswer: "",
-    rateValue: 0,
-    mcop1: 0,
-    mcop2: 0,
-    mcop3: 0,
-    mcop4: 0,
-    mcop5: 0,
-    mcop6: 0,
+            DS: Ember.inject.service('store'),
+            SAanswer: "",
+            rateValue: 0,
+            mcop1: 0,
+            mcop2: 0,
+            mcop3: 0,
+            mcop4: 0,
+            mcop5: 0,
+            mcop6: 0,
 
-    actions: {
-      ratingSave: function ratingSave(rv) {
+            actions: {
+                  ratingSave: function ratingSave(rv) {
 
-        this.set('rateValue', rv);
+                        this.set('rateValue', rv);
 
-        var temp = [];
-        this.get("assessment").get('answers').forEach(function (element) {
-          temp.push(element);
-        });
+                        var temp = [];
+                        this.get("assessment").get('answers').forEach(function (element) {
+                              temp.push(element);
+                        });
 
-        temp[this.get("qNumber")] = this.get('rateValue');
-        this.get("assessment").get('answers').clear();
+                        temp[this.get("qNumber")] = this.get('rateValue');
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
 
-        console.log(this.get("assessment").get('answers'));
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      },
-      TFtrue: function TFtrue() {
-        var temp = [];
-        this.get("assessment").get('answers').forEach(function (element) {
-          temp.push(element);
-        });
-        temp[this.get("qNumber")] = "True";
-        this.get("assessment").get('answers').clear();
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  },
+                  TFtrue: function TFtrue() {
+                        var temp = [];
+                        this.get("assessment").get('answers').forEach(function (element) {
+                              temp.push(element);
+                        });
+                        temp[this.get("qNumber")] = "True";
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
 
-        console.log(this.get("assessment").get('answers'));
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      },
-      TFfalse: function TFfalse() {
-        var temp = [];
-        this.get("assessment").get('answers').forEach(function (element) {
-          temp.push(element);
-        });
-        temp[this.get("qNumber")] = "False";
-        this.get("assessment").get('answers').clear();
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  },
+                  TFfalse: function TFfalse() {
+                        var temp = [];
+                        this.get("assessment").get('answers').forEach(function (element) {
+                              temp.push(element);
+                        });
+                        temp[this.get("qNumber")] = "False";
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
 
-        console.log(this.get("assessment").get('answers'));
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      },
-      saSave: function saSave() {
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  },
+                  saSave: function saSave() {
 
-        var temp = [];
-        this.get("assessment").get('answers').forEach(function (element) {
-          temp.push(element);
-        });
-        temp[this.get("qNumber")] = this.get("SAanswer");
-        this.get("assessment").get('answers').clear();
+                        var temp = [];
+                        this.get("assessment").get('answers').forEach(function (element) {
+                              temp.push(element);
+                        });
+                        temp[this.get("qNumber")] = this.get("SAanswer");
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
 
-        console.log(this.get("assessment").get('answers'));
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      },
-      mcop1Save: function mcop1Save() {
-        var temp = [];
-        this.get("assessment").get('answers').forEach(function (element) {
-          temp.push(element);
-        });
-        temp[this.get("qNumber")] = "0";
-        this.get("assessment").get('answers').clear();
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  },
+                  mcop1Save: function mcop1Save() {
+                        var temp = [];
+                        this.get("assessment").get('answers').forEach(function (element) {
+                              temp.push(element);
+                        });
+                        temp[this.get("qNumber")] = "0";
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
 
-        console.log(this.get("assessment").get('answers'));
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      },
-      mcop2Save: function mcop2Save() {
-        var temp = [];
-        this.get("assessment").get('answers').forEach(function (element) {
-          temp.push(element);
-        });
-        temp[this.get("qNumber")] = "1";
-        this.get("assessment").get('answers').clear();
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  },
+                  mcop2Save: function mcop2Save() {
+                        var temp = [];
+                        this.get("assessment").get('answers').forEach(function (element) {
+                              temp.push(element);
+                        });
+                        temp[this.get("qNumber")] = "1";
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
 
-        console.log(this.get("assessment").get('answers'));
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      },
-      mcop3Save: function mcop3Save() {
-        var temp = [];
-        this.get("assessment").get('answers').forEach(function (element) {
-          temp.push(element);
-        });
-        temp[this.get("qNumber")] = "2";
-        this.get("assessment").get('answers').clear();
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  },
+                  mcop3Save: function mcop3Save() {
+                        var temp = [];
+                        this.get("assessment").get('answers').forEach(function (element) {
+                              temp.push(element);
+                        });
+                        temp[this.get("qNumber")] = "2";
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
 
-        console.log(this.get("assessment").get('answers'));
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      },
-      mcop4Save: function mcop4Save() {
-        var temp = [];
-        this.get("assessment").get('answers').forEach(function (element) {
-          temp.push(element);
-        });
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  },
+                  mcop4Save: function mcop4Save() {
+                        var temp = [];
+                        this.get("assessment").get('answers').forEach(function (element) {
+                              temp.push(element);
+                        });
 
-        temp[this.get("qNumber")] = "3";
-        this.get("assessment").get('answers').clear();
+                        temp[this.get("qNumber")] = "3";
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
 
-        console.log(this.get("assessment").get('answers'));
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      },
-      mcop5Save: function mcop5Save() {
-        var temp = [];
-        this.get("assessment").get('4').forEach(function (element) {
-          temp.push(element);
-        });
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  },
+                  mcop5Save: function mcop5Save() {
+                        var temp = [];
+                        this.get("assessment").get('4').forEach(function (element) {
+                              temp.push(element);
+                        });
 
-        temp[this.get("qNumber")] = "True";
-        this.get("assessment").get('answers').clear();
+                        temp[this.get("qNumber")] = "True";
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
 
-        console.log(this.get("assessment").get('answers'));
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      },
-      mcop6Save: function mcop6Save() {
-        var temp = [];
-        this.get("assessment").get('answers').forEach(function (element) {
-          temp.push(element);
-        });
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  },
+                  mcop6Save: function mcop6Save() {
+                        var temp = [];
+                        this.get("assessment").get('answers').forEach(function (element) {
+                              temp.push(element);
+                        });
 
-        temp[this.get("qNumber")] = "5";
-        this.get("assessment").get('answers').clear();
+                        temp[this.get("qNumber")] = "5";
+                        this.get("assessment").get('answers').clear();
 
-        for (var x = 0; x < temp.length; x++) {
+                        for (var x = 0; x < temp.length; x++) {
 
-          this.get("assessment").get('answers').push(temp[x]);
-        }
-        console.log(this.get("assessment").get('answers'));
+                              this.get("assessment").get('answers').push(temp[x]);
+                        }
+                        console.log(this.get("assessment").get('answers'));
 
-        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-          rec.save().then(function () {});
-        });
-      }
-    }
+                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+                              rec.save().then(function () {});
+                        });
+                  }
+            }
 
-  });
+      });
+});
+define('self-start-front-end/components/get-assessment-results', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Component.extend({
+
+        DS: Ember.inject.service('store'),
+        ID: "5abfeb9cda17a420b84b2591",
+
+        assessmentModel: Ember.computed(function () {
+            return this.get('DS').find('assessment-test', this.get('ID'));
+        })
+
+    });
 });
 define("self-start-front-end/components/illiquid-model", ["exports", "liquid-fire/components/illiquid-model"], function (exports, _illiquidModel) {
   "use strict";
@@ -10171,7 +10278,7 @@ define("self-start-front-end/templates/components/client-file", ["exports"], fun
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "+9jHxb+I", "block": "{\"symbols\":[\"plan\",\"column\",\"column\",\"attribute\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[1,[20,[\"model\",\"givenName\"]],false],[0,\" \"],[1,[20,[\"model\",\"familyName\"]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\\n\"],[6,\"div\"],[9,\"class\",\"background\"],[9,\"style\",\"padding-left: 2em;padding-right: 15em;padding-top: 10em;\"],[7],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui vertical pointing menu\"],[9,\"style\",\"width: 12rem;\"],[7],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"active item\"],[7],[0,\"\\n      Menu Builder\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Assessment\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Notes\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Photos\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[9,\"style\",\"margin-top: -18em;z-index:  2;position: relative;margin-left: 200px !important;\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"left thirteen wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n            Menu Builder\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"right two wide column\"],[9,\"style\",\"padding-left: 30px;\"],[7],[0,\"\\n          \"],[1,[25,\"add-rehabplan\",null,[[\"flagAdd\"],[[20,[\"flagAdd\"]]]]],false],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui left aligned seven wide column\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"two fields\"],[7],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\"],[4,\"ui-dropdown\",null,[[\"class\",\"selected\",\"onChange\"],[\"selection\",[20,[\"queryPath\"]],[25,\"action\",[[19,0,[]],[25,\"mut\",[[20,[\"queryPath\"]]],null]],null]]],{\"statements\":[[0,\"                \"],[6,\"div\"],[9,\"class\",\"default text\"],[7],[1,[20,[\"modelAttributes\",\"firstObject\",\"name\"]],false],[8],[0,\"\\n                \"],[6,\"i\"],[9,\"class\",\"dropdown icon\"],[7],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"menu\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"div\"],[9,\"class\",\"item\"],[10,\"data-value\",[26,[[19,4,[\"key\"]]]]],[7],[0,\"\\n                      \"],[1,[19,4,[\"name\"]],false],[0,\"\\n                    \"],[8],[0,\"\\n\"]],\"parameters\":[4]},null],[0,\"                \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui icon input\"],[7],[0,\"\\n                \"],[6,\"i\"],[9,\"class\",\"search icon\"],[7],[8],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"type\",\"placeholder\",\"value\"],[\"text\",\"Search...\",[20,[\"query\"]]]]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n          \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n            \"],[6,\"th\"],[9,\"class\",\"left aligned one wide column \"],[7],[0,\" \"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"              \"],[6,\"th\"],[10,\"class\",[19,3,[\"class\"]],null],[3,\"action\",[[19,0,[]],\"sortColumn\",[19,3,[\"key\"]],[19,3,[\"dir\"]]]],[7],[1,[19,3,[\"name\"]],false],[0,\"\\n\"],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"asc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort ascending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"desc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort descending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"            \"],[6,\"th\"],[9,\"class\",\"center aligned five wide  column\"],[7],[0,\"Actions\"],[8],[0,\"\\n            \"],[2,\"<th class=\\\"left aligned one wide  column\\\"></th>\"],[0,\"\\n\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"id\",\"myWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"plansModel\"]]],null,{\"statements\":[[0,\"\\n            \"],[6,\"tr\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"\\n\\n                \"],[6,\"td\"],[10,\"class\",[19,2,[\"class\"]],null],[7],[0,\"\\n                  \"],[1,[25,\"get\",[[19,1,[]],[19,2,[\"key\"]]],null],false],[0,\"\\n                \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"\\n              \"],[6,\"td\"],[9,\"class\",\"right aligned three wide column \"],[7],[0,\"\\n                  \"],[1,[25,\"assign-rehabplan\",null,[[\"plansData\",\"model\"],[[19,1,[]],[20,[\"model\"]]]]],false],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"td\"],[9,\"class\",\"right aligned one wide column \"],[7],[0,\"\\n                \"],[1,[25,\"edit-rehabplan\",null,[[\"plansData\"],[[19,1,[]]]]],false],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"td\"],[9,\"class\",\"left aligned one wide column \"],[7],[0,\"\\n                \"],[6,\"p\"],[7],[1,[25,\"delete-rehabplan\",null,[[\"ID\",\"flagDelete\"],[[19,1,[\"id\"]],[20,[\"flagDelete\"]]]]],false],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-file.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "ig6bmI1z", "block": "{\"symbols\":[\"plan\",\"column\",\"column\",\"attribute\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[1,[20,[\"model\",\"givenName\"]],false],[0,\" \"],[1,[20,[\"model\",\"familyName\"]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\\n\"],[6,\"div\"],[9,\"class\",\"background\"],[9,\"style\",\"padding-left: 2em;padding-right: 15em;padding-top: 10em;\"],[7],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui vertical pointing menu\"],[9,\"style\",\"width: 12rem;\"],[7],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"active item\"],[7],[0,\"\\n      Menu Builder\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Assessment\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Notes\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Photos\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[9,\"style\",\"margin-top: -18em;z-index:  2;position: relative;margin-left: 200px !important;\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"left thirteen wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n            Menu Builder\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"right two wide column\"],[9,\"style\",\"padding-left: 30px;\"],[7],[0,\"\\n          \"],[1,[25,\"add-rehabplan\",null,[[\"flagAdd\"],[[20,[\"flagAdd\"]]]]],false],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui left aligned seven wide column\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"two fields\"],[7],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\"],[4,\"ui-dropdown\",null,[[\"class\",\"selected\",\"onChange\"],[\"selection\",[20,[\"queryPath\"]],[25,\"action\",[[19,0,[]],[25,\"mut\",[[20,[\"queryPath\"]]],null]],null]]],{\"statements\":[[0,\"                \"],[6,\"div\"],[9,\"class\",\"default text\"],[7],[1,[20,[\"modelAttributes\",\"firstObject\",\"name\"]],false],[8],[0,\"\\n                \"],[6,\"i\"],[9,\"class\",\"dropdown icon\"],[7],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"menu\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"div\"],[9,\"class\",\"item\"],[10,\"data-value\",[26,[[19,4,[\"key\"]]]]],[7],[0,\"\\n                      \"],[1,[19,4,[\"name\"]],false],[0,\"\\n                    \"],[8],[0,\"\\n\"]],\"parameters\":[4]},null],[0,\"                \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui icon input\"],[7],[0,\"\\n                \"],[6,\"i\"],[9,\"class\",\"search icon\"],[7],[8],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"type\",\"placeholder\",\"value\"],[\"text\",\"Search...\",[20,[\"query\"]]]]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n          \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n            \"],[6,\"th\"],[9,\"class\",\"left aligned one wide column \"],[7],[0,\" \"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"              \"],[6,\"th\"],[10,\"class\",[19,3,[\"class\"]],null],[3,\"action\",[[19,0,[]],\"sortColumn\",[19,3,[\"key\"]],[19,3,[\"dir\"]]]],[7],[1,[19,3,[\"name\"]],false],[0,\"\\n\"],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"asc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort ascending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"desc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort descending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"            \"],[6,\"th\"],[9,\"class\",\"center aligned five wide  column\"],[7],[0,\"Actions\"],[8],[0,\"\\n            \"],[2,\"<th class=\\\"left aligned one wide  column\\\"></th>\"],[0,\"\\n\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"id\",\"myWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"plansModel\"]]],null,{\"statements\":[[0,\"\\n            \"],[6,\"tr\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"\\n\\n                \"],[6,\"td\"],[10,\"class\",[19,2,[\"class\"]],null],[7],[0,\"\\n                  \"],[1,[25,\"get\",[[19,1,[]],[19,2,[\"key\"]]],null],false],[0,\"\\n                \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"\\n              \"],[6,\"td\"],[9,\"class\",\"right aligned three wide column \"],[7],[0,\"\\n                  \"],[1,[25,\"assign-rehabplan\",null,[[\"plansData\",\"model\"],[[19,1,[]],[20,[\"model\"]]]]],false],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"td\"],[9,\"class\",\"right aligned one wide column \"],[7],[0,\"\\n                \"],[1,[25,\"edit-rehabplan\",null,[[\"plansData\"],[[19,1,[]]]]],false],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"td\"],[9,\"class\",\"left aligned one wide column \"],[7],[0,\"\\n                \"],[6,\"p\"],[7],[1,[25,\"delete-rehabplan\",null,[[\"ID\",\"flagDelete\"],[[19,1,[\"id\"]],[20,[\"flagDelete\"]]]]],false],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[1,[18,\"get-assessment-results\"],false],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-file.hbs" } });
 });
 define("self-start-front-end/templates/components/client-nav", ["exports"], function (exports) {
   "use strict";
@@ -10301,6 +10408,14 @@ define("self-start-front-end/templates/components/delete-status", ["exports"], f
   });
   exports.default = Ember.HTMLBars.template({ "id": "jCwNEmuY", "block": "{\"symbols\":[],\"statements\":[[6,\"p\"],[9,\"style\",\"cursor: pointer;\"],[9,\"title\",\"Delete\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[6,\"i\"],[9,\"class\",\"red remove icon\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Please Confirm ...\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you need to delete this element?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"float:left; width: 50%; cursor: pointer; background: #fc7169; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/delete-status.hbs" } });
 });
+define("self-start-front-end/templates/components/display-answers", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "xxIV41pX", "block": "{\"symbols\":[],\"statements\":[[6,\"script\"],[9,\"type\",\"text/javascript\"],[7],[0,\"$(document).ready(function(){$(\\\".rating\\\").rating();});\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"question\",\"sa\"]]],null,{\"statements\":[[0,\"    \"],[6,\"label\"],[7],[1,[20,[\"question\",\"questionText\"]],false],[8],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui disabled input focus\"],[7],[0,\"\\n      \"],[6,\"li\"],[7],[1,[25,\"input\",null,[[\"type\",\"value\"],[\"text\",[20,[\"SAanswer\"]]]]],false],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"question\",\"ra\"]]],null,{\"statements\":[[0,\"    \"],[6,\"label\"],[7],[1,[20,[\"question\",\"questionText\"]],false],[8],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[1,[25,\"ui-rating\",null,[[\"class\",\"maxRating\",\"initialRating\"],[\"heart\",10,[20,[\"Rating\"]]]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"question\",\"tf\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"li\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"inline fields\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[1,[20,[\"question\",\"questionText\"]],false],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[1,[25,\"ui-checkbox\",null,[[\"label\",\"checked\",\"disabled\"],[\"True\",[20,[\"checkTrue\"]],true]]],false],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n           \"],[1,[25,\"ui-checkbox\",null,[[\"label\",\"checked\",\"disabled\"],[\"True\",[20,[\"checkFalse\"]],true]]],false],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"question\",\"mc\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"grouped fields\"],[7],[0,\"\\n      \"],[6,\"label\"],[7],[1,[20,[\"question\",\"questionText\"]],false],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[1,[25,\"ui-checkbox\",null,[[\"label\",\"checked\",\"disabled\"],[[20,[\"mcop1\"]],[20,[\"checkmcop1\"]],true]]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[1,[25,\"ui-checkbox\",null,[[\"label\",\"checked\",\"disabled\"],[[20,[\"mcop2\"]],[20,[\"checkmcop2\"]],true]]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[1,[25,\"ui-checkbox\",null,[[\"label\",\"checked\",\"disabled\"],[[20,[\"mcop3\"]],[20,[\"checkmcop3\"]],true]]],false],[0,\"\\n      \"],[8],[0,\"\\n\"],[4,\"if\",[[25,\"number-of-mc\",[[20,[\"question\",\"optionNumber\"]],3],null]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[1,[25,\"ui-checkbox\",null,[[\"label\",\"checked\",\"disabled\"],[[20,[\"mcop4\"]],[20,[\"checkmcop4\"]],true]]],false],[0,\"                 \\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"number-of-mc\",[[20,[\"question\",\"optionNumber\"]],4],null]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[1,[25,\"ui-checkbox\",null,[[\"label\",\"checked\",\"disabled\"],[[20,[\"mcop5\"]],[20,[\"checkmcop5\"]],true]]],false],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"number-of-mc\",[[20,[\"question\",\"optionNumber\"]],5],null]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n            \"],[1,[25,\"ui-checkbox\",null,[[\"label\",\"checked\",\"disabled\"],[[20,[\"mcop6\"]],[20,[\"checkmcop6\"]],true]]],false],[0,\"   \\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/display-answers.hbs" } });
+});
 define("self-start-front-end/templates/components/display-assessment", ["exports"], function (exports) {
   "use strict";
 
@@ -10412,6 +10527,14 @@ define("self-start-front-end/templates/components/get-answers", ["exports"], fun
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "Da6tBefL", "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"question\",\"sa\"]]],null,{\"statements\":[[0,\"    \"],[6,\"label\"],[7],[1,[20,[\"question\",\"questionText\"]],false],[8],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui input focus\"],[7],[0,\"\\n      \"],[6,\"li\"],[7],[1,[25,\"input\",null,[[\"type\",\"value\",\"focus-out\"],[\"text\",[20,[\"SAanswer\"]],\"saSave\"]]],false],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"question\",\"ra\"]]],null,{\"statements\":[[0,\"    \"],[6,\"label\"],[7],[1,[20,[\"question\",\"questionText\"]],false],[8],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[1,[25,\"ui-rating\",null,[[\"class\",\"maxRating\",\"onRate\"],[\"heart\",10,[25,\"action\",[[19,0,[]],\"ratingSave\"],[[\"rateValue\"],[[20,[\"value\"]]]]]]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"question\",\"tf\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"li\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"inline fields\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[1,[20,[\"question\",\"questionText\"]],false],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[1,[25,\"ui-radio\",null,[[\"name\",\"label\",\"value\",\"current\",\"onChange\"],[\"tf\",\"True\",\"True\",[20,[\"tf\"]],[25,\"action\",[[19,0,[]],\"TFtrue\"],null]]]],false],[0,\"\\n\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[1,[25,\"ui-radio\",null,[[\"name\",\"label\",\"value\",\"current\",\"onChange\"],[\"tf\",\"False\",\"False\",[20,[\"tf\"]],[25,\"action\",[[19,0,[]],\"TFfalse\"],null]]]],false],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"question\",\"mc\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"grouped fields\"],[7],[0,\"\\n      \"],[6,\"label\"],[7],[1,[20,[\"question\",\"questionText\"]],false],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[9,\"value\",\"mcop2\"],[7],[0,\"\\n          \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"mcop1Save\"],null],null],[7],[8],[0,\"\\n          \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[20,[\"question\",\"optionString\"]],0],null],false],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n          \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"mcop2Save\"],null],null],[7],[8],[0,\"\\n          \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[20,[\"question\",\"optionString\"]],1],null],false],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n          \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"mcop3Save\"],null],null],[7],[8],[0,\"\\n          \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[20,[\"question\",\"optionString\"]],2],null],false],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\"],[4,\"if\",[[25,\"number-of-mc\",[[20,[\"question\",\"optionNumber\"]],3],null]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n            \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"mcop4Save\"],null],null],[7],[8],[0,\"\\n            \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[20,[\"question\",\"optionString\"]],3],null],false],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"number-of-mc\",[[20,[\"question\",\"optionNumber\"]],4],null]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n            \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"mcop5Save\"],null],null],[7],[8],[0,\"\\n            \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[20,[\"question\",\"optionString\"]],4],null],false],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"number-of-mc\",[[20,[\"question\",\"optionNumber\"]],5],null]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n            \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"mcop6Save\"],null],null],[7],[8],[0,\"\\n            \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[20,[\"question\",\"optionString\"]],5],null],false],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/get-answers.hbs" } });
+});
+define("self-start-front-end/templates/components/get-assessment-results", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "m2zhzOvH", "block": "{\"symbols\":[\"assess\",\"index\"],\"statements\":[[4,\"each\",[[20,[\"assessmentModel\",\"questions\"]]],null,{\"statements\":[[0,\"     \"],[1,[25,\"display-answers\",null,[[\"question\",\"qID\",\"assessment\",\"qNumber\",\"assessid\"],[[19,1,[]],[19,1,[\"id\"]],[20,[\"assessmentModel\"]],[19,2,[]],[20,[\"assessmentModel\",\"id\"]]]]],false],[0,\"\\n\"]],\"parameters\":[1,2]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/get-assessment-results.hbs" } });
 });
 define("self-start-front-end/templates/components/list-forms", ["exports"], function (exports) {
   "use strict";
@@ -11543,6 +11666,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+8264e2da"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+759a4c35"});
 }
 //# sourceMappingURL=self-start-front-end.map
