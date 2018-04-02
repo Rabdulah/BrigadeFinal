@@ -1,4 +1,4 @@
-<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/form-style.css"> <!-- Resource style -->
+
 <br><br><br><br><br><br>
 {{#if isEditing}}
   <form class="cd-form floating-labels" {{action "save" on="submit"}} style="padding-right: 10em; padding-left: 10em">
@@ -6,7 +6,7 @@
     <fieldset>
       <legend>Change Appointment Schedule</legend>
 
-
+      <!--this should be gone after token implementation-->
       <label class="cd-label">Select Physiotherapist</label>
       <p class="cd-select icon">
         <select class="people" value ={{selectphysio}} onchange={{action "updateValue" value="target.value"}} >
@@ -18,10 +18,6 @@
           {{/each}}
         </select>
       </p>
-
-      {{#each appointments_filter as |appo|}}
-        <p>{{appo.date}}</p>
-      {{/each}}
     </fieldset>
   </form>
 
