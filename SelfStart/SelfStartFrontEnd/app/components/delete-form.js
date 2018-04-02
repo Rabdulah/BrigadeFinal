@@ -1,28 +1,35 @@
 import Component from '@ember/component';
-import Ember from "ember";
+import { inject } from '@ember/service';
+import { computed } from '@ember/object';
+import $ from 'jquery';
 
 export default Component.extend({
-    DS: Ember.inject.service('store'),
+  DS: inject('store'),
+  flagDelete: null,
 
-    modalName: Ember.computed(function(){
+  modalName: computed(function(){
     return 'Delete-form' + this.get('ID');
   }),
 
   actions: {
     openModal: function () {
-      Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+      $('.ui.' + this.get('modalName') + '.modal').modal({
         closeable: false,
-        detachable: false,
         transition: 'fly down',
         onDeny: () => {
           return true;
         },
         onApprove: () => {
-          this.get('DS').find('form', this.get('ID')).then((form) => {
-            form.destroyRecord().then(() => {
-              return true;
-            });
-          })
+
+          let form = this.get('DS').peekRecord('form', this.get('ID'));
+
+          form.destroyRecord().then(()=> {
+            if (this.get('flagDelete') === true)
+              this.set('flagDelete', false);
+            else
+              this.set('flagDelete', true);
+            return true;
+          });
         }
       })
         .modal('show');

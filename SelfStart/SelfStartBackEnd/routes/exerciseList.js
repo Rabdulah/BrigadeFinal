@@ -46,7 +46,7 @@ router.route('/:exerciseList_id')
             else {
 
                 // update each attribute
-                exerciseList.name = request.body.exerciseList.name;
+                exerciseList.order = request.body.exerciseList.order;
                 exerciseList.exercise = request.body.exerciseList.exercise;
                 exerciseList.rehabilitationPlan = request.body.exerciseList.rehabilitationPlan;
 

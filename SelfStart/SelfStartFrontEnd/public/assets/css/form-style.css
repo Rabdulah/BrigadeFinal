@@ -48,11 +48,11 @@ Form
   font-size: 1.25rem;
   border-bottom: 1px solid #ecf0f1;
 }
-.cd-form div {
-  /* form element wrapper */
-  position: relative;
-  margin: 20px 0;
-}
+/*.cd-form div {*/
+  /*!* form element wrapper *!*/
+  /*position: relative;*/
+  /*margin: 20px 0;*/
+/*}*/
 .cd-form h4, .cd-form .cd-label {
   font-size: 0.5rem;
   color: #94aab0;
@@ -133,6 +133,7 @@ Form
 }
 .cd-form .cd-form-list {
   margin-top: 16px;
+  padding-left: 10px;
 }
 .cd-form .cd-form-list::after {
   clear: both;
@@ -141,14 +142,14 @@ Form
 }
 .cd-form .cd-form-list li {
   /* wrapper for radio and checkbox input types */
-  display: inline-block;
+  /*display: inline-block;*/
   position: relative;
   -webkit--select: none;
   -moz--select: none;
   -ms--select: none;
   -select: none;
   margin: 0 26px 16px 0;
-  float: left;
+  /*float: left;*/
 }
 .cd-form input[type=radio],
 .cd-form input[type=checkbox] {
@@ -287,10 +288,10 @@ Form
   border-color: #e94b35 !important;
 }
 @media only screen and (min-width: 600px) {
-  .cd-form div {
-    /* form element wrapper */
-    margin: 32px 0;
-  }
+  /*.cd-form div {*/
+    /*!* form element wrapper *!*/
+    /*margin: 32px 0;*/
+  /*}*/
   .cd-form legend + div {
     /* reduce margin-top for first form element after the legend */
     margin-top: 20px;
@@ -443,24 +444,69 @@ button, input, optgroup, select, textarea {
   background: url('/assets/images/form/multiple-11.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
 }
 
-.cd-form .star {
-  background: url('/assets/images/form//favourite-31.svg') no-repeat 16px 16px;
-}
-.cd-form [required].star {
-  background: url('/assets/images/form/favourite-31.svg') no-repeat 16px 16px, url('/assets/images/form/cd-required.svg') no-repeat top right;
-}
+/*.cd-form .star {*/
+  /*background: url('/assets/images/form//favourite-31.svg') no-repeat 12px 12px;*/
+/*}*/
+/*.cd-form [required].star {*/
+  /*background: url('/assets/images/form/favourite-31.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;*/
+/*}*/
 .cd-form .award {
-  background: url('/assets/images/form/award-48.svg') no-repeat 16px 16px;
+  background: url('/assets/images/form/award-48.svg') no-repeat 12px 12px;
 }
 .cd-form [required].award {
-  background: url('/assets/images/form/award-48.svg') no-repeat 16px 16px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+  background: url('/assets/images/form/award-48.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
 }
 .cd-form .video {
-  background: url('/assets/images/form/video-66.svg') no-repeat 16px 16px;
+  background: url('/assets/images/form/video-66.svg') no-repeat 12px 12px;
 }
 .cd-form [required].video {
-  background: url('/assets/images/form/video-66.svg') no-repeat 16px 16px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+  background: url('/assets/images/form/video-66.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
 }
+.cd-form .question {
+  background: url('/assets/images/form/ic_question_answer_24px.svg') no-repeat 12px 12px;
+}
+.cd-form [required].question {
+  background: url('/assets/images/form/ic_question_answer_24px.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+}
+.cd-form .options {
+  background: url('/assets/images/form/grid-45.svg') no-repeat 12px 12px;
+}
+.cd-form [required].options {
+  background: url('/assets/images/form/grid-45.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+}
+.cd-form .chat {
+   background: url('/assets/images/form/chat-46.svg') no-repeat 12px 12px;
+ }
+.cd-form [required].chat {
+  background: url('/assets/images/form/chat-46.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+}
+.cd-form .circle {
+  background: url('/assets/images/form/check-circle-07.svg') no-repeat 12px 12px;
+}
+.cd-form [required].circle {
+  background: url('/assets/images/form/check-circle-07.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+}
+.cd-form .pencil {
+  background: url('/assets/images/form/pencil.svg') no-repeat 12px 12px;
+}
+.cd-form [required].pencil {
+  background: url('/assets/images/form/pencil.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+}
+.cd-form .help {
+  background: url('/assets/images/form/support-16.svg') no-repeat 12px 12px;
+}
+.cd-form [required].help {
+  background: url('/assets/images/form/support-16.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+}
+.cd-form .note {
+  background: url('/assets/images/form/single-folded-content.svg') no-repeat 12px 12px;
+}
+.cd-form [required].note {
+  background: url('/assets/images/form/single-folded-content.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+}
+
+
+
 
 
 /* --------------------------------

@@ -212,3 +212,35 @@ a img {
   height: 100%;
 }
 
+#select{
+  height: 51px;
+  line-height: 1.3em;
+  min-width: 100%;
+}
+
+#disabled{
+  pointer-events: none;
+  opacity: 0.75;
+}
+
+#disabled2{
+  pointer-events: none;
+  opacity: 0.75;
+}
+
+#selectIcon{
+  /* arrow icon for select element */
+  content: '';
+  position: absolute;
+  z-index: 1;
+  right: 23px;
+  top: 55%;
+  margin-top: -8px;
+  display: block;
+  width: 16px;
+  height: 12px;
+  background: url('/assets/images/form/cd-icon-arrow.svg') no-repeat center center;
+  pointer-events: none;
+  padding: 0;
+  font-size: 0;
+}

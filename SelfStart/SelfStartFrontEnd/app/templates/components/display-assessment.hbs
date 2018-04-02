@@ -1,24 +1,9 @@
-<div class="masthead segment bg2">
-  <div class="ui container">
-    <div class="introduction">
-      <h1 class="ui inverted header">
-        <span class="library" style="font-size: 1.25em">Assessment Display</span>
-      </h1>
-    </div>
-  </div>
-</div>
+<div class="ui form">
 
-<div class="background" style="padding-top: 5em">
-
-  <div class="ui very padded container segment" >
-
-    <div class="ui form">
-      {{#each assessmentModel.questions as |q index|}}
-        {{get-answers question=q qNumber = index assessment=assessmentModel assessid = assessmentModel.id}}
-      {{/each}}
-      <button {{action "Submit"}}>
-        Submit
-      </button>
-    </div>
-  </div>
+  {{#each assessmentModel.questions as |q index|}}
+    {{get-answers question=q assessment=assessmentModel qNumber = index assessid = assessmentModel.id}}
+  {{/each}}
+  <button {{action "Submit"}}>
+    Submit
+  </button>
 </div>

@@ -135,13 +135,16 @@ export default Component.extend({
 
     // this.get('model').get((rec) => {
     //   console.log(rec.id);
+
+
     self.get('store').query('exercise-list', {filter: {'rehabilitationPlan': this.get('model').id}}).then((exercises) => {
 
+      this.get('listModel').clear();
+      console.log(this.get('listModel'));
       exercises.forEach((exe)=>{
         // console.log(exe.get('exercise'));
         this.get('listModel').pushObject(exe.get('exercise'));
       });
-
     });
     // });
 
@@ -183,9 +186,7 @@ export default Component.extend({
       let temp = [];
       let count = 0;
 
-      // this.get('listModel').forEach((rec) => {
-      //   self.get('listModel').removeObject(rec) ;
-      // });
+
 
       this.get('exercisesModel').forEach((rec) => {
         if (rec['selected']) {
@@ -241,7 +242,7 @@ export default Component.extend({
 
       self.get('store').query('exercise-list', {filter: {'rehabilitationPlan': this.get('model').id}}).then((exercises) => {
         exercises.forEach((exercise) => {
-          exercise.set('rehabilitationPlan', null);
+          // exercise.set('rehabilitationPlan', null);
           exercise.save().then((rec)=>{
             rec.destroyRecord();
           })
@@ -249,37 +250,30 @@ export default Component.extend({
         })
       });
 
-     self.get('store').findRecord('rehabilitationplan', this.get('model').id).then((rehabilitationplan)=>{
-       rehabilitationplan.set('planName', this.get('model.planName'));
-       rehabilitationplan.set('description', this.get('model.description'));
+       self.get('store').findRecord('rehabilitationplan', this.get('model').id).then((rehabilitationplan)=>{
+         rehabilitationplan.set('planName', this.get('model.planName'));
+         rehabilitationplan.set('description', this.get('model.description'));
 
-       console.log(this.get('model.planName'));
+         console.log(this.get('model.planName'));
 
-       rehabilitationplan.save().then((plan) => {
+         rehabilitationplan.save().then((plan) => {
 
-         this.get('listModel').forEach((rec, i) => {
+           this.get('listModel').forEach((rec, i) => {
+             let list = this.get('store').createRecord('exercise-list', {
+               order: i + 1,
+               exercise: rec,
+               rehabilitationPlan: plan
+             });
 
-           let list = this.get('store').createRecord('exercise-list', {
-             order: i + 1,
-             exercise: rec.get('exercise'),
-             rehabilitationPlan: plan
+             list.save().then(()=>{
+               //route back
+               this.get('router').transitionTo('practitioner.rehabplans');
+             });
            });
 
-           list.save().then(()=>{
-             //route back
-             this.get('router').transitionTo('practitioner.rehabplans');
-           });
-         });
 
-
-       })
-
-
-
-
-
-
-      });
+         })
+       });
     },
   }
 });

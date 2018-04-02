@@ -12,10 +12,40 @@ router.route('/')
         })
         
         .get(function (request, response) {
-            Questions.Model.find(function (error, questions) {
-                if (error) response.send(error);
-                response.json({question: questions});
-            });
+            let {sort, dir, queryPath, regex} = request.query;
+            if (!regex){
+                Questions.Model.find(function (error, questions) {
+                    if (error) response.send(error);
+                    response.json({question: questions});
+                });
+            }
+            else{
+
+                dir = dir || 'asc';
+                sort = sort || 'id';
+
+                let query = {};
+                if (regex !== '')
+                    query[queryPath] = new RegExp(regex, "i");
+
+                var sortOrder = sort;
+                if (sortOrder) {
+                    if (dir !== 'asc') {
+                        sortOrder = '-' + sort;
+                    }
+                }
+
+                let options = {
+                    sort: sortOrder,
+                    lean: true,
+                };
+
+                Questions.Model.paginate(query, options, function (error, questions) {
+                    if (error) response.send(error);
+                    response.json({question: questions.docs});
+                });
+            }
+
         });
 
 router.route('/:question_id')
@@ -49,6 +79,7 @@ router.route('/:question_id')
                     question.ra = request.body.question.ra;
                     question.tf = request.body.question.tf;
                     question.answer = request.body.question.answer;
+                    question.questionOrder = request.body.question.questionOrder;
                 
                     question.save(function (error) {
                         if (error) {

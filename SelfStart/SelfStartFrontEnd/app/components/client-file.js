@@ -1,5 +1,6 @@
 import Component from '@ember/component';
 import Ember from "ember";
+import { computed } from '@ember/object';
 
 export default Component.extend({
   store: Ember.inject.service(),
@@ -12,11 +13,31 @@ export default Component.extend({
   query: null,
   flagDelete: false,
   flagAdd: false,
+  listModel: [],
+
+  rehabModel: computed(function(){
+    return this.get('store').findAll('rehabilitationplan' );
+  }),
+
+  exerciseModel: Ember.observer('plan', function(){
+    this.get('store').query('exercise-list', {filter: {'rehabilitationPlan': this.get('plan')}}).then((exercises) => {
+
+      this.get('listModel').clear();
+
+      exercises.forEach((exe)=>{
+        // this.get('listModel').removeObject(exe.get('exercise'));
+        this.get('listModel').pushObject(exe.get('exercise'));
+      });
+
+    });
+  }),
 
   modelAttributes:
 
-    [{'key': 'planName', 'name':'Plan Name', 'dir' : 'asc', 'class' :'left aligned five wide column'},
-     {'key': 'physioID.givenName', 'name':'Author Name', 'dir' : '','class' :'left aligned six wide column'}],
+    [{'key': 'sets', 'name': 'Sets', 'dir': 'asc', 'class': 'left aligned two wide column'},
+      {'key': 'reps', 'name': 'Reps', 'dir': '', 'class': 'left aligned two wide column'},
+      {'key': 'duration', 'name': 'Duration', 'dir': '', 'class': 'left aligned three wide column'},
+      {'key': 'name', 'name': 'Exercise', 'dir': '', 'class': 'left aligned five wide column'}],
 
   plansModel: [],
   INDEX: null,
@@ -57,15 +78,9 @@ export default Component.extend({
     this.set('pageSize', 10);
     let self = this;
 
-    this.get('store').query('rehabilitationplan', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
-      self.set('plansModel', records.toArray());
-    });
 
-    // this.get('plansModel').forEach(function (gph) {
-    //   self.get('store').findRecord('physiotherapest', gph.get('id')).then(()=>{
-    //
-    //   })
-    // });
+
+    // this.set('listModel', this.get('store').findAll('exercise-list', this.get('planId')));
 
   },
 
@@ -117,6 +132,8 @@ export default Component.extend({
 
 
   actions: {
+
+
     assign(){
       let assign = self.get('store').createRecord('rehab-client-link', {
         terminated: self.get('terminated'),

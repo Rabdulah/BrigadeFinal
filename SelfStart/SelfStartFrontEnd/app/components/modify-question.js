@@ -31,56 +31,56 @@ export default Component.extend({
     isMultipleChoice: function() {
       // console.log(this.get('questionData.type'));
       if(this.get('questionData.type') === "Multiple choice"){
-          this.set('multipleChoice',true);
-          let breakdown = this.get('questionData.optionString').split('+++');
+        this.set('multipleChoice',true);
+        let breakdown = this.get('questionData.optionString').split('+++');
 
-          if(this.get('questionData.optionNumber') === 6){
-            this.set('opt2', true);
-            this.set('opt3', true);
-            this.set('opt4', true);
-            this.set('opt5', true);
-            this.set('opt6', true);
-            for(let i = 0; i < 6;i++){
-                this.set('opt' +(i+1) + 'String', breakdown[i]);
-            }
+        if(this.get('questionData.optionNumber') === 6){
+          this.set('opt2', true);
+          this.set('opt3', true);
+          this.set('opt4', true);
+          this.set('opt5', true);
+          this.set('opt6', true);
+          for(let i = 0; i < 6;i++){
+            this.set('opt' +(i+1) + 'String', breakdown[i]);
           }
+        }
 
-          else if (this.get('questionData.optionNumber') === 5) {
-            this.set('opt2', true);
-            this.set('opt3', true);
-            this.set('opt4', true);
-            this.set('opt5', true);
-            for(let j = 0; j < 5;j++){
-              this.set('opt' +(j+1) + 'String', breakdown[j]);
-            }
+        else if (this.get('questionData.optionNumber') === 5) {
+          this.set('opt2', true);
+          this.set('opt3', true);
+          this.set('opt4', true);
+          this.set('opt5', true);
+          for(let j = 0; j < 5;j++){
+            this.set('opt' +(j+1) + 'String', breakdown[j]);
           }
+        }
 
-          else if (this.get('questionData.optionNumber') === 4) {
-            this.set('opt2', true);
-            this.set('opt3', true);
-            this.set('opt4', true);
-            for(let k = 0; k < 4;k++){
-              this.set('opt' +(k+1) + 'String', breakdown[k]);
-            }
+        else if (this.get('questionData.optionNumber') === 4) {
+          this.set('opt2', true);
+          this.set('opt3', true);
+          this.set('opt4', true);
+          for(let k = 0; k < 4;k++){
+            this.set('opt' +(k+1) + 'String', breakdown[k]);
           }
+        }
 
-          else if (this.get('questionData.optionNumber') === 3) {
-            this.set('opt2', true);
-            this.set('opt3', true);
-            for(let l = 0; l < 3;l++){
-              this.set('opt' +(l+1) + 'String', breakdown[l]);
-            }
+        else if (this.get('questionData.optionNumber') === 3) {
+          this.set('opt2', true);
+          this.set('opt3', true);
+          for(let l = 0; l < 3;l++){
+            this.set('opt' +(l+1) + 'String', breakdown[l]);
           }
+        }
 
-          else if (this.get('questionData.optionNumber') === 2) {
-            this.set('opt2', true);
-            for(let m = 0; m < 2;m++){
-              this.set('opt' +(m+1) + 'String', breakdown[m]);
-            }
+        else if (this.get('questionData.optionNumber') === 2) {
+          this.set('opt2', true);
+          for(let m = 0; m < 2;m++){
+            this.set('opt' +(m+1) + 'String', breakdown[m]);
           }
+        }
       }
       else
-         this.set('multipleChoice',false);
+        this.set('multipleChoice',false);
     },
 
     openModal: function () {
@@ -89,30 +89,31 @@ export default Component.extend({
       $('.ui.' + this.get('modalName') + '.modal').modal({
         closeable: false,
         transaction: 'horizontal flip',
-        detachable: false,
         onDeny: () => {
           return true;
         },
-        onApprove: () => {
-            if(this.get('questionData.type') === "Multiple choice"){
-              this.set('optString', "");
-              for(let i =0; i < this.get('questionData.optionNumber'); i++){
-                this.set('optString', this.get('optString') + this.get('opt' + (i+1) + 'String'));
-                this.set('optString', this.get('optString') + '+++');
-              }
-
-            }
-            this.get('DS').findRecord('question', this.get('ID')).then((rec) => {
-            rec.set('questionText', this.get('questionText'));
-            rec.set('optionString', this.get('optString'));
-            rec.set('helpDescription', this.get('helpDescription'));
-            rec.save().then(()=>{
-              return true;
-            });
-          })
-        }
       })
         .modal('show');
     },
+
+    submit(){
+      if(this.get('questionData.type') === "Multiple choice"){
+        this.set('optString', "");
+        for(let i =0; i < this.get('questionData.optionNumber'); i++){
+          this.set('optString', this.get('optString') + this.get('opt' + (i+1) + 'String'));
+          this.set('optString', this.get('optString') + '+++');
+        }
+
+      }
+      this.get('DS').findRecord('question', this.get('questionData').id).then((rec) => {
+        rec.set('questionText', this.get('questionData.questionText'));
+        rec.set('optionString', this.get('questionData.optString'));
+        rec.set('helpDescription', this.get('questionData.helpDescription'));
+        rec.save().then(()=>{
+          $('.ui.' + this.get('modalName') + '.modal').modal('hide');
+        });
+      })
+    }
   }
+
 });

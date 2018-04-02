@@ -10,7 +10,7 @@
 </div>
 
 <div class="ui container" style="padding-top: 2em">
-  <div class="ui top attached tabular stackable menu" style="padding-left: 150px;">
+  <div class="ui top attached tabular stackable menu" style="padding-left: 20%;">
     <a class="item">
       Assessment
     </a>
@@ -22,9 +22,6 @@
     </a>
     <a class="{{menusState}} item" {{action "menusView"}}>
       Menus
-    </a>
-    <a class="{{personalMenuState}} item" {{action "personalMenuView"}}>
-      Personal Menu
     </a>
     <a class="item">
       Documents
@@ -39,46 +36,30 @@
 
     <div class="ui very padded container segment" id="top">
       <div class="ui grid" style="margin-top: -30px;">
-        <div class="left thirteen wide column" style="margin-top: -5px;">
+        <div class="left twelve wide column" style="margin-top: -5px;">
           <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">
             Menu Builder
           </p>
         </div>
-        <div class="right two wide column" style="padding-left: 30px;">
-          {{add-rehabplan flagAdd=flagAdd}}
-        </div>
-      </div>
-      <br><br><br><br>
-
-
-      <div class="ui left aligned seven wide column">
-        <div class="ui form" >
-          <div class="two fields" >
-
-            <div class="field">
-              {{#ui-dropdown class="selection" selected=queryPath onChange=(action (mut queryPath))}}
-                <div class="default text">{{modelAttributes.firstObject.name}}</div>
-                <i class="dropdown icon"></i>
-                <div class="menu">
-                  {{#each modelAttributes as |attribute|}}
-                    <div class="item" data-value="{{attribute.key}}">
-                      {{attribute.name}}
-                    </div>
-                  {{/each}}
-                </div>
-              {{/ui-dropdown}}
-            </div>
-
-            <div class="field">
-              <div class="ui icon input">
-                <i class="search icon"></i>
-                {{input type="text" placeholder="Search..."  value=query }}
+        <div class="right three wide column" style="padding-left: 30px;">
+          {{!--{{add-rehabplan flagAdd=flagAdd}}--}}
+          <div class="ui form" >
+            {{#ui-dropdown class="selection" onChange=(action (mut plan))}}
+              <div class="default text">Select a menu</div>
+              <i class="dropdown icon"></i>
+              <div class="menu">
+                {{#each rehabModel as |plan|}}
+                  <div data-value="{{plan.id}}" class="item">
+                    {{plan.planName}}
+                  </div>
+                {{/each}}
               </div>
-            </div>
+            {{/ui-dropdown}}
+
           </div>
         </div>
       </div>
-
+      <br><br><br><br>
 
       <div style="display: inline">
         <table class="ui fixed table" style="border: none;border-color: white;">
@@ -97,8 +78,6 @@
                 {{/if}}
               </th>
             {{/each}}
-            <th class="center aligned five wide  column">Actions</th>
-            <!--<th class="left aligned one wide  column"></th>-->
 
           </tr>
           </tbody>
@@ -110,26 +89,25 @@
       <div  id="myWindow" style="height:500px; overflow-y: scroll; overflow-x: hidden;">
         <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
           <tbody >
-          {{#each plansModel as |plan|}}
+          {{#each listModel as |exercise|}}
 
             <tr>
 
               {{#each modelAttributes as |column|}}
 
-
                 <td class={{column.class}}>
-                  {{get plan column.key}}
+                  {{get exercise column.key}}
                 </td>
               {{/each}}
-
-              <td class="center aligned five wide column">
-                  {{assign-rehabplan  plansData=plan model=model}}
-              </td>
             </tr>
           {{/each}}
+
+          {{!--{{assign-rehabplan  plansData=plan model=model}}--}}
+
           </tbody>
         </table>
       </div>
+
     </div>
     {{/if}}
     {{#if personalMenu}}
