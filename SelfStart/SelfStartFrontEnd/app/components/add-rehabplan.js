@@ -13,6 +13,10 @@ export default Component.extend({
   isEditing: false,
 
   actions: {
+    selectExercise (exercise){
+      this.set('selectedExercise', exercise);
+    },
+
     addRehabPlan (){
       this.set('isEditing', true);
     },
@@ -39,7 +43,7 @@ export default Component.extend({
         description: self.get('description'),
         goal: self.get('goal'),
         timeToComplete: self.get('timeToComplete'),
-        //exercises: self.get('exercises'),
+        exercises: self.get('selectedExercise'),
         //assessmentTests: self.get('assessmentTests'),
       });
       //when save is successfull close form

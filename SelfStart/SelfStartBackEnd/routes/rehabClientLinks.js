@@ -9,6 +9,7 @@ router.route('/')
         RehabClientLink.getLinkByPatientAndPlan(rehabClientLink.Patient, rehabClientLink.RehabilitationPlan, (err, rCL) => {
 
             if(rCL){
+                rehabClientLink.save();
                 response.json({rehabClientLink: rCL, success: false});
             } else {
                 rehabClientLink.save();
@@ -74,16 +75,16 @@ router.route('/:rehabClientLink_id')
                 });
             }
         });
-    });
+    })
 
-// .delete( function (request, response) {
-//     RehabLinker.Model.findByIdAndRemove(request.params.rehabLinkers_id,
-//         function (error, deleted) {
-//             if (!error) {
-//                 response.json({rehabLinker: deleted});
-//             }
-//         }
-//     );
-// });
+.delete( function (request, response) {
+    RehabLinker.Model.findByIdAndRemove(request.params.rehabLinkers_id,
+        function (error, deleted) {
+            if (!error) {
+                response.json({rehabLinker: deleted});
+            }
+        }
+    );
+});
 
 module.exports = router;

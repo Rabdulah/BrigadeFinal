@@ -97,7 +97,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/assign-rehabplan.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'components/assign-rehabplan.js should pass ESLint\n\n');
+    assert.ok(false, 'components/assign-rehabplan.js should pass ESLint\n\n28:15 - \'self\' is assigned a value but never used. (no-unused-vars)\n61:17 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/back-to-top.js', function (assert) {
@@ -212,7 +212,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/display-questions.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/display-questions.js should pass ESLint\n\n4:9 - \'Ember\' is not defined. (no-undef)\n8:16 - \'Ember\' is not defined. (no-undef)\n16:13 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/display-questions.js should pass ESLint\n\n4:9 - \'Ember\' is not defined. (no-undef)\n8:16 - \'Ember\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/edit-admin.js', function (assert) {
@@ -332,7 +332,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/show-form-questions.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/show-form-questions.js should pass ESLint\n\n15:13 - Unexpected console statement. (no-console)\n27:26 - \'fid\' is defined but never used. (no-unused-vars)\n28:17 - \'thisForm\' is assigned a value but never used. (no-unused-vars)\n35:13 - Unexpected console statement. (no-console)\n39:13 - Unexpected console statement. (no-console)\n40:13 - Unexpected console statement. (no-console)\n46:13 - Unexpected console statement. (no-console)\n69:13 - Unexpected console statement. (no-console)\n72:21 - \'x\' is already defined. (no-redeclare)');
+    assert.ok(false, 'components/show-form-questions.js should pass ESLint\n\n18:13 - Unexpected console statement. (no-console)\n30:26 - \'fid\' is defined but never used. (no-unused-vars)\n31:17 - \'thisForm\' is assigned a value but never used. (no-unused-vars)\n38:13 - Unexpected console statement. (no-console)\n42:13 - Unexpected console statement. (no-console)\n43:13 - Unexpected console statement. (no-console)\n49:13 - Unexpected console statement. (no-console)\n72:13 - Unexpected console statement. (no-console)\n75:21 - \'x\' is already defined. (no-redeclare)');
   });
 
   QUnit.test('components/show-patient.js', function (assert) {
