@@ -35,10 +35,11 @@ router.route('/:assessment_id')
                 response.send({error: error});
             }
             else {
+
                 // update each attribute
                 assessmentTest.questions = request.body.assessmentTest.questions;
                 assessmentTest.form = request.body.assessmentTest.form;
-                assessmentTest.rehabLink = request.body.assessmentTest.rehabLink;
+                assessmentTest.rehabPlan = request.body.assessmentTest.rehabPlan;
                 assessmentTest.answers = request.body.assessmentTest.answers;
                 assessmentTest.completed = request.body.assessmentTest.completed;
 
@@ -54,7 +55,7 @@ router.route('/:assessment_id')
         });
     })
     .delete( function (request, response) {
-        AssessmentTests.Model.findByIdAndRemove(request.params.city_id,
+        AssessmentTests.Model.findByIdAndRemove(request.params.assessment_id,
             function (error, deleted) {
                 if (!error) {
                     response.json({assessmentTest: deleted});

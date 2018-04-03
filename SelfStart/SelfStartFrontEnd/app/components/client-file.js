@@ -1,5 +1,6 @@
 import Component from '@ember/component';
 import Ember from "ember";
+import { computed } from '@ember/object';
 
 export default Component.extend({
   store: Ember.inject.service(),
@@ -12,17 +13,44 @@ export default Component.extend({
   query: null,
   flagDelete: false,
   flagAdd: false,
+  listModel: [],
+  plan: null,
+  isPlanSelected: false,
+  model: null,
+
+  modalName: computed(function () {
+    return 'editAssign' + this.get('plan');
+  }),
+
+  rehabModel: computed(function(){
+    return this.get('store').findAll('rehabilitationplan' );
+  }),
+
+  exerciseModel: Ember.observer('plan', function(){
+    this.get('store').query('exercise-list', {filter: {'rehabilitationPlan': this.get('plan')}}).then((exercises) => {
+
+      this.get('listModel').clear();
+
+      exercises.forEach((exe)=>{
+        // this.get('listModel').removeObject(exe.get('exercise'));
+        this.get('listModel').pushObject(exe.get('exercise'));
+      });
+
+    });
+  }),
 
   modelAttributes:
 
-    [{'key': 'planName', 'name':'Plan Name', 'dir' : 'asc', 'class' :'left aligned five wide column'},
-     {'key': 'physioID.givenName', 'name':'Author Name', 'dir' : '','class' :'left aligned six wide column'}],
+    [{'key': 'sets', 'name': 'Sets', 'dir': 'asc', 'class': 'left aligned two wide column'},
+      {'key': 'reps', 'name': 'Reps', 'dir': '', 'class': 'left aligned two wide column'},
+      {'key': 'duration', 'name': 'Duration', 'dir': '', 'class': 'left aligned three wide column'},
+      {'key': 'name', 'name': 'Exercise', 'dir': '', 'class': 'left aligned five wide column'}],
 
   plansModel: [],
   INDEX: null,
   queryPath: 'planName',
   scrolledLines: 0,
-
+  disabled: "",
 
 
   activeModel: Ember.observer('offset', 'limit', 'sort', 'dir','flagDelete','flagAdd', function () {
@@ -34,6 +62,23 @@ export default Component.extend({
     });
 
 
+  }),
+
+  isSelected: Ember.observer('plan', function () {
+    this.set('isPlanSelected', true);
+
+    let client = this.get('model').id;
+    let plan = this.get('plan');
+
+    this.get('store').query('rehab-client-link', {filter: {'RehabilitationPlan': plan, 'Patient': client}}).then((update) => {
+      console.log(plan);
+      console.log(update.content.length);
+      if (update.content.length !== 0) {
+        this.set('disabled', "disabled");
+      } else {
+        this.set('disabled', "");
+      }
+    })
   }),
 
   filterplans: Ember.observer('query', 'queryPath', function () {
@@ -57,15 +102,9 @@ export default Component.extend({
     this.set('pageSize', 10);
     let self = this;
 
-    this.get('store').query('rehabilitationplan', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
-      self.set('plansModel', records.toArray());
-    });
 
-    // this.get('plansModel').forEach(function (gph) {
-    //   self.get('store').findRecord('physiotherapest', gph.get('id')).then(()=>{
-    //
-    //   })
-    // });
+
+    // this.set('listModel', this.get('store').findAll('exercise-list', this.get('planId')));
 
   },
 
@@ -107,14 +146,18 @@ export default Component.extend({
     Ember.$("#myWindow").unbind('touchmove');
   },
 
-  clientState: "active",
-  practState: "",
-  adminState: "",
+  menusState: "active",
+
+
+  menus: true,
+
 
   terminated: false,
 
 
   actions: {
+
+
     assign(){
       let assign = self.get('store').createRecord('rehab-client-link', {
         terminated: self.get('terminated'),
@@ -126,30 +169,12 @@ export default Component.extend({
         return true;
       });
     },
-    client(){
-      this.set('clientView', true);
-      this.set('practView', false);
-      this.set('adminView', false);
-      this.set('clientState', "active");
-      this.set('practState', "");
-      this.set('adminState', "");
+    menusView(){
+      this.set('menus', true);
+      this.set('menusState', "active");
     },
-    pract(){
-      this.set('clientView', false);
-      this.set('practView', true);
-      this.set('adminView', false);
-      this.set('clientState', "");
-      this.set('practState', "active");
-      this.set('adminState', "");
-    },
-    admin(){
-      this.set('clientView', false);
-      this.set('practView', false);
-      this.set('adminView', true);
-      this.set('clientState', "");
-      this.set('practState', "");
-      this.set('adminState', "active");
-    },
+
+
     toggleDetail(ID) {
 
       if (this.get('isShowing') === ID)
@@ -190,6 +215,34 @@ export default Component.extend({
         this.set('offset', this.get('offset') - this.get('pageSize'));
 
       }
+    },
+    openModal: function () {
+      $('.ui.' + this.get('modalName') + '.modal').modal({
+        closable: false,
+
+        transition: 'fly down',
+
+        onDeny: () => {
+          return true;
+        },
+        onApprove: () => {
+          let plan = this.get('plan');
+
+          var planRecord = this.get('store').peekRecord('rehabilitationplan', plan);
+
+          let link = this.get('store').createRecord('rehab-client-link', {
+            terminated: this.get('plan.terminated'),
+            RehabilitationPlan: planRecord,
+            Patient: this.get('model'),
+            assigned: true
+          });
+          link.save().then((res)=> {
+            $('.ui.' + this.get('modalName') + '.modal').modal('hide');
+            this.set('disabled', "disabled");
+          });
+        }
+      })
+        .modal('show');
     },
   }
 });

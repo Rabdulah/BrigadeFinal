@@ -94,23 +94,6 @@ export default Component.extend({
       patientAccount['userAccountName'] = self.get('userAccountName');
       patientAccount['encryptedPassword'] = self.get('encryptedPassword');
 
-      let tForm = this.get('DS').findRecord('form', '5aac10411eac5942040e581f');
-      console.log(tForm);
-      let temp = [];
-      tForm.get("questions").forEach(element => {
-        temp.push("!!!!");
-      });
-
-      let introTest = this.get('DS').createRecord('assessment-test', {
-        form: tForm,
-        questions: tForm.get("questions"),
-        answers: temp
-      });
-      introTest.save().then(()=> {
-        return true;
-      });
-
-
       let patient = this.get('DS').createRecord('patient', {
         familyName: self.get('familyName'),
         givenName: self.get('givenName'),

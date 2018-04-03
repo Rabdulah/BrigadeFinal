@@ -1,4 +1,5 @@
 var mongoose = require('mongoose');
+var mongoosePaginate = require('mongoose-paginate');
 
 var questionsSchema = mongoose.Schema({
     questionText: String,
@@ -11,8 +12,10 @@ var questionsSchema = mongoose.Schema({
     tf: Boolean,
     ra: Boolean,
     answer: [{type: mongoose.Schema.ObjectId, ref: 'Answers'}],
-    form: [{type: mongoose.Schema.ObjectId, ref: 'Forms'}]
+    form: [{type: mongoose.Schema.ObjectId, ref: 'Forms'}],
+    questionOrder: [{type: mongoose.Schema.ObjectId, ref: 'QuestionOrder'}]
 });
 
+questionsSchema.plugin(mongoosePaginate);
 var Questions = mongoose.model('question', questionsSchema);
 exports.Model = Questions;

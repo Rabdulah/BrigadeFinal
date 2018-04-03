@@ -33,13 +33,14 @@ var patientProfilesSchema = mongoose.Schema(
                 },
         appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],
         rehablink: [{type: mongoose.Schema.ObjectId, ref: 'RehabClientLink'}], 
-        introTest: {type: mongoose.Schema.ObjectId, ref: 'AssessmentTests'}  
+        introTest: {type: mongoose.Schema.ObjectId, ref: 'AssessmentTests'}, 
         // payments: [{
         //             dayTimestamp: Date,
         //             amount: Number,
         //             note: String
         //         }],
-        // askAPhysio: [{type: mongoose.Schema.ObjectId, ref: 'AskAPhysio'}],
+        appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],
+        rehablink: [{type: mongoose.Schema.ObjectId, ref: 'RehabClientLink'}],        // askAPhysio: [{type: mongoose.Schema.ObjectId, ref: 'AskAPhysio'}],
         // plan: [{type: mongoose.Schema.ObjectId, ref: 'Treatments'}]
         
     }

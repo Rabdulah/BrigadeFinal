@@ -1,14 +1,9 @@
 
-<button class="ui button" {{action 'openModal'}}>
-Manage Form Questions
-</button>
 
-{{#ui-modal name= modalName class= modalName}}
-        <div class='content'>
           <div class='ui form'>
            <h2> {{fName}} </h2>
            <div class="ui grid">
-                {{#each questionsModel as |question|}}   
+                {{#each questionsModel as |question|}}
                         <div class="four wide column">
                          <label>{{question.questionText}}</label>
                         </div>
@@ -20,10 +15,17 @@ Manage Form Questions
            </div>
            <br><br>
          </div>
-        </div>
-        <div class="actions">
-         <div class="ui positive right labeled icon button">
-         Done
-         </div>
-        </div>
-{{/ui-modal}}
+
+
+
+{{!--<div class="ui grid" style="display: contents">-->
+  <!--{{#each questionsModel as |question|}}-->
+    <!--<div class="twelve wide column">-->
+      <!--<label>{{question.questionText}}</label>-->
+    <!--</div>-->
+
+    <!--<div class="two wide column">-->
+      <!--<button {{action "addQuestion" question form question.id}}> Add </button>-->
+    <!--</div>-->
+  <!--{{/each}}-->
+<!--</div>--}}

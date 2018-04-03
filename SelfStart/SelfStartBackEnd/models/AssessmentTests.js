@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 var assessmentTestSchema = mongoose.Schema({
     form: {type: mongoose.Schema.ObjectId, ref: 'Forms'},
-    rehabLink: {type: mongoose.Schema.ObjectId, ref: 'RehabClientLink'},
+    rehabPlan: {type: mongoose.Schema.ObjectId, ref: 'RehabilitationPlans'},
     questions:  [{type: mongoose.Schema.ObjectId, ref: 'Questions'}],
     answers:  [String],
     completed: Boolean

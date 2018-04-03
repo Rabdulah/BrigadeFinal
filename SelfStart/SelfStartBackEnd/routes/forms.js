@@ -12,10 +12,42 @@ router.route('/')
         })
         
         .get(function (request, response) {
-            Forms.Model.find(function (error, forms) {
-                if (error) response.send(error);
-                response.json({form: forms});
-            });
+            let {limit, offset, sort, dir, queryPath, regex} = request.query;
+            if(!limit){
+                Forms.Model.find(function (error, forms) {
+                    if (error) response.send(error);
+                    response.json({form: forms});
+                });
+            }
+            else{
+                offset = Number(offset || 0);
+                limit = Number(limit || 10);
+                dir = dir || 'asc';
+                sort = sort || 'id';
+
+                let query = {};
+                if (regex !== '')
+                    query[queryPath] = new RegExp(regex, "i");
+
+                var sortOrder = sort;
+                if (sortOrder) {
+                    if (dir !== 'asc') {
+                        sortOrder = '-' + sort;
+                    }
+                }
+
+                let options = {
+                    sort: sortOrder,
+                    lean: true,
+                    offset: offset,
+                    limit: limit
+                };
+
+                Forms.Model.paginate(query, options, function (error, forms) {
+                    if (error) response.send(error);
+                    response.json({form: forms.docs});
+                });
+            }
         });
 
 router.route('/:form_id')
@@ -44,6 +76,7 @@ router.route('/:form_id')
                     form.assessmentTest = request.body.form.assessmentTest;
                     form.questions = request.body.form.questions;
                     form.answer = request.body.form.answer;
+                    form.questionOrder = request.body.form.questionOrder;
                     
                     form.save(function (error) {
                         if (error) {

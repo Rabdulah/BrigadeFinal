@@ -1,0 +1,117 @@
+<div class="ui container">
+
+  <div class="ui form" >
+  <div class="inline fields" >
+    <div class = "field">
+      <div class="ui search">
+        {{input type="text" placeholder="Search..." }}
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="ui radio checkbox">
+        {{input type="checkbox" checked=tableView change=(action "tableView") }}
+        <label>Table View</label>
+      </div>
+    </div>
+
+    <div class="field">
+      <div class="ui radio checkbox">
+        {{input type="checkbox" checked=cardView change=(action "cardView") }}
+        <label>Card View</label>
+      </div>
+    </div>
+
+    <div class = "field" style="margin-left: 414px;">
+    {{add-exercises Images=model.image}}
+    </div>
+
+  </div>
+</div>
+
+
+{{#if cardView}}
+  <div class ="ui five column doubling grid">
+    {{#each model.exercise as |Exercise index|}}
+      <div class="column" style="padding-bottom: 50px;padding-top: 50px;">
+        <div class="ui fluid card" style="max-height: 226px;min-height: 226px;width: 154px !important;">
+          <div class = "image" style="max-height:105px;min-height:105px;min-width:141.63px;" onmouseleave={{action "pause" Exercise}} onmouseover={{action "play" Exercise}}>
+            {{#if Exercise.images}}
+
+              {{!--{{#if Exercise.play}}--}}
+                {{#slick-slider speed=500 autoplay=false arrows=true id=index pauseOnHover=false}}
+                  {{#each Exercise.images as |Image|}}
+                    <div class ="box">
+                      <img style="max-height:105px;display: block;margin-left: auto;margin-right: auto;" src="{{Image.imageData}}">
+                    </div>
+                  {{/each}}
+                {{/slick-slider}}
+              {{!--{{else}}--}}
+                {{!--{{#slick-slider autoplay=false arrows=true id=index pauseOnHover=false}}--
+                  {{!--{{#each Exercise.images as |Image|}}--
+                    <!--<div class ="box">-->
+                      <!--<img style="max-height:105px;display: block;margin-left: auto;margin-right: auto;" src="{{Image.imageData}}">-->
+                    <!--</div>-->
+                  <!--{{/each}}-->
+                <!--{{/slick-slider}}--}}
+              {{!--{{/if}}--}}
+
+
+            {{else}}
+              <img src="/assets/images/NoImagesSaved.jpg" style="height:105px; width: auto;">
+            {{/if}}
+          </div>
+
+          <div class="content" style="max-height: 80px;min-height: 80px;text-align:  center;display: table;">
+            <p style="display: table-cell;vertical-align: middle;">{{Exercise.name}}</p>
+          </div>
+
+          <div class="extra content" style="padding-left:21px;">
+            <div class="mini ui buttons">
+              {{edit-exercises ID=Exercise.id images=Exercise.images Im=model.image}}
+              <div class="or" style="margin-top: -8px;"></div>
+              {{delete-exercises ID=Exercise.id}}
+            </div>
+          </div>
+
+          <div class="extra content">
+            <a><span class="date">{{Exercise.dateCreated}}</span></a>
+          </div>
+        </div>
+      </div>
+    {{/each}}
+
+  </div>
+
+
+{{else}}
+  <table class="ui single line table">
+
+    <thead>
+    <tr>
+      <th>Exercise Name</th>
+      <th>Description</th>
+      <th></th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {{#each model.exercise as |Exercise|}}
+      <tr>
+        <td>{{Exercise.name}}</td>
+        <td>{{Exercise.description}}</td>
+        <td>
+          <div class="four wide column right aligned">
+            {{edit-exercises ID=Exercise.id images=Exercise.images}}
+          </div>
+          <div class="four wide column left aligned">
+            {{delete-exercises ID=Exercise.id}}
+          </div>
+        </td>
+      </tr>
+    {{/each}}
+    </tbody>
+
+  </table>
+{{/if}}
+</div>

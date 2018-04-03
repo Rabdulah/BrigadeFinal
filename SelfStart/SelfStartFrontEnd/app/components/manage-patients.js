@@ -28,6 +28,7 @@ export default Component.extend({
 
 
 
+
   activeModel: Ember.observer('offset', 'limit', 'sort', 'dir','flagDelete', function () {
     var self = this;
 
@@ -125,13 +126,16 @@ export default Component.extend({
           if (direction === 'asc') {
             Ember.set(element, 'dir', 'desc');
             this.set('dir', 'desc');
+
           }
           else if (direction === 'desc') {
             Ember.set(element, 'dir', 'asc');
             this.set('dir', 'asc');
+
           } else {
             Ember.set(element, 'dir', 'asc');
             this.set('dir', 'asc');
+
           }
         }
         else

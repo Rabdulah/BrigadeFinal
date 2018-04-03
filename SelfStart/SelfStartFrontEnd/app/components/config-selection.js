@@ -5,6 +5,7 @@ import Ember from "ember";
 export default Component.extend({
   store: Ember.inject.service(),
 
+  citySelected: false,
   genderSelected: false,
   countrySelected: false,
   provinceSelected: false,
@@ -100,39 +101,30 @@ export default Component.extend({
     //Ember.$("#myWin").unbind('touchmove');
   },
 
-
   actions: {
     genderSelect: function(){
       this.set('genderSelected', true);
       this.set('countrySelected', false);
       this.set('provinceSelected', false);
-      this.set('quoteSelected', false);
+      this.set('citySelected', false);
     },
     countrySelect: function(){
       this.set('countrySelected', true);
       this.set('genderSelected', false);
       this.set('provinceSelected', false);
-      this.set('quoteSelected', false);
+      this.set('citySelected', false);
     },
     provinceSelect: function(){
       this.set('provinceSelected', true);
       this.set('genderSelected', false);
       this.set('countrySelected', false);
-      this.set('quoteSelected', false);
+      this.set('citySelected', false);
     },
-    quoteSelect: function(){
+    citySelect: function(){
       this.set('provinceSelected', false);
       this.set('genderSelected', false);
       this.set('countrySelected', false);
-      this.set('quoteSelected', true);
-    },
-    submit(){
-      this.get('store').findAll('administrator').then((rec) =>{
-        rec.set('message', this.get('message') );
-        rec.save().then(()=>{
-          return true;
-        });
-      });
+      this.set('citySelected', true);
     },
     sortColumn(columnName, direction) {
 

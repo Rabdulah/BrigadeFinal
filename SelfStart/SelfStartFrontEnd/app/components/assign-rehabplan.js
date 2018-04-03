@@ -9,12 +9,45 @@ export default Component.extend({
   store: inject('store'),
   model: null,
   ajax: Ember.inject.service(),
+  disabled: "",
 
   modalName: computed(function () {
-    return 'editAssign' + this.get('plansData').id;
+    return 'editAssign' + this.get('plansData');
   }),
 
+  // planChange: Ember.observer('plansData', function () {
+  //   let client = this.get('model').id;
+  //   let plan = this.get('plansData');
+  //
+  //   this.get('store').query('rehab-client-link', {filter: {'RehabilitationPlan': plan, 'Patient': client}}).then((update) => {
+  //     console.log(update.content.length);
+  //     if (update.content.length !== 0) {
+  //       this.set('disabled', "disabled");
+  //     } else {
+  //       this.set('disabled', "");
+  //     }
+  //   })
+  // }),
+
+  didInsertElement(){
+    this._super(...arguments);
+
+    let client = this.get('model').id;
+    let plan = this.get('plansData');
+
+    this.get('store').query('rehab-client-link', {filter: {'RehabilitationPlan': plan, 'Patient': client}}).then((update) => {
+      console.log(plan);
+      console.log(update.content.length);
+      if (update.content.length !== 0) {
+        this.set('disabled', "disabled");
+      } else {
+        this.set('disabled', "");
+      }
+    })
+  },
+
   actions: {
+
     openModal: function () {
       $('.ui.' + this.get('modalName') + '.modal').modal({
         closable: false,
@@ -25,52 +58,19 @@ export default Component.extend({
           return true;
         },
         onApprove: () => {
+          let plan = this.get('plansData');
+
+          var planRecord = this.get('store').peekRecord('rehabilitationplan', plan);
 
           let link = this.get('store').createRecord('rehab-client-link', {
             terminated: this.get('plansData.terminated'),
-            RehabilitationPlan: this.get('plansData'),
+            RehabilitationPlan: planRecord,
             Patient: this.get('model'),
             assigned: true
           });
-
-          let tests = this.get('store').findAll('assessment-test');
-          console.log(tests);
-          tests.forEach(test => {
-            console.log(test.get('rehabLink'));
-            if (test.get('rehabLink') === null ) {
-              let thisLink = this.get('store').findRecord('rehab-client-link', "5ab930d8e13ebe423412e083");
-              console.log(thisLink);
-              test.set('rehabLink', thisLink);
-              console.log(test);
-            }
-          })
-         link.save().then((res)=> {
-              this.get('ajax').request('http://localhost:8082/rehabClientLinks', {
-                method: 'POST',
-                data: {
-                  rehabClientLink: {
-                    terminated: this.get('plansData.terminated'),
-                    RehabilitationPlan: this.get('plansData'),
-                    Patient: this.get('model'),
-                    assigned: true
-                  }
-                },
-                success: function(res) {
-                  if(res.success) {
-                    $('.ui.' + this.get('modalName') + '.modal').modal('hide');
-                    return true;
-                  } else {
-                    alert("This Rehab Plan is already assigned to this patient");
-                  }
-                }
-              });
-
-            if (res.success) {
+          link.save().then((res)=> {
               $('.ui.' + this.get('modalName') + '.modal').modal('hide');
-              return true;
-            } else {
-              alert("This Rehab Plan is already assigned to this patient");
-            }
+              this.set('disabled', "disabled");
           });
         }
       })

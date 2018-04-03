@@ -42,6 +42,8 @@ export default Component.extend({
   }),
 
   filterpateints: Ember.observer('query', 'queryPath', function () {
+    var self=this;
+
     let queryText = this.get('query');
     if (queryText !== null && queryText.length > 0) {
       this.set('regex', "^"+queryText);
