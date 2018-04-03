@@ -101,10 +101,10 @@ export default Component.extend({
       },
 
       rating (){
-        this.set('trueFalse', false);
-        this.set('shortAns', false);
-        this.set('multipleChoice', false);
-        this.set('rating',true);
+        // this.set('trueFalse', false);
+        // this.set('shortAns', false);
+        // this.set('multipleChoice', false);
+        // this.set('rating',true);
       },
 
       addQuestion (){

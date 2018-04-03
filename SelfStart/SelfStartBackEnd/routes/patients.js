@@ -22,6 +22,8 @@ router.route('/')
             if(err) {
                 response.json({success: false, msg: 'Failed to register client'});
             } else{
+                console.log("ewae");
+                Patients.sendEmail(patient);
                 response.json({patient: patient});
             }
         });

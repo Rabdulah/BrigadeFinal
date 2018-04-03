@@ -1,37 +1,33 @@
-<link href='http://fonts.googleapis.com/css?family=Ubuntu:400,700' rel='stylesheet' type='text/css'>
+<div id="content">
+  {{add-exercises Images=model.image}}
+  <br><br>
+  <table class="ui single line table">
 
-<link integrity="" rel="stylesheet" href="{{rootURL}}assets/css/table-style.css"> <!-- Resource style -->
+    <thead>
+    <tr>
+      <th>Exercise Name</th>
+      <th>Description</th>
+      <th></th>
+    </tr>
+    </thead>
 
+    <tbody>
+    {{#each model.exercise as |Exercise|}}
+      <tr>
+        <td>{{Exercise.name}}</td>
+        <td>{{Exercise.description}}</td>
+        <td>
+          <div class="four wide column right aligned">
+            {{edit-exercises ID=Exercise.id images=Exercise.images}}
+          </div>
+          <div class="four wide column left aligned">
+            {{delete-exercises ID=Exercise.id}}
+          </div>
+        </td>
+      </tr>
+    {{/each}}
+    </tbody>
 
-<br><br><br><br><br>
-<section id="cd-section">
-  <section id="cd-table">
-    <div class="cd-table-container">
-      <ul>
-        <li style="text-align: center; font-size: 1.2rem; text-transform: uppercase;
-                          font-weight: bold; color: white; background-color: #f58b4c;">Exercises</li>
+  </table>
 
-        {{#each model as |Exercise|}}
-
-          <li>
-            {{Exercise.name}}
-            <p style="float: right;  padding-top: .5%;">{{delete-exercises ID=Exercise.id}}</p>
-            <p style="float: right; padding-right: 2%;  padding-top: .5%;">{{edit-exercises ID=Exercise.id}}</p>
-            <p style="float: right; padding-right: 30%; ">{{Exercise.description}}</p>
-          </li>
-
-        {{/each}}
-      </ul>
-    </div>
-
-  </section> <!-- cd-table -->
-</section>
-
-
-<div id="add" class="container">
-  {{#link-to 'new-exercise'}}
-    <a id="add" class="round-button">
-      <i class="plus icon"></i>
-    </a>
-  {{/link-to}}
 </div>

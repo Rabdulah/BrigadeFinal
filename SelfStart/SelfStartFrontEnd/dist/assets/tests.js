@@ -32,7 +32,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/add-exercises.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/add-exercises.js should pass ESLint\n\n85:11 - Unexpected console statement. (no-console)\n226:7 - Unexpected console statement. (no-console)\n235:13 - \'saveImage\' is assigned a value but never used. (no-unused-vars)\n236:9 - Unexpected console statement. (no-console)\n237:9 - Unexpected console statement. (no-console)\n238:9 - Unexpected console statement. (no-console)\n240:11 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/add-exercises.js should pass ESLint\n\n89:11 - Unexpected console statement. (no-console)\n153:7 - Unexpected console statement. (no-console)\n161:7 - Unexpected console statement. (no-console)\n167:13 - \'saveImage\' is assigned a value but never used. (no-unused-vars)\n168:9 - Unexpected console statement. (no-console)\n169:9 - Unexpected console statement. (no-console)\n170:9 - Unexpected console statement. (no-console)\n172:11 - Unexpected console statement. (no-console)\n222:7 - Unexpected console statement. (no-console)\n224:7 - Unexpected console statement. (no-console)\n228:7 - Unexpected console statement. (no-console)\n231:11 - Unexpected console statement. (no-console)\n239:11 - Unexpected console statement. (no-console)\n240:11 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/add-form-question.js', function (assert) {
@@ -48,6 +48,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('components/add-gender.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/add-gender.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/add-image.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/add-image.js should pass ESLint\n\n82:11 - Unexpected console statement. (no-console)\n125:9 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/add-patient.js', function (assert) {
@@ -92,7 +97,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/assign-rehabplan.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'components/assign-rehabplan.js should pass ESLint\n\n');
+    assert.ok(false, 'components/assign-rehabplan.js should pass ESLint\n\n28:15 - \'self\' is assigned a value but never used. (no-unused-vars)\n61:17 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/back-to-top.js', function (assert) {
@@ -160,6 +165,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'components/delete-gender.js should pass ESLint\n\n');
   });
 
+  QUnit.test('components/delete-image.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/delete-image.js should pass ESLint\n\n');
+  });
+
   QUnit.test('components/delete-patient.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/delete-patient.js should pass ESLint\n\n');
@@ -192,7 +202,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/display-assessment.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/display-assessment.js should pass ESLint\n\n4:7 - \'Ember\' is not defined. (no-undef)\n8:20 - \'Ember\' is not defined. (no-undef)\n15:7 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/display-assessment.js should pass ESLint\n\n9:20 - \'Ember\' is not defined. (no-undef)\n10:5 - Unexpected console statement. (no-console)\n18:7 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/display-forms.js', function (assert) {
@@ -202,7 +212,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/display-questions.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/display-questions.js should pass ESLint\n\n4:9 - \'Ember\' is not defined. (no-undef)\n8:16 - \'Ember\' is not defined. (no-undef)\n16:13 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/display-questions.js should pass ESLint\n\n4:9 - \'Ember\' is not defined. (no-undef)\n8:16 - \'Ember\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/edit-admin.js', function (assert) {
@@ -257,7 +267,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/get-answers.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/get-answers.js should pass ESLint\n\n18:7 - Unexpected console statement. (no-console)\n34:7 - Unexpected console statement. (no-console)\n51:7 - Unexpected console statement. (no-console)\n69:7 - Unexpected console statement. (no-console)\n72:92 - \'rec\' is defined but never used. (no-unused-vars)\n92:7 - Unexpected console statement. (no-console)\n109:7 - Unexpected console statement. (no-console)\n126:7 - Unexpected console statement. (no-console)\n144:7 - Unexpected console statement. (no-console)\n161:7 - Unexpected console statement. (no-console)\n178:7 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/get-answers.js should pass ESLint\n\n34:7 - Unexpected console statement. (no-console)\n55:7 - Unexpected console statement. (no-console)\n76:7 - Unexpected console statement. (no-console)\n98:7 - Unexpected console statement. (no-console)\n120:7 - Unexpected console statement. (no-console)\n141:7 - Unexpected console statement. (no-console)\n162:7 - Unexpected console statement. (no-console)\n184:7 - Unexpected console statement. (no-console)\n206:7 - Unexpected console statement. (no-console)\n227:7 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/list-forms.js', function (assert) {
@@ -322,7 +332,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/show-form-questions.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/show-form-questions.js should pass ESLint\n\n15:13 - Unexpected console statement. (no-console)\n27:26 - \'fid\' is defined but never used. (no-unused-vars)\n28:17 - \'thisForm\' is assigned a value but never used. (no-unused-vars)\n35:13 - Unexpected console statement. (no-console)\n39:13 - Unexpected console statement. (no-console)\n40:13 - Unexpected console statement. (no-console)\n46:13 - Unexpected console statement. (no-console)\n69:13 - Unexpected console statement. (no-console)\n72:21 - \'x\' is already defined. (no-redeclare)');
+    assert.ok(false, 'components/show-form-questions.js should pass ESLint\n\n18:13 - Unexpected console statement. (no-console)\n30:26 - \'fid\' is defined but never used. (no-unused-vars)\n31:17 - \'thisForm\' is assigned a value but never used. (no-unused-vars)\n38:13 - Unexpected console statement. (no-console)\n42:13 - Unexpected console statement. (no-console)\n43:13 - Unexpected console statement. (no-console)\n49:13 - Unexpected console statement. (no-console)\n72:13 - Unexpected console statement. (no-console)\n75:21 - \'x\' is already defined. (no-redeclare)');
   });
 
   QUnit.test('components/show-patient.js', function (assert) {
@@ -1065,6 +1075,35 @@ define('self-start-front-end/tests/integration/components/add-gender-test', ['em
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/add-image-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('add-image', 'Integration | Component | add image', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "NnOG7p6X",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"add-image\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "6FmPwRX7",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"add-image\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/add-patient-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -1668,6 +1707,35 @@ define('self-start-front-end/tests/integration/components/delete-gender-test', [
     this.render(Ember.HTMLBars.template({
       "id": "Hn6cu5dC",
       "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"delete-gender\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/delete-image-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('delete-image', 'Integration | Component | delete image', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "HhpgUZI4",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"delete-image\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "D0OgxapJ",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"delete-image\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
       "meta": {}
     }));
 
@@ -3021,6 +3089,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/add-gender-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('integration/components/add-image-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/add-image-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('integration/components/add-patient-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/add-patient-test.js should pass ESLint\n\n');
@@ -3124,6 +3197,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('integration/components/delete-gender-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/delete-gender-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/delete-image-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/delete-image-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/delete-patient-test.js', function (assert) {
