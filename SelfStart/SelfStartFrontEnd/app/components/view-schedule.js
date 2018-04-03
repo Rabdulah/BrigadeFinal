@@ -10,6 +10,7 @@ export default Component.extend({
   routing: inject('-routing'),
   availableSpot: Ember.A(),
   removedSpot: Ember.A(),
+  bookedAppointment: Ember.A(),
 
   selectedphysio : null,
   selectedPhysioId: null,
@@ -36,18 +37,33 @@ export default Component.extend({
         isRemovable: true,
         endsAt: occurrence.get('endsAt')
       });
+
       this.get('occurrences').pushObject(container);
       this.get('availableSpot').pushObject(container);
+
+
       console.log(JSON.stringify(this.get('availableSpot')));
     },
 
     calendarUpdateOccurrence: function(occurrence, properties, isPreview) {
-      occurrence.setProperties(properties);
+      console.log(JSON.stringify(occurrence));
 
-      if (!isPreview) {
-        // console.log((properties));
-      }
-      console.log(JSON.stringify(this.get('availableSpot')));
+
+      let self = this;
+      let isCollided = false;
+      self.get('bookedAppointment').forEach( function (obj) {
+          let startBA = moment(obj.startsAt);
+          let endBA = moment(obj.endsAt);
+          let rages = moment().range(startBA, endBA);
+
+          if (ranges.contains(moment(occurrence.startsAt)) || ranges.contains(moment(occurrence.endsAt))){
+            console.log(collided);
+          }
+
+      });
+
+      occurrence.setProperties(properties);
+      // console.log(JSON.stringify(this.get('availableSpot')));
     },
 
     calendarRemoveOccurrence: function(occurrence) {
@@ -85,7 +101,7 @@ export default Component.extend({
             //filter out any appointments that is previous to current date
             if (scheduledDate > moment()) {
               if (app.get('reason')!= null) {
-                home.get('occurrences').pushObject(Ember.Object.create({
+                let newBooked = Ember.Object.create({
                   title: "Booked",
                   isFilled: true,
                   isDraggable: false,
@@ -93,7 +109,9 @@ export default Component.extend({
                   isRemovable: false,
                   startsAt: scheduledDate.toISOString(),
                   endsAt: endDate.toISOString()
-                }));
+                });
+                home.get('occurrences').pushObject(newBooked);
+                home.get('bookedAppointment').pushObject(newBooked);
               }
               else {
                 let temp = Ember.Object.create({
@@ -108,7 +126,6 @@ export default Component.extend({
                 });
                 home.get('occurrences').pushObject(temp);
                 home.get('availableSpot').pushObject(temp);
-
               }
             }
           });

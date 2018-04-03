@@ -25,7 +25,6 @@ export default Ember.Component.extend({
 
   _duration: Ember.computed.oneWay('model.duration'),
   _startingTime: Ember.computed('model.startingTime', function() {
-    console.log(this.get('model.content'));
     let time = get(this, 'model.startingTime');
     this.set('startingTime', moment(time).format('hh:mm A'));
     this.set('dayEndingTime', moment(time).add(this.get('_occupiedTimeSlots')*30, 'minute').format('hh:mm A'));

@@ -6165,6 +6165,7 @@ define('self-start-front-end/components/view-schedule', ['exports', 'moment'], f
     routing: Ember.inject.service('-routing'),
     availableSpot: Ember.A(),
     removedSpot: Ember.A(),
+    bookedAppointment: Ember.A(),
 
     selectedphysio: null,
     selectedPhysioId: null,
@@ -6190,18 +6191,30 @@ define('self-start-front-end/components/view-schedule', ['exports', 'moment'], f
           isRemovable: true,
           endsAt: occurrence.get('endsAt')
         });
+
         this.get('occurrences').pushObject(container);
         this.get('availableSpot').pushObject(container);
+
         console.log(JSON.stringify(this.get('availableSpot')));
       },
 
       calendarUpdateOccurrence: function calendarUpdateOccurrence(occurrence, properties, isPreview) {
-        occurrence.setProperties(properties);
+        console.log(JSON.stringify(occurrence));
 
-        if (!isPreview) {
-          // console.log((properties));
-        }
-        console.log(JSON.stringify(this.get('availableSpot')));
+        var self = this;
+        var isCollided = false;
+        self.get('bookedAppointment').forEach(function (obj) {
+          var startBA = (0, _moment.default)(obj.startsAt);
+          var endBA = (0, _moment.default)(obj.endsAt);
+          var rages = (0, _moment.default)().range(startBA, endBA);
+
+          if (ranges.contains((0, _moment.default)(occurrence.startsAt)) || ranges.contains((0, _moment.default)(occurrence.endsAt))) {
+            console.log(collided);
+          }
+        });
+
+        occurrence.setProperties(properties);
+        // console.log(JSON.stringify(this.get('availableSpot')));
       },
 
       calendarRemoveOccurrence: function calendarRemoveOccurrence(occurrence) {
@@ -6237,7 +6250,7 @@ define('self-start-front-end/components/view-schedule', ['exports', 'moment'], f
               //filter out any appointments that is previous to current date
               if (scheduledDate > (0, _moment.default)()) {
                 if (app.get('reason') != null) {
-                  home.get('occurrences').pushObject(Ember.Object.create({
+                  var newBooked = Ember.Object.create({
                     title: "Booked",
                     isFilled: true,
                     isDraggable: false,
@@ -6245,7 +6258,9 @@ define('self-start-front-end/components/view-schedule', ['exports', 'moment'], f
                     isRemovable: false,
                     startsAt: scheduledDate.toISOString(),
                     endsAt: endDate.toISOString()
-                  }));
+                  });
+                  home.get('occurrences').pushObject(newBooked);
+                  home.get('bookedAppointment').pushObject(newBooked);
                 } else {
                   var temp = Ember.Object.create({
                     title: "SetAvailable Spot",
@@ -11522,6 +11537,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+8264e2da"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+398b89d8"});
 }
 //# sourceMappingURL=self-start-front-end.map
