@@ -147,10 +147,10 @@ export default Component.extend({
   },
 
   menusState: "active",
-  personalMenuState: "",
+
 
   menus: true,
-  personalMenu: false,
+
 
   terminated: false,
 
@@ -171,18 +171,9 @@ export default Component.extend({
     },
     menusView(){
       this.set('menus', true);
-      this.set('personalMenu', false);
-
       this.set('menusState', "active");
-      this.set('personalMenuState', "");
     },
-    personalMenuView(){
-      this.set('menus', false);
-      this.set('personalMenu', true);
 
-      this.set('menusState', "");
-      this.set('personalMenuState', "active");
-    },
 
     toggleDetail(ID) {
 
