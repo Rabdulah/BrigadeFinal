@@ -12,16 +12,31 @@ export default Component.extend({
   disabled: "",
 
   modalName: computed(function () {
-    return 'editAssign' + this.get('plansData').id;
+    return 'editAssign' + this.get('plansData');
   }),
 
-  init(){
+  // planChange: Ember.observer('plansData', function () {
+  //   let client = this.get('model').id;
+  //   let plan = this.get('plansData');
+  //
+  //   this.get('store').query('rehab-client-link', {filter: {'RehabilitationPlan': plan, 'Patient': client}}).then((update) => {
+  //     console.log(update.content.length);
+  //     if (update.content.length !== 0) {
+  //       this.set('disabled', "disabled");
+  //     } else {
+  //       this.set('disabled', "");
+  //     }
+  //   })
+  // }),
+
+  didInsertElement(){
     this._super(...arguments);
 
     let client = this.get('model').id;
-    let plan = this.get('plansData').id;
+    let plan = this.get('plansData');
 
     this.get('store').query('rehab-client-link', {filter: {'RehabilitationPlan': plan, 'Patient': client}}).then((update) => {
+      console.log(plan);
       console.log(update.content.length);
       if (update.content.length !== 0) {
         this.set('disabled', "disabled");
@@ -43,9 +58,13 @@ export default Component.extend({
           return true;
         },
         onApprove: () => {
+          let plan = this.get('plansData');
+
+          var planRecord = this.get('store').peekRecord('rehabilitationplan', plan);
+
           let link = this.get('store').createRecord('rehab-client-link', {
             terminated: this.get('plansData.terminated'),
-            RehabilitationPlan: this.get('plansData'),
+            RehabilitationPlan: planRecord,
             Patient: this.get('model'),
             assigned: true
           });

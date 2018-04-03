@@ -1,106 +1,44 @@
-{{#if isEditing}}
+<div class="ui button" {{action 'openModal'}}>
+  Add Exercise
+</div>
 
-{{!-- {{#ui-modal name=modalName class=modalName}}
+{{#ui-modal name="newExercise" class="newExercise"}}
+  <i class="close icon"></i>
+  <link integrity="" rel="stylesheet" href="{{rootURL}}../assets/css/form-style.css"> <!-- Resource style -->
 
-    <div class="scrolling content">
-        <div class ="ui center alligned five column grid">
-            {{#each Images as |Image|}}
-                <div class ="column">
-                <div class="ui fluid card" style="max-height:221px;min-height:221px;">
-                    <div class="content">
-                         <div class ="sidebar-box" style="max-height:50px;min-height:50px;">
-                            <p class ="sidebar-box">{{Image.name}}</p>
-                        </div>
-                    </div>
-                    <div class = "content" style="min-height:105px;">
-                        <div class="image">
-                            <img style="max-height:105px;" class = "ui small image" src="{{Image.imageData}}">
-                        </div>
-                    </div>
-                    <div class="extra content">
-                        <div class="ui toggle checkbox">
-                            {{input type="checkbox" checked=cbState change=(action "addTempImage" Image) }}
-                            <label>Add</label>
-                        </div>
-                    </div>
-                </div>
-                </div>
-            {{/each}}
-        </div>
-    </div>
-    <div class="actions">
-        <div class="ui positive button">Save</div>
-        <div class="ui black deny button">Cancel</div>
-        <div class="ui form" >
-            <div class="fields" >
-                <div class="ui fluid search">{{input type="text" placeholder="Search..." }}</div>
-            </div>
-        </div>
-    </div>
-    <br><br>
-{{/ui-modal}} --}}
+  <div class="header">
+    Adding new Exercise
+  </div>
+  <div class="scrolling content">
 
-  <div class="ui fluid raised very padded text container segment">
-    <h2 id="exercise" class="ui fluid centered header">Add New Exercise</h2>
+    <form id="edit" class="cd-form floating-labels" {{action "submit" on="submit"}}>
 
-    <form class="ui form">
-
-      <div class="field">
-        <label>Exercise Name</label>
-        {{input type ="text" value=Name placeholder="Exercise Name"}}
+      <div class="field" style="margin: 1em 0;">
+        {{input class="run"  type ="text" value = Name placeholder="Exercise Name" required = true}}
       </div>
 
-      <div class="field">
-        <label>Description</label>
-        {{textarea value=Description cols="80" rows="6" placeholder="Description"}}
+      <div class="field" style="margin: 1em 0;">
+        {{textarea class="message"  type ="text" value = Description placeholder="Description" required = true}}
       </div>
 
-      <div class="field">
-        <label>Author Name</label>
-        {{input type ="text" value=AuthName placeholder="Author Name"}}
-      </div>
 
       <div class="field">
 
-        <label>Objectives</label>
 
-        <div class="ui action input">
-          {{input type ="text" value=Objective placeholder="Objective"}}
-          <button class="ui white right labeled icon button" {{action "addObjective"}}>
-            Add Objective
-            <i class="add icon"></i>
-          </button>
+        <div class="ui grid" style="margin: 1em 0;">
+          <div class="twelve wide column" style="padding: 0">
+            {{input class="list"  type ="text" value = ActionSteps placeholder="Action Steps" required = true}}
+          </div>
+          <div class="four wide column" style="padding-right: 0">
+            <button class="ui white right labeled icon button" style="height: 50px" {{action "addActionStep"}}>
+              Add Action Step
+              <i class="add icon"></i>
+            </button>
+          </div>
         </div>
 
         <div class="ui inverted segment">
-          <label>Current Objectives</label>
-          <ul align = "left">
-            {{#each obj as |o|}}
-              <li>
-                <p>
-                  {{o}}
-                  <br>
-                  <i style=" cursor: pointer;" title="Edit" {{action 'edit' }} class="gray write icon" ></i>
-                  <i style=" cursor: pointer;" title="Delete" {{action "openModal" }} class="red remove icon" ></i>
-                </p>
-              </li>
-            {{/each}}
-          </ul>
-        </div>
-      </div>
-
-      <div class="field">
-        <label>Action Steps</label>
-        <div class = "ui action input">
-          {{input type ="text" value=ActionSteps placeholder="Action Steps"}}
-          <button class="ui white right labeled icon button" {{action "addActionStep"}}>
-            Add Action Step
-            <i class="add icon"></i>
-          </button>
-        </div>
-
-        <div class="ui inverted segment">
-          <label>Current Action Steps</label>
+          <label style="color: white">Current Action Steps</label>
           <ol align = "left">
             {{#each actionStep as |aS|}}
               <li>
@@ -115,33 +53,20 @@
         </div>
       </div>
 
-      <div class="field">
-        <label>Location</label>
-        {{input type ="text" value=Location placeholder="Location"}}
+      <div class="field" style="margin: 1em 0;">
+        {{input class="watch"  type ="text" value = sets placeholder="Sets" required = true}}
+      </div>
+      <div class="field" style="margin: 1em 0;">
+        {{input class="watch"  type ="text" value = reps placeholder="Reps" required = true}}
+      </div>
+      <div class="field" style="margin: 1em 0;">
+        {{input class="watch"  type ="text" value = Duration placeholder="Duration" required = true}}
       </div>
 
-      <div class="field">
-        <label>Frequency</label>
-        {{!-- <i class="hourglass half icon"></i> --}}
-        {{input type ="text" value=Frequency placeholder="Frequency"}}
+      <div class="field" style="margin: 1em 0;">
+        {{input class="link"  type ="text" value = MMURL placeholder="Multi Media URL" required = true}}
       </div>
 
-      <div class="field">
-        <label>Duration</label>
-        {{!-- <i class="calendar icon"></i> --}}
-        {{input type ="text" value=Duration placeholder="Duration"}}
-      </div>
-
-      <div class="field">
-        <label>Target Date</label>
-        {{!-- <i class="add to calendar icon"></i> --}}
-        {{input type ="text" value=TargetDate placeholder="Target Date"}}
-      </div>
-
-      <div class="field">
-        <label>Multimedia URL</label>
-        {{input type ="text" value=MMURL placeholder="Multi Media URL"}}
-      </div>
 
       <div class = "field">
         {{#each queue as |file| }}
@@ -201,30 +126,23 @@
                  accept="{{accept}}" multiple={{multiple}}>
         </div>
         <br><br><br><br>
-        {{!-- <button class="ui button" {{action 'openModal'}}>Assign Images from Existing Images</button> --}}
-
-        {{!-- <div class="ui block header">{{input type="text" placeholder="Search..." }}</div> --}}
 
 
         <div class ="ui center alligned three column grid" style="border:0.5px solid black;overflow-y:scroll;max-height:300px;">
           {{#each Images as |Image|}}
-            <div class ="column">
-              <div class="ui fluid card" style="max-height:221px;min-height:221px;">
-                <div class="content">
-                  <div class ="sidebar-box" style="max-height:50px;min-height:50px;">
-                    <p class ="sidebar-box">{{Image.name}}</p>
-                  </div>
+            <div class ="column" style="padding: 1em">
+              <div class="ui fluid card">
+                <div class="content" style="max-height: 80px;min-height: 80px;text-align:  center;display: table;">
+                  <p style="display: table-cell;vertical-align: middle;">{{Image.name}}</p>
                 </div>
-                <div class = "content" style="min-height:105px;">
+                <div class = "content">
                   <div class="image">
-                    <img style="max-height:105px;" class = "ui small image" src="{{Image.imageData}}">
+                    <img style="max-height:105px;width: auto;display: block;margin-left: auto;margin-right: auto;" class = "ui small image" src="{{Image.imageData}}">
                   </div>
                 </div>
                 <div class="extra content">
-                  <div class="ui toggle checkbox">
-                    {{input type="checkbox" checked=cbState change=(action "addTempImage" Image) }}
-                    <label>Add</label>
-                  </div>
+                  {{ui-checkbox class="toggle" label="Add" checked=cbState change=(action "addTempImage" Image)}}
+                    {{!--{{input type="checkbox" checked=cbState change=(action "addTempImage" Image) }}--}}
                 </div>
               </div>
             </div>
@@ -232,27 +150,14 @@
         </div>
 
 
-        {{!-- <div class="actions">
-            <div class="ui positive button">Save</div>
-            <div class="ui black deny button">Cancel</div> --}}
-        {{!-- <div class="ui form" >
-            <div class="fields" >
-                <div class="ui fluid search">{{input type="text" placeholder="Search..." }}</div>
-            </div>
-        </div> --}}
-        {{!-- </div> --}}
-
       </div>
-      <div class = "inline">
-        <br><br><br>
-        <button class="ui button" type="submit" {{action "submit"}}>Submit</button>
-        <button class="ui button" type="submit" {{action "cancel"}}>Cancel</button>
+
+      <div class="field" style="margin-top: 3em;">
+        <button class="fluid ui blue button" style="max-width: 100%; height: 50px;">
+          Submit
+        </button>
       </div>
 
     </form>
   </div>
-{{else}}
-  <button class="ui button" {{action 'addExercise'}}>
-    Add Exercise
-  </button>
-{{/if}}
+{{/ui-modal}}

@@ -5,24 +5,36 @@ import $ from 'jquery';
 
 export default Component.extend({
   DS: inject('store'),
-  countryId: null,
-
-
-  countries: computed(function(){
-    return this.get('DS').findAll('country');
-  }),
+  //selectedCountry: null,
 
 
   actions: {
 
-    setCountryId: function (comp, id) {
-      this.set('countryId', id);
+    selectCountry(country) {
+      this.set('selectedCountry', country);
+    },
+
+    submit(){
+      let self = this;
+
+      let newProvince = this.get('DS').createRecord('province', {
+        name: self.get('name'),
+      });
+
+      this.get('DS').findRecord('country', self.get('selectedCountry')).then(function (src) {
+
+        newProvince.set('country', src);
+
+        newProvince.save().then(function ()  {
+          $('.ui.small.newProvince.modal').modal('hide');
+        });
+      });
+
+      this.set('name', '');
+      this.set('selectedCountry', null);
     },
 
     openModal: function () {
-      // this.set('name', '');
-      // this.set('countryId', null);
-      // this.set('city', []);
 
       $('.ui.small.newProvince.modal').modal({
         closable: false,
@@ -30,21 +42,6 @@ export default Component.extend({
         onDeny: () => {
           return true;
         },
-
-        onApprove: () => {
-
-          let self = this;
-
-          let newProvince = this.get('DS').createRecord('province', {
-            name: self.get('name'),
-            country: self.get('DS').peekRecord('country', self.get('countryId')),
-            city: []
-          });
-
-          newProvince.save().then(() => {
-            return true;
-          });
-        }
       }).modal('show');
     },
   }

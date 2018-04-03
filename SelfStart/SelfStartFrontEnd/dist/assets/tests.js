@@ -25,6 +25,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'components/add-admin.js should pass ESLint\n\n');
   });
 
+  QUnit.test('components/add-city.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/add-city.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n15:7 - Unexpected console statement. (no-console)\n26:7 - Unexpected console statement. (no-console)');
+  });
+
   QUnit.test('components/add-country.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/add-country.js should pass ESLint\n\n');
@@ -32,7 +37,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/add-exercises.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/add-exercises.js should pass ESLint\n\n90:11 - Unexpected console statement. (no-console)\n155:7 - Unexpected console statement. (no-console)\n156:11 - \'self\' is assigned a value but never used. (no-unused-vars)\n175:13 - \'saveImage\' is assigned a value but never used. (no-unused-vars)\n176:9 - Unexpected console statement. (no-console)\n177:9 - Unexpected console statement. (no-console)\n178:9 - Unexpected console statement. (no-console)\n180:11 - Unexpected console statement. (no-console)\n230:7 - Unexpected console statement. (no-console)\n232:7 - Unexpected console statement. (no-console)\n236:7 - Unexpected console statement. (no-console)\n239:11 - Unexpected console statement. (no-console)\n247:11 - Unexpected console statement. (no-console)\n248:11 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/add-exercises.js should pass ESLint\n\n86:11 - Unexpected console statement. (no-console)\n144:7 - Unexpected console statement. (no-console)\n145:11 - \'self\' is assigned a value but never used. (no-unused-vars)\n164:13 - \'saveImage\' is assigned a value but never used. (no-unused-vars)\n165:9 - Unexpected console statement. (no-console)\n166:9 - Unexpected console statement. (no-console)\n167:9 - Unexpected console statement. (no-console)\n169:11 - Unexpected console statement. (no-console)\n219:7 - Unexpected console statement. (no-console)\n221:7 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/add-form-question.js', function (assert) {
@@ -62,7 +67,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/add-province.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'components/add-province.js should pass ESLint\n\n');
+    assert.ok(false, 'components/add-province.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/add-question.js', function (assert) {
@@ -92,7 +97,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/assign-rehabplan.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/assign-rehabplan.js should pass ESLint\n\n25:7 - Unexpected console statement. (no-console)\n52:29 - \'res\' is defined but never used. (no-unused-vars)');
+    assert.ok(false, 'components/assign-rehabplan.js should pass ESLint\n\n39:7 - Unexpected console statement. (no-console)\n40:7 - Unexpected console statement. (no-console)\n71:29 - \'res\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/back-to-top.js', function (assert) {
@@ -107,12 +112,12 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/client-file.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/client-file.js should pass ESLint\n\n51:5 - Unexpected console statement. (no-console)\n79:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n89:5 - Unexpected console statement. (no-console)\n138:11 - \'assign\' is assigned a value but never used. (no-unused-vars)\n144:7 - \'rehabplan\' is not defined. (no-undef)');
+    assert.ok(false, 'components/client-file.js should pass ESLint\n\n58:5 - Unexpected console statement. (no-console)\n74:7 - Unexpected console statement. (no-console)\n75:7 - Unexpected console statement. (no-console)\n103:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n113:5 - Unexpected console statement. (no-console)\n162:11 - \'assign\' is assigned a value but never used. (no-unused-vars)\n168:7 - \'rehabplan\' is not defined. (no-undef)\n229:7 - \'$\' is not defined. (no-undef)\n248:29 - \'res\' is defined but never used. (no-unused-vars)\n249:13 - \'$\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/config-selection.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/config-selection.js should pass ESLint\n\n73:5 - Unexpected console statement. (no-console)\n91:8 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/config-selection.js should pass ESLint\n\n74:5 - Unexpected console statement. (no-console)\n92:8 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/confirm-booking.js', function (assert) {
@@ -123,6 +128,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('components/delete-admin.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/delete-admin.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/delete-city.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/delete-city.js should pass ESLint\n\n');
   });
 
   QUnit.test('components/delete-country.js', function (assert) {
@@ -193,6 +203,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('components/edit-admin.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/edit-admin.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/edit-city.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/edit-city.js should pass ESLint\n\n38:9 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/edit-country.js', function (assert) {
@@ -986,6 +1001,35 @@ define('self-start-front-end/tests/integration/components/add-admin-test', ['emb
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/add-city-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('add-city', 'Integration | Component | add city', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "hYKCHpi2",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"add-city\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "624Vutsh",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"add-city\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/add-country-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -1479,6 +1523,35 @@ define('self-start-front-end/tests/integration/components/delete-admin-test', ['
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/delete-city-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('delete-city', 'Integration | Component | delete city', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "cJKlVglH",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"delete-city\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "UwRRhjQS",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"delete-city\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/delete-country-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -1850,6 +1923,35 @@ define('self-start-front-end/tests/integration/components/edit-admin-test', ['em
     this.render(Ember.HTMLBars.template({
       "id": "jngG0+mu",
       "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"edit-admin\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/edit-city-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('edit-city', 'Integration | Component | edit city', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "m2luNVLP",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"edit-city\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "5pJuo5WA",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"edit-city\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
       "meta": {}
     }));
 
@@ -3043,6 +3145,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/add-admin-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('integration/components/add-city-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/add-city-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('integration/components/add-country-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/add-country-test.js should pass ESLint\n\n');
@@ -3128,6 +3235,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/delete-admin-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('integration/components/delete-city-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/delete-city-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('integration/components/delete-country-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/delete-country-test.js should pass ESLint\n\n');
@@ -3191,6 +3303,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('integration/components/edit-admin-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/edit-admin-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/edit-city-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/edit-city-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/edit-country-test.js', function (assert) {

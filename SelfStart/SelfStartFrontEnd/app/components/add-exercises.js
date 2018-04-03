@@ -4,6 +4,7 @@ import { inject } from '@ember/service';
 import Ember from 'ember';
 import fileObject from "../utils/file-object";
 import moment from 'moment';
+import $ from 'jquery';
 
 export default Component.extend({
   DS: inject('store'),
@@ -18,12 +19,7 @@ export default Component.extend({
   queue: [],
   modelQueue: [],
   savingInProgress: false,
-  isEditing: false,
   id: null,
-
-  modalName: Ember.computed(function () {
-    return 'add-exercise' + this.get('id');
-  }),
 
   labelArray: [
     'height: 6.25em',
@@ -127,13 +123,6 @@ export default Component.extend({
       this.set('Objective', "");
     },
 
-    cancel() {
-      this.set('isEditing', false);
-    },
-
-    addExercise (){
-      this.set('isEditing', true);
-    },
 
     submit: function() {
       let date = moment().format("MMM Do YY");
@@ -163,11 +152,11 @@ export default Component.extend({
 
       this.queue2.forEach(file => {
         secQueue2.push(file);
-      })
+      });
 
       this.get('temp').forEach(function(obj) {
         secQueue2.push(obj);
-      })
+      });
 
       this.get('temp').clear();
 
@@ -220,7 +209,7 @@ export default Component.extend({
       this.set('TargetDate', "");
       this.set("actionStep", []);
       this.set("obj", []);
-      this.set('isEditing', false);
+      $('.ui.newExercise.modal').modal('hide');
 
       // window.location.reload();
       // windows.location.reload();
@@ -232,31 +221,16 @@ export default Component.extend({
       console.log(image.name);
     },
 
-    openModal: function () {
-      console.log("ajskdaksjd");
-      Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+    openModal: function ()  {
+      $('.ui.newExercise.modal').modal({
+        closable: false,
+
         onDeny: () => {
-          console.log("sa");
-          this.get('temp').clear();
           return true;
         },
 
-        onApprove: () => {
-
-          let self = this;
-          console.log("asdjaskdjaksdj");
-          console.log(this.temp);
-          this.get('temp').forEach(function(obj) {
-            self.get("queue2").pushObject(obj);
-          })
-
-
-
-          this.get('temp').clear();
-          return true;
-        }
-      }).modal('show');
-    }
+      }).modal('show')
+    },
 
   }
 });

@@ -172,9 +172,7 @@ Form
   padding-left: 24px;
 }
 .cd-form input[type="radio"] + label::before,
-.cd-form input[type="radio"] + label::after,
-.cd-form input[type="checkbox"] + label::before,
-.cd-form input[type="checkbox"] + label::after {
+.cd-form input[type="radio"] + label::after {
   /* custom radio and check boxes */
   content: '';
   display: block;
@@ -184,6 +182,17 @@ Form
   margin-top: -8px;
   width: 16px;
   height: 16px;
+}
+.cd-form input[type="checkbox"] + label::before,
+.cd-form input[type="checkbox"] + label::after {
+  content: '';
+  display: block;
+  position: absolute;
+  left: 0;
+  top: 50%;
+  /*margin-top: -8px;*/
+  width: 16px;
+  height: 16px
 }
 .cd-form input[type="radio"] + label::before,
 .cd-form input[type="checkbox"] + label::before {
@@ -401,12 +410,12 @@ button, input, optgroup, select, textarea {
 .cd-form [required].date {
   background: url('/assets/images/form/calendar-60.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
 }
-.cd-form .card {
-  background: url('/assets/images/form/badge-13.svg') no-repeat 12px 12px;
-}
-.cd-form [required].card {
-  background: url('/assets/images/form/badge-13.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
-}
+/*.cd-form .card {*/
+  /*background: url('/assets/images/form/badge-13.svg') no-repeat 12px 12px;*/
+/*}*/
+/*.cd-form [required].card {*/
+  /*background: url('/assets/images/form/badge-13.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;*/
+/*}*/
 .cd-form .home {
   background: url('/assets/images/form/home-52.svg') no-repeat 12px 12px;
 }
@@ -504,9 +513,30 @@ button, input, optgroup, select, textarea {
 .cd-form [required].note {
   background: url('/assets/images/form/single-folded-content.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
 }
-
-
-
+.cd-form .run {
+  background: url('/assets/images/form/ic_directions_run_24px.svg') no-repeat 12px 12px;
+}
+.cd-form [required].run {
+  background: url('/assets/images/form/ic_directions_run_24px.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+}
+.cd-form .watch {
+  background: url('/assets/images/form/ic_timer_24px.svg') no-repeat 12px 12px;
+}
+.cd-form [required].watch {
+  background: url('/assets/images/form/ic_timer_24px.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+}
+.cd-form .link {
+  background: url('/assets/images/form/link-72.svg') no-repeat 12px 12px;
+}
+.cd-form [required].link {
+  background: url('/assets/images/form/link-72.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+}
+.cd-form .list {
+  background: url('/assets/images/form/ic_format_list_numbered_24px.svg') no-repeat 12px 12px;
+}
+.cd-form [required].list {
+  background: url('/assets/images/form/ic_format_list_numbered_24px.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+}
 
 
 /* --------------------------------

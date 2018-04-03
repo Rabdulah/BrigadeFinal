@@ -5,35 +5,41 @@ import $ from 'jquery';
 
 export default Component.extend({
   DS: inject('store'),
-  selectedCountry: null,
-  provinceData: null,
-  // name: computed.oneWay('provinceData.name'),
+  selectedProvince: null,
+  cityData: null,
+  // name: computed.oneWay('cityData.name'),
 
   modalName: computed(function () {
-    return 'editProvince' + this.get('provinceData').id;
+    return 'editCity' + this.get('cityData').id;
   }),
 
   init(){
     this._super(...arguments);
 
-    this.set('selectedCountry', this.get('provinceData').get('country.name'));
+    this.set('selectedProvince', this.get('cityData').get('province.name'));
   },
 
   actions: {
-    selectCountry(country) {
-      this.set('selectedCountry', country);
+    selectProvince(province) {
+      this.set('selectedProvince', province);
     },
 
     submit(){
       let self= this;
 
-      var countryId = this.get('selectedCountry');
+      var provinceId = this.get('selectedProvince');
 
-      this.get('DS').findRecord('province', this.get('provinceData').id).then((rec) =>{
-        rec.set('name', this.get('provinceData.name'));
+      var ID = this.get('cityData').id;
 
-        this.get('DS').findRecord('country', countryId).then(function (src) {
-          rec.set('country', src);
+
+      this.get('DS').findRecord('city', ID).then((rec) =>{
+        rec.set('name', this.get('cityData.name'));
+
+        console.log(provinceId);
+
+        this.get('DS').findRecord('province', provinceId).then(function (src) {
+          rec.set('province', src);
+
           rec.save().then(()=>{
 
             $('.ui.' + self.get('modalName') + '.modal').modal('hide');
@@ -41,11 +47,11 @@ export default Component.extend({
         });
       });
       this.set('name', '');
-      this.set('selectedCountry', null);
+      this.set('selectedProvince', null);
     },
 
     openModal: function () {
-      //this.set('provinceData', this.get('DS').peekRecord('province', this.get('ID')));
+      //this.set('cityData', this.get('DS').peekRecord('province', this.get('ID')));
 
       $('.ui.' + this.get('modalName') + '.modal').modal({
         closable: false,

@@ -14,6 +14,13 @@ export default Component.extend({
   flagDelete: false,
   flagAdd: false,
   listModel: [],
+  plan: null,
+  isPlanSelected: false,
+  model: null,
+
+  modalName: computed(function () {
+    return 'editAssign' + this.get('plan');
+  }),
 
   rehabModel: computed(function(){
     return this.get('store').findAll('rehabilitationplan' );
@@ -43,7 +50,7 @@ export default Component.extend({
   INDEX: null,
   queryPath: 'planName',
   scrolledLines: 0,
-
+  disabled: "",
 
 
   activeModel: Ember.observer('offset', 'limit', 'sort', 'dir','flagDelete','flagAdd', function () {
@@ -55,6 +62,23 @@ export default Component.extend({
     });
 
 
+  }),
+
+  isSelected: Ember.observer('plan', function () {
+    this.set('isPlanSelected', true);
+
+    let client = this.get('model').id;
+    let plan = this.get('plan');
+
+    this.get('store').query('rehab-client-link', {filter: {'RehabilitationPlan': plan, 'Patient': client}}).then((update) => {
+      console.log(plan);
+      console.log(update.content.length);
+      if (update.content.length !== 0) {
+        this.set('disabled', "disabled");
+      } else {
+        this.set('disabled', "");
+      }
+    })
   }),
 
   filterplans: Ember.observer('query', 'queryPath', function () {
@@ -200,6 +224,34 @@ export default Component.extend({
         this.set('offset', this.get('offset') - this.get('pageSize'));
 
       }
+    },
+    openModal: function () {
+      $('.ui.' + this.get('modalName') + '.modal').modal({
+        closable: false,
+
+        transition: 'fly down',
+
+        onDeny: () => {
+          return true;
+        },
+        onApprove: () => {
+          let plan = this.get('plan');
+
+          var planRecord = this.get('store').peekRecord('rehabilitationplan', plan);
+
+          let link = this.get('store').createRecord('rehab-client-link', {
+            terminated: this.get('plan.terminated'),
+            RehabilitationPlan: planRecord,
+            Patient: this.get('model'),
+            assigned: true
+          });
+          link.save().then((res)=> {
+            $('.ui.' + this.get('modalName') + '.modal').modal('hide');
+            this.set('disabled', "disabled");
+          });
+        }
+      })
+        .modal('show');
     },
   }
 });
