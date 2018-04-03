@@ -228,6 +228,8 @@ export default Component.extend({
         onApprove: () => {
           let plan = this.get('plan');
 
+          console.log( this.get('model'));
+
           var planRecord = this.get('store').peekRecord('rehabilitationplan', plan);
 
           let link = this.get('store').createRecord('rehab-client-link', {
