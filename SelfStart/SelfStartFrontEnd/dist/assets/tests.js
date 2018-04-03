@@ -122,7 +122,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/client-file.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/client-file.js should pass ESLint\n\n58:5 - Unexpected console statement. (no-console)\n74:7 - Unexpected console statement. (no-console)\n75:7 - Unexpected console statement. (no-console)\n103:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n113:5 - Unexpected console statement. (no-console)\n162:11 - \'assign\' is assigned a value but never used. (no-unused-vars)\n168:7 - \'rehabplan\' is not defined. (no-undef)\n220:7 - \'$\' is not defined. (no-undef)\n231:11 - Unexpected console statement. (no-console)\n241:29 - \'res\' is defined but never used. (no-unused-vars)\n242:13 - \'$\' is not defined. (no-undef)');
+    assert.ok(false, 'components/client-file.js should pass ESLint\n\n58:5 - Unexpected console statement. (no-console)\n74:7 - Unexpected console statement. (no-console)\n75:7 - Unexpected console statement. (no-console)\n103:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n113:5 - Unexpected console statement. (no-console)\n162:11 - \'assign\' is assigned a value but never used. (no-unused-vars)\n168:7 - \'rehabplan\' is not defined. (no-undef)\n220:7 - \'$\' is not defined. (no-undef)\n231:11 - Unexpected console statement. (no-console)\n234:11 - Unexpected console statement. (no-console)\n247:29 - \'res\' is defined but never used. (no-unused-vars)\n248:13 - \'$\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/client-nav.js', function (assert) {
@@ -592,7 +592,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('models/rehab-client-link.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'models/rehab-client-link.js should pass ESLint\n\n');
+    assert.ok(false, 'models/rehab-client-link.js should pass ESLint\n\n2:8 - \'assessmentTest\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('models/rehabilitationplan.js', function (assert) {

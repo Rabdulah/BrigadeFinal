@@ -5,8 +5,8 @@ export default DS.Model.extend({
   form: DS.belongsTo("form"),
   questions: DS.hasMany('question'),
   answers: DS.attr(),
-  rehabPlan: DS.belongsTo('rehabilitationplan'),
-  completed:DS.attr(),
+  rehablink: DS.belongsTo('rehab-client-link'),
+  completed: DS.attr(),
 });
 
 //SEND FORM BUTTON

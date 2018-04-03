@@ -231,13 +231,19 @@ export default Component.extend({
           console.log( this.get('model'));
 
           var planRecord = this.get('store').peekRecord('rehabilitationplan', plan);
+          console.log(planRecord);
+      
+          // var assess = this.get('store').findAll('assessment-test');
+          // console.log(assess);
 
           let link = this.get('store').createRecord('rehab-client-link', {
             terminated: this.get('plan.terminated'),
             RehabilitationPlan: planRecord,
             Patient: this.get('model'),
-            assigned: true
+            assigned: true,
+            //assessmentTest: assess,
           });
+          
           link.save().then((res)=> {
             $('.ui.' + this.get('modalName') + '.modal').modal('hide');
             this.set('disabled', "disabled");

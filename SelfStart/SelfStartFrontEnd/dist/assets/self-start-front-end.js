@@ -2411,13 +2411,19 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
             console.log(_this4.get('model'));
 
             var planRecord = _this4.get('store').peekRecord('rehabilitationplan', plan);
+            console.log(planRecord);
+
+            // var assess = this.get('store').findAll('assessment-test');
+            // console.log(assess);
 
             var link = _this4.get('store').createRecord('rehab-client-link', {
               terminated: _this4.get('plan.terminated'),
               RehabilitationPlan: planRecord,
               Patient: _this4.get('model'),
               assigned: true
+              //assessmentTest: assess,
             });
+
             link.save().then(function (res) {
               $('.ui.' + _this4.get('modalName') + '.modal').modal('hide');
               _this4.set('disabled', "disabled");
@@ -9162,7 +9168,7 @@ define('self-start-front-end/models/assessment-test', ['exports', 'ember-data'],
     form: _emberData.default.belongsTo("form"),
     questions: _emberData.default.hasMany('question'),
     answers: _emberData.default.attr(),
-    rehabPlan: _emberData.default.belongsTo('rehabilitationplan'),
+    rehablink: _emberData.default.belongsTo('rehab-client-link'),
     completed: _emberData.default.attr()
   });
 });
@@ -9379,7 +9385,7 @@ define('self-start-front-end/models/question', ['exports', 'ember-data'], functi
     questionOrder: _emberData.default.hasMany('question-order')
   });
 });
-define('self-start-front-end/models/rehab-client-link', ['exports', 'ember-data'], function (exports, _emberData) {
+define('self-start-front-end/models/rehab-client-link', ['exports', 'ember-data', 'self-start-front-end/models/assessment-test'], function (exports, _emberData, _assessmentTest) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -9389,7 +9395,8 @@ define('self-start-front-end/models/rehab-client-link', ['exports', 'ember-data'
     terminated: _emberData.default.attr('boolean'),
     RehabilitationPlan: _emberData.default.belongsTo('rehabilitationplan'),
     Patient: _emberData.default.belongsTo('patient'),
-    assigned: _emberData.default.attr('boolean')
+    assigned: _emberData.default.attr('boolean'),
+    assessmentTest: _emberData.default.attr()
   });
 });
 define('self-start-front-end/models/rehabilitationplan', ['exports', 'ember-data'], function (exports, _emberData) {
@@ -9854,12 +9861,9 @@ define('self-start-front-end/routes/practitioner/client-file', ['exports'], func
     value: true
   });
   exports.default = Ember.Route.extend({
-    // model(){
-    //   return RSVP.hash({
-    //     rehabLink: this.store.findAll('rehab-client-link'),
-    //     assessmentTest: this.store.findAll('assessment-test')
-    //   });
-    // }
+    assessmentModel: function assessmentModel() {
+      return this.store.findAll('assessment-test');
+    }
   });
 });
 define('self-start-front-end/routes/practitioner/clients', ['exports'], function (exports) {
