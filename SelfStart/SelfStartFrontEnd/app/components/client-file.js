@@ -244,6 +244,7 @@ export default Component.extend({
           Patient: this.get('model'),
           assigned: true,
           assessmentTest: rec,
+          //In memory of Ouda
         });
 
          var peekTest = this.get('store').peekRecord('assessment-test', test.get("id"));

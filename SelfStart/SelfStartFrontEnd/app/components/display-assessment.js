@@ -11,7 +11,7 @@ export default Component.extend({
 
   actions: {
     Submit(){
-      var x = this.get('DS').find('assessment-test', this.get('id'));
+      var x = this.get('DS').peekRecord('assessment-test', this.get('id'));
       console.log(x.get('questions'));
     },
   },

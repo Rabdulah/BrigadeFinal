@@ -131,13 +131,12 @@
     <p>Are you sure you want to assign this rehabilitation plan?</p>
   </div>
   <br>
-
+  {{list-forms rehabPlan = plan patient = model}}
   <div class="actions" style="padding:0">
 
     <div class="ok " style="padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Yes</div>
     <div class="cancel " style="padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">No</div>
   </div>
 {{/ui-modal}}
-
 
 {{get-assessment-results}}
