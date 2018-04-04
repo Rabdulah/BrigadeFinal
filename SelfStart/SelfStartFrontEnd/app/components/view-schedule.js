@@ -30,7 +30,7 @@ export default Component.extend({
     //add delete, update
     calendarAddOccurrence: function(occurrence) {
       let container = Ember.Object.create({
-        title: "SetAvailable Spot",
+        title: "Available Spot",
         startsAt: occurrence.get('startsAt'),
         isDraggable: true,
         isResizable: true,
@@ -47,31 +47,6 @@ export default Component.extend({
 
     calendarUpdateOccurrence: function(occurrence, properties, isPreview) {
       // console.log(JSON.stringify(occurrence));
-      let self = this;
-      let isCollided = false;
-
-      self.get('bookedAppointment').forEach( function (obj) {
-        let startBA = moment(obj.startsAt);
-        let endBA = moment(obj.endsAt);
-          if (moment(occurrence.startsAt).isBetween(startBA,endBA) || moment(occurrence.endsAt).isBetween(startBA,endBA)){
-            console.log("collision detected with occurance and booked appointment");
-            isCollided = true;
-          }
-      });
-      self.get('availableSpot').forEach( function (obj) {
-        console.log(occurrence);
-        console.log(obj);
-        if (obj !== occurrence) {
-          let startBA = moment(obj.startsAt);
-          let endBA = moment(obj.endsAt);
-          if (moment(occurrence.startsAt).isBetween(startBA, endBA) || moment(occurrence.endsAt).isBetween(startBA, endBA)) {
-            console.log("collision detected with occurance and available spot");
-            isCollided = true;
-          }
-        }
-      });
-
-      if (!isCollided)
         occurrence.setProperties(properties);
       // console.log(JSON.stringify(this.get('availableSpot')));
     },
@@ -125,7 +100,7 @@ export default Component.extend({
               }
               else {
                 let temp = Ember.Object.create({
-                  title: "SetAvailable Spot",
+                  title: "Available Spot",
                   isFilled: false,
                   isDraggable: true,
                   isResizable: true,

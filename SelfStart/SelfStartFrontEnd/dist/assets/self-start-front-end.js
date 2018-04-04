@@ -6184,7 +6184,7 @@ define('self-start-front-end/components/view-schedule', ['exports', 'moment'], f
       //add delete, update
       calendarAddOccurrence: function calendarAddOccurrence(occurrence) {
         var container = Ember.Object.create({
-          title: "SetAvailable Spot",
+          title: "Available Spot",
           startsAt: occurrence.get('startsAt'),
           isDraggable: true,
           isResizable: true,
@@ -6200,31 +6200,7 @@ define('self-start-front-end/components/view-schedule', ['exports', 'moment'], f
 
       calendarUpdateOccurrence: function calendarUpdateOccurrence(occurrence, properties, isPreview) {
         // console.log(JSON.stringify(occurrence));
-        var self = this;
-        var isCollided = false;
-
-        self.get('bookedAppointment').forEach(function (obj) {
-          var startBA = (0, _moment.default)(obj.startsAt);
-          var endBA = (0, _moment.default)(obj.endsAt);
-          if ((0, _moment.default)(occurrence.startsAt).isBetween(startBA, endBA) || (0, _moment.default)(occurrence.endsAt).isBetween(startBA, endBA)) {
-            console.log("collision detected with occurance and booked appointment");
-            isCollided = true;
-          }
-        });
-        self.get('availableSpot').forEach(function (obj) {
-          console.log(occurrence);
-          console.log(obj);
-          if (obj !== occurrence) {
-            var startBA = (0, _moment.default)(obj.startsAt);
-            var endBA = (0, _moment.default)(obj.endsAt);
-            if ((0, _moment.default)(occurrence.startsAt).isBetween(startBA, endBA) || (0, _moment.default)(occurrence.endsAt).isBetween(startBA, endBA)) {
-              console.log("collision detected with occurance and available spot");
-              isCollided = true;
-            }
-          }
-        });
-
-        if (!isCollided) occurrence.setProperties(properties);
+        occurrence.setProperties(properties);
         // console.log(JSON.stringify(this.get('availableSpot')));
       },
 
@@ -6274,7 +6250,7 @@ define('self-start-front-end/components/view-schedule', ['exports', 'moment'], f
                   home.get('bookedAppointment').pushObject(newBooked);
                 } else {
                   var temp = Ember.Object.create({
-                    title: "SetAvailable Spot",
+                    title: "Available Spot",
                     isFilled: false,
                     isDraggable: true,
                     isResizable: true,
@@ -11548,6 +11524,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+b0e7a577"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+7ab489e7"});
 }
 //# sourceMappingURL=self-start-front-end.map
