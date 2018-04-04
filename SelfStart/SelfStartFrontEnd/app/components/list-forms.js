@@ -15,23 +15,39 @@ export default Component.extend({
   actions: {
 
     AddTest(thisForm, thisPlan){
-      console.log(thisForm);
       let temp = [];
       let questionList = [];
-      thisForm.get("questionOrder").forEach(element => {
-        temp.push("!!!!");
-        questionList.pushObject(element.get("question"));
+
+      this.get('DS').query('question-order', {filter: {'form': thisForm.get('id')}}).then((questions) => {
+
+       // this.get('questionList').clear();
+        console.log(questions);
+        console.log("****************");
+        questions.forEach((q)=>{
+          console.log(q.get('question'));
+          temp.push("!!");
+          questionList.pushObject(q.get('question'));
+        });
+        console.log("****************");
+
       });
 
+      // thisForm.get("questionOrder").forEach(element => {
+      //   temp.push("!!!!");
+      //   questionList.pushObject(element.get("question"));
+      // });
+      console.log(temp);
+      console.log(questionList);
+      console.log("****************");
       let newTest = this.get('DS').createRecord('assessment-test', {
         form: thisForm,
         questions: questionList,
-        rehabPlan: thisPlan,
         answers: temp,
         completed: false,
       });
       newTest.save().then(()=> {
         this.set("assessID", newTest.get('id'));
+        console.log(newTest.get('questions')[0]);
         return true;
       });
     },
@@ -45,9 +61,6 @@ export default Component.extend({
         onApprove: () => {
           var rehab = this.get('DS').peekRecord('rehabilitationplan', this.get('rehabPlan'));
           var test = this.get('DS').peekRecord('assessment-test', this.get('assessID'));
-
-          console.log(rehab);
-          console.log(test);
 
           let link = this.get('DS').createRecord('rehab-client-link', {
             terminated: this.get('rehabPlan.terminated'),
