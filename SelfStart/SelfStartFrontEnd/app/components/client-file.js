@@ -147,7 +147,8 @@ export default Component.extend({
   },
 
   menusState: "active",
-
+  assessState: "",
+  assess:false,
 
   menus: true,
 
@@ -172,6 +173,15 @@ export default Component.extend({
     menusView(){
       this.set('menus', true);
       this.set('menusState', "active");
+      this.set('assess', false);
+      this.set('assessState', "");
+    },
+
+    assessView(){
+        this.set('assess', true);
+        this.set('assessState', "active");
+        this.set('menus', false);
+        this.set('menusState', "");
     },
 
 

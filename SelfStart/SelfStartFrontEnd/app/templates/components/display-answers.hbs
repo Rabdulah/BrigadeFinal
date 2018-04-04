@@ -6,7 +6,7 @@
     <label>{{question.questionText}}</label>
     <br><br>
     <div class="ui disabled input focus">
-      <li>{{input type="text" value=SAanswer}}</li>
+      {{input type="text" value=SAanswer}}
     </div>
   {{/if}}
 
@@ -17,6 +17,7 @@
       class="heart"
       maxRating=10
       initialRating = Rating
+      interactive = false
     }}
   {{/if}}
 
