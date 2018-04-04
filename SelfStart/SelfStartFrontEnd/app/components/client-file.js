@@ -2,6 +2,7 @@ import Component from '@ember/component';
 import Ember from "ember";
 import { computed } from '@ember/object';
 
+
 export default Component.extend({
   store: Ember.inject.service(),
 
@@ -53,6 +54,7 @@ export default Component.extend({
   disabled: "",
 
 
+
   activeModel: Ember.observer('offset', 'limit', 'sort', 'dir','flagDelete','flagAdd', function () {
     var self = this;
     console.log(this.plansModel);
@@ -63,7 +65,6 @@ export default Component.extend({
 
 
   }),
-
   isSelected: Ember.observer('plan', function () {
     this.set('isPlanSelected', true);
 
@@ -102,9 +103,8 @@ export default Component.extend({
     this.set('pageSize', 10);
     let self = this;
 
-
-
     // this.set('listModel', this.get('store').findAll('exercise-list', this.get('planId')));
+
 
   },
 
@@ -149,11 +149,11 @@ export default Component.extend({
   menusState: "active",
   menus: true,
 
+
   terminated: false,
 
 
   actions: {
-
 
     assign(){
       let assign = self.get('store').createRecord('rehab-client-link', {
@@ -170,7 +170,6 @@ export default Component.extend({
       this.set('menus', true);
       this.set('menusState', "active");
     },
-
 
     toggleDetail(ID) {
 
@@ -241,5 +240,6 @@ export default Component.extend({
       })
         .modal('show');
     },
+
   }
 });

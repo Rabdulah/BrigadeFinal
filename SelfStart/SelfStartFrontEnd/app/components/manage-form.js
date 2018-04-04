@@ -6,7 +6,6 @@ export default Component.extend({
   DS: Ember.inject.service('store'),
 
 
-
   edit: false,
 
   questionsModel: Ember.computed(function(){
@@ -29,6 +28,5 @@ export default Component.extend({
         });
       });
     },
-
   }
 });

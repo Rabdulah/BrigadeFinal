@@ -7,5 +7,4 @@ export default DS.Model.extend({
   rawSize: DS.attr('number'),
   imageData: DS.attr(),
   exercise: DS.hasMany('exercise')
-
 });

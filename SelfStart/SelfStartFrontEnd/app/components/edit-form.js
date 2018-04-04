@@ -103,6 +103,7 @@ export default Component.extend({
 
       self.get('questionsModel').forEach((rec)=>{
         rec.set('selected', false);
+
       })
     });
 

@@ -84,7 +84,6 @@ router.route('/:rehabilitation_id')
                 rehabilitation.exerciseList = request.body.rehabilitationplan.exerciseList;
 
 
-
                 rehabilitation.save(function (error) {
                     if (error) {
                         response.send({error: error});

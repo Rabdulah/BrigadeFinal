@@ -56,6 +56,7 @@ export default Component.extend({
 
   actions: {
 
+
     selectExercise (exercise){
       this.set('selectedExercise', exercise);
     },
@@ -89,10 +90,10 @@ export default Component.extend({
     openModal: function ()  {
       $('.ui.newPlan.modal').modal({
         closable: false,
-
         onDeny: () => {
           return true;
         },
+
 
       }).modal('show')
     },

@@ -21,6 +21,10 @@ export default Component.extend({
   savingInProgress: false,
   id: null,
 
+  modalName: Ember.computed(function () {
+    return 'add-exercise' + this.get('id');
+  }),
+
   labelArray: [
     'height: 6.25em',
     'line-height: 5.25em',
@@ -126,6 +130,7 @@ export default Component.extend({
 
     submit: function() {
       let date = moment().format("MMM Do YY");
+
       let exercise = this.get('DS').createRecord('exercise', {
         name:this.get('Name'),
         description:this.get('Description'),
@@ -147,6 +152,10 @@ export default Component.extend({
       this.queue.forEach(file => {
         secQueue.pushObject(file);
       });
+      console.log("this is q2", this.queue2);
+      this.queue2.forEach(file => {
+        secQueue2.push(file);
+      })
 
       this.queue2.forEach(file => {
         secQueue2.push(file);
@@ -206,6 +215,7 @@ export default Component.extend({
       this.set("actionStep", []);
       $('.ui.newExercise.modal').modal('hide');
 
+
     },
 
     addTempImage: function(image) {
@@ -224,6 +234,5 @@ export default Component.extend({
 
       }).modal('show')
     },
-
   }
 });

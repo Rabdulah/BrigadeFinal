@@ -193,6 +193,7 @@ Form
   margin-top: -8px;
   width: 16px;
   height: 16px
+
 }
 .cd-form input[type="radio"] + label::before,
 .cd-form input[type="checkbox"] + label::before {
@@ -416,6 +417,7 @@ button, input, optgroup, select, textarea {
 /*.cd-form [required].card {*/
   /*background: url('/assets/images/form/badge-13.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;*/
 /*}*/
+
 .cd-form .home {
   background: url('/assets/images/form/home-52.svg') no-repeat 12px 12px;
 }

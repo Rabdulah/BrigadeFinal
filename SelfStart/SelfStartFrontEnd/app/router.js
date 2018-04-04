@@ -19,6 +19,7 @@ Router.map(function() {
     this.route('new-form');
     // this.route('view-form');
     this.route('edit-form', { path: 'forms/:form_id'});
+
   });
   //this.route('questions');
   this.route('forms');
@@ -47,6 +48,7 @@ Router.map(function() {
     this.route('new-rehabplans');
     this.route('assessment-display');
     this.route('appointment');
+
     this.route('edit-menu', { path: 'rehabplans/:rehabilitationplan_id'});
     this.route('exercises');
   });

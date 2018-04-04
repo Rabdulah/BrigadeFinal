@@ -16,6 +16,7 @@ export default Component.extend({
 
     Skype.ui({
       "name": "chat",
+
       "element": "SkypeButton_Call",
       "participants": ["ramzi_abdullahi"],
       "imageSize": 24,
