@@ -2408,25 +2408,31 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
           onApprove: function onApprove() {
             var plan = _this4.get('plan');
 
-            console.log(_this4.get('model'));
-
             var planRecord = _this4.get('store').peekRecord('rehabilitationplan', plan);
-            console.log(planRecord);
 
-            // var assess = this.get('store').findAll('assessment-test');
-            // console.log(assess);
+            var self = _this4;
 
-            var link = _this4.get('store').createRecord('rehab-client-link', {
-              terminated: _this4.get('plan.terminated'),
-              RehabilitationPlan: planRecord,
-              Patient: _this4.get('model'),
-              assigned: true
-              //assessmentTest: assess,
-            });
+            // var assess = this.get('store').peekRecord('assessment-test', '5ab92c228a4acc04487b157a');
+            var test = _this4.get('store').createRecord('assessment-test', {});
+            test.save().then(function (rec) {
 
-            link.save().then(function (res) {
-              $('.ui.' + _this4.get('modalName') + '.modal').modal('hide');
-              _this4.set('disabled', "disabled");
+              var link = _this4.get('store').createRecord('rehab-client-link', {
+                terminated: _this4.get('plan.terminated'),
+                RehabilitationPlan: planRecord,
+                Patient: _this4.get('model'),
+                assigned: true,
+                assessmentTest: rec
+              });
+
+              var peekTest = _this4.get('store').peekRecord('assessment-test', test.get("id"));
+              console.log(peekTest);
+              peekTest.set('rehabLink', link);
+              link.save().then(function () {
+                peekTest.save();
+                _this4.set('assessmentTest', test);
+                $('.ui.' + _this4.get('modalName') + '.modal').modal('hide');
+                _this4.set('disabled', "disabled");
+              });
             });
           }
         }).modal('show');
@@ -9396,7 +9402,7 @@ define('self-start-front-end/models/rehab-client-link', ['exports', 'ember-data'
     RehabilitationPlan: _emberData.default.belongsTo('rehabilitationplan'),
     Patient: _emberData.default.belongsTo('patient'),
     assigned: _emberData.default.attr('boolean'),
-    assessmentTest: _emberData.default.attr()
+    assessmentTest: _emberData.default.belongsTo('assessment-test')
   });
 });
 define('self-start-front-end/models/rehabilitationplan', ['exports', 'ember-data'], function (exports, _emberData) {

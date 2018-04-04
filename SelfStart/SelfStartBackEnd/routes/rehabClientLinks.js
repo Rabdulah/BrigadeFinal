@@ -5,6 +5,7 @@ var RehabClientLink = require('../models/RehabClientLink');
 router.route('/')
     .post( function (request, response) {
         var rehabClientLink = new RehabClientLink.Model(request.body.rehabClientLink);
+        console.log(request.body);
         rehabClientLink.save(function(error) {
             if(error) response.send(error);
             response.json({rehabClientLink: rehabClientLink});

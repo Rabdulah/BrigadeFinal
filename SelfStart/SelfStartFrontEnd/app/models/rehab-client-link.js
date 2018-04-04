@@ -6,5 +6,5 @@ export default DS.Model.extend({
   RehabilitationPlan: DS.belongsTo('rehabilitationplan'),
   Patient: DS.belongsTo('patient'),
   assigned: DS.attr('boolean'),
-  assessmentTest: DS.attr()
+  assessmentTest: DS.belongsTo('assessment-test'),
 });
