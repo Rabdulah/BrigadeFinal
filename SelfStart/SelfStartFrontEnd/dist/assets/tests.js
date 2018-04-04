@@ -122,7 +122,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/client-file.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/client-file.js should pass ESLint\n\n58:5 - Unexpected console statement. (no-console)\n74:7 - Unexpected console statement. (no-console)\n75:7 - Unexpected console statement. (no-console)\n103:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n113:5 - Unexpected console statement. (no-console)\n163:11 - \'assign\' is assigned a value but never used. (no-unused-vars)\n169:7 - \'rehabplan\' is not defined. (no-undef)\n230:7 - \'$\' is not defined. (no-undef)\n249:29 - \'res\' is defined but never used. (no-unused-vars)\n250:13 - \'$\' is not defined. (no-undef)');
+    assert.ok(false, 'components/client-file.js should pass ESLint\n\n58:5 - Unexpected console statement. (no-console)\n74:7 - Unexpected console statement. (no-console)\n75:7 - Unexpected console statement. (no-console)\n103:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n113:5 - Unexpected console statement. (no-console)\n163:11 - \'assign\' is assigned a value but never used. (no-unused-vars)\n169:7 - \'rehabplan\' is not defined. (no-undef)\n230:7 - \'$\' is not defined. (no-undef)\n244:15 - \'self\' is assigned a value but never used. (no-unused-vars)\n261:10 - Unexpected console statement. (no-console)\n266:15 - \'$\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/client-nav.js', function (assert) {
@@ -217,7 +217,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/display-assessment.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/display-assessment.js should pass ESLint\n\n4:7 - \'Ember\' is not defined. (no-undef)\n8:20 - \'Ember\' is not defined. (no-undef)\n14:11 - \'assess\' is assigned a value but never used. (no-unused-vars)');
+    assert.ok(false, 'components/display-assessment.js should pass ESLint\n\n4:7 - \'Ember\' is not defined. (no-undef)\n8:20 - \'Ember\' is not defined. (no-undef)\n15:7 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/display-forms.js', function (assert) {
@@ -302,7 +302,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/list-forms.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/list-forms.js should pass ESLint\n\n20:41 - \'element\' is defined but never used. (no-unused-vars)');
+    assert.ok(false, 'components/list-forms.js should pass ESLint\n\n18:7 - Unexpected console statement. (no-console)\n49:11 - Unexpected console statement. (no-console)\n50:11 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/manage-admin-accounts.js', function (assert) {
@@ -592,7 +592,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('models/rehab-client-link.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'models/rehab-client-link.js should pass ESLint\n\n');
+    assert.ok(false, 'models/rehab-client-link.js should pass ESLint\n\n2:8 - \'assessmentTest\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('models/rehabilitationplan.js', function (assert) {
@@ -777,7 +777,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('routes/practitioner/client-file.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'routes/practitioner/client-file.js should pass ESLint\n\n');
+    assert.ok(false, 'routes/practitioner/client-file.js should pass ESLint\n\n2:8 - \'RSVP\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('routes/practitioner/clients.js', function (assert) {

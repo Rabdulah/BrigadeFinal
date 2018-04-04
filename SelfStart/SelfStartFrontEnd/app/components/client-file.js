@@ -238,18 +238,37 @@ export default Component.extend({
         onApprove: () => {
           let plan = this.get('plan');
 
-          var planRecord = this.get('store').peekRecord('rehabilitationplan', plan);
 
-          let link = this.get('store').createRecord('rehab-client-link', {
-            terminated: this.get('plan.terminated'),
-            RehabilitationPlan: planRecord,
-            Patient: this.get('model'),
-            assigned: true
+          var planRecord = this.get('store').peekRecord('rehabilitationplan', plan);
+      
+          var self = this;
+
+         // var assess = this.get('store').peekRecord('assessment-test', '5ab92c228a4acc04487b157a');
+         let test = this.get('store').createRecord('assessment-test', {});
+         test.save().then((rec)=> {
+         
+
+         let link = this.get('store').createRecord('rehab-client-link', {
+          terminated: this.get('plan.terminated'),
+          RehabilitationPlan: planRecord,
+          Patient: this.get('model'),
+          assigned: true,
+          assessmentTest: rec,
+          //In memory of Ouda
+        });
+
+         var peekTest = this.get('store').peekRecord('assessment-test', test.get("id"));
+         console.log(peekTest);
+         peekTest.set('rehabLink', link)
+           link.save().then(()=> {
+            peekTest.save();
+              this.set('assessmentTest', test)
+              $('.ui.' + this.get('modalName') + '.modal').modal('hide');
+              this.set('disabled', "disabled");
+              
+            });
           });
-          link.save().then((res)=> {
-            $('.ui.' + this.get('modalName') + '.modal').modal('hide');
-            this.set('disabled', "disabled");
-          });
+         
         }
       })
         .modal('show');

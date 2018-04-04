@@ -39,7 +39,7 @@ router.route('/:assessment_id')
                 // update each attribute
                 assessmentTest.questions = request.body.assessmentTest.questions;
                 assessmentTest.form = request.body.assessmentTest.form;
-                assessmentTest.rehabPlan = request.body.assessmentTest.rehabPlan;
+                assessmentTest.rehablink = request.body.assessmentTest.rehablink;
                 assessmentTest.answers = request.body.assessmentTest.answers;
                 assessmentTest.completed = request.body.assessmentTest.completed;
 

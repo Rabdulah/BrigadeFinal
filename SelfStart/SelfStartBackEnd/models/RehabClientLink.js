@@ -4,8 +4,8 @@ var RehabClientLink = mongoose.Schema({
 
     RehabilitationPlan: {type: mongoose.Schema.ObjectId, ref: 'RehabilitationPlans'},
     Patient: {type: mongoose.Schema.ObjectId, ref: 'PatientProfiles'},
-    terminated : Boolean,
-    AssessmentTests : [{type: mongoose.Schema.ObjectId, ref: 'AssessmentTests'}]
+    terminated: Boolean,
+    assessmentTest: {type: mongoose.Schema.ObjectId, ref: 'AssessmentTests'}
 
 });
 var RehabClientLinkSchema = mongoose.model('rehabClientLinks', RehabClientLink);

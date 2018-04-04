@@ -11,11 +11,8 @@ export default Component.extend({
 
   actions: {
     Submit(){
-      var assess = this.get("assessmentModel");
-      // this.get('DS').findRecord('assessment-test', this.assessid).then((rec) => {
-      //   rec.save().then(()=>{
-      //   });
-      // });
+      var x = this.get('DS').peekRecord('assessment-test', this.get('id'));
+      console.log(x.get('questions'));
     },
   },
 });

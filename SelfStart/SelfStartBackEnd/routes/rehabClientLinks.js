@@ -5,6 +5,7 @@ var RehabClientLink = require('../models/RehabClientLink');
 router.route('/')
     .post( function (request, response) {
         var rehabClientLink = new RehabClientLink.Model(request.body.rehabClientLink);
+        console.log(request.body);
         rehabClientLink.save(function(error) {
             if(error) response.send(error);
             response.json({rehabClientLink: rehabClientLink});
@@ -69,6 +70,7 @@ router.route('/:rehabClientLink_id')
                 rehabClientLink.Patient = request.body.rehabClientLink.Patient;
                 rehabClientLink.terminated = request.body.rehabClientLink.terminated;
                 rehabClientLink.assigned = request.body.rehabClientLink.assigned;
+                rehabClientLink.assessmentTest = request.body.rehabClientLink.assessmentTest;
 
                 rehabClientLink.save(function (error) {
                     if (error) {
