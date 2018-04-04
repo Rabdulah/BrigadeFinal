@@ -5,6 +5,29 @@ var passport = require('passport');
 var BearerStrategy = require('passport-http-bearer').Strategy;
 const config = require('../config/database');
 const jwt = require('jsonwebtoken');
+const crypto = require('crypto');
+
+//Crypto------------------------------------------------------------------
+function hash(text) {
+    const hash = crypto.createHash('sha256');
+    hash.update(text);
+    return hash.digest('binary');
+};
+
+function encrypt(plainText) {
+    var cipher = crypto.createCipher('aes256', 'SE3350b Winter 2016');
+    var crypted = cipher.update(plainText, 'ascii', 'binary');
+    crypted += cipher.final('binary');
+    return crypted;
+};
+
+function decrypt(cipherText) {
+    var decipher = crypto.createDecipher('aes256', 'SE3350b Winter 2016');
+    var dec = decipher.update(cipherText, 'binary', 'ascii');
+    dec += decipher.final('ascii');
+    return dec;
+};
+//--------------------------------------------------------------------------
 
 router.route('/')
     .post( function (request, response) {

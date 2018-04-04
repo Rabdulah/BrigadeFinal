@@ -40,7 +40,19 @@ var patientProfilesSchema = mongoose.Schema(
         appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],
         askAPhysio: [{type: mongoose.Schema.ObjectId, ref: 'AskAPhysio'}],
 
-        plan: [{type: mongoose.Schema.ObjectId, ref: 'Treatments'}]
+        plan: [{type: mongoose.Schema.ObjectId, ref: 'Treatments'}],
+        
+         //New----------------------------------
+        token: String,
+        requestType: String,
+        wrongUserName: Boolean,
+        wrongPassword: Boolean,
+        passwordMustChanged: Boolean,
+        passwordReset: Boolean,
+        loginFailed: Boolean,
+        accountIsDisabled: Boolean,
+        sessionIsActive: Boolean
+        //--------------------------------------
     }
 );
 

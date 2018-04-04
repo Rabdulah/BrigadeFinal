@@ -28,7 +28,19 @@ var physiotherapestsSchema = mongoose.Schema({
             type: String,
             default: "1"
         }
-    }
+    },
+
+     //New----------------------------------
+     token: String,
+     requestType: String,
+     wrongUserName: Boolean,
+     wrongPassword: Boolean,
+     passwordMustChanged: Boolean,
+     passwordReset: Boolean,
+     loginFailed: Boolean,
+     accountIsDisabled: Boolean,
+     sessionIsActive: Boolean
+     //--------------------------------------
 
 });
 var PhysiotherapestsSchema = mongoose.model('physiotherapest', physiotherapestsSchema);

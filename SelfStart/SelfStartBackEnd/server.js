@@ -11,6 +11,19 @@ var app = express(); // define our app using express
 var port = 8082;        // set our port
 var router = express.Router(); // get an instance of the express Router
 
+//NEW--------------------------------------------------------------------------
+//AND THE BOTTOM---------------------------------------------------------------
+var http = require('http'); 
+var https = require('https');
+var fs = require('fs');
+
+//Setting ssl options
+var sslOptions = {
+    key: fs.readFileSync('c:\certificate\server.key'),
+    cert: fs.readFileSync('c:\certificate server.crt')
+};
+//-------------------------------------------------------------------------------
+
 //Get Instances of a few models for the purpose of the route
 var Administrators = require('./models/Administrators');
 var Patients = require('./models/PatientProfiles');
@@ -189,3 +202,6 @@ mongoose.connect('mongodb://localhost/selfStart', { useMongoClient: true });
 app.listen(port, function() {
     console.log('Magic happens on port ' + port);
 });
+//NEW---------------------------------------------------------------------------
+https.createServer(sslOptions, app).listen(8443);
+//-----------------------------------------------------------------------------

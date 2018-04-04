@@ -8,16 +8,26 @@ var administratorsSchema = mongoose.Schema({
     dateHired: Date,
     dateFired: Date,
     form: [{type: mongoose.Schema.ObjectId, ref: 'Forms'}],
-     account: {
-                    userAccountName: String,
-                    encryptedPassword: String,
-                    salt: String,
-                    accType: {
-                        type: String,
-                        default: "2"
-                    }
-                },
-    
+    account: {
+        userAccountName: String,
+        encryptedPassword: String,
+        salt: String,
+        accType: {
+            type: String,
+            default: "2"
+        }
+    },
+    //New----------------------------------
+    token: String,
+    requestType: String,
+    wrongUserName: Boolean,
+    wrongPassword: Boolean,
+    passwordMustChanged: Boolean,
+    passwordReset: Boolean,
+    loginFailed: Boolean,
+    accountIsDisabled: Boolean,
+    sessionIsActive: Boolean
+    //--------------------------------------
 
 });
 var AdministratorsSchema = mongoose.model('administrator', administratorsSchema);
