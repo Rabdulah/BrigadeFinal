@@ -11,20 +11,24 @@ router.route('/')
         console.log(request.body.patient);
         var patient = new Patients.Model(request.body.patient);
 
-        Patients.getUserByEmail(patient.email, (err, client) =>{
-            if(client) {
-                response.json({success: false, msg: 'User already registered'});
-            }
+        patient.save(function (error) {
+            if (error) response.send(error);
+            response.json({patient: patient});
         });
+        // Patients.getUserByEmail(patient.email, (err, client) =>{
+        //     if(client) {
+        //         response.json({success: false, msg: 'User already registered'});
+        //     }
+        // });
 
-        Patients.addClient(patient, (err, patient) => {
-            console.log("ASDJKkajsdkjsajkd");
-            if(err) {
-                response.json({success: false, msg: 'Failed to register client'});
-            } else{
-                response.json({patient: patient});
-            }
-        });
+        // Patients.addClient(patient, (err, patient) => {
+        //     console.log("ASDJKkajsdkjsajkd");
+        //     if(err) {
+        //         response.json({success: false, msg: 'Failed to register client'});
+        //     } else{
+        //         response.json({patient: patient});
+        //     }
+        // });
 
         // patient.save(function (error) {
         //     if (error) response.send(error);
@@ -34,7 +38,7 @@ router.route('/')
     })
     .get( function (request, response) {
         let {limit, offset, sort, dir, queryPath, regex} = request.query;
-        if(!limit) {
+        if(!limit && !regex) {
             Patients.Model.find(function (error, patients) {
                 if (error) response.send(error);
                 response.json({patient: patients});

@@ -2700,4 +2700,37 @@ a img {
   padding: 0;
   font-size: 0; }
 
+#countrySelect {
+  background: url("/assets/images/form/world.svg") no-repeat 12px 12px, url("/assets/images/form/cd-required.svg") no-repeat top right;
+  height: 51px;
+  line-height: 1.5em;
+  min-width: 100%;
+  padding-left: 50px; }
+
+#provinceSelect {
+  background: url("/assets/images/form/world.svg") no-repeat 12px 12px, url("/assets/images/form/cd-required.svg") no-repeat top right;
+  height: 51px;
+  line-height: 1.5em;
+  min-width: 100%;
+  padding-left: 50px; }
+
+#citySelect {
+  background: url("/assets/images/form/world.svg") no-repeat 12px 12px, url("/assets/images/form/cd-required.svg") no-repeat top right;
+  height: 51px;
+  line-height: 1.5em;
+  min-width: 100%;
+  padding-left: 50px; }
+
+#addSelect {
+  background: url("/assets/images/form/world.svg") no-repeat 12px 12px;
+  height: 51px;
+  line-height: 1.5em;
+  min-width: 100%;
+  padding-left: 50px; }
+
+.ui.checkbox input:checked ~ .box:after, .ui.checkbox input:checked ~ label:after {
+  opacity: 1;
+  color: white !important;
+  font-size: 10px; }
+
 /*# sourceMappingURL=self-start-front-end.css.map */

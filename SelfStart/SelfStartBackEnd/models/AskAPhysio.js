@@ -5,7 +5,6 @@ var askAPhysioSchema = mongoose.Schema({
     lastName: String,
     email: String,
     comment: String,
-    patient: {type: mongoose.Schema.ObjectId, ref: 'PatientProfiles'}
 });
 var AskAPhysioSchema = mongoose.model('askAPhysio', askAPhysioSchema);
 exports.Model = AskAPhysioSchema;

@@ -1,0 +1,39 @@
+<div id="example" class="index">
+
+
+  <div class="full height">
+    <div class="following bar">
+      <div class="ui container">
+
+        <div class="ui large secondary network menu inverted">
+          <div class="item">
+            <div class="ui logo shape">
+              <div class="sides">
+                <div class="active ui side">
+                  {{#link-to 'client'}}
+                    <img class="ui image selfStart" src="/assets/images/home/Header.png">
+                  {{/link-to}}
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="right menu inverted">
+            <a  href="/client/exercise-menu"class="item">Exercise Menu</a>
+            <!--<a  href="/"class="item">Initial Intake</a>-->
+            <a href="../images" class="item">Upload Photos</a>
+            <!--<a  href="/"class="item">Transations</a>-->
+            <!--<a  href="/"class="item">Settings</a>-->
+            <a href="/client/resources" class="item">Resources</a>
+            <a href="/client/appointment" class="item">Book Appointment</a>
+            <a id="login" href="../" class="item">Log out</a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    {{yield}}
+    <div id="SkypeButton_Call" style="position: fixed; right: 0; bottom: 0"></div>
+
+  </div>
+</div>

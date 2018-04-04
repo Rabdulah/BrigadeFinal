@@ -78,7 +78,7 @@ app.use('/assessmentTests', assessments);
 app.use('/forms', forms);
 app.use('/questions', questions);
 app.use('/appointments', appointments);
-app.use('/askAPhysio', askAPhysio);
+app.use('/askPhysios', askAPhysio);
 app.use('/exercises', excercise);
 app.use('/provinces', provinces);
 app.use('/recommendation', recommendation);

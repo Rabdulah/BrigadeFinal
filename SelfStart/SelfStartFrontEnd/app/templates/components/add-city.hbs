@@ -21,16 +21,31 @@
       </div>
 
       <div class="field" style="margin: 1em 0;">
+      <h4>Country</h4>
+      {{#ui-dropdown class="selection " onChange=(action (mut country)) id="addSelect"}}
+        <div class="default text">Select a country</div>
+        <i class="dropdown icon" id="selectIcon"></i>
+        <div class="menu">
+          {{#each countries as |country|}}
+            <div data-value="{{country.id}}" class="item">
+              {{country.name}}
+            </div>
+          {{/each}}
+        </div>
+      {{/ui-dropdown}}
+      </div>
+
+      <div class="field" style="margin: 1em 0;">
         <h4>Province</h4>
         <p class="cd-select icon">
           <select class="world" onchange={{action 'selectProvince' value="target.value"}} required=true>
-            {{#each provinces as |oneProvince|}}
+            {{#each provModel as |oneProvince|}}
               <option value={{oneProvince.id}} selected={{eq province oneProvince.name}}>
-                {{oneProvince.name}}
+                {{oneProvince.data.name}}
               </option>
             {{/each}}
           </select>
-          <</p>
+          </p>
       </div>
 
       <div class="field">

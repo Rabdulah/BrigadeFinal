@@ -10,6 +10,7 @@ var administratorsSchema = mongoose.Schema({
     phoneNumber: String,
     dateHired: Date,
     dateFired: Date,
+    message: String,
     form: [{type: mongoose.Schema.ObjectId, ref: 'Forms'}],
      account: {
             userAccountName: String,

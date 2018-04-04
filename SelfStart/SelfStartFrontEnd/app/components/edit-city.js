@@ -35,7 +35,7 @@ export default Component.extend({
       this.get('DS').findRecord('city', ID).then((rec) =>{
         rec.set('name', this.get('cityData.name'));
 
-        console.log(provinceId);
+        //console.log(provinceId);
 
         this.get('DS').findRecord('province', provinceId).then(function (src) {
           rec.set('province', src);

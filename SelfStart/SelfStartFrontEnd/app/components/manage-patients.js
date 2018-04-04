@@ -83,8 +83,8 @@ export default Component.extend({
     this.unbindScrolling();
   },
   scrolled: function() {
-    if (this.get('scrolledLines') < Ember.$("#myWindow").scrollTop()) {
-      this.set('scrolledLines', Ember.$("#myWindow").scrollTop());
+    if (this.get('scrolledLines') < Ember.$("#clientWindow").scrollTop()) {
+      this.set('scrolledLines', Ember.$("#clientWindow").scrollTop());
       this.set('limit', this.get('limit') + 10);
     }
   },
@@ -94,13 +94,13 @@ export default Component.extend({
     var onScroll = function() {
       Ember.run.debounce(self, self.scrolled, 500);
     };
-    Ember.$("#myWindow").bind('touchmove', onScroll);
-    Ember.$("#myWindow").bind('scroll', onScroll);
+    Ember.$("#clientWindow").bind('touchmove', onScroll);
+    Ember.$("#clientWindow").bind('scroll', onScroll);
   },
 
   unbindScrolling: function() {
-    Ember.$("#myWindow").unbind('scroll');
-    Ember.$("#myWindow").unbind('touchmove');
+    Ember.$("#clientWindow").unbind('scroll');
+    Ember.$("#clientWindow").unbind('touchmove');
   },
 
   actions: {

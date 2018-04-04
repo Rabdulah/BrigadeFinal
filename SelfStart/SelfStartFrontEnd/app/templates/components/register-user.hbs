@@ -3,31 +3,158 @@
 </a>
 
 {{#ui-modal name="register" class="register"}}
-  {{!--<link integrity="" rel="stylesheet" href="{{rootURL}}../assets/css/form-style.css"> &lt;!&ndash; Resource style &ndash;&gt;--}}
+  <i class="close icon"></i>
+  <link integrity="" rel="stylesheet" href="{{rootURL}}../assets/css/form-style.css"> <!-- Resource style -->
 
-  <h2 class="ui fluid centered header">Register</h2>
+  <div class="header">
+    Register
+  </div>
+  <div class="scrolling content">
 
-  <div id="ui container" style="height: 320px; padding-left:10%; padding-right: 10%; padding-top: 2%">
-    <form class="ui form">
+    <form id="edit" class="cd-form floating-labels" {{action "submit" on="submit"}}>
 
-      <div class="field">
-        <label>User Name</label>
-        {{input type ="text" value=UName placeholder="User Name"}}
+      <legend>Account Information</legend>
+      <div class="ui hidden divider"></div>
+      <div class="field" style="margin: 1em 0;">
+        {{input class="email" type="email" value = email placeholder="email" required = true}}
+      </div>
+      <div class="field" style="margin: 1em 0;">
+        {{input class="lock" type ="password" value=encryptedPassword placeholder="Password" required = true}}
       </div>
 
-      <div class="field">
-        <label>Email</label>
-        {{input type ="text" value=Email placeholder="Email"}}
+      <div class="ui hidden divider"></div>
+      <div class="ui hidden divider"></div>
+
+      <legend>Personal Information</legend>
+      <div class="ui hidden divider"></div>
+      <div class="ui two column grid">
+        <div class="column " style="margin: 1em 0;">
+          {{input class="user" type="text" value = givenName placeholder="First Name" required = true}}
+        </div>
+        <div class="column " style="margin: 1em 0;">
+          {{input class="user" type="text" value = familyName placeholder="Last Name" required = true}}
+        </div>
       </div>
 
-      <div class="field">
-        <label>Password</label>
-        {{input type ="password" value=PWord placeholder="Password"}}
+      <div class="ui two column grid">
+        <div class="column " style="margin: 1em 0;">
+          <input class="date" type="date" value={{selectedDate}}  onchange={{action 'assignDate' value="target.value"}} required>
+        </div>
+        <div class="column " style="margin: 1em 0;">
+          <p class="cd-select icon">
+            <select class="people" onchange={{action 'selectGender' value="target.value"}} required=true>
+              <option selected="selected">
+                Select Gender
+              </option>
+              {{#each genderModel as |oneGender|}}
+                <option value={{oneGender.name}} selected={{eq gender oneGender.name}}>
+                  {{oneGender.name}}
+                </option>
+              {{/each}}
+            </select>
+          </p>
+        </div>
       </div>
 
-      <div class = "inline">
-        <button class="ui green button " {{action "submit"}}>Submit</button>
-        <button class="ui button " {{action "deny"}}>Cancel</button>
+      <div class="field" style="margin: 1em 0;">
+        {{input class="phone" type="text" value = phoneNumber placeholder="Phone Number" required = true}}
+      </div>
+
+      <div class="ui hidden divider"></div>
+      <div class="ui hidden divider"></div>
+
+      <legend>Address</legend>
+      <div class="ui hidden divider"></div>
+
+      <div class="ui two column grid">
+        <div class="column " style="margin: 1em 0;">
+          {{input class="home" type="text" value = streetNumber placeholder="Street Number" required = true}}
+        </div>
+        <div class="column " style="margin: 1em 0;">
+          {{input class="home" type="text" value = streetName placeholder="Street Name" required = true}}
+        </div>
+      </div>
+
+      <div class="ui two column grid">
+        <div class="column " style="margin: 1em 0;">
+          {{input class="home" type="text" placeholder="Unit Number" value = apartment}}
+        </div>
+        <div class="column " style="margin: 1em 0;">
+          {{input class="flag" type="text" value = postalCode placeholder="Postal/Zip Code" required = true}}
+        </div>
+      </div>
+
+      <div class="ui three column grid" id="grid">
+        <div class="column " style="margin: 1em 0;">
+          {{#ui-dropdown class="selection " onChange=(action (mut country)) id="countrySelect"}}
+            <div class="default text">Select a country</div>
+            <i class="dropdown icon" id="selectIcon"></i>
+            <div class="menu">
+              {{#each model as |country|}}
+                <div data-value="{{country.id}}" class="item">
+                  {{country.name}}
+                </div>
+              {{/each}}
+            </div>
+          {{/ui-dropdown}}
+        </div>
+        <div class="column " style="margin: 1em 0;">
+
+          {{#ui-dropdown class="selection " onChange=(action (mut province)) id="provinceSelect"}}
+            <div class="default text">Select a province</div>
+            <i class="dropdown icon" id="selectIcon"></i>
+            <div class="menu">
+              {{#each provModel as |province|}}
+                <div data-value="{{province.id}}" class="item">
+                  {{province.name}}
+                </div>
+              {{/each}}
+            </div>
+          {{/ui-dropdown}}
+        </div>
+
+
+        <div class="column " style="margin: 1em 0;">
+
+          {{#ui-dropdown class="selection " onChange=(action (mut city)) id="citySelect"}}
+            <div class="default text">Select a city</div>
+            <i class="dropdown icon" id="selectIcon"></i>
+            <div class="menu">
+              {{#each cityModel as |city|}}
+                <div data-value="{{city.id}}" class="item">
+                  {{city.name}}
+                </div>
+              {{/each}}
+            </div>
+          {{/ui-dropdown}}
+
+          {{!--<p class="cd-select icon">-->
+            <!--<select class="world" onchange={{action 'selectCity' value="target.value"}} required=true>-->
+              <!--<option selected="selected">-->
+                <!--Select City-->
+              <!--</option>-->
+              <!--{{#each cityModel as |oneCity|}}-->
+                <!--<option value={{oneCity.name}} selected={{eq sity oneCity.name}}>-->
+                  <!--{{oneCity.name}}-->
+                <!--</option>-->
+              <!--{{/each}}-->
+            <!--</select>-->
+          <!--</p>--}}
+
+
+        </div>
+      </div>
+
+      <div class="field" style="margin-top: 1em;">
+        <p>By creating an account you agree to our <a style="color: blue; cursor: pointer; text-decoration: underline;">Terms & Privacy.</a></p>
+        <br>
+      </div>
+
+
+      <div class="field">
+        <button class="fluid ui blue button" style="max-width: 100%; height: 50px;">
+          Submit
+        </button>
       </div>
 
     </form>

@@ -50,6 +50,12 @@ Router.map(function() {
     this.route('edit-menu', { path: 'rehabplans/:rehabilitationplan_id'});
     this.route('exercises');
   });
+  this.route('client', function() {
+    this.route('welcome-client', {path: '/'});
+    this.route('appointment');
+    this.route('exercise-menu');
+    this.route('resources');
+  });
 });
 
 export default Router;

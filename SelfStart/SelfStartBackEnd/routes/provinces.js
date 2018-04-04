@@ -11,10 +11,19 @@ router.route('/')
         });
     })
     .get( function (request, response) {
-        Provinces.Model.find(function (error, provinces) {
-            if (error) response.send(error);
-            response.json({province: provinces});
-        });
+        var prov =  request.query.filter;
+        if (!prov){
+            Provinces.Model.find(function (error, provinces) {
+                if (error) response.send(error);
+                response.json({province: provinces});
+            });
+        }
+        else{
+            Provinces.Model.find({"country": prov.country}, function (error, provinces) {
+                if (error) response.send(error);
+                response.json({province: provinces});
+            });
+        }
     });
 
 router.route('/:province_id')

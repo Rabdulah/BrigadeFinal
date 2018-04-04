@@ -1,6 +1,9 @@
-<div class="ui button" {{action 'openModal'}}>
-  Add Exercise
-</div>
+
+  <div class="ui button" {{action 'openModal'}}>
+    Add Exercise
+  </div>
+
+
 
 {{#ui-modal name="newExercise" class="newExercise"}}
   <i class="close icon"></i>
@@ -22,7 +25,7 @@
       </div>
 
 
-      <div class="field">
+      <div class="field" style="margin: 1em 0;">
 
 
         <div class="ui grid" style="margin: 1em 0;">
@@ -53,18 +56,22 @@
         </div>
       </div>
 
-      <div class="field" style="margin: 1em 0;">
-        {{input class="watch"  type ="text" value = sets placeholder="Sets" required = true}}
-      </div>
-      <div class="field" style="margin: 1em 0;">
-        {{input class="watch"  type ="text" value = reps placeholder="Reps" required = true}}
-      </div>
-      <div class="field" style="margin: 1em 0;">
-        {{input class="watch"  type ="text" value = Duration placeholder="Duration" required = true}}
+
+      <div class="ui three column grid">
+        <div class="column" style="margin: 1em 0;">
+          {{input class="watch"  type ="text" value = sets placeholder="Sets"}}
+
+        </div>
+        <div class="column" style="margin: 1em 0;">
+          {{input class="watch"  type ="text" value = reps placeholder="Reps"}}
+        </div>
+        <div class="column" style="margin: 1em 0;">
+          {{input class="watch"  type ="text" value = Duration placeholder="Duration"}}
+        </div>
       </div>
 
       <div class="field" style="margin: 1em 0;">
-        {{input class="link"  type ="text" value = MMURL placeholder="Multi Media URL" required = true}}
+        {{input class="link"  type ="text" value = MMURL placeholder="Multi Media URL"}}
       </div>
 
 

@@ -147,10 +147,7 @@ export default Component.extend({
   },
 
   menusState: "active",
-
-
   menus: true,
-
 
   terminated: false,
 
