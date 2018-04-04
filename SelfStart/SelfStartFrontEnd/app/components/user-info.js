@@ -8,10 +8,12 @@ export default Component.extend({
   router: inject('-routing'),
   loggedOut: false,
   tagName: '',
+  authentication: inject('auth'),
 
   init(){
     this._super(...arguments);
-
+    // console.log(this.get('authentication').hash("asdads"));
+    // console.log(this.get('auth'));
     this.set('familyName', '');
     this.set('givenName', '');
     this.set('email', '');
@@ -89,85 +91,49 @@ export default Component.extend({
       this.set('selectedGender', gender);
     },
 
-    goToIntro() {
-      this.set('accountValue', "completed");
-      this.set('introValue', "active");
-      this.set('intro', true);
-      this.set('account', false);
+    submit() {
+      let self = this;
+      
+      let passwords = this.get('DS').createRecord('password', {
+        email: self.get('email'),
+        encryptedPassword: self.get('authentication').hash(self.get('encryptedPassword')),
+        passwordMustChanged : true,
+        passwordReset:true,
+      });
 
-      // let self = this;
-      //
-      // let patientAccount = {};
-      // // patientAccount['userAccountName'] = localStorage.getItem('UName');
-      // patientAccount['encryptedPassword'] = self.get('encryptedPassword');
-      //
-      // let patient = this.get('DS').createRecord('patient', {
-      //   familyName: self.get('familyName'),
-      //   givenName: self.get('givenName'),
-      //   email: self.get('email'),
-      //   streetName: self.get('streetName'),
-      //   streetNumber: self.get('streetNumber'),
-      //   apartment: self.get('apartment'),
-      //   country: self.get('selectedCountry'),
-      //   province: self.get('province'),
-      //   city: self.get('city'),
-      //   dateOfBirth: new Date(this.get('selectedDate')),
-      //   healthCardNumber: self.get('healthCardNumber'),
-      //   gender: self.get('selectedGender'),
-      //   phoneNumber: self.get('phoneNumber'),
-      //   postalCode: self.get('postalCode'),
-      //   account: patientAccount
-      // });
-      //
-      // patient.save().then((patient) =>{
-      //   localStorage.clear();
-      //   // localStorage.setItem('loggedIn', false);
-      // });
-    },
-    backToAccount() {
-      this.set('accountValue', "active");
-      this.set('introValue', "");
-      this.set('intro', false);
-      this.set('account', true);
-    },
-    goToAppointment() {
-      this.set('introValue', "completed");
-      this.set('appointmentValue', "active");
-      this.set('appointment', true);
-      this.set('intro', false);
-    },
-    backToIntro() {
-      this.set('introValue', "active");
-      this.set('appointmentValue', "");
-      this.set('intro', true);
-      this.set('appointment', false);
-    },
-    goToPayment() {
-      this.set('paymentValue', "active");
-      this.set('appointmentValue', "completed");
-      this.set('appointment', false);
-      this.set('payment', true);
-    },
-    backToAppointment() {
-      this.set('appointmentValue', "active");
-      this.set('paymentValue', "");
-      this.set('payment', false);
-      this.set('appointment', true);
-    },
-    goToConfirm() {
-      this.set('confirmValue', "active");
-      this.set('paymentValue', "completed");
-      this.set('payment', false);
-      this.set('confirm', true);
-    },
-    backToPayment() {
-      this.set('paymentValue', "active");
-      this.set('confirmValue', "");
-      this.set('payment', true);
-      this.set('confirm', false);
-    },
-    goToPaypal() {
+      passwords.save().then((passwords) => {
+        let patient = this.get('DS').createRecord('patient', {
+          familyName: self.get('familyName'),
+          givenName: self.get('givenName'),
+          email: self.get('email'),
+          streetName: self.get('streetName'),
+          streetNumber: self.get('streetNumber'),
+          apartment: self.get('apartment'),
+          country: self.get('selectedCountry'),
+          province: self.get('province'),
+          city: self.get('city'),
+          dateOfBirth: new Date(this.get('selectedDate')),
+          gender: self.get('selectedGender'),
+          phoneNumber: self.get('phoneNumber'),
+          postalCode: self.get('postalCode')
+        });
 
+        patient.save().then((res) => {
+          console.log('this is the response', res);
+          console.log(res.get("success"));
+          if(!res.get("success")) {
+            console.log("FAILED")
+            patient.destroyRecord().then(o => {
+              console.log("destroyed", o);
+            });
+            passwords.destroyRecord().then(o => {});
+          } else{
+            console.log("SUCCESS", res);
+            passwords.set('client', res);
+          }
+        });
+
+      })
     },
   }
 });

@@ -15,9 +15,19 @@ var physiotherapestsSchema = mongoose.Schema({
     appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],
 
     account: {
-        userAccountName: String,
-        encryptedPassword: String,
-        salt: String,
+        encryptedPassword: [{type: mongoose.Schema.ObjectId, ref: 'Passwords'}],
+        //New----------------------------------------
+        nonce: String,
+        response: String,
+        token: String,
+        requestType: String,
+        wrongUserName: Boolean,
+        wrongPassword: Boolean,
+        passwordMustChanged: Boolean,
+        passwordReset: Boolean,
+        loginFailed: Boolean,
+        sessionIsActive: Boolean,
+        //-------------------------------------------
         accType: {
             type: String,
             default: "1"
@@ -42,6 +52,13 @@ exports.getUserByID = function(id, callback) {
 exports.getUserByEmail = function(email, callback) {
     const query = {email: email};
     Physio.findOne(query, callback);
+};
+//-----------------------Get User By Email Direct Return-----------------------//
+exports.getUserByEmailDirect = function(email) {
+    const query = {email: email};
+    Physio.findOne(query, (err, physio) =>{
+        return physio;
+    });
 };
 //----------------------------Add New Physiotherapest--------------------------//
 exports.addPhysio = function(physio, callback) {

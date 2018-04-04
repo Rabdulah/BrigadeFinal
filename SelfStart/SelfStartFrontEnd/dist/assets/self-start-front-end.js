@@ -3763,224 +3763,224 @@ define('self-start-front-end/components/edit-status', ['exports'], function (exp
   });
 });
 define('self-start-front-end/components/get-answers', ['exports'], function (exports) {
-      'use strict';
+  'use strict';
 
-      Object.defineProperty(exports, "__esModule", {
-            value: true
-      });
-      exports.default = Ember.Component.extend({
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
 
-            DS: Ember.inject.service('store'),
-            SAanswer: "",
-            rateValue: 0,
-            mcop1: 0,
-            mcop2: 0,
-            mcop3: 0,
-            mcop4: 0,
-            mcop5: 0,
-            mcop6: 0,
+    DS: Ember.inject.service('store'),
+    SAanswer: "",
+    rateValue: 0,
+    mcop1: 0,
+    mcop2: 0,
+    mcop3: 0,
+    mcop4: 0,
+    mcop5: 0,
+    mcop6: 0,
 
-            actions: {
-                  ratingSave: function ratingSave(rv) {
+    actions: {
+      ratingSave: function ratingSave(rv) {
 
-                        this.set('rateValue', rv);
+        this.set('rateValue', rv);
 
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
 
-                        temp[this.get("qNumber")] = this.get('rateValue');
-                        this.get("assessment").get('answers').clear();
+        temp[this.get("qNumber")] = this.get('rateValue');
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
+          this.get("assessment").get('answers').push(temp[x]);
+        }
 
-                        console.log(this.get("assessment").get('answers'));
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  TFtrue: function TFtrue() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-                        temp[this.get("qNumber")] = "True";
-                        this.get("assessment").get('answers').clear();
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      TFtrue: function TFtrue() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+        temp[this.get("qNumber")] = "True";
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
+          this.get("assessment").get('answers').push(temp[x]);
+        }
 
-                        console.log(this.get("assessment").get('answers'));
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  TFfalse: function TFfalse() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-                        temp[this.get("qNumber")] = "False";
-                        this.get("assessment").get('answers').clear();
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      TFfalse: function TFfalse() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+        temp[this.get("qNumber")] = "False";
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
+          this.get("assessment").get('answers').push(temp[x]);
+        }
 
-                        console.log(this.get("assessment").get('answers'));
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  saSave: function saSave() {
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      saSave: function saSave() {
 
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-                        temp[this.get("qNumber")] = this.get("SAanswer");
-                        this.get("assessment").get('answers').clear();
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+        temp[this.get("qNumber")] = this.get("SAanswer");
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
+          this.get("assessment").get('answers').push(temp[x]);
+        }
 
-                        console.log(this.get("assessment").get('answers'));
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  mcop1Save: function mcop1Save() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-                        temp[this.get("qNumber")] = "0";
-                        this.get("assessment").get('answers').clear();
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      mcop1Save: function mcop1Save() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+        temp[this.get("qNumber")] = "0";
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
+          this.get("assessment").get('answers').push(temp[x]);
+        }
 
-                        console.log(this.get("assessment").get('answers'));
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  mcop2Save: function mcop2Save() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-                        temp[this.get("qNumber")] = "1";
-                        this.get("assessment").get('answers').clear();
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      mcop2Save: function mcop2Save() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+        temp[this.get("qNumber")] = "1";
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
+          this.get("assessment").get('answers').push(temp[x]);
+        }
 
-                        console.log(this.get("assessment").get('answers'));
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  mcop3Save: function mcop3Save() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-                        temp[this.get("qNumber")] = "2";
-                        this.get("assessment").get('answers').clear();
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      mcop3Save: function mcop3Save() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+        temp[this.get("qNumber")] = "2";
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
+          this.get("assessment").get('answers').push(temp[x]);
+        }
 
-                        console.log(this.get("assessment").get('answers'));
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  mcop4Save: function mcop4Save() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      mcop4Save: function mcop4Save() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
 
-                        temp[this.get("qNumber")] = "3";
-                        this.get("assessment").get('answers').clear();
+        temp[this.get("qNumber")] = "3";
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
+          this.get("assessment").get('answers').push(temp[x]);
+        }
 
-                        console.log(this.get("assessment").get('answers'));
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  mcop5Save: function mcop5Save() {
-                        var temp = [];
-                        this.get("assessment").get('4').forEach(function (element) {
-                              temp.push(element);
-                        });
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      mcop5Save: function mcop5Save() {
+        var temp = [];
+        this.get("assessment").get('4').forEach(function (element) {
+          temp.push(element);
+        });
 
-                        temp[this.get("qNumber")] = "True";
-                        this.get("assessment").get('answers').clear();
+        temp[this.get("qNumber")] = "True";
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
+          this.get("assessment").get('answers').push(temp[x]);
+        }
 
-                        console.log(this.get("assessment").get('answers'));
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  mcop6Save: function mcop6Save() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      mcop6Save: function mcop6Save() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
 
-                        temp[this.get("qNumber")] = "5";
-                        this.get("assessment").get('answers').clear();
+        temp[this.get("qNumber")] = "5";
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
-                        console.log(this.get("assessment").get('answers'));
+          this.get("assessment").get('answers').push(temp[x]);
+        }
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  }
-            }
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      }
+    }
 
-      });
+  });
 });
 define("self-start-front-end/components/illiquid-model", ["exports", "liquid-fire/components/illiquid-model"], function (exports, _illiquidModel) {
   "use strict";
@@ -4925,7 +4925,9 @@ define('self-start-front-end/components/physio-nav', ['exports'], function (expo
     },
 
 
-    actions: {}
+    actions: {
+      logout: function logout() {}
+    }
   });
 });
 define('self-start-front-end/components/physio-table', ['exports'], function (exports) {
@@ -5858,10 +5860,12 @@ define('self-start-front-end/components/user-info', ['exports'], function (expor
     router: Ember.inject.service('-routing'),
     loggedOut: false,
     tagName: '',
+    authentication: Ember.inject.service('auth'),
 
     init: function init() {
       this._super.apply(this, arguments);
-
+      // console.log(this.get('authentication').hash("asdads"));
+      // console.log(this.get('auth'));
       this.set('familyName', '');
       this.set('givenName', '');
       this.set('email', '');
@@ -5935,84 +5939,51 @@ define('self-start-front-end/components/user-info', ['exports'], function (expor
       selectGender: function selectGender(gender) {
         this.set('selectedGender', gender);
       },
-      goToIntro: function goToIntro() {
-        this.set('accountValue', "completed");
-        this.set('introValue', "active");
-        this.set('intro', true);
-        this.set('account', false);
+      submit: function submit() {
+        var _this = this;
 
-        // let self = this;
-        //
-        // let patientAccount = {};
-        // // patientAccount['userAccountName'] = localStorage.getItem('UName');
-        // patientAccount['encryptedPassword'] = self.get('encryptedPassword');
-        //
-        // let patient = this.get('DS').createRecord('patient', {
-        //   familyName: self.get('familyName'),
-        //   givenName: self.get('givenName'),
-        //   email: self.get('email'),
-        //   streetName: self.get('streetName'),
-        //   streetNumber: self.get('streetNumber'),
-        //   apartment: self.get('apartment'),
-        //   country: self.get('selectedCountry'),
-        //   province: self.get('province'),
-        //   city: self.get('city'),
-        //   dateOfBirth: new Date(this.get('selectedDate')),
-        //   healthCardNumber: self.get('healthCardNumber'),
-        //   gender: self.get('selectedGender'),
-        //   phoneNumber: self.get('phoneNumber'),
-        //   postalCode: self.get('postalCode'),
-        //   account: patientAccount
-        // });
-        //
-        // patient.save().then((patient) =>{
-        //   localStorage.clear();
-        //   // localStorage.setItem('loggedIn', false);
-        // });
-      },
-      backToAccount: function backToAccount() {
-        this.set('accountValue', "active");
-        this.set('introValue', "");
-        this.set('intro', false);
-        this.set('account', true);
-      },
-      goToAppointment: function goToAppointment() {
-        this.set('introValue', "completed");
-        this.set('appointmentValue', "active");
-        this.set('appointment', true);
-        this.set('intro', false);
-      },
-      backToIntro: function backToIntro() {
-        this.set('introValue', "active");
-        this.set('appointmentValue', "");
-        this.set('intro', true);
-        this.set('appointment', false);
-      },
-      goToPayment: function goToPayment() {
-        this.set('paymentValue', "active");
-        this.set('appointmentValue', "completed");
-        this.set('appointment', false);
-        this.set('payment', true);
-      },
-      backToAppointment: function backToAppointment() {
-        this.set('appointmentValue', "active");
-        this.set('paymentValue', "");
-        this.set('payment', false);
-        this.set('appointment', true);
-      },
-      goToConfirm: function goToConfirm() {
-        this.set('confirmValue', "active");
-        this.set('paymentValue', "completed");
-        this.set('payment', false);
-        this.set('confirm', true);
-      },
-      backToPayment: function backToPayment() {
-        this.set('paymentValue', "active");
-        this.set('confirmValue', "");
-        this.set('payment', true);
-        this.set('confirm', false);
-      },
-      goToPaypal: function goToPaypal() {}
+        var self = this;
+
+        var passwords = this.get('DS').createRecord('password', {
+          email: self.get('email'),
+          encryptedPassword: self.get('authentication').hash(self.get('encryptedPassword')),
+          passwordMustChanged: true,
+          passwordReset: true
+        });
+
+        passwords.save().then(function (passwords) {
+          var patient = _this.get('DS').createRecord('patient', {
+            familyName: self.get('familyName'),
+            givenName: self.get('givenName'),
+            email: self.get('email'),
+            streetName: self.get('streetName'),
+            streetNumber: self.get('streetNumber'),
+            apartment: self.get('apartment'),
+            country: self.get('selectedCountry'),
+            province: self.get('province'),
+            city: self.get('city'),
+            dateOfBirth: new Date(_this.get('selectedDate')),
+            gender: self.get('selectedGender'),
+            phoneNumber: self.get('phoneNumber'),
+            postalCode: self.get('postalCode')
+          });
+
+          patient.save().then(function (res) {
+            console.log('this is the response', res);
+            console.log(res.get("success"));
+            if (!res.get("success")) {
+              console.log("FAILED");
+              patient.destroyRecord().then(function (o) {
+                console.log("destroyed", o);
+              });
+              passwords.destroyRecord().then(function (o) {});
+            } else {
+              console.log("SUCCESS", res);
+              passwords.set('client', res);
+            }
+          });
+        });
+      }
     }
   });
 });
@@ -6022,97 +5993,75 @@ define('self-start-front-end/components/user-login', ['exports'], function (expo
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.Component.extend({
+
+  var _EmberComponent$exte;
+
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  exports.default = Ember.Component.extend((_EmberComponent$exte = {
     DS: Ember.inject.service('store'),
     router: Ember.inject.service('-routing'),
     model: null,
     ajax: Ember.inject.service(),
     temp: false,
+    authentication: Ember.inject.service('auth')
 
-    authentication: function authentication() {
+  }, _defineProperty(_EmberComponent$exte, 'authentication', function authentication() {
+    var self = this;
+    if (localStorage.getItem('temp')) {
+      return this.get('ajax').request('http://localhost:8082/Authenticate', {
+        method: 'POST',
+        data: {
+          email: this.get('Email'),
+          password: this.get('PWord')
+        },
+        success: function success(res) {
+          localStorage.setItem('id_token', res.token);
+          localStorage.setItem('user_level', res.user.account.accType);
+          localStorage.setItem('_id', res.user._id);
+          localStorage.setItem('loggedIn', true);
+          Ember.$('.ui.login.modal').modal('hide');
+          this.get('router').transitionTo('dashboard');
+        }
+      });
+    } else {
+      console.log("NOT AN ACC");
+    }
+  }), _defineProperty(_EmberComponent$exte, 'actions', {
+    goToInfo: function goToInfo() {},
+    deny: function deny() {
+      Ember.$('.ui.login.modal').modal('hide');
+    },
+    submit: function submit() {
+      var auth = this.get("authentication");
       var self = this;
-      if (localStorage.getItem('temp')) {
-        return this.get('ajax').request('http://localhost:8082/Authenticate', {
-          method: 'POST',
-          data: {
-            email: this.get('Email'),
-            password: this.get('PWord')
-          },
-          success: function success(res) {
-            localStorage.setItem('id_token', res.token);
-            localStorage.setItem('user_level', res.user.account.accType);
-            localStorage.setItem('_id', res.user._id);
-            localStorage.setItem('loggedIn', true);
-            Ember.$('.ui.login.modal').modal('hide');
-            this.get('router').transitionTo('dashboard');
-          }
-        });
-      } else {
-        console.log("NOT AN ACC");
-      }
+      auth.open(this.get('Email'), this.get('PWord')).then(function () {
+        self.get('authentication').set('isLoginRequired', false);
+      }, function (error) {});
     },
 
 
-    actions: {
-      goToInfo: function goToInfo() {},
-      deny: function deny() {
-        Ember.$('.ui.login.modal').modal('hide');
-      },
-      submit: function submit() {
+    logout: function logout() {
+      localStorage.clear();
+    },
 
-        localStorage.setItem('temp', false);
-        this.get('ajax').request('http://localhost:8082/patients/' + this.get('Email'), {
-          method: 'GET',
-          success: function success(res) {
-            console.log(res);
-            if (res.patient) {
-              console.log("THIS IS A CLIENT");
-              localStorage.setItem('temp', true);
-            }
-          }
-        });
-        this.get('ajax').request('http://localhost:8082/administrators/' + this.get('Email'), {
-          method: 'GET',
-          success: function success(res) {
-            if (res.admin) {
-              console.log("THIS IS A Admin");
-              localStorage.setItem('temp', true);
-            }
-          }
-        });
-
-        this.get('ajax').request('http://localhost:8082/physiotherapests/' + this.get('Email'), {
-          method: 'GET',
-          success: function success(res) {
-            if (res.physio) {
-              console.log("THIS IS A Physio");
-              localStorage.setItem('temp', true);
-            }
-          }
-        });
-
-        // if(localStorage.getItem('temp')) {
-        this.authentication();
-
-        // } else {
-        // console.log("NOT AN ACCOUNT");
-        // }
-      },
-
-      logout: function logout() {
-        localStorage.clear();
-      },
-
-      openModal: function openModal() {
-
-        Ember.$('.ui.login.modal').modal({
-          // closable: false,
-
-        }).modal('show');
-      }
+    openModal: function openModal() {
+      Ember.$('.ui.login.modal').modal({}).modal('show');
     }
-
-  });
+  }), _EmberComponent$exte));
 });
 define('self-start-front-end/components/view-appointment', ['exports'], function (exports) {
   'use strict';
@@ -7798,6 +7747,27 @@ define('self-start-front-end/models/image', ['exports', 'ember-data'], function 
     exercise: _emberData.default.hasMany('exercise')
   });
 });
+define('self-start-front-end/models/login', ['exports', 'ember-data'], function (exports, _emberData) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _emberData.default.Model.extend({
+    email: _emberData.default.attr(),
+    password: _emberData.default.attr(),
+    nonce: _emberData.default.attr(),
+    response: _emberData.default.attr(),
+    token: _emberData.default.attr(),
+    requestType: _emberData.default.attr(),
+    wrongUserName: _emberData.default.attr('boolean'),
+    wrongPassword: _emberData.default.attr('boolean'),
+    passwordMustChanged: _emberData.default.attr('boolean'),
+    passwordReset: _emberData.default.attr('boolean'),
+    loginFailed: _emberData.default.attr('boolean'),
+    sessionIsActive: _emberData.default.attr('boolean')
+  });
+});
 define('self-start-front-end/models/marital-status', ['exports', 'ember-data'], function (exports, _emberData) {
   'use strict';
 
@@ -7809,6 +7779,23 @@ define('self-start-front-end/models/marital-status', ['exports', 'ember-data'], 
 
     name: _emberData.default.attr()
   });
+});
+define('self-start-front-end/models/password', ['exports', 'ember-data'], function (exports, _emberData) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = _emberData.default.Model.extend({
+        email: _emberData.default.attr(),
+        salt: _emberData.default.attr(),
+        encryptedPassword: _emberData.default.attr(),
+        passwordMustChanged: _emberData.default.attr(),
+        passwordReset: _emberData.default.attr(),
+        admin: _emberData.default.belongsTo('administrator'),
+        practitioner: _emberData.default.belongsTo('physiotherapest'),
+        client: _emberData.default.belongsTo('patient')
+    });
 });
 define('self-start-front-end/models/patient', ['exports', 'ember-data'], function (exports, _emberData) {
   'use strict';
@@ -7835,7 +7822,8 @@ define('self-start-front-end/models/patient', ['exports', 'ember-data'], functio
     postalCode: _emberData.default.attr(),
     appointments: _emberData.default.hasMany('appointment', { async: true }),
     account: _emberData.default.attr(),
-    rehablink: _emberData.default.hasMany('rehab-client-link', { async: true })
+    rehablink: _emberData.default.hasMany('rehab-client-link', { async: true }),
+    success: _emberData.default.attr()
   });
 });
 define("self-start-front-end/models/physiotherapest", ["exports", "ember-data"], function (exports, _emberData) {
@@ -8459,6 +8447,301 @@ define('self-start-front-end/services/ajax', ['exports', 'ember-ajax/services/aj
     enumerable: true,
     get: function () {
       return _ajax.default;
+    }
+  });
+});
+define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'], function (exports, _npmCryptoBrowserify) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Service.extend({
+    userName: null,
+    encryptedPassword: null,
+    isAuthenticated: false,
+    store: Ember.inject.service(),
+    isLoginRequested: false,
+    userCList: null,
+    ajax: Ember.inject.service(),
+
+    getName: Ember.computed(function () {
+      var identity = localStorage.getItem('sas-session-id');
+      if (identity) {
+        return this.decrypt(identity);
+      } else {
+        return null;
+      }
+    }),
+
+    setName: function setName(name) {
+      this.set('userName', name.toLowerCase());
+      var identity = this.encrypt(this.get('userName'));
+      localStorage.setItem('sas-session-id', identity);
+    },
+    setPassword: function setPassword(password) {
+      this.set('encryptedPassword', this.hash(password));
+    },
+    hash: function hash(text) {
+      var hash = _npmCryptoBrowserify.default.createHash('sha256');
+      hash.update(text);
+      return hash.digest('binary');
+    },
+    encrypt: function encrypt(plainText) {
+      var cipher = _npmCryptoBrowserify.default.createCipher('aes256', 'SE3350b Winter 2016');
+      var crypted = cipher.update(plainText, 'ascii', 'binary');
+      crypted += cipher.final('binary');
+      return crypted;
+    },
+    decrypt: function decrypt(cipherText) {
+      var decipher = _npmCryptoBrowserify.default.createDecipher('aes256', 'SE3350b Winter 2016');
+      var dec = decipher.update(cipherText, 'binary', 'ascii');
+      dec += decipher.final('ascii');
+      return dec;
+    },
+    open: function open(email, password) {
+      var self = this;
+      return new Ember.RSVP.Promise(function (resolve, reject) {
+        // send username and password to the server asking for a challenge (nonce)
+        self.setPassword(password);
+        var myStore = self.get('store');
+
+        self.get('ajax').request(window.location.protocol + "//" + window.location.hostname + ":8082" + "/Authenticate", {
+          method: 'POST',
+          data: {
+            email: email,
+            password: null, //first message password should be null
+            nonce: null, // a challenge from the server
+            response: null, // client response
+            requestType: "open"
+          },
+          success: function success(serverResponse) {
+            if (serverResponse.get('loginFailed')) {
+              self.close(name);
+              reject("loginFailed");
+            } else {
+              if (serverResponse.get('wrongUserName')) {
+                //       self.close(name);
+                reject("wrongUserName");
+              } else {
+                if (serverResponse.get('accountIsDisabled')) {
+                  //        self.close(name);
+                  reject("accountIsDisabled");
+                } else {
+
+                  var NONCE = self.encrypt(serverResponse.get('nonce'));
+                  var clientResponse = myStore.createRecord('login', {
+                    userName: name,
+                    password: self.get('encryptedPassword'),
+                    nonce: null, // a challenge from the server
+                    response: NONCE, // client response
+                    requestType: "openResponse"
+                  });
+
+                  clientResponse.save().then(function (message4) {
+                    //get the token (message 4 in the protocol)
+                    // and get the capability list or no access flag
+                    // set the capability list as a token property in this service and return true
+                    // or set the token property null and return false.
+                    if (serverResponse.get('loginFailed')) {
+                      ////  self.close(name);
+                      reject("loginFailed");
+                    } else {
+
+                      if (message4.get('wrongPassword')) {
+                        ////self.close(name);
+                        reject("wrongPassword");
+                      } else {
+                        if (message4.get('passwordReset')) {
+                          //self.close(name);
+                          reject("passwordReset");
+                        } else {
+                          self.setName(name);
+                          var userRole = self.decrypt(message4.get('token'));
+                          self.set('isAuthenticated', true);
+                          self.set('userCList', userRole);
+                          resolve(userRole);
+                        }
+                      }
+                    }
+                  });
+                }
+              }
+            }
+          }
+        });
+
+        // send the first message of the authentication protocol
+        loginRequest.save().then(function (serverResponse) {
+          //get the server challenge (message 2 in the protocol)
+
+          if (serverResponse.get('loginFailed')) {
+            self.close(name);
+            reject("loginFailed");
+          } else {
+            // encrypt server nonce and set client response
+            if (serverResponse.get('wrongUserName')) {
+              //       self.close(name);
+              reject("wrongUserName");
+            } else {
+              if (serverResponse.get('accountIsDisabled')) {
+                //        self.close(name);
+                reject("accountIsDisabled");
+              } else {
+
+                var NONCE = self.encrypt(serverResponse.get('nonce'));
+                var clientResponse = myStore.createRecord('login', {
+                  userName: name,
+                  password: self.get('encryptedPassword'),
+                  nonce: null, // a challenge from the server
+                  response: NONCE, // client response
+                  requestType: "openResponse"
+                });
+                // send the third message of the authentication protocol
+                clientResponse.save().then(function (message4) {
+                  //get the token (message 4 in the protocol)
+                  // and get the capability list or no access flag
+                  // set the capability list as a token property in this service and return true
+                  // or set the token property null and return false.
+                  if (serverResponse.get('loginFailed')) {
+                    ////  self.close(name);
+                    reject("loginFailed");
+                  } else {
+
+                    if (message4.get('wrongPassword')) {
+                      ////self.close(name);
+                      reject("wrongPassword");
+                    } else {
+                      if (message4.get('passwordReset')) {
+                        //self.close(name);
+                        reject("passwordReset");
+                      } else {
+                        self.setName(name);
+                        var userRole = self.decrypt(message4.get('token'));
+                        self.set('isAuthenticated', true);
+                        self.set('userCList', userRole);
+                        resolve(userRole);
+                      }
+                    }
+                  }
+                });
+              }
+            }
+          }
+        });
+      });
+    },
+    fetch: function fetch() {
+      // get the current token from backend database
+      var self = this;
+      return new Ember.RSVP.Promise(function (resolve, reject) {
+        var identity = localStorage.getItem('sas-session-id');
+        if (identity) {
+          var name = self.decrypt(identity);
+          self.set('userName', name);
+          var myStore = self.get('store');
+          var fetchRequest = myStore.createRecord('login', {
+            userName: name,
+            password: null,
+            nonce: null,
+            response: null,
+            requestType: "fetch"
+          });
+          fetchRequest.save().then(function (serverResponse) {
+            if (serverResponse.get('loginFailed')) {
+              self.close(name);
+              reject("fetchFailed");
+            } else {
+              var NONCE = self.encrypt(serverResponse.get('nonce'));
+              var clientResponse = myStore.createRecord('login', {
+                userName: name,
+                password: null,
+                nonce: null, // a challenge from the server
+                response: NONCE, // client response
+                requestType: "fetchResponse"
+              });
+              // send the third message of the authentication protocol
+              clientResponse.save().then(function (givenToken) {
+                if (givenToken.get('loginFailed')) {
+                  self.close(name);
+                  reject("fetchFailed");
+                } else {
+                  var plainToken = self.decrypt(givenToken.get('token'));
+                  self.set('isAuthenticated', true);
+                  self.set('userCList', plainToken);
+                  resolve(plainToken);
+                }
+              });
+            }
+          });
+        } else {
+          reject("userNotActive");
+        }
+      });
+    },
+    close: function close(user) {
+      var myStore = this.get('store');
+      myStore.query('login', { filter: { userName: user } }).then(function (Login) {
+        if (Login) {
+          Login.forEach(function (record) {
+            record.destroyRecord();
+          });
+        }
+      });
+      window.localStorage.removeItem('sas-session-id');
+      this.set('getName', null);
+      this.set('userName', null);
+      this.set('encryptedPassword', null);
+      this.set('isAuthenticated', false);
+      this.set('isLoginRequested', false);
+    },
+    openRoot: function openRoot(password) {
+      var self = this;
+      return new Ember.RSVP.Promise(function (resolve, reject) {
+        if (password) {
+          var myStore = self.get('store');
+          var loginRequest = myStore.createRecord('root', {
+            password: null,
+            nonce: null,
+            response: null
+          });
+          loginRequest.save().then(function (serverResponse) {
+            // encrypt server nonce and set client response
+            var NONCE = self.encrypt(serverResponse.get('nonce'));
+            var clientResponse = myStore.createRecord('root', {
+              password: self.encrypt(self.hash(password)),
+              nonce: null,
+              response: NONCE
+            });
+            clientResponse.save().then(function (message4) {
+              if (message4.get('wrongPassword')) {
+                self.closeRoot();
+                reject("wrongPassword");
+              } else {
+                // self.setName("Root");
+                self.set('isAuthenticated', true);
+                resolve("Root");
+              }
+            });
+          });
+        } else {
+          self.closeRoot();
+          reject("wrongPassword");
+        }
+      });
+    },
+    closeRoot: function closeRoot() {
+      var myStore = this.get('store');
+      myStore.queryRecord('root', {}).then(function (Login) {
+        if (Login) {
+          Login.destroyRecord();
+        }
+      });
+      //window.localStorage.removeItem('sas-session-id');
+      this.set('getName', null);
+      this.set('userName', null);
+      this.set('isAuthenticated', false);
+      this.set('isLoginRequested', false);
     }
   });
 });
@@ -10470,7 +10753,7 @@ define("self-start-front-end/templates/components/physio-nav", ["exports"], func
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "S+yrcJEB", "block": "{\"symbols\":[\"&default\"],\"statements\":[[2,\"<style>\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .fixed,\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .pusher {\"],[0,\"\\n\"],[2,\"-ebkit-transform: translate3d(260px, 0, 0); transform: translate3d(260px, 0, 0);\"],[0,\"\\n\"],[2,\"}\"],[0,\"\\n\"],[2,\"</style>\"],[0,\"\\n\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index\"],[7],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"following bar\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n\"],[4,\"link-to\",[\"practitioner\"],null,{\"statements\":[[0,\"                    \"],[6,\"img\"],[9,\"class\",\"ui image selfStart\"],[9,\"src\",\"/assets/images/home/Header.png\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"right menu inverted\"],[7],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/clients\"],[9,\"class\",\"item\"],[7],[0,\"Clients\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/rehabplans\"],[9,\"class\",\"item\"],[7],[0,\"Menu Builder\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/appointment\"],[9,\"class\",\"item\"],[7],[0,\"Appointments\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"href\",\"../\"],[9,\"class\",\"item\"],[7],[0,\"Log out\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[11,1],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/physio-nav.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "AysRSHAa", "block": "{\"symbols\":[\"&default\"],\"statements\":[[2,\"<style>\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .fixed,\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .pusher {\"],[0,\"\\n\"],[2,\"-ebkit-transform: translate3d(260px, 0, 0); transform: translate3d(260px, 0, 0);\"],[0,\"\\n\"],[2,\"}\"],[0,\"\\n\"],[2,\"</style>\"],[0,\"\\n\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index\"],[7],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"following bar\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n\"],[4,\"link-to\",[\"practitioner\"],null,{\"statements\":[[0,\"                    \"],[6,\"img\"],[9,\"class\",\"ui image selfStart\"],[9,\"src\",\"/assets/images/home/Header.png\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"right menu inverted\"],[7],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/clients\"],[9,\"class\",\"item\"],[7],[0,\"Clients\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/rehabplans\"],[9,\"class\",\"item\"],[7],[0,\"Menu Builder\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/appointment\"],[9,\"class\",\"item\"],[7],[0,\"Appointments\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"class\",\"item\"],[10,\"onClick\",[25,\"action\",[[19,0,[]],\"logout\"],null],null],[7],[0,\"Log out\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[11,1],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/physio-nav.hbs" } });
 });
 define("self-start-front-end/templates/components/physio-table", ["exports"], function (exports) {
   "use strict";
@@ -10662,7 +10945,7 @@ define("self-start-front-end/templates/components/user-info", ["exports"], funct
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "HsQkx1n1", "block": "{\"symbols\":[\"oneCountry\",\"oneGender\"],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/home-style.css\"]]],[7],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index pushable\"],[7],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"following bar\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[9,\"id\",\"mini-nav\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n                  \"],[6,\"a\"],[9,\"href\",\"/\"],[7],[0,\"\\n                    \"],[6,\"img\"],[9,\"src\",\"assets/images/mini-logo2.png\"],[7],[8],[0,\"\\n                    \"],[6,\"span\"],[7],[0,\"\\n                      \"],[6,\"i\"],[9,\"class\",\"angle left icon\"],[7],[8],[0,\"\\n                      Go back to home page\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n    \"],[6,\"div\"],[9,\"class\",\"masthead segment bg4\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n          \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n            \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Registration\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n\\n\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui centered very padded segment container\"],[9,\"style\",\"border: none; box-shadow: none; background-color: white;margin-top: -320px;position: relative;z-index:  2;\"],[7],[0,\"\\n        \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui five tablet stackable top attached steps\"],[7],[0,\"\\n          \"],[6,\"a\"],[10,\"class\",[26,[[18,\"accountValue\"],\" step\"]]],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"user plus icon\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Create Account\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"a\"],[10,\"class\",[26,[[18,\"introValue\"],\" step\"]]],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"wpforms icon\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Introduction\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"a\"],[10,\"class\",[26,[[18,\"appointmentValue\"],\" step\"]]],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"bookmark icon\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Book appointment\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"a\"],[10,\"class\",[26,[[18,\"paymentValue\"],\" step\"]]],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"payment icon\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Payment plan\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"a\"],[10,\"class\",[26,[[18,\"confirmValue\"],\" step\"]]],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"check circle icon\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Confirmation\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui attached segment\"],[7],[0,\"\\n          \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"account\"]]],null,{\"statements\":[[0,\"          \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"margin: 0 0; padding-right: 15%; padding-left: 15%\"],[3,\"action\",[[19,0,[]],\"goToIntro\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n            \"],[6,\"legend\"],[7],[0,\"Account Information\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"email\",\"email\",[20,[\"email\"]],\"email\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"lock\",\"password\",[20,[\"encryptedPassword\"]],\"Password\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n            \"],[6,\"legend\"],[7],[0,\"Personal Information\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                  \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"user\",\"text\",[20,[\"givenName\"]],\"First Name\",true]]],false],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                  \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"user\",\"text\",[20,[\"familyName\"]],\"Last Name\",true]]],false],[0,\"\\n                \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"class\",\"date\"],[9,\"type\",\"date\"],[10,\"value\",[18,\"selectedDate\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"assignDate\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n                  \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectGender\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"true\"],[7],[0,\"\\n                    \"],[6,\"option\"],[9,\"selected\",\"selected\"],[7],[0,\"\\n                      Select Gender\\n                    \"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"genderModel\"]]],null,{\"statements\":[[0,\"                      \"],[6,\"option\"],[10,\"value\",[19,2,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"gender\"]],[19,2,[\"name\"]]],null],null],[7],[0,\"\\n                        \"],[1,[19,2,[\"name\"]],false],[0,\"\\n                      \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"phone\",\"text\",[20,[\"phoneNumber\"]],\"Phone Number\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"card\",\"text\",[20,[\"healthCardNumber\"]],\"Health Card Number\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n            \"],[6,\"legend\"],[7],[0,\"Address\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"home\",\"text\",[20,[\"streetNumber\"]],\"Street Number\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"home\",\"text\",[20,[\"streetName\"]],\"Street Name\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"placeholder\",\"value\"],[\"home\",\"text\",\"Unit Number\",[20,[\"apartment\"]]]]],false],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"flag\",\"text\",[20,[\"postalCode\"]],\"Postal/Zip Code\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui three column grid\"],[9,\"id\",\"grid\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n                  \"],[6,\"select\"],[9,\"class\",\"world\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectCountry\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"true\"],[7],[0,\"\\n                    \"],[6,\"option\"],[9,\"selected\",\"selected\"],[7],[0,\"\\n                      Select Country\\n                    \"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"conutryModel\"]]],null,{\"statements\":[[0,\"                      \"],[6,\"option\"],[10,\"value\",[19,1,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"country\"]],[19,1,[\"name\"]]],null],null],[7],[0,\"\\n                        \"],[1,[19,1,[\"name\"]],false],[0,\"\\n                      \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"world\",\"text\",[20,[\"province\"]],\"Province/State\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"world\",\"text\",[20,[\"city\"]],\"City\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"p\"],[7],[0,\"By creating an account you agree to our \"],[6,\"a\"],[9,\"style\",\"color: blue; cursor: pointer; text-decoration: underline;\"],[7],[0,\"Terms & Privacy.\"],[8],[8],[0,\"\\n              \"],[6,\"br\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[9,\"value\",\"Submit\"],[7],[0,\"Next\"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"intro\"]]],null,{\"statements\":[[0,\"            \"],[6,\"p\"],[7],[0,\"Introduction Form Goes Here!!\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToAccount\"]],[7],[0,\"Back\"],[8],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToAppointment\"]],[7],[0,\"Next\"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"appointment\"]]],null,{\"statements\":[[0,\"            \"],[6,\"p\"],[7],[0,\"Appointment Calender Goes Here!!\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\\n              \"],[1,[18,\"book-appointment\"],false],[0,\"\\n\\n\\n              \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToIntro\"]],[7],[0,\"Back\"],[8],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToPayment\"]],[7],[0,\"Next\"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"payment\"]]],null,{\"statements\":[[0,\"\\n            \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/payment-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"cd-pricing-container cd-has-margins\"],[7],[0,\"\\n\\n              \"],[6,\"ul\"],[9,\"class\",\"cd-pricing-list\"],[7],[0,\"\\n                \"],[6,\"li\"],[9,\"class\",\"package\"],[7],[0,\"\\n                  \"],[6,\"header\"],[9,\"class\",\"cd-pricing-header\"],[7],[0,\"\\n                    \"],[6,\"h2\"],[7],[0,\"Basic\"],[8],[0,\"\\n\\n                    \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"95\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-header \"],[0,\"\\n\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-pricing-body\"],[7],[0,\"\\n                    \"],[6,\"ul\"],[9,\"class\",\"cd-pricing-features\"],[7],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Professional assessments\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Physiotherapy diagnosis\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Personal treatment plan\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Education, exercises, advice\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Includes only one appointment\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-body \"],[0,\"\\n\\n                  \"],[6,\"footer\"],[9,\"class\",\"cd-pricing-footer\"],[7],[0,\"\\n                    \"],[6,\"a\"],[9,\"class\",\"cd-option\"],[9,\"href\",\"\"],[7],[0,\"Select\"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-footer \"],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"li\"],[9,\"class\",\"cd-popular package\"],[7],[0,\"\\n                  \"],[6,\"header\"],[9,\"class\",\"cd-pricing-header\"],[7],[0,\"\\n                    \"],[6,\"h2\"],[7],[0,\"Popular\"],[8],[0,\"\\n\\n                    \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"245\"],[8],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-duration\"],[7],[0,\"mo\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-header \"],[0,\"\\n\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-pricing-body\"],[7],[0,\"\\n                    \"],[6,\"ul\"],[9,\"class\",\"cd-pricing-features\"],[7],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Professional assessments\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Physiotherapy diagnosis\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Personal treatment plan\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Education, exercises, advice\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[6,\"em\"],[7],[0,\"unlimited\"],[8],[0,\" appointments for a month\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-body \"],[0,\"\\n\\n                  \"],[6,\"footer\"],[9,\"class\",\"cd-pricing-footer\"],[7],[0,\"\\n                    \"],[6,\"a\"],[9,\"class\",\"cd-option\"],[9,\"href\",\"\"],[7],[0,\"Select\"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-footer \"],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"li\"],[9,\"class\",\"package\"],[7],[0,\"\\n                  \"],[6,\"header\"],[9,\"class\",\"cd-pricing-header\"],[7],[0,\"\\n                    \"],[6,\"h2\"],[7],[0,\"Premier\"],[8],[0,\"\\n\\n                    \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"395\"],[8],[0,\"\\n                      \"],[6,\"span\"],[9,\"class\",\"cd-duration\"],[7],[0,\"3 mo\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-header \"],[0,\"\\n\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-pricing-body\"],[7],[0,\"\\n                    \"],[6,\"ul\"],[9,\"class\",\"cd-pricing-features\"],[7],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Professional assessments\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Physiotherapy diagnosis\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Personal treatment plan\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[0,\"Education, exercises, advice\"],[8],[0,\"\\n                      \"],[6,\"li\"],[7],[6,\"em\"],[7],[0,\"unlimited\"],[8],[0,\" appointments for three month\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\" \"],[2,\" .cd-pricing-body \"],[0,\"\\n\\n                  \"],[6,\"footer\"],[9,\"class\",\"cd-pricing-footer\"],[7],[0,\"\\n                    \"],[6,\"a\"],[9,\"class\",\"cd-option\"],[9,\"href\",\"\"],[7],[0,\"Select\"],[8],[0,\"\\n                  \"],[8],[0,\"  \"],[2,\" .cd-pricing-footer \"],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\" \"],[2,\" .cd-pricing-list \"],[0,\"\\n            \"],[8],[0,\" \"],[2,\" .cd-pricing-container \"],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToAppointment\"]],[7],[0,\"Back\"],[8],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToConfirm\"]],[7],[0,\"Next\"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"confirm\"]]],null,{\"statements\":[[0,\"            \"],[6,\"p\"],[7],[0,\"Confirmation Page Goes Here!!\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToPayment\"]],[7],[0,\"Back\"],[8],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToPaypal\"]],[7],[0,\"Next\"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/user-info.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "Ereszmnh", "block": "{\"symbols\":[\"oneCountry\",\"oneGender\"],\"statements\":[[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/home-style.css\"]]],[7],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index\"],[7],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"following bar\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[9,\"id\",\"mini-nav\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n                  \"],[6,\"a\"],[9,\"href\",\"/\"],[7],[0,\"\\n                    \"],[6,\"img\"],[9,\"src\",\"assets/images/mini-logo2.png\"],[7],[8],[0,\"\\n                    \"],[6,\"span\"],[7],[0,\"\\n                      \"],[6,\"i\"],[9,\"class\",\"angle left icon\"],[7],[8],[0,\"\\n                      Go back to home page\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n    \"],[6,\"div\"],[9,\"class\",\"masthead segment bg4\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n          \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n            \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Registration\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n\\n\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui centered very padded segment container\"],[9,\"style\",\"border: none; box-shadow: none; background-color: white;margin-top: -320px;position: relative;z-index:  2;\"],[7],[0,\"\\n        \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\\n\"],[0,\"\\n\\n        \"],[2,\"<div class=\\\"ui attached segment\\\">\"],[0,\"\\n          \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[0,\"          \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"margin: 0 0; padding-right: 15%; padding-left: 15%\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n            \"],[6,\"legend\"],[7],[0,\"Account Information\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"email\",\"email\",[20,[\"email\"]],\"email\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"lock\",\"password\",[20,[\"encryptedPassword\"]],\"Password\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n            \"],[6,\"legend\"],[7],[0,\"Personal Information\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                  \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"user\",\"text\",[20,[\"givenName\"]],\"First Name\",true]]],false],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                  \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"user\",\"text\",[20,[\"familyName\"]],\"Last Name\",true]]],false],[0,\"\\n                \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[6,\"input\"],[9,\"class\",\"date\"],[9,\"type\",\"date\"],[10,\"value\",[18,\"selectedDate\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"assignDate\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n                  \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectGender\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"true\"],[7],[0,\"\\n                    \"],[6,\"option\"],[9,\"selected\",\"selected\"],[7],[0,\"\\n                      Select Gender\\n                    \"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"genderModel\"]]],null,{\"statements\":[[0,\"                      \"],[6,\"option\"],[10,\"value\",[19,2,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"gender\"]],[19,2,[\"name\"]]],null],null],[7],[0,\"\\n                        \"],[1,[19,2,[\"name\"]],false],[0,\"\\n                      \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"phone\",\"text\",[20,[\"phoneNumber\"]],\"Phone Number\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n            \"],[6,\"legend\"],[7],[0,\"Address\"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"home\",\"text\",[20,[\"streetNumber\"]],\"Street Number\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"home\",\"text\",[20,[\"streetName\"]],\"Street Name\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"placeholder\",\"value\"],[\"home\",\"text\",\"Unit Number\",[20,[\"apartment\"]]]]],false],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"flag\",\"text\",[20,[\"postalCode\"]],\"Postal/Zip Code\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"ui three column grid\"],[9,\"id\",\"grid\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n                  \"],[6,\"select\"],[9,\"class\",\"world\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectCountry\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"true\"],[7],[0,\"\\n                    \"],[6,\"option\"],[9,\"selected\",\"selected\"],[7],[0,\"\\n                      Select Country\\n                    \"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"conutryModel\"]]],null,{\"statements\":[[0,\"                      \"],[6,\"option\"],[10,\"value\",[19,1,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"country\"]],[19,1,[\"name\"]]],null],null],[7],[0,\"\\n                        \"],[1,[19,1,[\"name\"]],false],[0,\"\\n                      \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"world\",\"text\",[20,[\"province\"]],\"Province/State\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n                \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"world\",\"text\",[20,[\"city\"]],\"City\",true]]],false],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"p\"],[7],[0,\"By creating an account you agree to our \"],[6,\"a\"],[9,\"style\",\"color: blue; cursor: pointer; text-decoration: underline;\"],[7],[0,\"Terms & Privacy.\"],[8],[8],[0,\"\\n              \"],[6,\"br\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[9,\"value\",\"Submit\"],[7],[0,\"Submit\"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n          \"],[8],[0,\"\\n\"],[0,\"\\n\"],[0,\"\\n        \"],[2,\"</div>\"],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/user-info.hbs" } });
 });
 define("self-start-front-end/templates/components/user-login", ["exports"], function (exports) {
   "use strict";
@@ -10670,7 +10953,7 @@ define("self-start-front-end/templates/components/user-login", ["exports"], func
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "t3aKz2j9", "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"Log in\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"login\",\"login\"]],{\"statements\":[[0,\"  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"h2\"],[9,\"class\",\"ui fluid centered header\"],[7],[0,\"Login\"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"id\",\"ui container\"],[9,\"style\",\"height: 250px; padding-left:5%; padding-right: 5%; padding-top: 2%\"],[7],[0,\"\\n  \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Email\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Email\"]],\"Email\"]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Password\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"password\",[20,[\"PWord\"]],\"Password\"]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"inline\"],[7],[0,\"\\n      \"],[6,\"button\"],[9,\"class\",\"ui blue button \"],[3,\"action\",[[19,0,[]],\"submit\"]],[7],[0,\"Submit\"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/user-login.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "Z5hxyboC", "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"Log in\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"login\",\"login\"]],{\"statements\":[[0,\"  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"h2\"],[9,\"class\",\"ui fluid centered header\"],[7],[0,\"Login\"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"id\",\"ui container\"],[9,\"style\",\"height: 250px; padding-left:5%; padding-right: 5%; padding-top: 2%\"],[7],[0,\"\\n  \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Email\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Email\"]],\"Email\"]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Password\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"password\",[20,[\"PWord\"]],\"Password\"]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"inline\"],[7],[0,\"\\n      \"],[6,\"button\"],[9,\"class\",\"ui blue button \"],[3,\"action\",[[19,0,[]],\"submit\"]],[7],[0,\"Login\"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/user-login.hbs" } });
 });
 define("self-start-front-end/templates/components/view-appointment", ["exports"], function (exports) {
   "use strict";
@@ -11522,6 +11805,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+8264e2da"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+5669efeb"});
 }
 //# sourceMappingURL=self-start-front-end.map

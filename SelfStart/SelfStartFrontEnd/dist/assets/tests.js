@@ -352,12 +352,12 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/user-info.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'components/user-info.js should pass ESLint\n\n');
+    assert.ok(false, 'components/user-info.js should pass ESLint\n\n122:11 - Unexpected console statement. (no-console)\n123:11 - Unexpected console statement. (no-console)\n125:13 - Unexpected console statement. (no-console)\n127:15 - Unexpected console statement. (no-console)\n129:44 - \'o\' is defined but never used. (no-unused-vars)\n131:13 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/user-login.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/user-login.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n10:9 - \'Ember\' is not defined. (no-undef)\n14:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n34:7 - Unexpected console statement. (no-console)\n55:11 - Unexpected console statement. (no-console)\n57:13 - Unexpected console statement. (no-console)\n66:13 - Unexpected console statement. (no-console)\n76:13 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/user-login.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n10:9 - \'Ember\' is not defined. (no-undef)\n14:3 - Duplicate key \'authentication\'. (no-dupe-keys)\n15:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n35:7 - Unexpected console statement. (no-console)\n54:19 - \'error\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/view-appointment.js', function (assert) {
@@ -505,9 +505,19 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'models/image.js should pass ESLint\n\n');
   });
 
+  QUnit.test('models/login.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'models/login.js should pass ESLint\n\n');
+  });
+
   QUnit.test('models/marital-status.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'models/marital-status.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('models/password.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'models/password.js should pass ESLint\n\n');
   });
 
   QUnit.test('models/patient.js', function (assert) {
@@ -758,6 +768,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('serializers/patient.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'serializers/patient.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('services/auth.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'services/auth.js should pass ESLint\n\n125:7 - \'loginRequest\' is not defined. (no-undef)');
   });
 
   QUnit.test('services/doc.js', function (assert) {
@@ -3544,9 +3559,19 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/models/image-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/models/login-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/models/login-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/models/marital-status-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/models/marital-status-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/models/passwords-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/models/passwords-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/models/patient-test.js', function (assert) {
@@ -3787,6 +3812,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('unit/serializers/patient-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/serializers/patient-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/services/auth-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/services/auth-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/services/doc-test.js', function (assert) {
@@ -4104,10 +4134,38 @@ define('self-start-front-end/tests/unit/models/image-test', ['ember-qunit'], fun
     assert.ok(!!model);
   });
 });
+define('self-start-front-end/tests/unit/models/login-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForModel)('login', 'Unit | Model | login', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var model = this.subject();
+    // let store = this.store();
+    assert.ok(!!model);
+  });
+});
 define('self-start-front-end/tests/unit/models/marital-status-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
   (0, _emberQunit.moduleForModel)('marital-status', 'Unit | Model | marital status', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var model = this.subject();
+    // let store = this.store();
+    assert.ok(!!model);
+  });
+});
+define('self-start-front-end/tests/unit/models/passwords-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForModel)('passwords', 'Unit | Model | passwords', {
     // Specify the other units that are required for this test.
     needs: []
   });
@@ -4755,6 +4813,20 @@ define('self-start-front-end/tests/unit/serializers/patient-test', ['ember-qunit
     var serializedRecord = record.serialize();
 
     assert.ok(serializedRecord);
+  });
+});
+define('self-start-front-end/tests/unit/services/auth-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('service:auth', 'Unit | Service | auth', {
+    // Specify the other units that are required for this test.
+    // needs: ['service:foo']
+  });
+
+  // Replace this with your real tests.
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var service = this.subject();
+    assert.ok(service);
   });
 });
 define('self-start-front-end/tests/unit/services/doc-test', ['ember-qunit'], function (_emberQunit) {

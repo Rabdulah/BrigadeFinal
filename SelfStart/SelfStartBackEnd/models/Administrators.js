@@ -12,16 +12,26 @@ var administratorsSchema = mongoose.Schema({
     dateFired: Date,
     message: String,
     form: [{type: mongoose.Schema.ObjectId, ref: 'Forms'}],
-     account: {
-            userAccountName: String,
-            encryptedPassword: String,
-            salt: String,
-            accType:{
-                type: String,
-                deafult: "2"
-            }
-        },
-
+    account: {
+        encryptedPassword: [{type: mongoose.Schema.ObjectId, ref: 'Passwords'}],
+        //New----------------------------------------
+        nonce: String,
+        response: String,
+        token: String,
+        requestType: String,
+        wrongUserName: Boolean,
+        wrongPassword: Boolean,
+        passwordMustChanged: Boolean,
+        passwordReset: Boolean,
+        loginFailed: Boolean,
+        sessionIsActive: Boolean,
+        //-------------------------------------------
+        accType:{
+            type: String,
+            deafult: "2"
+        }
+    },
+    
 
 });
 
@@ -41,6 +51,13 @@ exports.getUserByID = function(id, callback) {
 exports.getUserByEmail = function(email, callback) {
     const query = {email: email};
     Admin.findOne(query, callback);
+};
+//-----------------------Get User By Email Direct Return-----------------------//
+exports.getUserByEmailDirect = function(email) {
+    const query = {email: email};
+    Admin.findOne(query, (err, admin) =>{
+        return admin;
+    });
 };
 //----------------------------Add New Admin------------------------------------//
 exports.addAdmin = function(admin, callback) {

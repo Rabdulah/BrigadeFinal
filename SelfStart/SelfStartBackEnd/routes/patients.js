@@ -6,35 +6,72 @@ var BearerStrategy = require('passport-http-bearer').Strategy;
 const config = require('../config/database');
 const jwt = require('jsonwebtoken');
 
+//New------------------------
+var bodyParser = require('body-parser');
+var parseUrlencoded = bodyParser.urlencoded({extended: false});
+var parseJSON = bodyParser.json();
+const crypto = require('crypto');
+var rand = require('csprng');
+
+function hash(text) {
+    const hash = crypto.createHash('sha256');
+    hash.update(text);
+    return hash.digest('binary');
+};
+
+function encrypt(plainText) {
+    var cipher = crypto.createCipher('aes256', 'SE3350b Winter 2016');
+    var crypted = cipher.update(plainText, 'ascii', 'binary');
+    crypted += cipher.final('binary');
+    return crypted;
+};
+
+function decrypt(cipherText) {
+    var decipher = crypto.createDecipher('aes256', 'SE3350b Winter 2016');
+    var dec = decipher.update(cipherText, 'binary', 'ascii');
+    dec += decipher.final('ascii');
+    return dec;
+};
+//---------------------------
+
 router.route('/')
-    .post( function (request, response) {
-        console.log(request.body.patient);
+    .post(parseUrlencoded, parseJSON, function (request, response) {
+        // console.log(request.body.patient);
         var patient = new Patients.Model(request.body.patient);
 
         Patients.getUserByEmail(patient.email, (err, client) =>{
-            if(client) {
-                response.json({success: false, msg: 'User already registered'});
-            }
-        });
-
-        Patients.addClient(patient, (err, patient) => {
-            console.log("ASDJKkajsdkjsajkd");
             if(err) {
-                response.json({success: false, msg: 'Failed to register client'});
-            } else{
-                console.log("ewae");
-                Patients.sendEmail(patient);
-                response.json({patient: patient});
+                patient.success = false;
             }
+            else if(client) {
+                console.log("ERROR");
+                patient.success = false;
+            } 
+            
+            patient.save().then((patient) => {
+                console.log(patient.success);
+                if(!patient.success) {
+                    console.log("err");
+                    // console.log("this is the patient", patient);
+                    response.json({patient: patient});
+                } else{
+                    console.log("patient");
+                    Patients.sendEmail(patient);
+                    response.json({patient: patient});
+                }
+            });
         });
 
-        // patient.save(function (error) {
-        //     if (error) response.send(error);
-        //     response.json({patient: patient});
+        // Patients.addClient(patient, (err, patient) => {
+        //     if(err) {
+        //         response.json({success: false, msg: 'Failed to register client'});
+        //     } else{
+        //         Patients.sendEmail(patient);
+        //         response.json({patient: patient});
+        //     }
         // });
-
     })
-    .get( function (request, response) {
+    .get(parseUrlencoded, parseJSON, function (request, response) {
         let {limit, offset, sort, dir, queryPath, regex} = request.query;
         if(!limit) {
             Patients.Model.find(function (error, patients) {
@@ -76,62 +113,9 @@ router.route('/')
         }
     });
 
-// router.route('/Authenticate')
-//     .post( function (request, response) {
-//         const email = request.body.email;
-//         const password = request.body.password;
-
-//         Patients.getUserByEmail(email, (err, client) => {
-//             if(err) throw err;
-
-//             if(!client){
-//                 return response.json({success: false, msg: 'User not found'});
-//             }
-
-//             Patients.comparePassword(password, client.account.encryptedPassword, (err, isMatch) => {
-//                 if(err) throw err;
-
-//                 if(isMatch){
-//                     const token = jwt.sign({data:client}, config.secret, {
-//                         expiresIn: 36000 //10 hours
-//                     });
-
-//                     response.json({
-//                         success: true,
-//                         token: 'JWT ' + token,
-//                         client: client
-//                     });
-
-//                 } else{
-//                     return response.json({success: false, msg: 'Wrong Password'});
-//                 }
-
-
-//             });
-//         });
-//     });
-
-// router.get('/profile', passport.authenticate('jwt', {session: false}), (req, res,) => {
-//     res.json({client: req.user});
-// })
-
-// router.route('/:email')
-//
-//     .get( function (request, response) {
-//
-//         Patients.getUserByEmail(request.params.email, function (error, patient) {
-//             if (error) {
-//                 response.send({error: error});
-//             }
-//             else {
-//                 response.json({success: true, patient: patient});
-//             }
-//         });
-//     });
-
 router.route('/:patient_id')
 
-    .get( function (request, response) {
+    .get(parseUrlencoded, parseJSON, function (request, response) {
 
         Patients.Model.findById(request.params.patient_id, function (error, patient) {
             if (error) {
@@ -142,7 +126,7 @@ router.route('/:patient_id')
             }
         });
     })
-    .put( function (request, response) {
+    .put(parseUrlencoded, parseJSON, function (request, response) {
         Patients.Model.findById(request.params.patient_id, function (error, patient) {
             if (error) {
                 response.send({error: error});
@@ -166,11 +150,10 @@ router.route('/:patient_id')
                 patient.postalCode = request.body.patient.postalCode;
                 patient.appointments = request.body.patient.appointments;
                 patient.rehablink = request.body.patient.rehablink;
-
                 patient.answer = request.body.patient.answer;
                 // patient.account = request.body.patient.account;
 
-                patient.account = request.body.patient.account;
+                // patient.account = request.body.patient.account;
 
                 // patient.payments = request.body.patient.payments;
                 // patient.appointments = request.body.patient.appointments;
@@ -188,7 +171,7 @@ router.route('/:patient_id')
             }
         });
     })
-    .delete( function (request, response) {
+    .delete(parseUrlencoded, parseJSON, function (request, response) {
         Patients.Model.findByIdAndRemove(request.params.patient_id,
             function (error, deleted) {
                 if (!error) {

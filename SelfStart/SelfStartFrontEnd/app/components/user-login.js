@@ -9,6 +9,7 @@ export default Component.extend({
   model: null,
   ajax: Ember.inject.service(),
   temp: false,
+  authentication: inject('auth'),
 
   authentication() {
     var self= this;
@@ -37,8 +38,6 @@ export default Component.extend({
 
 
   actions: {
-
-
     goToInfo(){
 
     },
@@ -46,57 +45,22 @@ export default Component.extend({
     deny(){
       $('.ui.login.modal').modal('hide');
     },
+
     submit(){
-
-      localStorage.setItem('temp', false);
-      this.get('ajax').request('http://localhost:8082/patients/' + this.get('Email'), {
-        method: 'GET',
-        success: function (res) {
-          console.log(res);
-          if (res.patient) {
-            console.log("THIS IS A CLIENT");
-            localStorage.setItem('temp', true);
-          }
-        }
+      var auth = this.get("authentication");
+      var self = this;
+      auth.open(this.get('Email'), this.get('PWord')).then(function() {
+        self.get('authentication').set('isLoginRequired', false);
+      }, function(error) {
       });
-      this.get('ajax').request('http://localhost:8082/administrators/' + this.get('Email'), {
-        method: 'GET',
-        success: function(res) {
-          if(res.admin) {
-            console.log("THIS IS A Admin");
-            localStorage.setItem('temp', true);
-          }
-        }
-      });
-
-      this.get('ajax').request('http://localhost:8082/physiotherapests/' + this.get('Email'), {
-        method: 'GET',
-        success: function(res) {
-          if(res.physio) {
-            console.log("THIS IS A Physio");
-            localStorage.setItem('temp', true);
-          }
-        }
-      });
-
-      // if(localStorage.getItem('temp')) {
-      this.authentication();
-
-      // } else {
-      // console.log("NOT AN ACCOUNT");
-      // }
-
     },
+
     logout: function() {
       localStorage.clear();
     },
 
     openModal: function ()  {
-
-      $('.ui.login.modal').modal({
-        // closable: false,
-
-      }).modal('show')
+      $('.ui.login.modal').modal({}).modal('show')
     },
   }
 

@@ -1,6 +1,8 @@
 var mongoose = require('mongoose');
 var mongoosePaginate = require('mongoose-paginate');
 var bcrypt=require('bcrypt');
+const crypto = require('crypto');
+var rand = require('csprng');
 
 'use strict';
 const nodemailer = require('nodemailer');
@@ -25,16 +27,29 @@ var patientProfilesSchema = mongoose.Schema(
         streetName: String,
         answer: [{type: mongoose.Schema.ObjectId, ref: 'Answers'}],
         postalCode: String,
+        success: {
+            type: Boolean,
+            default: true
+        },
         account: {
-                    userAccountName: String,
-                    encryptedPassword: String,
-                    salt: String,
-                    accType: {
-                        type: String,
-                        default: "0"
-                    }
-                },
-
+            encryptedPassword: [{type: mongoose.Schema.ObjectId, ref: 'Passwords'}],
+            //New----------------------------------------
+            nonce: String,
+            response: String,
+            token: String,
+            requestType: String,
+            wrongUserName: Boolean,
+            wrongPassword: Boolean,
+            passwordMustChanged: Boolean,
+            passwordReset: Boolean,
+            loginFailed: Boolean,
+            sessionIsActive: Boolean,
+            //-------------------------------------------
+            accType: {
+                type: String,
+                default: "0"
+            }
+        },
         // payments: [{
         //             dayTimestamp: Date,
         //             amount: Number,
@@ -61,25 +76,26 @@ exports.getUserByEmail = function(email, callback) {
     const query = {email: email};
     Client.findOne(query, callback);
 };
-//----------------------------Add New Client----------------------------------//
-exports.addClient = function(client, callback) {
-
-    bcrypt.genSalt(10, (err, salt) =>{
-        bcrypt.hash(client.account.encryptedPassword, salt, (err, hash) =>{
-            if(err){
-                throw err;
-            }
-            client.account.encryptedPassword = hash;
-            client.account.salt = salt;
-            console.log("THIS IS THE CLIENT", client);
-            client.save(callback);
-        });
+//-----------------------Get User By Email Direct Return-----------------------//
+exports.getUserByEmailDirect = function(email) {
+    const query = {email: email};
+    Client.findOne(query, (err, client) =>{
+        console.log("this is the err", err);
+        console.log("this is the client", client);
+        if(client) {
+            console.log("true");
+            return true;
+        } else{
+            console.log("false");
+            return false;
+        }
     });
+    console.log("OUTSIDE");
 };
 //--------------------Comparing Password For Authentication-------------------//
 exports.comparePassword = function(candidatePass, hash, callback) {
     bcrypt.compare(candidatePass, hash, (err, isMatch) => {
-        if(err) throw err;
+        if(err) console.log("ERROR");
 
         callback(null, isMatch);
     });
@@ -118,3 +134,4 @@ exports.sendEmail = function(client){
         }
     });
 }
+//-------------------------------------------------------------------------------------
