@@ -772,7 +772,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('services/auth.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'services/auth.js should pass ESLint\n\n125:7 - \'loginRequest\' is not defined. (no-undef)');
+    assert.ok(false, 'services/auth.js should pass ESLint\n\n58:11 - \'myStore\' is assigned a value but never used. (no-unused-vars)\n129:13 - \'myStore\' is assigned a value but never used. (no-unused-vars)');
   });
 
   QUnit.test('services/doc.js', function (assert) {

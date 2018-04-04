@@ -2,7 +2,7 @@ import Ember from 'ember';
 import crypto from "npm:crypto-browserify";
 
 export default Ember.Service.extend({
-  userName: null,
+  email: null,
   encryptedPassword: null,
   isAuthenticated: false,
   store: Ember.inject.service(),
@@ -20,8 +20,8 @@ export default Ember.Service.extend({
   }),
 
   setName(name) {
-    this.set('userName', name.toLowerCase());
-    var identity = this.encrypt(this.get('userName'));
+    this.set('email', name.toLowerCase());
+    var identity = this.encrypt(this.get('email'));
     localStorage.setItem('sas-session-id', identity);
   },
 
@@ -75,29 +75,21 @@ export default Ember.Service.extend({
               //       self.close(name);
               reject("wrongUserName");
             } else {
-              if (serverResponse.get('accountIsDisabled')) {
-                //        self.close(name);
-                reject("accountIsDisabled");
-              } else {
-  
-                var NONCE = self.encrypt(serverResponse.get('nonce'));
-                var clientResponse = myStore.createRecord('login', {
-                  userName: name,
+              var NONCE = self.encrypt(serverResponse.get('nonce'));
+              self.get('ajax').request(window.location.protocol + "//" +  window.location.hostname + ":8082" + "/Authenticate", {
+                method: 'POST',
+                data: {
+                  email: email,
                   password: self.get('encryptedPassword'),
                   nonce: null,  // a challenge from the server
                   response: NONCE,  // client response
                   requestType: "openResponse"
-                });
-
-                clientResponse.save().then(function (message4) { //get the token (message 4 in the protocol)
-                  // and get the capability list or no access flag
-                  // set the capability list as a token property in this service and return true
-                  // or set the token property null and return false.
+                },
+                success: function(message4) {
                   if (serverResponse.get('loginFailed')) {
                     ////  self.close(name);
                     reject("loginFailed");
                   } else {
-
                     if (message4.get('wrongPassword')) {
                       ////self.close(name);
                       reject("wrongPassword");
@@ -107,80 +99,22 @@ export default Ember.Service.extend({
                         reject("passwordReset");
                       } else {
                         self.setName(name);
-                        var userRole = self.decrypt(message4.get('token'));
+                        // var userRole = self.decrypt(message4.get('token'));
+                        var userRole = null;
                         self.set('isAuthenticated', true);
-                        self.set('userCList', userRole);
-                        resolve(userRole);
-                      }
-                    }
-                  }
-                });
-            }
-          }
-        }
-      }
-    });
-
-      // send the first message of the authentication protocol
-      loginRequest.save().then(function (serverResponse) { //get the server challenge (message 2 in the protocol)
-
-        if (serverResponse.get('loginFailed')) {
-          self.close(name);
-          reject("loginFailed");
-        } else {
-          // encrypt server nonce and set client response
-          if (serverResponse.get('wrongUserName')) {
-            //       self.close(name);
-            reject("wrongUserName");
-          } else {
-            if (serverResponse.get('accountIsDisabled')) {
-              //        self.close(name);
-              reject("accountIsDisabled");
-            } else {
-
-              var NONCE = self.encrypt(serverResponse.get('nonce'));
-              var clientResponse = myStore.createRecord('login', {
-                userName: name,
-                password: self.get('encryptedPassword'),
-                nonce: null,  // a challenge from the server
-                response: NONCE,  // client response
-                requestType: "openResponse"
-              });
-              // send the third message of the authentication protocol
-              clientResponse.save().then(function (message4) { //get the token (message 4 in the protocol)
-                  // and get the capability list or no access flag
-                  // set the capability list as a token property in this service and return true
-                  // or set the token property null and return false.
-                  if (serverResponse.get('loginFailed')) {
-                    ////  self.close(name);
-                    reject("loginFailed");
-                  } else {
-
-                    if (message4.get('wrongPassword')) {
-                      ////self.close(name);
-                      reject("wrongPassword");
-                    } else {
-                      if (message4.get('passwordReset')) {
-                        //self.close(name);
-                        reject("passwordReset");
-                      } else {
-                        self.setName(name);
-                        var userRole = self.decrypt(message4.get('token'));
-                        self.set('isAuthenticated', true);
-                        self.set('userCList', userRole);
+                        // self.set('userCList', userRole);
                         resolve(userRole);
                       }
                     }
                   }
                 }
-              );
-            }
+              });
           }
         }
-      })
-      ;
-    })
-      ;
+      }
+    });
+
+    });
   },
 
   fetch()
@@ -190,43 +124,49 @@ export default Ember.Service.extend({
     return new Ember.RSVP.Promise(function (resolve, reject) {
       var identity = localStorage.getItem('sas-session-id');
       if (identity) {
-        var name = self.decrypt(identity);
-        self.set('userName', name);
+        var email = self.decrypt(identity);
+        self.set('email', email);
         var myStore = self.get('store');
-        var fetchRequest = myStore.createRecord('login', {
-          userName: name,
-          password: null,
-          nonce: null,
-          response: null,
-          requestType: "fetch"
-        });
-        fetchRequest.save().then(function (serverResponse) {
-          if (serverResponse.get('loginFailed')) {
-            self.close(name);
-            reject("fetchFailed");
-          } else {
-            var NONCE = self.encrypt(serverResponse.get('nonce'));
-            var clientResponse = myStore.createRecord('login', {
-              userName: name,
-              password: null,
-              nonce: null,  // a challenge from the server
-              response: NONCE,  // client response
-              requestType: "fetchResponse"
-            });
-            // send the third message of the authentication protocol
-            clientResponse.save().then(function (givenToken) {
-              if (givenToken.get('loginFailed')) {
-                self.close(name);
-                reject("fetchFailed");
-              } else {
-                var plainToken = self.decrypt(givenToken.get('token'));
-                self.set('isAuthenticated', true);
-                self.set('userCList', plainToken);
-                resolve(plainToken);
-              }
-            });
-          }
-        });
+        
+        self.get('ajax').request(window.location.protocol + "//" +  window.location.hostname + ":8082" + "/Authenticate", {
+                method: 'POST',
+                data: {
+                  email: email,
+                  password: null,
+                  nonce: null,
+                  response: null,
+                  requestType: "fetch"
+                },
+                success: function(serverResponse) {
+                  if (serverResponse.get('loginFailed')) {
+                    self.close(name);
+                    reject("fetchFailed");
+                  } else {
+                    var NONCE = self.encrypt(serverResponse.get('nonce'));
+                    self.get('ajax').request(window.location.protocol + "//" +  window.location.hostname + ":8082" + "/Authenticate", {
+                      method: 'POST',
+                      data: {
+                        email: email,
+                        password: null,
+                        nonce: null,  // a challenge from the server
+                      response: NONCE,  // client response
+                      requestType: "fetchResponse"
+                      },
+                      success: function(givenToken) {
+                        if (givenToken.get('loginFailed')) {
+                          self.close(name);
+                          reject("fetchFailed");
+                        } else {
+                          var plainToken = self.decrypt(givenToken.get('token'));
+                          self.set('isAuthenticated', true);
+                          self.set('userCList', plainToken);
+                          resolve(plainToken);
+                        }
+                      }
+                    });
+                  } 
+                }
+              });
       }
       else {
         reject("userNotActive");
@@ -237,7 +177,7 @@ export default Ember.Service.extend({
   close(user)
   {
     var myStore = this.get('store');
-    myStore.query('login', {filter: {userName: user}}).then(function (Login) {
+    myStore.query('login', {filter: {email: user}}).then(function (Login) {
       if (Login) {
         Login.forEach((record) => {
           record.destroyRecord();
@@ -246,7 +186,7 @@ export default Ember.Service.extend({
     });
     window.localStorage.removeItem('sas-session-id');
     this.set('getName', null);
-    this.set('userName', null);
+    this.set('email', null);
     this.set('encryptedPassword', null);
     this.set('isAuthenticated', false);
     this.set('isLoginRequested', false);
@@ -301,7 +241,7 @@ export default Ember.Service.extend({
     });
     //window.localStorage.removeItem('sas-session-id');
     this.set('getName', null);
-    this.set('userName', null);
+    this.set('email', null);
     this.set('isAuthenticated', false);
     this.set('isLoginRequested', false);
   }
