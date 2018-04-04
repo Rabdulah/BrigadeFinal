@@ -1679,9 +1679,9 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
         var self = this;
         //temp client until we get token
         //laptop
-        var client = '5ab9649cc7f3c62814754951';
+        // let client = '5ab9649cc7f3c62814754951';
         //desktop
-        // let client = '5a88738e1f0fdc2b94498e81';
+        var client = '5a88738e1f0fdc2b94498e81';
         var physio = self.get('selectphysio');
         var booking = this.get('DS').createRecord('appointment', {
           reason: self.get('Reason'),
@@ -6195,25 +6195,36 @@ define('self-start-front-end/components/view-schedule', ['exports', 'moment'], f
         this.get('occurrences').pushObject(container);
         this.get('availableSpot').pushObject(container);
 
-        console.log(JSON.stringify(this.get('availableSpot')));
+        // console.log(JSON.stringify(this.get('availableSpot')));
       },
 
       calendarUpdateOccurrence: function calendarUpdateOccurrence(occurrence, properties, isPreview) {
-        console.log(JSON.stringify(occurrence));
-
+        // console.log(JSON.stringify(occurrence));
         var self = this;
         var isCollided = false;
+
         self.get('bookedAppointment').forEach(function (obj) {
           var startBA = (0, _moment.default)(obj.startsAt);
           var endBA = (0, _moment.default)(obj.endsAt);
-          var rages = (0, _moment.default)().range(startBA, endBA);
-
-          if (ranges.contains((0, _moment.default)(occurrence.startsAt)) || ranges.contains((0, _moment.default)(occurrence.endsAt))) {
-            console.log(collided);
+          if ((0, _moment.default)(occurrence.startsAt).isBetween(startBA, endBA) || (0, _moment.default)(occurrence.endsAt).isBetween(startBA, endBA)) {
+            console.log("collision detected with occurance and booked appointment");
+            isCollided = true;
+          }
+        });
+        self.get('availableSpot').forEach(function (obj) {
+          console.log(occurrence);
+          console.log(obj);
+          if (obj !== occurrence) {
+            var startBA = (0, _moment.default)(obj.startsAt);
+            var endBA = (0, _moment.default)(obj.endsAt);
+            if ((0, _moment.default)(occurrence.startsAt).isBetween(startBA, endBA) || (0, _moment.default)(occurrence.endsAt).isBetween(startBA, endBA)) {
+              console.log("collision detected with occurance and available spot");
+              isCollided = true;
+            }
           }
         });
 
-        occurrence.setProperties(properties);
+        if (!isCollided) occurrence.setProperties(properties);
         // console.log(JSON.stringify(this.get('availableSpot')));
       },
 
@@ -11537,6 +11548,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+398b89d8"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+b0e7a577"});
 }
 //# sourceMappingURL=self-start-front-end.map
