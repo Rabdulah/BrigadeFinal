@@ -39,6 +39,7 @@ var patientProfilesSchema = mongoose.Schema(
         //         }],
         appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],
         rehablink: [{type: mongoose.Schema.ObjectId, ref: 'RehabClientLink'}],        // askAPhysio: [{type: mongoose.Schema.ObjectId, ref: 'AskAPhysio'}],
+        intakeForm: {type: mongoose.Schema.ObjectId, ref: 'AssessmentTest'},
         // plan: [{type: mongoose.Schema.ObjectId, ref: 'Treatments'}]
     }
 );

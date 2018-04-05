@@ -1871,6 +1871,250 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
     }
   });
 });
+define('self-start-front-end/components/client-appointment', ['exports', 'moment'], function (exports, _moment) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    occurrences: Ember.A(),
+    availableSpot: Ember.A(),
+    removedSpot: Ember.A(),
+
+    DS: Ember.inject.service('store'),
+    routing: Ember.inject.service('-routing'),
+    isEditing: false,
+
+    modalName: Ember.computed(function () {
+      return 'Book Appointment';
+    }),
+    givenName: null,
+    familyName: null,
+    timeSlots: Ember.A(),
+    selectedappointmentBlock: null,
+    selectedbookedTime: null,
+
+    phyidget: null,
+
+    physioPicked: false,
+
+    getphysio: Ember.computed(function () {
+      return this.get('DS').findAll('physiotherapest');
+    }),
+
+    init: function init() {
+      this._super.apply(this, arguments);
+    },
+
+
+    actions: {
+      calendarAddOccurrence: function calendarAddOccurrence(occurrence) {
+        // this.get('occurrences').pushObject(Ember.Object.create({
+        //   title: occurrence.get('title'),
+        //   startsAt: occurrence.get('startsAt'),
+        //   endsAt: occurrence.get('endsAt')
+        // }));
+        //
+        // console.log(JSON.stringify(this.get('occurrences')));
+      },
+
+      calendarUpdateOccurrence: function calendarUpdateOccurrence(occurrence, properties, isPreview) {
+        console.log(JSON.stringify(occurrence));
+        this.set('selectedappointmentBlock', occurrence);
+
+        Ember.$('.ui.bk.modal').modal({
+          closeable: false,
+          onDeny: function onDeny() {
+            return true;
+          },
+          onApprove: function onApprove() {
+            return true;
+          }
+        }).modal('show');
+      },
+
+      calendarRemoveOccurrence: function calendarRemoveOccurrence(occurrence) {
+        // this.get('occurrences').removeObject(occurrence);
+        // console.log(JSON.stringify(occurrence));
+      },
+
+      updateValue: function updateValue(physio) {
+        this.set('occurrences', Ember.A());
+        this.set('removedSpot', Ember.A());
+
+        var home = this;
+        //save physioid
+        this.set('selectedPhysioId', physio);
+        //get record of selected physiotherapist
+        this.get('DS').findRecord('physiotherapest', physio).then(function (phy) {
+          //might not need this
+          home.set('selectedphysio', phy);
+          home.set('givenName', phy.get('givenName'));
+          home.set('familyName', phy.get('familyName'));
+          //get each appointment by  physiotherapist appointment
+          phy.get('appointments').forEach(function (obj) {
+            var curid = obj.get('id');
+            home.get('DS').findRecord('appointment', curid).then(function (app) {
+              var scheduledDate = (0, _moment.default)(app.get('date'));
+              var endDate = (0, _moment.default)(app.get('endDate'));
+              //filter out any appointments that is previous to current date
+              if (scheduledDate > (0, _moment.default)()) {
+                if (app.get('reason') == null) {
+                  home.get('occurrences').pushObject(Ember.Object.create({
+                    title: "Book Appointment",
+                    startsAt: scheduledDate.toISOString(),
+                    endsAt: endDate.toISOString(),
+                    tempid: app.get('id')
+                  }));
+                }
+              }
+            });
+          });
+        });
+      },
+      updateTime: function updateTime(type) {
+        // this.get('occurrences').pushObject(Ember.Object.create({
+        //   title: occurrence.get('title'),
+        //   startsAt: occurrence.get('startsAt'),
+        //   endsAt: occurrence.get('endsAt')
+        // }));
+        this.set('timeSlots', Ember.A());
+
+        var selected = this.get('selectedappointmentBlock');
+        var start_time = selected.startsAt;
+        var end_time = selected.endsAt;
+
+        var amount = void 0;
+        if (type === 't') amount = 60;else amount = 90;
+
+        while ((0, _moment.default)(start_time).add(amount, 'minute') <= (0, _moment.default)(end_time)) {
+          this.get('timeSlots').pushObject(Ember.Object.create({
+            time: (0, _moment.default)(start_time),
+            end: (0, _moment.default)(start_time).add(amount, 'minute'),
+            value: (0, _moment.default)(start_time).format('hh:mm A')
+          }));
+
+          start_time = (0, _moment.default)(start_time).add(30, 'minute');
+        }
+      },
+      setselectedtime: function setselectedtime(t) {
+        var self = this;
+        this.get('timeSlots').forEach(function (obj) {
+          if ((0, _moment.default)(t).isSame(obj.time)) {
+            self.set('selectedbookedTime', obj);
+          }
+        });
+        console.log(JSON.stringify(this.get('selectedbookedTime')));
+      },
+      cancel_appointment: function cancel_appointment() {
+        this.set('Reason', '');
+        this.set('selectAppointmentType', '');
+        this.set('Other', '');
+        this.set('selectedTime', '');
+        this.set('timeSlots', Ember.A());
+        Ember.$('.ui.bk.modal').modal('hide');
+      },
+      book_appointment: function book_appointment() {
+        var self = this;
+        //temp client until we get token
+        //laptop
+        var client = '5a8cea371af849309c3833d4';
+        //desktop
+        // let client = '5a88738e1f0fdc2b94498e81';
+        var physio = self.get('selectphysio');
+        var booking = this.get('DS').createRecord('appointment', {
+          reason: self.get('Reason'),
+          other: self.get('Other'),
+          date: self.get('selectedbookedTime').time,
+          endDate: self.get('selectedbookedTime').end
+        });
+        self.get('DS').findRecord('patient', client).then(function (src) {
+          console.log(src);
+          booking.set('patient', src);
+          src.get('appointments').pushObject(booking);
+          booking.save().then(function () {
+            src.save().then(function () {
+              self.get('DS').findRecord('physiotherapest', self.get('selectedPhysioId')).then(function (a) {
+                a.get('appointments').pushObject(booking);
+                a.save().then(function () {
+                  //{"title":"Book Appointment","startsAt":"2018-03-16T13:00:00.000Z","endsAt":"2018-03-16T17:30:00.000Z","tempid":"5aa9d71c004e3909bc597bba"}
+                  var usedBlock = self.get('selectedappointmentBlock');
+                  //time":"2018-03-16T13:00:00.000Z","end":"2018-03-16T14:30:00.000Z","value":"09:00
+                  var bookedTime = self.get('selectedbookedTime');
+                  //remove the block you used
+
+                  //case 1 if the slots are exact
+                  if ((0, _moment.default)(usedBlock.startsAt).isSame(bookedTime.time) && (0, _moment.default)(usedBlock.endsAt).isSame(bookedTime.end)) {
+                    console.log("case 1");
+                    self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
+                      old.destroyRecord().then(function () {
+                        Ember.$('.ui.bk.modal').modal('hide');
+                        window.location.reload();
+                      });
+                    });
+                  }
+                  //case 2 booked at the start block
+                  else if ((0, _moment.default)(usedBlock.startsAt).isSame(bookedTime.time)) {
+                      console.log("case 2");
+                      self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
+                        old.set('date', bookedTime.end);
+                        old.save().then(function () {
+                          Ember.$('.ui.bk.modal').modal('hide');
+                          window.location.reload();
+                        });
+                      });
+                    }
+                    //case 3 booked at the end block
+                    else if ((0, _moment.default)(usedBlock.endsAt).isSame(bookedTime.end)) {
+                        console.log("case 3");
+                        self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
+                          old.set('endDate', bookedTime.time);
+                          old.save().then(function () {
+                            Ember.$('.ui.bk.modal').modal('hide');
+                            window.location.reload();
+                          });
+                        });
+                      }
+                      //case 4 booked in between
+                      else {
+                          //create 2 segmented block
+                          var topappo = self.get('DS').createRecord('appointment', {
+                            date: usedBlock.startsAt,
+                            endDate: bookedTime.time
+                          });
+                          var bottomappo = self.get('DS').createRecord('appointment', {
+                            date: bookedTime.end,
+                            endDate: usedBlock.endsAt
+                          });
+                          topappo.save().then(function () {
+                            bottomappo.save().then(function () {
+                              a.get('appointments').pushObject(topappo);
+                              a.get('appointments').pushObject(bottomappo);
+                              a.save().then(function () {
+                                //remove old block
+                                self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (rec) {
+                                  a.get('appointments').removeObject(rec);
+                                  a.save().then(function () {
+                                    rec.destroyRecord().then(function () {
+                                      Ember.$('.ui.bk.modal').modal('hide');
+                                      window.location.reload();
+                                    });
+                                  });
+                                });
+                              });
+                            });
+                          });
+                        }
+                });
+              });
+            });
+          });
+        });
+      }
+    }
+  });
+});
 define('self-start-front-end/components/client-file', ['exports'], function (exports) {
   'use strict';
 
@@ -2164,13 +2408,64 @@ define('self-start-front-end/components/client-nav', ['exports'], function (expo
     actions: {}
   });
 });
-define('self-start-front-end/components/client-welcome', ['exports'], function (exports) {
-  'use strict';
+define("self-start-front-end/components/client-welcome", ["exports"], function (exports) {
+  "use strict";
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.Component.extend({});
+  exports.default = Ember.Component.extend({
+    introValue: "active",
+    appointmentValue: "disabled",
+    photoValue: "disabled",
+    confirmValue: "disabled",
+
+    intro: true,
+    appointment: false,
+    photo: false,
+    confirm: false,
+
+    actions: {
+      goToPhoto: function goToPhoto() {
+        this.set('introValue', "completed");
+        this.set('photoValue', "active");
+        this.set('photo', true);
+        this.set('intro', false);
+      },
+      backToIntro: function backToIntro() {
+        this.set('introValue', "active");
+        this.set('photoValue', "");
+        this.set('photo', false);
+        this.set('intro', true);
+      },
+      goToAppointment: function goToAppointment() {
+        this.set('photoValue', "completed");
+        this.set('appointmentValue', "active");
+        this.set('appointment', true);
+        this.set('photo', false);
+      },
+      backToPhoto: function backToPhoto() {
+        this.set('photoValue', "active");
+        this.set('appointmentValue', "");
+        this.set('photo', true);
+        this.set('appointment', false);
+      },
+      goToConfirm: function goToConfirm() {
+        this.set('confirmValue', "active");
+        this.set('appointmentValue', "completed");
+        this.set('appointment', false);
+        this.set('confirm', true);
+      },
+      backToAppointment: function backToAppointment() {
+        this.set('appointmentValue', "active");
+        this.set('confirmValue', "");
+        this.set('confirm', false);
+        this.set('appointment', true);
+      },
+      goToPaypal: function goToPaypal() {}
+    }
+
+  });
 });
 define('self-start-front-end/components/config-selection', ['exports'], function (exports) {
   'use strict';
@@ -2864,8 +3159,8 @@ define('self-start-front-end/components/display-assessment', ['exports'], functi
 
     actions: {
       Submit: function Submit() {
-        var x = this.get('DS').find('assessment-test', this.get('id'));
-        console.log(x.get('questions'));
+        // var x = this.get('DS').find('assessment-test', this.get('id'));
+        // console.log(x.get('questions'));
       }
     }
   });
@@ -6067,33 +6362,67 @@ define('self-start-front-end/components/register-user', ['exports'], function (e
         this.set('selectedGender', gender);
       },
       submit: function submit() {
+        var _this3 = this;
+
         var self = this;
 
-        var patientAccount = {};
-        // patientAccount['userAccountName'] = localStorage.getItem('UName');
-        patientAccount['encryptedPassword'] = self.get('encryptedPassword');
+        var temp = [];
+        var questionList = [];
 
-        var patient = this.get('DS').createRecord('patient', {
-          familyName: self.get('familyName'),
-          givenName: self.get('givenName'),
-          email: self.get('email'),
-          streetName: self.get('streetName'),
-          streetNumber: self.get('streetNumber'),
-          apartment: self.get('apartment'),
-          country: self.get('country'),
-          province: self.get('province'),
-          city: self.get('city'),
-          dateOfBirth: new Date(this.get('selectedDate')),
-          gender: self.get('selectedGender'),
-          phoneNumber: self.get('phoneNumber'),
-          postalCode: self.get('postalCode'),
-          account: patientAccount
+        // this.get('DS').findAll('form').then((rec)=>{
+        //   rec.forEach((r)=>{
+        //     if(r.get('name') === 'Intake Form'){
+        //       thisForm = r;
+        //     }
+        //   })
+        // });
+
+
+        this.get('DS').query('question-order', { filter: { 'form': '5ac1ae2773e03d3f78384c92' } }).then(function (questions) {
+
+          // self.get('questionList').clear();
+
+          questions.forEach(function (q) {
+            temp.push("");
+            questionList.pushObject(q.get('question'));
+          });
         });
 
-        patient.save().then(function (patient) {
-          localStorage.clear();
-          Ember.$('.ui.register.modal').modal('hide');
-          // localStorage.setItem('loggedIn', false);
+        var newTest = this.get('DS').createRecord('assessment-test', {
+          // form: thisForm,
+          questions: questionList,
+          answers: temp,
+          completed: false
+        });
+        newTest.save().then(function () {
+
+          var patientAccount = {};
+          // patientAccount['userAccountName'] = localStorage.getItem('UName');
+          patientAccount['encryptedPassword'] = self.get('encryptedPassword');
+
+          var patient = _this3.get('DS').createRecord('patient', {
+            familyName: self.get('familyName'),
+            givenName: self.get('givenName'),
+            email: self.get('email'),
+            streetName: self.get('streetName'),
+            streetNumber: self.get('streetNumber'),
+            apartment: self.get('apartment'),
+            country: self.get('country'),
+            province: self.get('province'),
+            city: self.get('city'),
+            dateOfBirth: new Date(_this3.get('selectedDate')),
+            gender: self.get('selectedGender'),
+            phoneNumber: self.get('phoneNumber'),
+            postalCode: self.get('postalCode'),
+            account: patientAccount,
+            intakeForm: newTest
+          });
+
+          patient.save().then(function (patient) {
+            localStorage.clear();
+            Ember.$('.ui.register.modal').modal('hide');
+            // localStorage.setItem('loggedIn', false);
+          });
         });
       },
 
@@ -8951,7 +9280,8 @@ define('self-start-front-end/models/patient', ['exports', 'ember-data'], functio
     postalCode: _emberData.default.attr(),
     appointments: _emberData.default.hasMany('appointment', { async: true }),
     account: _emberData.default.attr(),
-    rehablink: _emberData.default.hasMany('rehab-client-link', { async: true })
+    rehablink: _emberData.default.hasMany('rehab-client-link', { async: true }),
+    intakeForm: _emberData.default.belongsTo('assessment-test', { async: true })
   });
 });
 define("self-start-front-end/models/physiotherapest", ["exports", "ember-data"], function (exports, _emberData) {
@@ -11338,6 +11668,14 @@ define("self-start-front-end/templates/components/book-appointment", ["exports"]
   });
   exports.default = Ember.HTMLBars.template({ "id": "TsyVdryD", "block": "{\"symbols\":[\"timeslot\",\"phsio\"],\"statements\":[[0,\"\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[9,\"href\",\"/assets/css/form-style.css\"],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\\n\"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"padding-right: 10em; padding-left: 10em\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"fieldset\"],[7],[0,\"\\n    \"],[6,\"legend\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n\\n\\n    \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n    \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n      \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectphysio\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateValue\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n        \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"getphysio\"]]],null,{\"statements\":[[0,\"          \"],[6,\"option\"],[10,\"value\",[19,2,[\"id\"]],null],[7],[0,\"\\n            \"],[1,[19,2,[\"givenName\"]],false],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\\n\"],[1,[25,\"as-calendar\",null,[[\"title\",\"occurrences\",\"defaultTimeZoneQuery\",\"dayStartingTime\",\"dayEndingTime\",\"timeSlotDuration\",\"onAddOccurrence\",\"onUpdateOccurrence\",\"onRemoveOccurrence\"],[\"Ember Schedule\",[20,[\"occurrences\"]],\"Toronto|New York\",\"8:00\",\"20:00\",\"00:30\",[25,\"action\",[[19,0,[]],\"calendarAddOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarUpdateOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarRemoveOccurrence\"],null]]]],false],[0,\"\\n\\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],\"bk\"]],{\"statements\":[[0,\"  \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"scrolling content\"],[7],[0,\"\\n\\n    \"],[6,\"fieldset\"],[7],[0,\"\\n      \"],[6,\"legend\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\" Physiotherapist\"],[8],[0,\"\\n      \"],[6,\"p\"],[7],[1,[18,\"familyName\"],false],[0,\" \"],[1,[18,\"givenName\"],false],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Type\"],[8],[0,\"\\n      \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n        \"],[6,\"select\"],[9,\"class\",\"selectedAppointment\"],[10,\"value\",[18,\"selectAppointmentType\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateTime\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n          \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select type\"],[8],[0,\"\\n          \"],[6,\"option\"],[9,\"value\",\"i\"],[7],[0,\"\\n            Initial Assessment\\n          \"],[8],[0,\"\\n          \"],[6,\"option\"],[9,\"value\",\"t\"],[7],[0,\"\\n            Treatment\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Reason\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"star\",\"text\",[20,[\"Reason\"]]]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Other\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"user\",\"text\",[20,[\"Other\"]]]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Time Slot\"],[8],[0,\"\\n      \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n        \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectedTime\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"setselectedtime\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n          \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select TimeSlot\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"timeSlots\"]]],null,{\"statements\":[[0,\"            \"],[6,\"option\"],[10,\"value\",[19,1,[\"time\"]],null],[7],[0,\"\\n              \"],[1,[19,1,[\"value\"]],false],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"cancel_appointment\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui fluid positive button\"],[3,\"action\",[[19,0,[]],\"book_appointment\"]],[7],[0,\"Submit\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/book-appointment.hbs" } });
 });
+define("self-start-front-end/templates/components/client-appointment", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "GjWZ3A3c", "block": "{\"symbols\":[\"timeslot\",\"phsio\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Book appointments\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[9,\"href\",\"/assets/css/form-style.css\"],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\\n\"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"padding-right: 10em; padding-left: 10em\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n\\n  \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n  \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n    \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectphysio\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateValue\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n      \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"getphysio\"]]],null,{\"statements\":[[0,\"        \"],[6,\"option\"],[10,\"value\",[19,2,[\"id\"]],null],[7],[0,\"\\n          \"],[1,[19,2,[\"givenName\"]],false],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[1,[25,\"as-calendar\",null,[[\"title\",\"occurrences\",\"defaultTimeZoneQuery\",\"dayStartingTime\",\"dayEndingTime\",\"timeSlotDuration\",\"onAddOccurrence\",\"onUpdateOccurrence\",\"onRemoveOccurrence\"],[\"Schedule\",[20,[\"occurrences\"]],\"Toronto|New York\",\"8:00\",\"20:00\",\"00:30\",[25,\"action\",[[19,0,[]],\"calendarAddOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarUpdateOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarRemoveOccurrence\"],null]]]],false],[0,\"\\n\\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],\"bk\"]],{\"statements\":[[0,\"  \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"scrolling content\"],[7],[0,\"\\n\\n      \"],[6,\"fieldset\"],[7],[0,\"\\n        \"],[6,\"legend\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\" Physiotherapist\"],[8],[0,\"\\n        \"],[6,\"p\"],[7],[1,[18,\"familyName\"],false],[0,\" \"],[1,[18,\"givenName\"],false],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[0,\"\\n\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Type\"],[8],[0,\"\\n        \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n          \"],[6,\"select\"],[9,\"class\",\"selectedAppointment\"],[10,\"value\",[18,\"selectAppointmentType\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateTime\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n            \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select type\"],[8],[0,\"\\n            \"],[6,\"option\"],[9,\"value\",\"i\"],[7],[0,\"\\n              Initial Assessment\\n            \"],[8],[0,\"\\n            \"],[6,\"option\"],[9,\"value\",\"t\"],[7],[0,\"\\n              Treatment\\n            \"],[8],[0,\"\\n\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n          \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Reason\"],[8],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"star\",\"text\",[20,[\"Reason\"]]]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n          \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Other\"],[8],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"user\",\"text\",[20,[\"Other\"]]]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Time Slot\"],[8],[0,\"\\n        \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n          \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectedTime\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"setselectedtime\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n            \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select TimeSlot\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"timeSlots\"]]],null,{\"statements\":[[0,\"              \"],[6,\"option\"],[10,\"value\",[19,1,[\"time\"]],null],[7],[0,\"\\n                \"],[1,[19,1,[\"value\"]],false],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"cancel_appointment\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui fluid positive button\"],[3,\"action\",[[19,0,[]],\"book_appointment\"]],[7],[0,\"Submit\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-appointment.hbs" } });
+});
 define("self-start-front-end/templates/components/client-file", ["exports"], function (exports) {
   "use strict";
 
@@ -11360,7 +11698,7 @@ define("self-start-front-end/templates/components/client-welcome", ["exports"], 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "gzDuqaHR", "block": "{\"symbols\":[\"admin\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg3\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[7],[0,\"Client Page\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"          \"],[6,\"span\"],[9,\"class\",\"tagline\"],[7],[0,\"\\n            \"],[1,[19,1,[\"message\"]],false],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui center aligned grid\"],[7],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-welcome.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "uFb1ruyt", "block": "{\"symbols\":[\"admin\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg3\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[7],[0,\"Client Page\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"          \"],[6,\"span\"],[9,\"class\",\"tagline\"],[7],[0,\"\\n            \"],[1,[19,1,[\"message\"]],false],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui center aligned grid\"],[7],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui vertical stripe intro segment\"],[9,\"id\",\"about\"],[9,\"style\",\"border-bottom: 10px dotted whitesmoke; padding-top: 10em\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui very padded segment container\"],[9,\"style\",\"border: none; box-shadow: none; background-color: white;position: relative;z-index:  2;\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui four steps\"],[7],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"introValue\"],\" step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"sticky note icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Intake Form\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"photoValue\"],\"  step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"photo icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Upload Photos\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"appointmentValue\"],\"  step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"bookmark icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"confirmValue\"],\"  step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"check circle icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Confirmation\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui attached segment\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"intro\"]]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n\\n      \"],[1,[25,\"display-assessment\",null,[[\"id\"],[[20,[\"paitent\",\"intakeForm\",\"id\"]]]]],false],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToPhoto\"]],[7],[0,\"Next\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"photo\"]]],null,{\"statements\":[[0,\"    \"],[6,\"p\"],[7],[0,\"Photos go here!!\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToIntro\"]],[7],[0,\"Back\"],[8],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToAppointment\"]],[7],[0,\"Next\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"appointment\"]]],null,{\"statements\":[[0,\"    \"],[6,\"p\"],[7],[0,\"Appointment go here!!\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToPhoto\"]],[7],[0,\"Back\"],[8],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToConfirm\"]],[7],[0,\"Next\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"confirm\"]]],null,{\"statements\":[[0,\"    \"],[6,\"p\"],[7],[0,\"Confirmation Page Goes Here!!\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToAppointment\"]],[7],[0,\"Back\"],[8],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToPaypal\"]],[7],[0,\"Next\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-welcome.hbs" } });
 });
 define("self-start-front-end/templates/components/config-selection", ["exports"], function (exports) {
   "use strict";
@@ -11672,7 +12010,7 @@ define("self-start-front-end/templates/components/physio-nav", ["exports"], func
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "p8JzcI0h", "block": "{\"symbols\":[\"&default\"],\"statements\":[[2,\"<style>\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .fixed,\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .pusher {\"],[0,\"\\n\"],[2,\"-ebkit-transform: translate3d(260px, 0, 0); transform: translate3d(260px, 0, 0);\"],[0,\"\\n\"],[2,\"}\"],[0,\"\\n\"],[2,\"</style>\"],[0,\"\\n\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index\"],[7],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"following bar\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n\"],[4,\"link-to\",[\"practitioner\"],null,{\"statements\":[[0,\"                    \"],[6,\"img\"],[9,\"class\",\"ui image selfStart\"],[9,\"src\",\"/assets/images/home/Header.png\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"right menu inverted\"],[7],[0,\"\\n            \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[6,\"div\"],[9,\"id\",\"SkypeButton_Call\"],[7],[8],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/clients\"],[9,\"class\",\"item\"],[7],[0,\"Clients\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/exercises\"],[9,\"class\",\"item\"],[7],[0,\"Exercise\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/rehabplans\"],[9,\"class\",\"item\"],[7],[0,\"Menu Builder\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/appointment\"],[9,\"class\",\"item\"],[7],[0,\"Appointments\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"href\",\"../\"],[9,\"class\",\"item\"],[7],[0,\"Log out\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[11,1],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/physio-nav.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "Wc+zsc9W", "block": "{\"symbols\":[\"&default\"],\"statements\":[[2,\"<style>\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .fixed,\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .pusher {\"],[0,\"\\n\"],[2,\"-ebkit-transform: translate3d(260px, 0, 0); transform: translate3d(260px, 0, 0);\"],[0,\"\\n\"],[2,\"}\"],[0,\"\\n\"],[2,\"</style>\"],[0,\"\\n\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index\"],[7],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"following bar\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n\"],[4,\"link-to\",[\"practitioner\"],null,{\"statements\":[[0,\"                    \"],[6,\"img\"],[9,\"class\",\"ui image selfStart\"],[9,\"src\",\"/assets/images/home/Header.png\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"right menu inverted\"],[7],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/clients\"],[9,\"class\",\"item\"],[7],[0,\"Clients\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/exercises\"],[9,\"class\",\"item\"],[7],[0,\"Exercise\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/rehabplans\"],[9,\"class\",\"item\"],[7],[0,\"Menu Builder\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/appointment\"],[9,\"class\",\"item\"],[7],[0,\"Appointments\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"href\",\"../\"],[9,\"class\",\"item\"],[7],[0,\"Log out\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[11,1],[0,\"\\n    \"],[6,\"div\"],[9,\"id\",\"SkypeButton_Call\"],[9,\"style\",\"position: fixed; right: 0; bottom: 0\"],[7],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/physio-nav.hbs" } });
 });
 define("self-start-front-end/templates/components/physio-table", ["exports"], function (exports) {
   "use strict";
