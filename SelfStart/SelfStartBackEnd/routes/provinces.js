@@ -50,6 +50,7 @@ router.route('/:province_id')
                 province.cities = request.body.province.cities;
                 // province.patient = request.body.province.patient;
 
+
                 province.save(function (error) {
                     if (error) {
                         response.send({error: error});

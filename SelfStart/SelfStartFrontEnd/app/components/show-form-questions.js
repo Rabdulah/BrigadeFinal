@@ -3,6 +3,7 @@ import Ember from "ember";
 
 
 export default Component.extend({
+
   DS: Ember.inject.service('store'),
   initialized:false,
   order:[],
@@ -14,6 +15,7 @@ export default Component.extend({
     removeQuestion(q, f, qid, fid){
       f.get('questions').removeObject(q);
       q.get('forms').removeObject(f);
+
 
       console.log(fid);
       this.get('DS').findRecord('form', fid).then((rec) => {

@@ -20,7 +20,6 @@ router.route('/')
         //         response.json({success: false, msg: 'User already registered'});
         //     }
         // });
-
         // Patients.addClient(patient, (err, patient) => {
         //     console.log("ASDJKkajsdkjsajkd");
         //     if(err) {
@@ -29,6 +28,7 @@ router.route('/')
         //         response.json({patient: patient});
         //     }
         // });
+
 
         // patient.save(function (error) {
         //     if (error) response.send(error);

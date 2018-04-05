@@ -6,7 +6,6 @@
 @import 'addons/ember-calendar/paint-core';
 @import 'addons/ember-calendar/main';
 
-
 /*.following.bar .ui.container {*/
 /*width: 1400px;*/
 /*}*/
@@ -60,7 +59,9 @@ body{
 
 .login.tiny.ui.modal {
   position: fixed !important;
+
   top: 7.7em !important;
+
 }
 
 //.ui.centered.very.padded.raised.segment.container {
@@ -282,4 +283,5 @@ a img {
   opacity: 1;
   color: white !important;
   font-size: 10px;
+
 }

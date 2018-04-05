@@ -4,6 +4,7 @@ import { computed } from '@ember/object';
 import $ from 'jquery';
 
 export default Component.extend({
+
   DS: inject('store'),
   questionNumber: 54,
   formModel: [],

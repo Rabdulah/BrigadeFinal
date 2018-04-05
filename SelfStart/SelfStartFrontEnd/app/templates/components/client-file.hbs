@@ -11,6 +11,7 @@
 
 <div class="ui container" style="padding-top: 2em">
   <div class="ui top attached tabular stackable menu" style="padding-left: 20%;">
+
     <a class="item">
       Assessment
     </a>
@@ -37,6 +38,7 @@
     <div class="ui very padded container segment" id="top">
       <div class="ui grid" style="margin-top: -30px;">
         <div class="left twelve wide column" style="margin-top: -5px;">
+
           <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">
             Menu Builder
           </p>
@@ -61,10 +63,12 @@
       </div>
       <br><br><br><br>
 
+
       <div style="display: inline">
         <table class="ui fixed table" style="border: none;border-color: white;">
           <tbody >
           <tr style="font-weight: bold;">
+
             {{#each modelAttributes as |column|}}
               <th class={{column.class}} {{action 'sortColumn' column.key column.dir}}>{{column.name}}
                 {{#if (eq column.dir 'asc')}}
@@ -90,6 +94,7 @@
         <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
           <tbody >
           {{#each listModel as |exercise|}}
+
 
             <tr>
 

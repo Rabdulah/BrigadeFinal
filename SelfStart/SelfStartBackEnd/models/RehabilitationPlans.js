@@ -11,6 +11,7 @@ var rehabilitationPlansSchema = mongoose.Schema({
     assessmentTests: [{type: mongoose.Schema.ObjectId, ref: 'AssessmentTests'}],
     exerciseList: [{type: mongoose.Schema.ObjectId, ref: 'ExerciseList'}]
 
+
 });
 
 rehabilitationPlansSchema.plugin(mongoosePaginate);

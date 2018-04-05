@@ -42,6 +42,7 @@ export default Component.extend({
   }),
 
   filterpateints: Ember.observer('query', 'queryPath', function () {
+
     var self=this;
 
     let queryText = this.get('query');

@@ -118,6 +118,7 @@ export default Component.extend({
         localStorage.clear();
         // localStorage.setItem('loggedIn', false);
       });
+
     },
     backToAccount() {
       this.set('accountValue', "active");

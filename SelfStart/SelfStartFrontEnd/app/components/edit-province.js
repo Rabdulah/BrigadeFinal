@@ -47,6 +47,7 @@ export default Component.extend({
     openModal: function () {
       //this.set('provinceData', this.get('DS').peekRecord('province', this.get('ID')));
 
+
       $('.ui.' + this.get('modalName') + '.modal').modal({
         closable: false,
         transition: 'horizontal flip',
@@ -54,7 +55,6 @@ export default Component.extend({
         onDeny: () => {
           return true;
         },
-
       })
         .modal('show');
     },

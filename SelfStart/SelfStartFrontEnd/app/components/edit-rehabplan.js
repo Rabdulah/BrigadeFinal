@@ -106,6 +106,7 @@ export default Component.extend({
           checkVal(singleInput);
           singleInput.on('change keyup', function () {
             checkVal(singleInput);
+
           });
         });
       }
