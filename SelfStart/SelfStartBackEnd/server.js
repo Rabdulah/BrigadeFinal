@@ -88,6 +88,9 @@ var genders = require('./routes/genders');
 var rehabClientLinks = require('./routes/rehabClientLinks');
 var pass = require('./routes/passwords');
 var log = require('./routes/logins');
+var exerciseList = require('./routes/exerciseList');
+var questionOrder = require('./routes/questionOrder');
+
 
 // REGISTER OUR ROUTES -------------------------------
 app.use('/images', photos);

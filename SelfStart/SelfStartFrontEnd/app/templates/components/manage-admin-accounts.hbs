@@ -10,23 +10,23 @@
 </div>
 
 
-<div class="background" style="padding-left: 2em;padding-right: 15em;padding-top: 10em;">
-
-  <div class="ui vertical pointing menu" style="width: 12rem;">
+<div class="ui container" style="padding-top: 2em">
+  <div class="ui top attached tabular stackable menu" style="padding-left: 20%;">
     <a class="{{clientState}} item" {{action "client"}}>
       Clients
     </a>
     <a class="{{practState}} item" {{action "pract"}}>
       Practitioners
     </a>
-    <a class="{{adminState}} item" {{action "admin"}}>
+    <a class="{{adminState}} item"  {{action "admin"}}>
       Admins
     </a>
   </div>
+  <div class="ui segment" style="background: transparent;border: none;box-shadow: none;">
 
-  <br><br>
+
   {{#if clientView}}
-  <div class="ui very padded container segment" id="top" style="margin-top: -18em;z-index:  2;position: relative;margin-left: 200px !important;">
+    <div class="ui very padded container segment" id="top">
     <div class="ui grid" style="margin-top: -30px;">
       <div class="left thirteen wide column" style="margin-top: -5px;">
         <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">
@@ -138,4 +138,5 @@
     {{admin-table}}
   {{/if}}
   <br><br><br><br>
+</div>
 </div>

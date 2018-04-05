@@ -1,91 +1,91 @@
-<button class="ui mini circular labeled icon green button" {{action 'openModal'}} {{action 'isMultipleChoice'}}
-        title="Edit"><i class="edit icon"></i>
-        Edit
-</button>
-
+<p style="cursor: pointer; " title="Edit"  {{action 'openModal' }} {{action 'isMultipleChoice'}}>
+  <img src="/assets/images/pencil.svg">
+</p>
 
 {{#ui-modal name= modalName class=modalName }}
 
   <div class="header">
     Edit Question: "{{questionText}}"
   </div>
-  <div class="content">
-    <div class="ui form">
+  <div class="scrolling content">
+
+    <form id="edit" class="cd-form floating-labels" {{action "submit" on="submit"}}>
 
       {{#if multipleChoice}}
 
-        <div class="field">
-          <label>Question</label>
-          {{input type="text" cols="50" rows="1" valueBinding=questionText}}
+        <div class="field" style="margin: 1em 0;">
+          <label class="cd-label">Question</label>
+          {{input class="question" type="text" value = questionData.questionText required = true}}
         </div>
 
-        <div class="field">
-          <label>Help Description</label>
-          {{textarea cols="50" rows="1" valueBinding=questionData.helpDescription}}
+        <div class="field" style="margin: 1em 0;">
+          <label class="cd-label">Help Description</label>
+          {{textarea class="message" type="text" value = questionData.helpDescription}}
         </div>
 
-        <div class="field">
-          <label>Option 1</label>
-          {{textarea cols="50" rows="1" valueBinding=opt1String}}
+
+        <div class="field" style="margin: 1em 0;">
+          <label class="cd-label">Option 1</label>
+          {{input class="circle" type="text" valueBinding = opt1String required = true}}
         </div>
+
 
         {{#if opt2}}
-          <div class="field">
-            <label>Option 2</label>
-            {{textarea cols="50" rows="1" valueBinding=opt2String}}
+          <div class="field" style="margin: 1em 0;">
+            <label class="cd-label">Option 2</label>
+            {{input class="circle" type="text" valueBinding = opt2String required = true}}
           </div>
         {{/if}}
 
         {{#if opt3}}
-          <div class="field">
-            <label>Option 3</label>
-            {{textarea cols="50" rows="1" valueBinding=opt3String}}
+          <div class="field" style="margin: 1em 0;">
+            <label class="cd-label">Option 3</label>
+            {{input class="circle" type="text" valueBinding = opt3String required = true}}
           </div>
         {{/if}}
 
         {{#if opt4}}
-          <div class="field">
-            <label>Option 4</label>
-            {{textarea cols="50" rows="1" valueBinding=opt4String}}
+          <div class="field" style="margin: 1em 0;">
+            <label class="cd-label">Option 4</label>
+            {{input class="circle" type="text" valueBinding = opt4String required = true}}
           </div>
         {{/if}}
 
         {{#if opt5}}
-          <div class="field">
-            <label>Option 5</label>
-            {{textarea cols="50" rows="1" valueBinding=opt5String}}
+          <div class="field" style="margin: 1em 0;">
+            <label class="cd-label">Option 5</label>
+            {{input class="circle" type="text" valueBinding = opt5String required = true}}
           </div>
         {{/if}}
 
         {{#if opt6}}
-          <div class="field">
-            <label>Option 6</label>
-            {{textarea cols="50" rows="1" valueBinding=opt6String}}
+          <div class="field" style="margin: 1em 0;">
+            <label class="cd-label">Option 6</label>
+            {{input class="circle" type="text" valueBinding = opt6String required = true}}
           </div>
         {{/if}}
 
       {{else}}
-        <div class="field">
-          <label>Question </label>
-          {{input type="text" cols="50" rows="1" value=questionData.questionText}}
-        </div>
+      <div class="field" style="margin: 1em 0;">
+        <label class="cd-label">Question</label>
+        {{input class="question" type="text" value = questionData.questionText required = true}}
+      </div>
 
-        <div class="field">
-          <label>Help Description</label>
-          {{textarea cols="50" rows="1" value=questionData.helpDescription}}
-        </div>
+      <div class="field" style="margin: 1em 0;">
+        <label class="cd-label">Help Description</label>
+        {{textarea class="message" type="text" value = questionData.helpDescription}}
+      </div>
 
       {{/if}}
 
 
-    </div>
-  </div>
-  <br>
-
-  <div class="actions" style="padding:0; ">
-    <div class="ui positive right" style="padding:.2em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Save<i class="checkmark icon"></i></div>
-    <div class="ui deny" style="padding:.2em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">Cancel</div>
+  <div class="field" style="padding-top: 2em">
+    <button class="fluid ui blue button" style="max-width: 100%; height: 50px;">
+      Submit
+    </button>
   </div>
 
-  <br><br>
+  </form>
+  </div>
+
 {{/ui-modal}}

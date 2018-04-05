@@ -20,6 +20,7 @@ export default DS.Model.extend({
   postalCode: DS.attr(),
   appointments: DS.hasMany('appointment', { async: true }),
   account: DS.attr(),
+  transactions: DS.attr(),
   rehablink: DS.hasMany('rehab-client-link', { async: true }),
   success: DS.attr()
 });

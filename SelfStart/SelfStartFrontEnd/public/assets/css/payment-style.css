@@ -158,11 +158,11 @@ Main Components
     display: none;
   }
 }
-@media only screen and (min-width: 1500px) {
-  .cd-full-width .cd-pricing-list > li {
-    padding: 2.5em 0;
-  }
-}
+/*@media only screen and (min-width: 1500px) {*/
+  /*.cd-full-width .cd-pricing-list > li {*/
+    /*padding: 2.5em 0;*/
+  /*}*/
+/*}*/
 
 @media only screen and (min-width: 768px) {
   .cd-popular .cd-pricing-wrapper > li::before {
@@ -358,7 +358,7 @@ Main Components
     /* hide arrow */
     display: none;
   }
-  .cd-has-margins .cd-pricing-footer {
+  .cd-pricing-footer {
     padding-bottom: 0;
   }
 }

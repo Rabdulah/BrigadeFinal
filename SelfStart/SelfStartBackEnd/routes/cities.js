@@ -37,8 +37,8 @@ router.route('/:city_id')
 
                 // update each attribute
                 city.name = request.body.city.name;
-                city.provinces = request.body.city.provinces;
-                city.patient = request.body.city.patient;
+                city.province = request.body.city.province;
+                // city.patient = request.body.city.patient;
     
 
 

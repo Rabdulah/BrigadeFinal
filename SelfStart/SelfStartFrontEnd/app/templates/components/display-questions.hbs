@@ -1,92 +1,106 @@
-<script type="text/javascript">$(document).ready(function(){$(".rating").rating();});</script>
+<p style="cursor: pointer; " title="View Form"  {{action 'openModal' }}>
+  <img src="/assets/images/eye-19.svg">
+</p>
 
-<div class="ui form">
-<ol>
-{{#each formModel.questions as |q|}}
-    <br>
-    {{#if q.sa}}
-        <label>{{q.questionText}}</label>
-        <br><br>
-        <div class="ui input focus">
-            <li>{{input type="text" value = the }}</li>
+{{#ui-modal name=modalName class=modalName }}
+  <i class="close icon"></i>
+  <link integrity="" rel="stylesheet" href="{{rootURL}}../assets/css/form-style.css"> <!-- Resource style -->
+
+
+  <div class="header">Form View</div>
+  <div class="scrolling content" >
+
+    <form id="edit" class="cd-form floating-labels" {{action "submit" on="submit"}}>
+
+
+<!--<script type="text/javascript">$(document).ready(function(){$(".rating").rating();});</script>-->
+
+    {{#each formModel as |q|}}
+
+      {{#if q.sa}}
+        <div class="field" style="margin: 1em 0;">
+          <label class="cd-label">{{q.questionText}}</label>
+          {{input class="message" type="text" value = the required = true}}
         </div>
-    {{/if}}
+      {{/if}}
 
-    {{#if q.ra}}
-        <label>{{q.questionText}}</label>
-        <br><br>
-         <li><div class="ui large heart rating" data-max-rating="10"></div></li>
-    {{/if}}
-
-    {{#if q.tf}}
-    <br><br>
-     <li>
-        <div class="inline fields">
-           <label>{{q.questionText}}</label>
-          <div class="field">
-            <div class="ui radio checkbox">
-                <input name="tf" type="radio">
-                <label>True</label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="ui radio checkbox">
-               <input name="tf" type="radio">
-               <label>False</label>
-            </div>
-          </div>
+      {{#if q.ra}}
+        <div class="field" style="margin: 1em 0;">
+          <label class="cd-label">{{q.questionText}}</label>
+          {{ui-rating class="ui massive star rating"
+            initialRating=rating
+            rating=rating
+            maxRating=10
+            onRate=(action (mut rating))}}
         </div>
-      </li>  
-    {{/if}}
+      {{/if}}
 
-    {{#if q.mc}}
-    <br><br>
-        <div class="grouped fields">
-          <label>{{q.questionText}}</label>
-          <div class="field">
-            <div class="ui radio checkbox">
-                <input name="mc" type="radio">
-                <label>{{mc-display q.optionString 0}}</label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="ui radio checkbox">
-                <input name="mc" type="radio">
-                <label>{{mc-display q.optionString 1}}</label>
-            </div>
-          </div>
-          <div class="field">
-            <div class="ui radio checkbox">
-                <input name="mc" type="radio">
-                <label>{{mc-display q.optionString 2}}</label>
-            </div>
-          </div>
-          {{#if (number-of-mc q.optionNumber 3)}}
-          <div class="field">
-            <div class="ui radio checkbox">
-                <input name="mc" type="radio">
+      {{#if q.tf}}
+        <div class="field" style="margin: 1em 0;">
+
+
+
+          <h4>{{q.questionText}}</h4>
+          <ul class="cd-form-list">
+            <li>
+              <input type="radio" name="{{q.id}}" checked>
+              <label>Yes</label>
+            </li>
+
+            <li>
+              <input type="radio" name="{{q.id}}">
+              <label>No</label>
+            </li>
+          </ul>
+
+        </div>
+      {{/if}}
+
+      {{#if q.mc}}
+        <div class="ui form" style="margin: 1em 0;">
+
+          <h4>{{q.questionText}}</h4>
+          <ul class="cd-form-list">
+            <li>
+              <input type="radio" name="{{q.id}}" checked>
+              <label>{{mc-display q.optionString 0}}</label>
+            </li>
+
+            <li>
+              <input type="radio" name="{{q.id}}">
+              <label>{{mc-display q.optionString 1}}</label>
+            </li>
+
+            <li>
+              <input type="radio" name="{{q.id}}">
+              <label>{{mc-display q.optionString 2}}</label>
+            </li>
+
+
+            {{#if (number-of-mc q.optionNumber 3)}}
+              <li>
+                <input type="radio" name="{{q.id}}">
                 <label>{{mc-display q.optionString 3}}</label>
-            </div>
-          </div>
-          {{/if}}
-          {{#if (number-of-mc q.optionNumber 4)}}
-          <div class="field">
-            <div class="ui radio checkbox">
-                <input name="mc" type="radio">
+              </li>
+            {{/if}}
+            {{#if (number-of-mc q.optionNumber 4)}}
+              <li>
+                <input type="radio" name="{{q.id}}">
                 <label>{{mc-display q.optionString 4}}</label>
-            </div>
-          </div>
-          {{/if}}
-          {{#if (number-of-mc q.optionNumber 5)}}
-          <div class="field">
-            <div class="ui radio checkbox">
-                <input name="mc" type="radio">
+              </li>
+            {{/if}}
+            {{#if (number-of-mc q.optionNumber 5)}}
+              <li>
+                <input type="radio" name="{{q.id}}">
                 <label>{{mc-display q.optionString 5}}</label>
-            </div>
-          </div>
-          {{/if}}
+              </li>
+            {{/if}}
+
+          </ul>
         </div>
-    {{/if}}
-{{/each}}
-</ol>
-</div>
+      {{/if}}
+    {{/each}}
+
+    </form>
+  </div>
+{{/ui-modal}}

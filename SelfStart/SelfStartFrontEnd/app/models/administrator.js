@@ -9,5 +9,4 @@ export default DS.Model.extend({
   dateFired: DS.attr("Date"),
   phoneNumber: DS.attr(),
   account: DS.attr(),
-  message: DS.attr()
 });

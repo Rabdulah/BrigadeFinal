@@ -4,50 +4,59 @@ var QuestionOrder = require('../models/QuestionOrder');
 
 router.route('/')
         .post(function (request, response) {
-            var questionorder = new QuestionOrder.Model(request.body.questionorder);
-            questionorder.save(function (error) {
+            var questionOrder = new QuestionOrder.Model(request.body.questionOrder);
+            questionOrder.save(function (error) {
                 if (error) response.send(error);
-                response.json({questionorder: questionorder});
+                response.json({questionOrder: questionOrder});
             });
         })
         
         .get(function (request, response) {
-            QuestionOrder.Model.find(function (error, questionorders) {
-                if (error) response.send(error);
-                response.json({questionorder: questionorders});
-            });
+            var order =  request.query.filter;
+            if(!order){
+                QuestionOrder.Model.find(function (error, questionOrders) {
+                    if (error) response.send(error);
+                    response.json({questionOrder: questionOrders});
+                });
+            }
+            else{
+                QuestionOrder.Model.find({"form": order.form}, function (error, questionOrders) {
+                    if (error) response.send(error);
+                    response.json({questionOrder: questionOrders});
+                });
+            }
         });
 
-router.route('/:question_id')
+router.route('/:questionOrder_id')
         .get(function (request, response) {
-            QuestionOrder.Model.findById(request.params.questionorder_id, function (error, questionorder) {
+            QuestionOrder.Model.findById(request.params.questionOrder_id, function (error, questionOrder) {
                 if (error) {
                     response.send({error: error});
                 }
                 else {
-                    response.json({questionorder: questionorder});
+                    response.json({questionOrder: questionOrder});
                 }
             });
         })
         
         .put(function (request, response) {
-            QuestionOrder.Model.findById(request.params.question_id, function (error, questionorder) {
+            QuestionOrder.Model.findById(request.params.questionOrder_id, function (error, questionOrder) {
                 if (error) {
                     response.send({error: error});
                 }
                 else {
                     
                     // update each attribute
-                    questionorder.question = request.body.questionorder.question;
-                    question.form = request.body.questionorder.form;
-                    questionorder.order = request.body.questionorder.order;
+                    questionOrder.question = request.body.questionOrder.question;
+                    questionOrder.form = request.body.questionOrder.form;
+                    questionOrder.order = request.body.questionOrder.order;
                     
-                    questionorder.save(function (error) {
+                    questionOrder.save(function (error) {
                         if (error) {
                             response.send({error: error});
                         }
                         else {
-                            response.json({questionorder: questionorder});
+                            response.json({questionOrder: questionOrder});
                         }
                     });
                 }
@@ -55,9 +64,9 @@ router.route('/:question_id')
         })
         
         .delete(function (request, response) {
-            QuestionOrder.Model.findByIdAndRemove(request.params.questionorder_id, function (error, deleted) {
+            QuestionOrder.Model.findByIdAndRemove(request.params.questionOrder_id, function (error, deleted) {
                 if (!error) {
-                    response.json({questionorder: deleted});
+                    response.json({questionOrder: deleted});
                 }
             });
         });

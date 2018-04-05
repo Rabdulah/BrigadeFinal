@@ -9,74 +9,65 @@
   </div>
 </div>
 
-
-<div class="background" style="padding-left: 2em;padding-right: 15em;padding-top: 10em;">
-
-  <div class="ui vertical pointing menu" style="width: 12rem;">
-    <a class="active item">
-      Menu Builder
-    </a>
-    <a class="item">
+<div class="ui container" style="padding-top: 2em">
+  <div class="ui top attached tabular stackable menu" style="padding-left: 15%;">
+  
+    <a class="{{assessState}} item" {{action "assessView"}}>
       Assessment
     </a>
     <a class="item">
       Notes
     </a>
+    <a class="{{reportState}} item"  {{action "reportView"}}>
+      Reports
+    </a>
     <a class="item">
       Photos
     </a>
+    <a class="{{menusState}} item" {{action "menusView"}}>
+      Menus
+    </a>
+    <a class="item">
+      Documents
+    </a>
+    <a class="{{accountingState}} item" {{action "accountingView"}}>
+      Accounting
+    </a>
   </div>
+  <div class="ui segment" style="background: transparent;border: none;box-shadow: none;">
 
-  <br><br>
+    {{#if menus}}
 
-    <div class="ui very padded container segment" id="top" style="margin-top: -18em;z-index:  2;position: relative;margin-left: 200px !important;">
+    <div class="ui very padded container segment" id="top">
       <div class="ui grid" style="margin-top: -30px;">
-        <div class="left thirteen wide column" style="margin-top: -5px;">
+        <div class="left twelve wide column" style="margin-top: -5px;">
           <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">
             Menu Builder
           </p>
         </div>
-        <div class="right two wide column" style="padding-left: 30px;">
-          {{add-rehabplan flagAdd=flagAdd}}
-        </div>
-      </div>
-      <br><br><br><br>
-
-
-      <div class="ui left aligned seven wide column">
-        <div class="ui form" >
-          <div class="two fields" >
-
-            <div class="field">
-              {{#ui-dropdown class="selection" selected=queryPath onChange=(action (mut queryPath))}}
-                <div class="default text">{{modelAttributes.firstObject.name}}</div>
-                <i class="dropdown icon"></i>
-                <div class="menu">
-                  {{#each modelAttributes as |attribute|}}
-                    <div class="item" data-value="{{attribute.key}}">
-                      {{attribute.name}}
-                    </div>
-                  {{/each}}
-                </div>
-              {{/ui-dropdown}}
-            </div>
-
-            <div class="field">
-              <div class="ui icon input">
-                <i class="search icon"></i>
-                {{input type="text" placeholder="Search..."  value=query }}
+        <div class="right three wide column" style="padding-left: 30px;">
+          {{!--{{add-rehabplan flagAdd=flagAdd}}--}}
+          <div class="ui form" >
+            {{#ui-dropdown class="selection" onChange=(action (mut plan))}}
+              <div class="default text">Select a menu</div>
+              <i class="dropdown icon"></i>
+              <div class="menu">
+                {{#each rehabModel as |plan|}}
+                  <div data-value="{{plan.id}}" class="item">
+                    {{plan.planName}}
+                  </div>
+                {{/each}}
               </div>
-            </div>
+            {{/ui-dropdown}}
+
           </div>
         </div>
       </div>
-
-
+      <br><br><br><br>
       <div style="display: inline">
         <table class="ui fixed table" style="border: none;border-color: white;">
           <tbody >
           <tr style="font-weight: bold;">
-            <th class="left aligned one wide column "> </th>
             {{#each modelAttributes as |column|}}
               <th class={{column.class}} {{action 'sortColumn' column.key column.dir}}>{{column.name}}
                 {{#if (eq column.dir 'asc')}}
@@ -90,8 +81,6 @@
                 {{/if}}
               </th>
             {{/each}}
-            <th class="center aligned five wide  column">Actions</th>
-            <!--<th class="left aligned one wide  column"></th>-->
 
           </tr>
           </tbody>
@@ -103,33 +92,279 @@
       <div  id="myWindow" style="height:500px; overflow-y: scroll; overflow-x: hidden;">
         <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
           <tbody >
-          {{#each plansModel as |plan|}}
+          {{#each listModel as |exercise|}}
 
             <tr>
 
               {{#each modelAttributes as |column|}}
 
-
                 <td class={{column.class}}>
-                  {{get plan column.key}}
+                  {{get exercise column.key}}
                 </td>
               {{/each}}
-
-              <td class="right aligned three wide column ">
-                  {{assign-rehabplan  plansData=plan model=model}}
-              </td>
-              <td class="right aligned one wide column ">
-                {{edit-rehabplan  plansData=plan }}
-              </td>
-              <td class="left aligned one wide column ">
-                <p>{{delete-rehabplan ID=plan.id flagDelete=flagDelete}}</p>
-              </td>
             </tr>
           {{/each}}
+
+          {{#if isPlanSelected}}
+            <div class="ui {{disabled}} button" {{action "openModal"}}>
+              Assign
+            </div>
+          {{/if}}
+
+
           </tbody>
         </table>
       </div>
     </div>
+    {{/if}}
 
-  <br><br><br><br>
+    {{#if reports}}
+
+<div class="ui very padded container segment" id="top">
+      <div class="ui grid" style="margin-top: -30px;">
+        <div class="left twelve wide column" style="margin-top: -5px;">
+          <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">
+            Reports
+          </p>
+        </div>
+        <div class="right three wide column" style="padding-left: 30px;">
+          {{!-- <div class="ui form" >
+            <button class="ui small blue labeled icon button">
+              <i class="file alternate icon"></i>
+              Generate Reports
+            </button>
+          </div> --}}
+        </div>
+      </div>
+      <br><br><br><br>
+
+      <div style="display: inline">
+        <table class="ui fixed table" style="border: none;border-color: white;">
+          <tbody >
+          <tr style="font-weight: bold;">
+        <th class>
+          Report Type
+        </th>
+        <th class>
+          Actions
+        </th>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ui divider"></div>
+
+      <div style="display: inline">
+        <table class="ui fixed table" style="border: none;border-color: white;">
+          <tbody>
+            <tr>
+              <th class>
+                Feedback Report
+              </th>
+              <th class>
+                <button class="circular ui icon button" {{action "openFeedback"}}>
+                  <i class="file alternate icon"></i>
+                </button>
+              </th>
+            </tr>
+            
+            <br><br>
+             <tr>
+              <th class>
+                Summary Report
+              </th>
+              <th class>
+                <button class="circular ui icon button" {{action "openSummary"}}>
+                  <i class="file alternate icon"></i>
+                </button>
+              </th>
+            </tr>
+
+            <br><br>
+             <tr>
+              <th class>
+                Data Report
+              </th>
+              <th class>
+                <button class="circular ui icon button" {{action "openData"}}>
+                  <i class="file alternate icon"></i> 
+                </button>
+              </th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+    </div>
+    {{/if}}
+    {{#if accountingmenus}}
+      <div class="ui very padded container segment" id="top">
+        <div class="ui grid" style="margin-top: -30px;">
+          <div class="left five wide column" style="margin-top: -5px;">
+            <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">Trasnactions</p>
+          </div>
+          <div class="right three wide column" style="padding-left: 30px; margin-top: -5px;">
+            <p>remaining: </p>
+          </div>
+          <td class="right aligned one wide column ">
+            <p style="cursor: pointer; " title="Edit">
+              <img src="/assets/images/pencil.svg">
+            </p>
+          </td>
+
+        </div>
+        <br><br><br><br>
+
+
+        <div style="display: inline">
+          <table class="ui fixed table" style="border: none;border-color: white;">
+            <tbody >
+            <tr style="font-weight: bold;">
+              <th> test </th>
+              <th> test2 </th>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ui divider"></div>
+
+        <div  id="myWindow" style="height:500px; overflow-y: scroll; overflow-x: hidden;">
+          <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
+            <tbody >
+            {{#each listModel as |exercise|}}
+
+
+              <tr>
+
+                {{#each modelAttributes as |column|}}
+
+                  <td class={{column.class}}>
+                    {{get exercise column.key}}
+                  </td>
+                {{/each}}
+              </tr>
+            {{/each}}
+
+            {{#if isPlanSelected}}
+              <div class="ui {{disabled}} button" {{action "openModal"}}>
+                Assign
+              </div>
+            {{/if}}
+
+
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    {{/if}}
+
+    {{#if assess}}
+      {{#each patientModel as |link index|}}
+        {{get-assessment-results linker = link count = index}}  
+      {{/each}}
+    {{/if}}
+
+  </div>
 </div>
+  <br><br><br><br>
+
+{{#ui-modal name=modalName class=modalName }}
+  <i class="close icon"></i>
+  <link integrity="" rel="stylesheet" href="/assets/css/form-style.css"> <!-- Resource style -->
+
+  <div class="ui icon header">
+    Assign {{plansData.planName}}
+  </div>
+  <div class="content">
+    <p>Are you sure you want to assign this rehabilitation plan?</p>
+  </div>
+  <br>
+  {{list-forms rehabPlan = plan patient = model}}
+  <div class="actions" style="padding:0">
+
+    <div class="ok " style="padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Yes</div>
+    <div class="cancel " style="padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">No</div>
+  </div>
+{{/ui-modal}}
+
+{{#ui-modal name="feedback" class="feedback"}}
+  <i class="close icon"></i>
+  {{!-- <link integrity="" rel="stylesheet" href="/assets/css/form-style.css"> <!-- Resource style --> --}}
+  <label class="text"></label>
+  <br>
+  <div class="ui form">
+    <div class="field">
+      <label>Summarise examination findings: </label>
+      <textarea></textarea>
+      <br><br><br>
+      <label>Summarise treatment plan: </label>
+      <textarea></textarea>
+    </div>
+  </div>
+  <br>
+
+  <div class="actions" style="padding:0">
+
+    <div class="ok" style="padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Print/Save</div>
+    <div class="cancel" style="padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">No</div>
+  </div>
+
+{{/ui-modal}}
+
+{{#ui-modal name="summary" class="summary"}}
+  <i class="close icon"></i>
+  {{!-- <link integrity="" rel="stylesheet" href="/assets/css/form-style.css"> <!-- Resource style --> --}}
+  <label class="text"></label>
+  <br>
+  <div class="ui form">
+    <div class="field">
+
+      <label class="header">Patient information:</label>
+      <br>
+      <label>Name: {{model.givenName}} {{model.familyName}}</label>
+      <label>Date of birth: {{model.dateOfBirth}}</label>
+      <label>Gender: {{model.gender}}</label>
+      <label>Address: {{model.streetNumber}} {{model.streetName}}, #{{model.apartment}}, {{model.postalCode}}  {{model.city}}, {{model.province}}, {{model.country}} </label>
+      <label>Email: {{model.email}}</label>
+      <label>Phone: {{model.phoneNumber}}</label>
+      <br>
+
+      <label class="header">Diagnosed case:</label>
+      <label>Injury: </label>
+
+      <br>
+
+      <label class="header">Treatments:</label>
+      {{#each patientModel as |link|}}
+        <label>{{link.RehabilitationPlan.planName}}</label>
+      {{/each}}
+
+      <br>
+
+      <label class="header">Appointment history:</label>
+
+      <br>
+
+      <label class="header">Payment history:</label>
+      {{#each model.transactions as |transaction|}} 
+        <label>Package #{{transaction.package}}, Date: {{transaction.date}}, Price: ${{transaction.amount}}</label>
+      {{/each}}
+
+      <br><br><br>
+
+      <label>Final outcomes: </label>
+      <textarea></textarea>
+    </div>
+  </div>
+  <br>
+
+  <div class="actions" style="padding:0">
+
+    <div class="ok" style="padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Print/Save</div>
+    <div class="cancel" style="padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">No</div>
+  </div>
+
+{{/ui-modal}}

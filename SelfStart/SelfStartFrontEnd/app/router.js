@@ -16,6 +16,9 @@ Router.map(function() {
     this.route('manage-selections');
     this.route('accounts');
     this.route('forms');
+    this.route('new-form');
+    // this.route('view-form');
+    this.route('edit-form', { path: 'forms/:form_id'});
   });
   //this.route('questions');
   this.route('forms');
@@ -44,6 +47,7 @@ Router.map(function() {
     this.route('new-rehabplans');
     this.route('assessment-display');
     this.route('appointment');
+    this.route('display-reports');
   });
 
   this.route('client', function() {
@@ -51,7 +55,11 @@ Router.map(function() {
     this.route('upload-photos');
     this.route('exercise-menu');
     this.route('resources');
+    this.route('settings');
+    this.route('upload-photos');
     this.route('appointment');
+    this.route('edit-menu', { path: 'rehabplans/:rehabilitationplan_id'});
+    this.route('exercises');
   });
 });
 

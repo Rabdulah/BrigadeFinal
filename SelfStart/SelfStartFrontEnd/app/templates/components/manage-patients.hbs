@@ -89,17 +89,12 @@
           <tbody >
           {{#each patientsModel as |patient|}}
 
-            <tr>
+            <tr{{action 'toggleDetail' patient.id}}>
               <td class="left aligned one wide column ">
-                <img src="/assets/images/nav/single-01.svg" class="ui mini rounded image" {{action 'toggleDetail' patient.id}}/>
+                <img src="/assets/images/nav/single-01.svg" class="ui mini rounded image" />
               </td>
 
               {{#each modelAttributes as |column|}}
-
-              {{!--{{#if (eq column.key 'dateOfBirth' )}}
-                <td class={{column.class}}>  {{dateFormat dateOfBirth}}  </td>
-              {{/if}}--}}
-
                 <td class={{column.class}}>
                   {{get patient column.key}}
                 </td>

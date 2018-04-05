@@ -1,16 +1,18 @@
 var mongoose = require('mongoose');
+var mongoosePaginate = require('mongoose-paginate');
 
 var rehabilitationPlansSchema = mongoose.Schema({
+
     planName: String,
     description: String,
-    physioID: String,
-    goal: String,
+    physioID: {type: mongoose.Schema.ObjectId, ref: 'Physiotherapests'},
     date: Date,
-    timeToComplete: String,
-    plan: [{type: mongoose.Schema.ObjectId, ref: 'Treatments'}],
+    //plan: [{type: mongoose.Schema.ObjectId, ref: 'Treatments'}],
     assessmentTests: [{type: mongoose.Schema.ObjectId, ref: 'AssessmentTests'}],
-    exercise: [{type: mongoose.Schema.ObjectId, ref: 'Exercises'}]
+    exerciseList: [{type: mongoose.Schema.ObjectId, ref: 'ExerciseList'}]
 
 });
+
+rehabilitationPlansSchema.plugin(mongoosePaginate);
 var RehabilitationPlansSchema = mongoose.model('rehabilitationPlan', rehabilitationPlansSchema);
 exports.Model = RehabilitationPlansSchema;

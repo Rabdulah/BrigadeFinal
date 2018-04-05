@@ -10,12 +10,41 @@ router.route('/')
             response.json({exercise: exercise});
         });
     })
-    .get( function (request, response) {
-        Exercise.Model.find(function (error, exercises) {
-            if (error) response.send(error);
-            response.json({exercise: exercises});
 
-        });
+    .get( function (request, response) {
+        let {sort, dir, queryPath, regex} = request.query;
+
+        if(!regex) {
+            Exercise.Model.find(function (error, exercises) {
+                if (error) response.send(error);
+                response.json({exercise: exercises});
+            });
+        }
+         else {
+
+            dir = dir || 'asc';
+            sort = sort || 'id';
+
+            let query = {};
+            if (regex !== '')
+                query[queryPath] = new RegExp(regex, "i");
+
+            var sortOrder = sort;
+            if (sortOrder) {
+                if (dir !== 'asc') {
+                    sortOrder = '-' + sort;
+                }
+            }
+
+            let options = {
+                sort: sortOrder,
+                lean: true,
+            };
+            Exercise.Model.paginate(query, options, function (error, exercises) {
+                if (error) response.send(error);
+                response.json({exercise: exercises.docs});
+            });
+        }
     });
 
 router.route('/:exercise_id')
@@ -49,7 +78,7 @@ router.route('/:exercise_id')
                 exercise.multimediaURL = request.body.exercise.multimediaURL;
                 exercise.targetDate = request.body.exercise.targetDate;
                 exercise.image = request.body.exercise.image;
-                exercise.rehabilitationPlan = request.body.exercise.rehabilitationPlan;
+                exercise.exerciseList = request.body.exercise.exerciseList;
 
                 exercise.save(function (error) {
                     if (error) {

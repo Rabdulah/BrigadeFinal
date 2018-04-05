@@ -1,6 +1,7 @@
 import Component from '@ember/component';
 import { inject } from '@ember/service';
 import { computed } from '@ember/object';
+import moment from 'moment';
 import $ from 'jquery';
 
 export default Component.extend({
@@ -21,7 +22,8 @@ init(){
   this._super(...arguments);
 
   var date = this.get('pateintsData').get('dateOfBirth');
-  var dateString = date.toISOString().substring(0, 10);
+  var dateString = moment(date,'DD-MM-YYYY').toISOString().substring(0, 10);
+  // var dateString = date.toISOString().substring(0, 10);
   this.set('selectedDate', dateString);
 
   this.set('selectedGender', this.get('pateintsData').get('gender'));

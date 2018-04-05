@@ -16,9 +16,6 @@ var patientProfilesSchema = mongoose.Schema(
         encryptedPassword: {type: mongoose.Schema.ObjectId, ref: 'Passwords'},
         dateOfBirth: Date,
         phoneNumber: String,
-        healthCardNumber: String,
-        // occupation: String,
-        // maritalStatus: String,
         gender: String,
         country: String,
         province: String,
@@ -55,9 +52,9 @@ var patientProfilesSchema = mongoose.Schema(
         //             amount: Number,
         //             note: String
         //         }],
-        appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],
-        rehablink: [{type: mongoose.Schema.ObjectId, ref: 'RehabClientLink'}],        // askAPhysio: [{type: mongoose.Schema.ObjectId, ref: 'AskAPhysio'}],
+        appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],      // askAPhysio: [{type: mongoose.Schema.ObjectId, ref: 'AskAPhysio'}],
         // plan: [{type: mongoose.Schema.ObjectId, ref: 'Treatments'}]
+        
     }
 );
 

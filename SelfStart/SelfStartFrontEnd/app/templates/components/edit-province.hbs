@@ -3,37 +3,41 @@
 </p>
 
 {{#ui-modal name= modalName class=modalName }}
+  <i class="close icon"></i>
+  <link integrity="" rel="stylesheet" href="{{rootURL}}../assets/css/form-style.css"> <!-- Resource style -->
 
   <div class="header">
-    Edit Province: "{{name}}"
+    Edit Province: "{{provinceData.name}}"
   </div>
   <div class="content">
-    <div class="ui form">
-      <div class="field">
-        <label>New Province Name</label>
-        {{input type="text" cols="50" rows="1" value = name placeholder="add province"}}
-      </div>
-      <div class="field">
-        <label>New Country Name</label>
-          {{#ui-dropdown class="search selection" onChange=(action "setCountryId")}}
-            <div class="default text">Select a country</div>
-            <i class="dropdown icon"></i>
-            <div class="menu">
-              {{#each countries as |country|}}
-                <div data-value="{{country.id}}" class="item">
-                  {{country.name}}
-                </div>
-              {{/each}}
-            </div>
-          {{/ui-dropdown}}
-      </div>
-    </div>
-  </div>
-  <br>
 
-  <div class="actions" style="padding:0; ">
-    <div class="ui positive right" style="padding:1em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Save<i class="checkmark icon"></i></div>
-    <div class="ui deny" style="padding:1em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">Cancel</div>
+    <form id="edit" class="cd-form floating-labels" {{action "submit" on="submit"}}>
+
+      <div class="field" style="margin-bottom: 1em">
+        <h4>Province</h4>
+        {{input class="world" type="text" value = provinceData.name placeholder="Add province" required=true}}
+      </div>
+
+      <div class="field" style="margin: 1em 0;">
+        <h4>Country</h4>
+        <p class="cd-select icon">
+          <select class="world" onchange={{action 'selectCountry' value="target.value"}} required=true>
+            {{#each countries as |oneCountry|}}
+              <option value={{oneCountry.id}} selected={{eq provinceData.country.name oneCountry.name}}>
+                {{oneCountry.name}}
+              </option>
+            {{/each}}
+          </select>
+          <</p>
+      </div>
+
+      <div class="field">
+        <button class="fluid ui blue button" style="max-width: 100%; height: 50px;">
+          Submit
+        </button>
+      </div>
+
+    </form>
   </div>
 
 {{/ui-modal}}

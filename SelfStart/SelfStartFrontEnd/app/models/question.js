@@ -12,6 +12,6 @@ export default DS.Model.extend({
   tf:DS.attr('boolean'),
   ra:DS.attr('boolean'),
   assessmentTest: DS.hasMany('assessment-test'),
-  forms: DS.hasMany('form'),
-
+  // forms: DS.hasMany('form'),
+  questionOrder:DS.hasMany('question-order'),
 });

@@ -1,0 +1,12 @@
+{{#if notOpen}}
+    <div class="ui positive button" {{action 'Open'}}>
+    {{fName}}
+    </div>
+{{/if}}
+
+
+{{#if open}}
+    {{#each assessmentModel.questions as |assess index|}}
+        {{display-answers question=assess qID = assess.id assessment=assessmentModel qNumber = index assessid = assessmentModel.id}}
+    {{/each}}
+{{/if}}

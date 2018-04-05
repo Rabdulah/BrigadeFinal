@@ -13,9 +13,9 @@
             <div class="item">
               <div class="ui logo shape">
                 <div class="sides">
-                  <div class="active ui side">
-                    {{#link-to 'home'}}<img class="ui image selfStart" src='assets/images/home/Header.png'>{{/link-to}}
-                  </div>
+                  <a class="active ui side" href="#home">
+                    <img class="ui image selfStart" src='assets/images/home/Header.png'>
+                  </a>
                 </div>
               </div>
             </div>
@@ -23,11 +23,10 @@
 
             <div class="right menu {{invertedValue}}">
               <a class="item scroll" href="#about">About</a>
-              <a class="item">How it Works</a>
-              <a class="item">Services</a>
-              <a class="item">Assessment</a>
-              <a class="item">Blog</a>
-              <a class="item">Contact</a>
+              <a class="item" href="#howItWorks">How it Works</a>
+              <a class="item" href="#services">Services</a>
+              <a class="item" href="#FAQs">FAQs</a>
+              <a class="item" href="#contact">Contact</a>
               {{#if loggedOut}}
                 {{!-- <a id="login" class="item" {{action 'openModal'}}>Log in</a> --}}
                 {{user-login}}
