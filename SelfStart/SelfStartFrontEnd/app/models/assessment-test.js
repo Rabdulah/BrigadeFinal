@@ -7,6 +7,7 @@ export default DS.Model.extend({
   answers: DS.attr(),
   rehablink: DS.belongsTo('rehab-client-link'),
   completed: DS.attr(),
+  formName: DS.attr(),
 });
 
 //SEND FORM BUTTON

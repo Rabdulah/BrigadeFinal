@@ -117,9 +117,8 @@
     {{/if}}
 
 {{#if assess}}
-  {{#each model.rehab-client-link as |link index|}}
-      xxx
-     {{get-assessment-results rehab = link count = index}}  
+  {{#each patientModel as |link index|}}
+     {{get-assessment-results linker = link count = index}}  
   {{/each}}
 {{/if}}
 

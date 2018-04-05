@@ -44,6 +44,7 @@ export default Component.extend({
         questions: questionList,
         answers: temp,
         completed: false,
+        formName: thisForm.get('name')
       });
       newTest.save().then(()=> {
         this.set("assessID", newTest.get('id'));

@@ -109,8 +109,7 @@ export default Component.extend({
         gender: self.get('selectedGender'),
         phoneNumber: self.get('phoneNumber'),
         postalCode: self.get('postalCode'),
-        account: patientAccount,
-        introTest: introTest
+        account: patientAccount
       });
 
       patient.save().then(() => {

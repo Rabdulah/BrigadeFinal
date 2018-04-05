@@ -8,10 +8,21 @@ export default Component.extend({
     notOpen:true,
 
     assessmentModel: Ember.computed(function(){
-        var id = this.get("rehab")[this.get("count")].get("assessment-test").get("id");
-        return this.get('DS').find('assessment-test', this.get('id'));
+        var id = this.get("linker").get("assessmentTest").get("id");
+        console.log(id);
+        return this.get('DS').find('assessment-test', id);
     }),
 
+    fName: "",
+
+    init() {
+        this._super(...arguments);
+        var assessID = this.get("linker").get("assessmentTest").get("id");
+        this.get('DS').findRecord('assessment-test', assessID).then((rec) => {
+            this.set("fName", rec.get('formName'));
+        });
+      },
+      
     actions:{
         Open(){
             this.set("open", true);

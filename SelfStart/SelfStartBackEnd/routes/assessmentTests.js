@@ -42,6 +42,7 @@ router.route('/:assessment_id')
                 assessmentTest.rehablink = request.body.assessmentTest.rehablink;
                 assessmentTest.answers = request.body.assessmentTest.answers;
                 assessmentTest.completed = request.body.assessmentTest.completed;
+                assessmentTest.formName = request.body.assessmentTest.formName;
 
                 assessmentTest.save(function (error) {
                     if (error) {

@@ -851,8 +851,7 @@ define('self-start-front-end/components/add-patient', ['exports'], function (exp
           gender: self.get('selectedGender'),
           phoneNumber: self.get('phoneNumber'),
           postalCode: self.get('postalCode'),
-          account: patientAccount,
-          introTest: introTest
+          account: patientAccount
         });
 
         patient.save().then(function () {
@@ -2229,16 +2228,58 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
       return this.get('store').findAll('rehabilitationplan');
     }),
 
-    exerciseModel: Ember.observer('plan', function () {
+    link: [],
+
+    patientModel: Ember.computed(function () {
       var _this = this;
+
+      // this.get('store').query('rehab-client-link', {filter: {'Patient': '5ac557fa6ba71c2a4c0e367ec0e367e'}}).then((links) => {
+      //   //console.log(links);
+
+      //     console.log(links);
+
+      //   links.forEach((rec)=>{
+      //     this.get('link').pushObject(rec);
+      //     console.log(this.get('link'));
+      //   });
+      // });
+
+      // console.log(this.get('model').get('id'));
+      // this.get('store').findRecord('rehab-client-link', this.get('model').id).then((links) => {
+      //   //console.log(links);
+
+      //     console.log(links);
+
+      //   links.forEach((rec)=>{
+      //     this.get('link').pushObject(rec);
+      //     console.log(this.get('link'));
+      //   });
+      // });
+      var arr = [];
+      this.get('store').findAll("rehab-client-link").then(function (link) {
+        console.log(link);
+        link.forEach(function (rec) {
+          console.log(rec.get("Patient"));
+          if (rec.get("Patient").get("id") === _this.get("model").id) {
+            console.log(rec);
+            arr.pushObject(rec);
+          }
+        });
+      });
+      console.log(arr);
+      return arr;
+    }),
+
+    exerciseModel: Ember.observer('plan', function () {
+      var _this2 = this;
 
       this.get('store').query('exercise-list', { filter: { 'rehabilitationPlan': this.get('plan') } }).then(function (exercises) {
 
-        _this.get('listModel').clear();
+        _this2.get('listModel').clear();
 
         exercises.forEach(function (exe) {
           // this.get('listModel').removeObject(exe.get('exercise'));
-          _this.get('listModel').pushObject(exe.get('exercise'));
+          _this2.get('listModel').pushObject(exe.get('exercise'));
         });
       });
     }),
@@ -2260,7 +2301,7 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
     }),
 
     isSelected: Ember.observer('plan', function () {
-      var _this2 = this;
+      var _this3 = this;
 
       this.set('isPlanSelected', true);
 
@@ -2271,9 +2312,9 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
         console.log(plan);
         console.log(update.content.length);
         if (update.content.length !== 0) {
-          _this2.set('disabled', "disabled");
+          _this3.set('disabled', "disabled");
         } else {
-          _this2.set('disabled', "");
+          _this3.set('disabled', "");
         }
       });
     }),
@@ -2374,19 +2415,19 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
         if (this.get('isShowing') === ID) this.set('isShowing', null);else this.set('isShowing', ID);
       },
       sortColumn: function sortColumn(columnName, direction) {
-        var _this3 = this;
+        var _this4 = this;
 
         this.get('modelAttributes').forEach(function (element) {
           if (element.key === columnName) {
             if (direction === 'asc') {
               Ember.set(element, 'dir', 'desc');
-              _this3.set('dir', 'desc');
+              _this4.set('dir', 'desc');
             } else if (direction === 'desc') {
               Ember.set(element, 'dir', 'asc');
-              _this3.set('dir', 'asc');
+              _this4.set('dir', 'asc');
             } else {
               Ember.set(element, 'dir', 'asc');
-              _this3.set('dir', 'asc');
+              _this4.set('dir', 'asc');
             }
           } else Ember.set(element, 'dir', '');
         });
@@ -2405,7 +2446,7 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
         }
       },
       openModal: function openModal() {
-        var _this4 = this;
+        var _this5 = this;
 
         $('.ui.' + this.get('modalName') + '.modal').modal({
           closable: false,
@@ -2416,33 +2457,33 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
             return true;
           },
           onApprove: function onApprove() {
-            var plan = _this4.get('plan');
+            var plan = _this5.get('plan');
 
-            var planRecord = _this4.get('store').peekRecord('rehabilitationplan', plan);
+            var planRecord = _this5.get('store').peekRecord('rehabilitationplan', plan);
 
-            var self = _this4;
+            var self = _this5;
 
             // var assess = this.get('store').peekRecord('assessment-test', '5ab92c228a4acc04487b157a');
-            var test = _this4.get('store').createRecord('assessment-test', {});
+            var test = _this5.get('store').createRecord('assessment-test', {});
             test.save().then(function (rec) {
 
-              var link = _this4.get('store').createRecord('rehab-client-link', {
-                terminated: _this4.get('plan.terminated'),
+              var link = _this5.get('store').createRecord('rehab-client-link', {
+                terminated: _this5.get('plan.terminated'),
                 RehabilitationPlan: planRecord,
-                Patient: _this4.get('model'),
+                Patient: _this5.get('model'),
                 assigned: true,
                 assessmentTest: rec
                 //In memory of Ouda
               });
 
-              var peekTest = _this4.get('store').peekRecord('assessment-test', test.get("id"));
+              var peekTest = _this5.get('store').peekRecord('assessment-test', test.get("id"));
               console.log(peekTest);
               peekTest.set('rehabLink', link);
               link.save().then(function () {
                 peekTest.save();
-                _this4.set('assessmentTest', test);
-                $('.ui.' + _this4.get('modalName') + '.modal').modal('hide');
-                _this4.set('disabled', "disabled");
+                _this5.set('assessmentTest', test);
+                $('.ui.' + _this5.get('modalName') + '.modal').modal('hide');
+                _this5.set('disabled', "disabled");
               });
             });
           }
@@ -3324,8 +3365,10 @@ define('self-start-front-end/components/display-assessment', ['exports'], functi
 
     actions: {
       Submit: function Submit() {
-        var x = this.get('DS').peekRecord('assessment-test', this.get('id'));
-        console.log(x.get('questions'));
+        this.get('DS').findRecord('assessment-test', this.get("id")).then(function (rec) {
+          rec.set("completed", true);
+          rec.save();
+        });
       }
     }
   });
@@ -4985,9 +5028,23 @@ define('self-start-front-end/components/get-assessment-results', ['exports'], fu
         notOpen: true,
 
         assessmentModel: Ember.computed(function () {
-            var id = this.get("rehab")[this.get("count")].get("assessment-test").get("id");
-            return this.get('DS').find('assessment-test', this.get('id'));
+            var id = this.get("linker").get("assessmentTest").get("id");
+            console.log(id);
+            return this.get('DS').find('assessment-test', id);
         }),
+
+        fName: "",
+
+        init: function init() {
+            var _this = this;
+
+            this._super.apply(this, arguments);
+            var assessID = this.get("linker").get("assessmentTest").get("id");
+            this.get('DS').findRecord('assessment-test', assessID).then(function (rec) {
+                _this.set("fName", rec.get('formName'));
+            });
+        },
+
 
         actions: {
             Open: function Open() {
@@ -5207,7 +5264,8 @@ define('self-start-front-end/components/list-forms', ['exports'], function (expo
           form: thisForm,
           questions: questionList,
           answers: temp,
-          completed: false
+          completed: false,
+          formName: thisForm.get('name')
         });
         newTest.save().then(function () {
           _this.set("assessID", newTest.get('id'));
@@ -9231,7 +9289,8 @@ define('self-start-front-end/models/assessment-test', ['exports', 'ember-data'],
     questions: _emberData.default.hasMany('question'),
     answers: _emberData.default.attr(),
     rehablink: _emberData.default.belongsTo('rehab-client-link'),
-    completed: _emberData.default.attr()
+    completed: _emberData.default.attr(),
+    formName: _emberData.default.attr()
   });
 });
 define('self-start-front-end/models/city', ['exports', 'ember-data'], function (exports, _emberData) {
@@ -11808,7 +11867,7 @@ define("self-start-front-end/templates/components/client-file", ["exports"], fun
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "TNc0w7ft", "block": "{\"symbols\":[\"link\",\"index\",\"exercise\",\"column\",\"column\",\"plan\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[1,[20,[\"model\",\"givenName\"]],false],[0,\" \"],[1,[20,[\"model\",\"familyName\"]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui container\"],[9,\"style\",\"padding-top: 2em\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui top attached tabular stackable menu\"],[9,\"style\",\"padding-left: 20%;\"],[7],[0,\"\\n  \\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"assessState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"assessView\"]],[7],[0,\"\\n      Assessment\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Notes\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Photos\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"menusState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"menusView\"]],[7],[0,\"\\n      Menus\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Documents\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Accounting\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui segment\"],[9,\"style\",\"background: transparent;border: none;box-shadow: none;\"],[7],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"menus\"]]],null,{\"statements\":[[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"left twelve wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n            Menu Builder\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"right three wide column\"],[9,\"style\",\"padding-left: 30px;\"],[7],[0,\"\\n\"],[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\"],[4,\"ui-dropdown\",null,[[\"class\",\"onChange\"],[\"selection\",[25,\"action\",[[19,0,[]],[25,\"mut\",[[20,[\"plan\"]]],null]],null]]],{\"statements\":[[0,\"              \"],[6,\"div\"],[9,\"class\",\"default text\"],[7],[0,\"Select a menu\"],[8],[0,\"\\n              \"],[6,\"i\"],[9,\"class\",\"dropdown icon\"],[7],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"menu\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"rehabModel\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"div\"],[10,\"data-value\",[26,[[19,6,[\"id\"]]]]],[9,\"class\",\"item\"],[7],[0,\"\\n                    \"],[1,[19,6,[\"planName\"]],false],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[6]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n          \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"              \"],[6,\"th\"],[10,\"class\",[19,5,[\"class\"]],null],[3,\"action\",[[19,0,[]],\"sortColumn\",[19,5,[\"key\"]],[19,5,[\"dir\"]]]],[7],[1,[19,5,[\"name\"]],false],[0,\"\\n\"],[4,\"if\",[[25,\"eq\",[[19,5,[\"dir\"]],\"asc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort ascending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,5,[\"dir\"]],\"desc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort descending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,5,[\"dir\"]],\"\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[5]},null],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"id\",\"myWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"listModel\"]]],null,{\"statements\":[[0,\"\\n            \"],[6,\"tr\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"\\n                \"],[6,\"td\"],[10,\"class\",[19,4,[\"class\"]],null],[7],[0,\"\\n                  \"],[1,[25,\"get\",[[19,3,[]],[19,4,[\"key\"]]],null],false],[0,\"\\n                \"],[8],[0,\"\\n\"]],\"parameters\":[4]},null],[0,\"            \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"isPlanSelected\"]]],null,{\"statements\":[[0,\"            \"],[6,\"div\"],[10,\"class\",[26,[\"ui \",[18,\"disabled\"],\" button\"]]],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n              Assign\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"assess\"]]],null,{\"statements\":[[4,\"each\",[[20,[\"model\",\"rehab-client-link\"]]],null,{\"statements\":[[0,\"      xxx\\n     \"],[1,[25,\"get-assessment-results\",null,[[\"rehab\",\"count\"],[[19,1,[]],[19,2,[]]]]],false],[0,\"  \\n\"]],\"parameters\":[1,2]},null]],\"parameters\":[]},null],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[9,\"href\",\"/assets/css/form-style.css\"],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Assign \"],[1,[20,[\"plansData\",\"planName\"]],false],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you want to assign this rehabilitation plan?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[1,[25,\"list-forms\",null,[[\"rehabPlan\",\"patient\"],[[20,[\"plan\"]],[20,[\"model\"]]]]],false],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-file.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "IoSmRI26", "block": "{\"symbols\":[\"link\",\"index\",\"exercise\",\"column\",\"column\",\"plan\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[1,[20,[\"model\",\"givenName\"]],false],[0,\" \"],[1,[20,[\"model\",\"familyName\"]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui container\"],[9,\"style\",\"padding-top: 2em\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui top attached tabular stackable menu\"],[9,\"style\",\"padding-left: 20%;\"],[7],[0,\"\\n  \\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"assessState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"assessView\"]],[7],[0,\"\\n      Assessment\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Notes\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Photos\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"menusState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"menusView\"]],[7],[0,\"\\n      Menus\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Documents\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Accounting\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui segment\"],[9,\"style\",\"background: transparent;border: none;box-shadow: none;\"],[7],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"menus\"]]],null,{\"statements\":[[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"left twelve wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n            Menu Builder\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"right three wide column\"],[9,\"style\",\"padding-left: 30px;\"],[7],[0,\"\\n\"],[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\"],[4,\"ui-dropdown\",null,[[\"class\",\"onChange\"],[\"selection\",[25,\"action\",[[19,0,[]],[25,\"mut\",[[20,[\"plan\"]]],null]],null]]],{\"statements\":[[0,\"              \"],[6,\"div\"],[9,\"class\",\"default text\"],[7],[0,\"Select a menu\"],[8],[0,\"\\n              \"],[6,\"i\"],[9,\"class\",\"dropdown icon\"],[7],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"menu\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"rehabModel\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"div\"],[10,\"data-value\",[26,[[19,6,[\"id\"]]]]],[9,\"class\",\"item\"],[7],[0,\"\\n                    \"],[1,[19,6,[\"planName\"]],false],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[6]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n          \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"              \"],[6,\"th\"],[10,\"class\",[19,5,[\"class\"]],null],[3,\"action\",[[19,0,[]],\"sortColumn\",[19,5,[\"key\"]],[19,5,[\"dir\"]]]],[7],[1,[19,5,[\"name\"]],false],[0,\"\\n\"],[4,\"if\",[[25,\"eq\",[[19,5,[\"dir\"]],\"asc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort ascending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,5,[\"dir\"]],\"desc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort descending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,5,[\"dir\"]],\"\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[5]},null],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"id\",\"myWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"listModel\"]]],null,{\"statements\":[[0,\"\\n            \"],[6,\"tr\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"\\n                \"],[6,\"td\"],[10,\"class\",[19,4,[\"class\"]],null],[7],[0,\"\\n                  \"],[1,[25,\"get\",[[19,3,[]],[19,4,[\"key\"]]],null],false],[0,\"\\n                \"],[8],[0,\"\\n\"]],\"parameters\":[4]},null],[0,\"            \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"isPlanSelected\"]]],null,{\"statements\":[[0,\"            \"],[6,\"div\"],[10,\"class\",[26,[\"ui \",[18,\"disabled\"],\" button\"]]],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n              Assign\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"assess\"]]],null,{\"statements\":[[4,\"each\",[[20,[\"patientModel\"]]],null,{\"statements\":[[0,\"     \"],[1,[25,\"get-assessment-results\",null,[[\"linker\",\"count\"],[[19,1,[]],[19,2,[]]]]],false],[0,\"  \\n\"]],\"parameters\":[1,2]},null]],\"parameters\":[]},null],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[9,\"href\",\"/assets/css/form-style.css\"],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Assign \"],[1,[20,[\"plansData\",\"planName\"]],false],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you want to assign this rehabilitation plan?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[1,[25,\"list-forms\",null,[[\"rehabPlan\",\"patient\"],[[20,[\"plan\"]],[20,[\"model\"]]]]],false],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-file.hbs" } });
 });
 define("self-start-front-end/templates/components/client-nav", ["exports"], function (exports) {
   "use strict";
@@ -12080,7 +12139,7 @@ define("self-start-front-end/templates/components/get-assessment-results", ["exp
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "RjaGd45Q", "block": "{\"symbols\":[\"assess\",\"index\"],\"statements\":[[4,\"if\",[[20,[\"notOpen\"]]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"Open\"]],[7],[0,\"\\n    Assessment Test\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"open\"]]],null,{\"statements\":[[4,\"each\",[[20,[\"assessmentModel\",\"questions\"]]],null,{\"statements\":[[0,\"        \"],[1,[25,\"display-answers\",null,[[\"question\",\"qID\",\"assessment\",\"qNumber\",\"assessid\"],[[19,1,[]],[19,1,[\"id\"]],[20,[\"assessmentModel\"]],[19,2,[]],[20,[\"assessmentModel\",\"id\"]]]]],false],[0,\"\\n\"]],\"parameters\":[1,2]},null]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/get-assessment-results.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "QdGyJhD+", "block": "{\"symbols\":[\"assess\",\"index\"],\"statements\":[[4,\"if\",[[20,[\"notOpen\"]]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[9,\"class\",\"ui positive button\"],[3,\"action\",[[19,0,[]],\"Open\"]],[7],[0,\"\\n    \"],[1,[18,\"fName\"],false],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"open\"]]],null,{\"statements\":[[4,\"each\",[[20,[\"assessmentModel\",\"questions\"]]],null,{\"statements\":[[0,\"        \"],[1,[25,\"display-answers\",null,[[\"question\",\"qID\",\"assessment\",\"qNumber\",\"assessid\"],[[19,1,[]],[19,1,[\"id\"]],[20,[\"assessmentModel\"]],[19,2,[]],[20,[\"assessmentModel\",\"id\"]]]]],false],[0,\"\\n\"]],\"parameters\":[1,2]},null]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/get-assessment-results.hbs" } });
 });
 define("self-start-front-end/templates/components/list-forms", ["exports"], function (exports) {
   "use strict";
