@@ -56,6 +56,7 @@ router.route('/:assessment_id')
     })
     .delete( function (request, response) {
         AssessmentTests.Model.findByIdAndRemove(request.params.assessment_id,
+
             function (error, deleted) {
                 if (!error) {
                     response.json({assessmentTest: deleted});

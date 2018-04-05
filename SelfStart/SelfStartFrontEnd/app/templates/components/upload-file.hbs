@@ -8,10 +8,14 @@
           </div>
         {{else}}
           <img src="{{file.base64Image}}">
+        {{!-- <br>
+          <button class="ui blue button">
+            Upload New Image
+          </button> --}}
         {{/if }}
       </div>
       <div class="middle aligned content">
-        <div class="header">{{file.name}}</div>
+        {{!-- <div class="header">{{file.name}}</div> --}}
         <div class="meta">
           <span>Size: {{file.size}}</span>
         </div>
@@ -22,16 +26,18 @@
             <p>Unsupported image</p>
           {{/if}}
         </div>
-        <div class="extra">
-          {{#if file.isDisplayableImage}}
-            <button class="ui icon green basic button" {{action 'saveFile' file}}>
-              <i class="checkmark icon"></i>
+        {{#if notInAddExercise}}
+          <div class="extra">
+            {{#if file.isDisplayableImage}}
+              <button class="ui icon green basic button" {{action 'saveFile' file}}>
+                <i class="checkmark icon"></i>
+              </button>
+            {{/if}}
+            <button class="ui icon red basic button" {{action 'deleteFile' file}}>
+              <i class="remove icon"></i>
             </button>
-          {{/if}}
-          <button class="ui icon red basic button" {{action 'deleteFile' file}}>
-            <i class="remove icon"></i>
-          </button>
-        </div>
+          </div>
+        {{/if}}
       </div>
     </div>
   </div>
@@ -45,17 +51,17 @@
            accept="{{accept}}" multiple={{multiple}}>
   </div>
   <br>
-  <button class="ui black button" {{action 'done' file}}>
-    Cancel
-  </button>
+{{!-- <button class="ui black button" {{action 'done' file}}>
+  Cancel
+</button> --}}
 {{/each}}
 
 
-{{#if queue}}
+{{!-- {{#if queue}}
   {{#if savingInProgress}}
     <button class="ui labeled green icon loading button">Loading</button>
   {{else}}
-    <button class="ui labeled green icon button"{{action 'saveAllFiles' }}>
+    <button class="ui labeled green icon button"{{action 'saveAllFiles' newExerID}}>
       <i class="checkmark icon"></i>
       Save All
     </button>
@@ -64,4 +70,4 @@
     <i class="remove icon"></i>
     Remove All
   </button>
-{{/if}}
+{{/if}} --}}

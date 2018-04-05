@@ -71,6 +71,7 @@ export default Component.extend({
           link.save().then((res)=> {
               $('.ui.' + this.get('modalName') + '.modal').modal('hide');
               this.set('disabled', "disabled");
+
           });
         }
       })

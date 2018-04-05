@@ -104,7 +104,9 @@ router.route('/:administrator_id')
             else {
 
                 // update each attribute
+
                 administrator.ID = request.body.administrator.ID;
+
                 administrator.familyName = request.body.administrator.familyName;
                 administrator.givenName = request.body.administrator.givenName;
                 administrator.email = request.body.administrator.email;
@@ -115,6 +117,7 @@ router.route('/:administrator_id')
                 administrator.account = request.body.administrator.account;
                 administrator.message = request.body.administrator.message;
                 console.log(request.body.administrator.message);
+
 
                 administrator.save(function (error) {
                     if (error) {

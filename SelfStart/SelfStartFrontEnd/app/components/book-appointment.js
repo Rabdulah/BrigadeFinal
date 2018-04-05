@@ -38,6 +38,29 @@ export default Component.extend({
     this._super(...arguments);
   },
 
+  didRender() {
+    this._super(...arguments);
+
+    if ($('.floating-labels').length > 0) floatLabels();
+
+    function floatLabels() {
+      var inputFields = $('.floating-labels .cd-label').next();
+      inputFields.each(function () {
+        var singleInput = $(this);
+        //check if  is filling one of the form fields
+        checkVal(singleInput);
+        singleInput.on('change keyup', function () {
+          checkVal(singleInput);
+        });
+      });
+    }
+
+    function checkVal(inputField) {
+      ( inputField.val() == '' ) ? inputField.prev('.cd-label').removeClass('float') : inputField.prev('.cd-label').addClass('float');
+    }
+  },
+
+
   actions: {
     calendarAddOccurrence: function(occurrence) {
       // this.get('occurrences').pushObject(Ember.Object.create({
@@ -93,6 +116,9 @@ export default Component.extend({
               if (app.get('reason')==null) {
                 home.get('occurrences').pushObject(Ember.Object.create({
                   title: "Book Appointment",
+                  isDraggable: true,
+                  isResizable: false,
+                  isRemovable: false,
                   startsAt: scheduledDate.toISOString(),
                   endsAt: endDate.toISOString(),
                   tempid : app.get('id')
@@ -157,9 +183,10 @@ export default Component.extend({
       let self = this;
       //temp client until we get token
       //laptop
-      let client = '5a8cea371af849309c3833d4';
+
+       let client = '5ac534f93d763c33cc978c39';
       //desktop
-      // let client = '5a88738e1f0fdc2b94498e81';
+      //let client = '5a88738e1f0fdc2b94498e81';
       let physio = self.get('selectphysio');
       let booking = this.get('DS').createRecord('appointment', {
         reason: self.get('Reason'),
@@ -168,10 +195,10 @@ export default Component.extend({
         endDate: self.get('selectedbookedTime').end
       });
       self.get('DS').findRecord('patient', client).then(function (src) {
-        console.log(src);
+        console.log(JSON.stringify(src));
         booking.set('patient', src);
-        src.get('appointments').pushObject(booking);
         booking.save().then(function (){
+          src.get('appointments').pushObject(booking);
           src.save().then(()=>{
             self.get('DS').findRecord('physiotherapest',self.get('selectedPhysioId')).then(function (a) {
               a.get('appointments').pushObject(booking);
@@ -188,7 +215,7 @@ export default Component.extend({
                   self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old){
                     old.destroyRecord().then(() =>{
                       $('.ui.bk.modal').modal('hide');
-                      window.location.reload();
+                      // window.location.reload();
                     });
                   });
                 }
@@ -199,7 +226,6 @@ export default Component.extend({
                     old.set('date', bookedTime.end);
                     old.save().then(() => {
                       $('.ui.bk.modal').modal('hide');
-                      window.location.reload();
                     });
                   });
                 }
@@ -210,7 +236,7 @@ export default Component.extend({
                     old.set('endDate', bookedTime.time);
                     old.save().then(() => {
                       $('.ui.bk.modal').modal('hide');
-                      window.location.reload();
+
                     });
                   });
                 }
@@ -236,7 +262,7 @@ export default Component.extend({
                           a.save().then(()=> {
                             rec.destroyRecord().then(() =>{
                               $('.ui.bk.modal').modal('hide');
-                              window.location.reload();
+
                             });
                           })
                         })
