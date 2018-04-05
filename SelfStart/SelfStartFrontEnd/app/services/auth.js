@@ -23,6 +23,7 @@ export default Ember.Service.extend({
     this.set('email', name.toLowerCase());
     var identity = this.encrypt(this.get('email'));
     localStorage.setItem('sas-session-id', identity);
+    console.log("In set item", this.get('email'));
   },
 
 
@@ -103,6 +104,7 @@ export default Ember.Service.extend({
                       //self.close(name);
                       reject("passwordReset");
                     } else {
+                      console.log("In else");
                       self.setName(name);
                       // var userRole = self.decrypt(message4.get('token'));
                       var userRole = null;
@@ -241,7 +243,7 @@ export default Ember.Service.extend({
         Login.destroyRecord();
       }
     });
-    //window.localStorage.removeItem('sas-session-id');
+    window.localStorage.removeItem('sas-session-id');
     this.set('getName', null);
     this.set('email', null);
     this.set('isAuthenticated', false);

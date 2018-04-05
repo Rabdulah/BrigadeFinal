@@ -6005,6 +6005,7 @@ define('self-start-front-end/components/user-login', ['exports'], function (expo
     ajax: Ember.inject.service(),
     temp: false,
     authentication: Ember.inject.service('auth'),
+    authent: Ember.inject.service('auth'),
     error: null,
 
     errorMessage: Ember.computed('error', function () {
@@ -6019,16 +6020,16 @@ define('self-start-front-end/components/user-login', ['exports'], function (expo
         var auth = this.get("authentication");
         var self = this;
         if (this.get('Email') === "root") {
-          authentication.openRoot(this.get('password')).then(function (name) {
-            self.get('oudaAuth').set('isLoginRequested', false);
-            authentication.set('getName', name);
+          auth.openRoot(this.get('password')).then(function (name) {
+            auth.set('isLoginRequested', false);
+            auth.set('getName', name);
             self.get('routing').transitionTo('home');
           }, function () {
             //console.log("Root" + error);
           });
         } else {
           auth.open(this.get('Email'), this.get('PWord')).then(function () {
-            self.get('authentication').set('isLoginRequested', false);
+            auth.set('isLoginRequested', false);
           }, function (error) {
             if (error === "passwordReset") {
               Ember.$('.ui.changePassword.modal').modal({
@@ -6048,17 +6049,20 @@ define('self-start-front-end/components/user-login', ['exports'], function (expo
                       return false;
                     } else {
                       self.set('error', null);
+                      // var ourAuth = self.get('authent')
                       var myStore = self.get('DS');
                       var userName = self.get('name');
                       var hashedPassword = auth.hash(self.get('firstPassword'));
-
-                      myStore.queryRecord('password', { filter: { userName: userName } }).then(function (userShadow) {
-                        userShadow.set('encryptedPassword', hashedPassword);
+                      console.log("BEfore");
+                      console.log(self.get('Email'));
+                      myStore.queryRecord('password', { filter: { "email": self.get('Email') } }).then(function (userShadow) {
+                        auth.set('encryptedPassword', hashedPassword);
                         userShadow.set('passwordMustChanged', true);
+                        console.log(userShadow);
                         userShadow.set('passwordReset', false);
                         userShadow.save().then(function () {
-                          self.get('authentication').close();
-                          self.get('authentication').set('isLoginRequested', true);
+                          // auth.close();
+                          auth.set('isLoginRequested', true);
                           console.log("Success update");
                           // self.get('routing').transitionTo('login');
                           //  return true;
@@ -8515,6 +8519,7 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
       this.set('email', name.toLowerCase());
       var identity = this.encrypt(this.get('email'));
       localStorage.setItem('sas-session-id', identity);
+      console.log("In set item", this.get('email'));
     },
     setPassword: function setPassword(password) {
       this.set('encryptedPassword', this.hash(password));
@@ -8590,6 +8595,7 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
                       //self.close(name);
                       reject("passwordReset");
                     } else {
+                      console.log("In else");
                       self.setName(name);
                       // var userRole = self.decrypt(message4.get('token'));
                       var userRole = null;
@@ -8713,7 +8719,7 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
           Login.destroyRecord();
         }
       });
-      //window.localStorage.removeItem('sas-session-id');
+      window.localStorage.removeItem('sas-session-id');
       this.set('getName', null);
       this.set('email', null);
       this.set('isAuthenticated', false);

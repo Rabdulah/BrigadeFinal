@@ -357,7 +357,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/user-login.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/user-login.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n10:9 - \'Ember\' is not defined. (no-undef)\n15:17 - \'Ember\' is not defined. (no-undef)\n29:9 - \'authentication\' is not defined. (no-undef)\n31:11 - \'authentication\' is not defined. (no-undef)\n41:11 - \'Ember\' is not defined. (no-undef)\n69:23 - Unexpected console statement. (no-console)\n84:15 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/user-login.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n10:9 - \'Ember\' is not defined. (no-undef)\n16:17 - \'Ember\' is not defined. (no-undef)\n42:11 - \'Ember\' is not defined. (no-undef)\n61:23 - \'userName\' is assigned a value but never used. (no-unused-vars)\n63:19 - Unexpected console statement. (no-console)\n64:19 - Unexpected console statement. (no-console)\n68:21 - Unexpected console statement. (no-console)\n73:23 - Unexpected console statement. (no-console)\n88:15 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/view-appointment.js', function (assert) {
@@ -772,7 +772,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('services/auth.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'services/auth.js should pass ESLint\n\n');
+    assert.ok(false, 'services/auth.js should pass ESLint\n\n26:5 - Unexpected console statement. (no-console)\n107:23 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('services/doc.js', function (assert) {

@@ -177,9 +177,9 @@ router.route('/')
                                                                 var rec = new Logins.Model({
                                                                     // token : encrypt(JSON.stringify(token)),
                                                                     sessionIsActive : true,
-                                                                    oginFailed : false
+                                                                    loginFailed : false
                                                                 });
-
+                                                                console.log("rec", rec);
                                                                 response.json({login: rec});
                                                             });
                                                         // });
@@ -450,7 +450,7 @@ router.route('/')
                                                                 var rec = new Logins.Model({
                                                                     // token : encrypt(JSON.stringify(token)),
                                                                     sessionIsActive : true,
-                                                                    oginFailed : false
+                                                                    loginFailed : false
                                                                 });
 
                                                                 response.json({login: rec});

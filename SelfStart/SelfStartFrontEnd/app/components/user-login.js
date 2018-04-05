@@ -10,6 +10,7 @@ export default Component.extend({
   ajax: Ember.inject.service(),
   temp: false,
   authentication: inject('auth'),
+  authent: inject('auth'),
   error: null,
 
   errorMessage: Ember.computed('error', function () {
@@ -26,16 +27,16 @@ export default Component.extend({
       var auth = this.get("authentication");
       var self = this;
       if (this.get('Email') === "root") {
-        authentication.openRoot(this.get('password')).then(function (name) {
-          self.get('oudaAuth').set('isLoginRequested', false);
-          authentication.set('getName', name);
+        auth.openRoot(this.get('password')).then(function (name) {
+          auth.set('isLoginRequested', false);
+          auth.set('getName', name);
           self.get('routing').transitionTo('home');
         }, function () {
           //console.log("Root" + error);
         });
       } else {
       auth.open(this.get('Email'), this.get('PWord')).then(function() {
-        self.get('authentication').set('isLoginRequested', false);
+        auth.set('isLoginRequested', false);
       }, function(error) {
         if (error === "passwordReset") {
           Ember.$('.ui.changePassword.modal').modal({
@@ -55,17 +56,20 @@ export default Component.extend({
                   return false;
                 } else {
                   self.set('error', null);
+                  // var ourAuth = self.get('authent')
                   var myStore = self.get('DS');
                   var userName = self.get('name');
                   var hashedPassword = auth.hash(self.get('firstPassword'));
-
-                  myStore.queryRecord('password', {filter: {userName: userName}}).then(function (userShadow) {
-                    userShadow.set('encryptedPassword', hashedPassword);
+                  console.log("BEfore");
+                  console.log(self.get('Email'));
+                  myStore.queryRecord('password', {filter: {"email": self.get('Email')}}).then(function (userShadow) {
+                    auth.set('encryptedPassword', hashedPassword);
                     userShadow.set('passwordMustChanged', true);
+                    console.log(userShadow);
                     userShadow.set('passwordReset', false);
                     userShadow.save().then(function () {
-                      self.get('authentication').close();
-                      self.get('authentication').set('isLoginRequested', true);
+                      // auth.close();
+                      auth.set('isLoginRequested', true);
                       console.log("Success update");
                       // self.get('routing').transitionTo('login');
                     //  return true;

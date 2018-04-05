@@ -72,8 +72,8 @@ router.route('/')
                     response.json({password: UserShadow});
                 });
             } else {
-                if (Password.userName){
-                    Passwords.Model.findOne({"userName": Password.userName}, function (error, UserShadow) {
+                if (Password.email){
+                    Passwords.Model.findOne({"email": Password.email}, function (error, UserShadow) {
                         if (error) response.send(error);
                         response.json({password: UserShadow});
                     });
@@ -110,10 +110,13 @@ router.route('/:password_id')
                     console.log("In first user info register");
                 }
                 else if (request.body.password.passwordMustChanged) {
-                    var Salt = rand(256, 36);
-                    UserShadow.encryptedPassword = hash(request.body.password.encryptedPassword + Salt);
-                    UserShadow.salt = Salt;
+                    console.log("IN THE Update")
+                    // var Salt = rand(256, 36);
+                    // console.log(request.body.password.encryptedPassword);
+                    // UserShadow.encryptedPassword = hash(request.body.password.encryptedPassword + Salt);
+                    // UserShadow.salt = Salt;
                     UserShadow.passwordMustChanged = false;
+                    // console.log("at put salt", Salt);
                 }
                 UserShadow.passwordReset = request.body.password.passwordReset;
                 UserShadow.email = request.body.password.email;
