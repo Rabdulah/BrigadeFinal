@@ -127,12 +127,17 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/client-file.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/client-file.js should pass ESLint\n\n60:5 - Unexpected console statement. (no-console)\n75:7 - Unexpected console statement. (no-console)\n76:7 - Unexpected console statement. (no-console)\n104:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n113:5 - Unexpected console statement. (no-console)\n159:11 - \'assign\' is assigned a value but never used. (no-unused-vars)\n165:7 - \'rehabplan\' is not defined. (no-undef)\n216:7 - \'$\' is not defined. (no-undef)\n235:29 - \'res\' is defined but never used. (no-unused-vars)\n236:13 - \'$\' is not defined. (no-undef)');
+    assert.ok(false, 'components/client-file.js should pass ESLint\n\n60:5 - Unexpected console statement. (no-console)\n75:7 - Unexpected console statement. (no-console)\n76:7 - Unexpected console statement. (no-console)\n104:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n113:5 - Unexpected console statement. (no-console)\n161:11 - \'assign\' is assigned a value but never used. (no-unused-vars)\n167:7 - \'rehabplan\' is not defined. (no-undef)\n227:7 - \'$\' is not defined. (no-undef)\n246:29 - \'res\' is defined but never used. (no-unused-vars)\n247:13 - \'$\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/client-nav.js', function (assert) {
     assert.expect(1);
     assert.ok(false, 'components/client-nav.js should pass ESLint\n\n15:431 - \'SkypeButton\' is not defined. (no-undef)\n15:472 - \'SkypeButton\' is not defined. (no-undef)');
+  });
+
+  QUnit.test('components/client-settings.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/client-settings.js should pass ESLint\n\n');
   });
 
   QUnit.test('components/client-welcome.js', function (assert) {
@@ -312,7 +317,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/manage-patients.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/manage-patients.js should pass ESLint\n\n70:5 - Unexpected console statement. (no-console)');
+    assert.ok(true, 'components/manage-patients.js should pass ESLint\n\n');
   });
 
   QUnit.test('components/manage-questions.js', function (assert) {
@@ -673,6 +678,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('routes/client/resources.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'routes/client/resources.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('routes/client/settings.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/client/settings.js should pass ESLint\n\n');
   });
 
   QUnit.test('routes/client/upload-photos.js', function (assert) {
@@ -1606,6 +1616,35 @@ define('self-start-front-end/tests/integration/components/client-nav-test', ['em
     this.render(Ember.HTMLBars.template({
       "id": "U3b0iEyO",
       "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"client-nav\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/client-settings-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('client-settings', 'Integration | Component | client settings', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "wOhfX/Ie",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"client-settings\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "/dwvkqL0",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"client-settings\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
       "meta": {}
     }));
 
@@ -3474,6 +3513,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/client-nav-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('integration/components/client-settings-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/client-settings-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('integration/components/client-welcome-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/client-welcome-test.js should pass ESLint\n\n');
@@ -4012,6 +4056,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('unit/routes/client/resources-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/routes/client/resources-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/routes/client/settings-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/client/settings-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/routes/client/upload-photos-test.js', function (assert) {
@@ -4810,6 +4859,19 @@ define('self-start-front-end/tests/unit/routes/client/resources-test', ['ember-q
   'use strict';
 
   (0, _emberQunit.moduleFor)('route:client/resources', 'Unit | Route | client/resources', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
+define('self-start-front-end/tests/unit/routes/client/settings-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:client/settings', 'Unit | Route | client/settings', {
     // Specify the other units that are required for this test.
     // needs: ['controller:foo']
   });

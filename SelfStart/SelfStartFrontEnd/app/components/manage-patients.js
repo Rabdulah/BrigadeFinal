@@ -1,5 +1,6 @@
 import Component from '@ember/component';
 import Ember from "ember";
+import moment from 'moment';
 
 export default Component.extend({
   store: Ember.inject.service(),
@@ -59,6 +60,9 @@ export default Component.extend({
     let self = this;
     //  this.set('modelAttributes', Object.keys(this.get('store').createRecord('patient').toJSON()));
     this.get('store').query('patient', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
+      records.forEach( function (patient){
+        patient.set('dateOfBirth', moment(patient.get('dateOfBirth')).format('DD/MM/YYYY'));
+      });
       self.set('patientsModel', records.toArray());
 
     });
@@ -66,11 +70,11 @@ export default Component.extend({
   },
 
 
-  dateFormat: Ember.computed(function(date){
-    console.log(date);
-    var dateString = date.toISOString().substring(0, 10);
-    return dateString;
-  }),
+  // dateFormat: Ember.computed(function(date){
+  //   console.log(date);
+  //   var dateString = moment(date).toISOString();
+  //   return dateString;
+  // }),
 
 
 

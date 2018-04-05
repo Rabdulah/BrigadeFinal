@@ -57,6 +57,7 @@ Router.map(function() {
     this.route('appointment');
     this.route('exercise-menu');
     this.route('resources');
+    this.route('settings');
   });
 });
 

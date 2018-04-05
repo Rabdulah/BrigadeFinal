@@ -27,7 +27,7 @@
     <a class="item">
       Documents
     </a>
-    <a class="item">
+    <a class="{{accountingState}} item" {{action "accountingView"}}>
       Accounting
     </a>
   </div>
@@ -62,8 +62,6 @@
         </div>
       </div>
       <br><br><br><br>
-
-
       <div style="display: inline">
         <table class="ui fixed table" style="border: none;border-color: white;">
           <tbody >
@@ -119,6 +117,68 @@
       </div>
 
     </div>
+    {{/if}}
+    {{#if accountingmenus}}
+      <div class="ui very padded container segment" id="top">
+        <div class="ui grid" style="margin-top: -30px;">
+          <div class="left five wide column" style="margin-top: -5px;">
+            <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">Trasnactions</p>
+          </div>
+          <div class="right three wide column" style="padding-left: 30px; margin-top: -5px;">
+            <p>remaining: </p>
+          </div>
+          <td class="right aligned one wide column ">
+            <p style="cursor: pointer; " title="Edit">
+              <img src="/assets/images/pencil.svg">
+            </p>
+          </td>
+
+        </div>
+        <br><br><br><br>
+
+
+        <div style="display: inline">
+          <table class="ui fixed table" style="border: none;border-color: white;">
+            <tbody >
+            <tr style="font-weight: bold;">
+              <th> test </th>
+              <th> test2 </th>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ui divider"></div>
+
+        <div  id="myWindow" style="height:500px; overflow-y: scroll; overflow-x: hidden;">
+          <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
+            <tbody >
+            {{#each listModel as |exercise|}}
+
+
+              <tr>
+
+                {{#each modelAttributes as |column|}}
+
+                  <td class={{column.class}}>
+                    {{get exercise column.key}}
+                  </td>
+                {{/each}}
+              </tr>
+            {{/each}}
+
+            {{#if isPlanSelected}}
+              <div class="ui {{disabled}} button" {{action "openModal"}}>
+                Assign
+              </div>
+            {{/if}}
+
+
+            </tbody>
+          </table>
+        </div>
+
+      </div>
     {{/if}}
 
   </div>
