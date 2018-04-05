@@ -297,7 +297,18 @@ link:[],
     },
 
     openSummary: function () {
+      $('.ui.' + 'summary' + '.modal').modal({
+        closable: false,
 
+        transition: 'fly down',
+
+        onDeny: () => {
+          return true;
+        },
+        onApprove: () => {
+          window.print();
+        }
+      }).modal('show');
     },
 
     openModal: function () {

@@ -241,3 +241,55 @@
 
 {{/ui-modal}}
 
+{{#ui-modal name="summary" class="summary"}}
+  <i class="close icon"></i>
+  {{!-- <link integrity="" rel="stylesheet" href="/assets/css/form-style.css"> <!-- Resource style --> --}}
+  <label class="text"></label>
+  <br>
+  <div class="ui form">
+    <div class="field">
+
+      <label class="header">Patient information:</label>
+      <br>
+      <label>Name: {{model.givenName}} {{model.familyName}}</label>
+      <label>Date of birth: {{model.dateOfBirth}}</label>
+      <label>Gender: {{model.gender}}</label>
+      <label>Address: {{model.streetNumber}} {{model.streetName}}, #{{model.apartment}}, {{model.postalCode}}  {{model.city}}, {{model.province}}, {{model.country}} </label>
+      <label>Email: {{model.email}}</label>
+      <label>Phone: {{model.phoneNumber}}</label>
+      <br>
+
+      <label class="header">Diagnosed case:</label>
+      <label>Injury: </label>
+
+      <br>
+
+      <label class="header">Treatments:</label>
+      {{#each patientModel as |link|}}
+        <label>{{link.RehabilitationPlan.planName}}</label>
+      {{/each}}
+
+      <br>
+
+      <label class="header">Appointment history:</label>
+
+      <br>
+
+      <label class="header">Payment history:</label>
+
+      
+      <br><br><br>
+
+      <label>Final outcomes: </label>
+      <textarea></textarea>
+    </div>
+  </div>
+  <br>
+
+  <div class="actions" style="padding:0">
+
+    <div class="ok" style="padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Print/Save</div>
+    <div class="cancel" style="padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">No</div>
+  </div>
+
+{{/ui-modal}}
