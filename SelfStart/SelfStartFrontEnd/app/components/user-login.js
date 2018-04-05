@@ -25,7 +25,7 @@ export default Component.extend({
     submit(){
       var auth = this.get("authentication");
       var self = this;
-      if (this.get('Email') === "mustafadawoud97@gmail.com") {
+      if (this.get('Email') === "root") {
         authentication.openRoot(this.get('password')).then(function (name) {
           self.get('oudaAuth').set('isLoginRequested', false);
           authentication.set('getName', name);
@@ -55,19 +55,19 @@ export default Component.extend({
                   return false;
                 } else {
                   self.set('error', null);
-                  var authentication = self.get('oudaAuth');
-                  var myStore = self.get('store');
+                  var myStore = self.get('DS');
                   var userName = self.get('name');
-                  var hashedPassword = authentication.hash(self.get('firstPassword'));
+                  var hashedPassword = auth.hash(self.get('firstPassword'));
 
                   myStore.queryRecord('password', {filter: {userName: userName}}).then(function (userShadow) {
                     userShadow.set('encryptedPassword', hashedPassword);
                     userShadow.set('passwordMustChanged', true);
                     userShadow.set('passwordReset', false);
                     userShadow.save().then(function () {
-                      self.get('oudaAuth').close();
-                      self.get('oudaAuth').set('isLoginRequested', true);
-                      self.get('routing').transitionTo('login');
+                      self.get('authentication').close();
+                      self.get('authentication').set('isLoginRequested', true);
+                      console.log("Success update");
+                      // self.get('routing').transitionTo('login');
                     //  return true;
                     });
                   });
