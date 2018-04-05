@@ -13,9 +13,6 @@ var patientProfilesSchema = mongoose.Schema(
         email: String,
         dateOfBirth: Date,
         phoneNumber: String,
-        healthCardNumber: String,
-        // occupation: String,
-        // maritalStatus: String,
         gender: String,
         country: String,
         province: String,
@@ -34,15 +31,23 @@ var patientProfilesSchema = mongoose.Schema(
                         default: "0"
                     }
                 },
+        transactions: [{
+            package: String,
+            date: Date,
+            amount: Number
+        }],
 
+        appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],
+        rehablink: [{type: mongoose.Schema.ObjectId, ref: 'RehabClientLink'}], 
+        introTest: {type: mongoose.Schema.ObjectId, ref: 'AssessmentTests'}, 
         // payments: [{
         //             dayTimestamp: Date,
         //             amount: Number,
         //             note: String
         //         }],
-        appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],
-        rehablink: [{type: mongoose.Schema.ObjectId, ref: 'RehabClientLink'}],        // askAPhysio: [{type: mongoose.Schema.ObjectId, ref: 'AskAPhysio'}],
+        appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],      // askAPhysio: [{type: mongoose.Schema.ObjectId, ref: 'AskAPhysio'}],
         // plan: [{type: mongoose.Schema.ObjectId, ref: 'Treatments'}]
+        
     }
 );
 

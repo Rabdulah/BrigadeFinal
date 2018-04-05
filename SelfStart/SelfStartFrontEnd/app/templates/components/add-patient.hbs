@@ -36,6 +36,7 @@
           {{input class="user" type="text" value = familyName placeholder="Last Name" required = true}}
         </div>
       </div>
+
       <div class="ui two column grid">
         <div class="column " style="margin: 1em 0;">
           <input class="date" type="date" placeholder="Date of birth" value= {{selectedDate}}  onchange={{action 'assignDate' value="target.value"}} required>
@@ -105,7 +106,6 @@
               {{/each}}
             </select>
           </p>
-
         </div>
         <div class="column " style="margin: 1em 0;">
           {{input class="world" type="text" value = province placeholder="Province/State" required = true}}

@@ -8,13 +8,11 @@ export default Component.extend({
   //selectedCountry: null,
 
 
-
   actions: {
 
     selectCountry(country) {
       this.set('selectedCountry', country);
     },
-
 
     submit(){
       let self = this;
@@ -37,7 +35,6 @@ export default Component.extend({
     },
 
     openModal: function () {
-
 
       $('.ui.small.newProvince.modal').modal({
         closable: false,

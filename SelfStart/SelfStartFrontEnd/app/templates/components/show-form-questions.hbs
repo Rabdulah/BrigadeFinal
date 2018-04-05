@@ -1,7 +1,5 @@
 <button class="ui mini circular labeled icon green button" {{action 'openModal'}}>
-
   Change Order
-
 </button>
 
 
@@ -15,7 +13,6 @@
         <br>
         <div class="two wide column right aligned">
           <button class="ui mini circular labeled icon red button"{{action 'removeQuestion' oneQuestion thisForm oneQuestion.id thisForm.id}}><i class="remove icon"></i>Remove</button>
-
           <p class="cd-select icon">
             <select class="world" onchange={{action 'orderChange' oneQuestion thisForm thisForm.id}}>
               {{#each questions as |q index|}}
@@ -29,7 +26,6 @@
       </div>
     </div>
     <br><br><br>
-
   {{/each}}
   <div class="actions">
     <div class="ui positive right labeled icon button" {{action 'save' thisForm thisForm.id}}>

@@ -11,20 +11,10 @@ router.route('/')
         });
     })
     .get( function (request, response) {
-        var getCity =  request.query.filter;
-        if(!getCity){
-            Cities.Model.find(function (error, cities) {
-                if (error) response.send(error);
-                response.json({city: cities});
-            });
-        }
-        else{
-            Cities.Model.find({"province": getCity.province}, function (error, cities) {
-                if (error) response.send(error);
-                response.json({city: cities});
-            });
-        }
-
+        Cities.Model.find(function (error, cities) {
+            if (error) response.send(error);
+            response.json({city: cities});
+        });
     });
 
 router.route('/:city_id')

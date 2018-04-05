@@ -29,7 +29,6 @@ export default Component.extend({
     this.set('postalCode', '');
     this.set('userAccountName', '');
     this.set('encryptedPassword', '');
-
     // this.set('selectedGender', this.get('selectedGender'));
     // this.set('selectedCountry', this.get('selectedCountry'));
   },
@@ -59,6 +58,9 @@ export default Component.extend({
     });
   },
 
+  introModel: computed( function() {
+    return this.get('DS').findRecord('form', '5aac10411eac5942040e581f');
+  }),
 
   conutryModel: computed(function(){
     return this.get('DS').findAll('country');
@@ -76,7 +78,7 @@ export default Component.extend({
       this.set('selectedDate', date);
     },
 
-    selectCountry (country){
+    selectCountry (country) {
       this.set('selectedCountry', country);
     },
 
@@ -87,6 +89,7 @@ export default Component.extend({
     submit(){
       let self = this;
 
+      
       let patientAccount = {};
       patientAccount['userAccountName'] = self.get('userAccountName');
       patientAccount['encryptedPassword'] = self.get('encryptedPassword');

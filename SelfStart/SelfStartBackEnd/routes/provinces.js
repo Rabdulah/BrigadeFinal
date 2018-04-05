@@ -11,19 +11,10 @@ router.route('/')
         });
     })
     .get( function (request, response) {
-        var prov =  request.query.filter;
-        if (!prov){
-            Provinces.Model.find(function (error, provinces) {
-                if (error) response.send(error);
-                response.json({province: provinces});
-            });
-        }
-        else{
-            Provinces.Model.find({"country": prov.country}, function (error, provinces) {
-                if (error) response.send(error);
-                response.json({province: provinces});
-            });
-        }
+        Provinces.Model.find(function (error, provinces) {
+            if (error) response.send(error);
+            response.json({province: provinces});
+        });
     });
 
 router.route('/:province_id')
@@ -49,7 +40,6 @@ router.route('/:province_id')
                 province.country = request.body.province.country;
                 province.cities = request.body.province.cities;
                 // province.patient = request.body.province.patient;
-
 
                 province.save(function (error) {
                     if (error) {

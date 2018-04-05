@@ -1,4 +1,3 @@
-
 <div class="ui very padded container segment" id="top">
   <div class="ui grid" style="margin-top: -30px;">
     <div class="left thirteen wide column" style="margin-top: -5px;">
@@ -43,7 +42,6 @@
   <table class="ui fixed table" id="tb" style="border: none;border-color: white;">
     <tbody>
     <tr style="font-weight: bold;">
-
       {{#each modelAttributes as |column|}}
         <th class={{column.class}} {{action 'sortColumn' column.key column.dir}}>{{column.name}}
           {{#if (eq column.dir 'asc')}}
@@ -57,14 +55,12 @@
           {{/if}}
         </th>
       {{/each}}
-
       <td class="center aligned two wide column">Actions</td>
     </tr>
     </tbody>
   </table>
 
   <div class="ui divider"></div>
-
 
 
   <div  id="myWindow" style="height:600px; overflow-y: scroll; overflow-x: hidden;">
@@ -92,4 +88,3 @@
     </table>
   </div>
 </div>
-

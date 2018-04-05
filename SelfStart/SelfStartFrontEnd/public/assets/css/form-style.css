@@ -190,10 +190,9 @@ Form
   position: absolute;
   left: 0;
   top: 50%;
-  margin-top: -8px;
+  /*margin-top: -8px;*/
   width: 16px;
   height: 16px
-
 }
 .cd-form input[type="radio"] + label::before,
 .cd-form input[type="checkbox"] + label::before {
@@ -211,10 +210,10 @@ Form
 }
 .cd-form input[type="radio"] + label::after,
 .cd-form input[type="checkbox"] + label::after {
-  background-color: #2c97de !important;
+  background-color: #2c97de;
   background-position: center center;
   background-repeat: no-repeat;
-  box-shadow: 0 0 5px rgba(44, 151, 222, 0.4) !important;
+  box-shadow: 0 0 5px rgba(44, 151, 222, 0.4);
   display: none;
 }
 
@@ -229,7 +228,7 @@ Form
 .cd-form input[type="radio"]:focus + label::before,
 .cd-form input[type="checkbox"]:focus + label::before {
   /* add focus effect for radio and check buttons */
-  box-shadow: 0 0 5px rgba(44, 151, 222, 0.6) !important;
+  box-shadow: 0 0 5px rgba(44, 151, 222, 0.6);
 }
 .cd-form input[type="radio"]:checked + label::after,
 .cd-form input[type="checkbox"]:checked + label::after {
@@ -417,7 +416,6 @@ button, input, optgroup, select, textarea {
 /*.cd-form [required].card {*/
   /*background: url('/assets/images/form/badge-13.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;*/
 /*}*/
-
 .cd-form .home {
   background: url('/assets/images/form/home-52.svg') no-repeat 12px 12px;
 }

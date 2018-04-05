@@ -8,6 +8,7 @@ export default Component.extend({
   questionView:false,
   formState: "active",
   questionState: "",
+
   limit: 10,
   offset: 0,
   pageSize: 10,

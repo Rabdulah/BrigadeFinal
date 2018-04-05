@@ -4,9 +4,7 @@ import $ from 'jquery';
 import Ember from "ember";
 
 export default Component.extend({
-
   DS: inject('store'),
-
 
   shortAns: false,
   multipleChoice:true,
@@ -90,7 +88,6 @@ export default Component.extend({
         return;
       }
     },
-
 
     removeOption(){
       if(this.option6 === true){

@@ -11,5 +11,5 @@ export default DS.Model.extend({
     gender: DS.attr(),
     treatment: DS.attr(),
     account: DS.attr(),
-    appointments: DS.hasMany('appointment' , { async: true })
+  appointments: DS.hasMany('appointment' , { async: true })
 });

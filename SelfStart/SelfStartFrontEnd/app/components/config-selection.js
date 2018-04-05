@@ -6,7 +6,6 @@ export default Component.extend({
   store: Ember.inject.service(),
 
   citySelected: false,
-
   genderSelected: false,
   countrySelected: false,
   provinceSelected: false,
@@ -108,48 +107,24 @@ export default Component.extend({
       this.set('countrySelected', false);
       this.set('provinceSelected', false);
       this.set('citySelected', false);
-
-      this.set('quoteSelected', false);
     },
     countrySelect: function(){
       this.set('countrySelected', true);
       this.set('genderSelected', false);
       this.set('provinceSelected', false);
       this.set('citySelected', false);
-
-      this.set('quoteSelected', false);
     },
     provinceSelect: function(){
       this.set('provinceSelected', true);
       this.set('genderSelected', false);
       this.set('countrySelected', false);
-
       this.set('citySelected', false);
-      this.set('quoteSelected', false);
     },
     citySelect: function(){
       this.set('provinceSelected', false);
       this.set('genderSelected', false);
       this.set('countrySelected', false);
       this.set('citySelected', true);
-
-      this.set('quoteSelected', false);
-    },
-    quoteSelect: function(){
-      this.set('provinceSelected', false);
-      this.set('genderSelected', false);
-      this.set('countrySelected', false);
-      this.set('quoteSelected', true);
-    },
-    submit(){
-      this.get('store').findAll('administrator').then((rec) =>{
-        rec.forEach((r)=>{
-          console.log(r);
-          r.set('message', this.get('message') );
-          r.save()
-        })
-
-      });
     },
     sortColumn(columnName, direction) {
 

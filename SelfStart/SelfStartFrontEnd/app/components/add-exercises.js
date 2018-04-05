@@ -130,16 +130,17 @@ export default Component.extend({
 
     submit: function() {
       let date = moment().format("MMM Do YY");
-
       let exercise = this.get('DS').createRecord('exercise', {
         name:this.get('Name'),
         description:this.get('Description'),
+        objectives:this.get('obj'),
         authorName:this.get('AuthName'),
         actionSteps:this.get('actionStep'),
-        sets:this.get('sets'),
-        reps:this.get('reps'),
+        location:this.get('Location'),
+        frequency:this.get('Frequency'),
         duration:this.get('Duration'),
         multimediaURL:this.get('MMURL'),
+        targetDate:this.get('TargetDate'),
         images: [],
         dateCreated: date
       });
@@ -206,16 +207,20 @@ export default Component.extend({
       this.get('queue2').clear();
       this.set('Name', "");
       this.set('Description', "");
+      this.set('Objective', "");
       this.set('AuthName', "");
       this.set('ActionStep', "");
-      this.set('reps', "");
-      this.set('sets', "");
+      this.set('Location', "");
+      this.set('Frequency', "");
       this.set('Duration', "");
       this.set('MMURL', "");
+      this.set('TargetDate', "");
       this.set("actionStep", []);
+      this.set("obj", []);
       $('.ui.newExercise.modal').modal('hide');
 
-
+      // window.location.reload();
+      // windows.location.reload();
     },
 
     addTempImage: function(image) {
@@ -234,5 +239,6 @@ export default Component.extend({
 
       }).modal('show')
     },
+
   }
 });

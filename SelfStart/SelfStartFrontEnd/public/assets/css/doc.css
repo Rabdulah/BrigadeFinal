@@ -247,13 +247,17 @@ blockquote .author {
   z-index: 1;
   margin: 0em;
   max-height: 230px;
-
   padding: 3em 0em;
   padding-bottom: 30em;
   background-color: #FFFFFF;
   border-bottom: 1px solid #DDDDDD;
   box-shadow: none;
 }
+<<<<<<< HEAD
+=======
+
+
+
 #example .masthead.bg5.segment {
   position: relative;
   z-index: 1;
@@ -264,6 +268,7 @@ blockquote .author {
   border-bottom: 1px solid #DDDDDD;
   box-shadow: none;
 }
+>>>>>>> origin/youda
 #example .masthead .introduction {
   display: block;
 }

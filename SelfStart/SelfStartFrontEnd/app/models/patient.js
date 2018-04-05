@@ -17,8 +17,10 @@ export default DS.Model.extend({
   gender: DS.attr(),
   phoneNumber: DS.attr(),
   postalCode: DS.attr(),
-  appointments: DS.hasMany('appointment' ),
+  appointments: DS.hasMany('appointment', { async: true }),
   account: DS.attr(),
+  transactions: DS.attr(),
   rehablink: DS.hasMany('rehab-client-link', { async: true }),
+
 });
 

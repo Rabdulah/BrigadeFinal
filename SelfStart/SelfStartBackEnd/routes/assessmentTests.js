@@ -39,9 +39,10 @@ router.route('/:assessment_id')
                 // update each attribute
                 assessmentTest.questions = request.body.assessmentTest.questions;
                 assessmentTest.form = request.body.assessmentTest.form;
-                assessmentTest.rehabPlan = request.body.assessmentTest.rehabPlan;
+                assessmentTest.rehablink = request.body.assessmentTest.rehablink;
                 assessmentTest.answers = request.body.assessmentTest.answers;
                 assessmentTest.completed = request.body.assessmentTest.completed;
+                assessmentTest.formName = request.body.assessmentTest.formName;
 
                 assessmentTest.save(function (error) {
                     if (error) {
@@ -56,7 +57,6 @@ router.route('/:assessment_id')
     })
     .delete( function (request, response) {
         AssessmentTests.Model.findByIdAndRemove(request.params.assessment_id,
-
             function (error, deleted) {
                 if (!error) {
                     response.json({assessmentTest: deleted});

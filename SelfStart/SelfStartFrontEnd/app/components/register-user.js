@@ -1,149 +1,122 @@
 import Component from '@ember/component';
 import { inject } from '@ember/service';
-import { computed } from '@ember/object';
-import Ember from "ember";
 import $ from 'jquery';
 
 
 export default Component.extend({
   DS: inject('store'),
-  loggedOut: false,
+  router: inject('-routing'),
 
 
-  init(){
-    this._super(...arguments);
-
-    this.set('familyName', '');
-    this.set('givenName', '');
-    this.set('email', '');
-    this.set('streetName', '');
-    this.set('streetNumber', '');
-    this.set('apartment', '');
-    this.set('selectedCity', '');
-    this.set('province', '');
-    this.set('city', '');
-    this.set('healthCardNumber', '');
-    this.set('selectedGender', '');
-    this.set('dateOfBirth', '');
-    this.set('phoneNumber', '');
-    this.set('postalCode', '');
-    // this.set('userAccountName', '');
-    this.set('encryptedPassword', '');
-
-    // this.set('selectedGender', this.get('selectedGender'));
-    // this.set('selectedCountry', this.get('selectedCountry'));
-  },
-
-  didRender() {
-    this._super(...arguments);
-
-    if ($('.floating-labels').length > 0) floatLabels();
-
-    function floatLabels() {
-      var inputFields = $('.floating-labels .cd-label').next();
-      inputFields.each(function () {
-        var singleInput = $(this);
-        //check if  is filling one of the form fields
-        checkVal(singleInput);
-        singleInput.on('change keyup', function () {
-          checkVal(singleInput);
-        });
-      });
-    }
-
-    function checkVal(inputField) {
-      ( inputField.val() == '' ) ? inputField.prev('.cd-label').removeClass('float') : inputField.prev('.cd-label').addClass('float');
-    }
-  },
-
-  // countryModel: computed(function(){
-  //   return this.get('DS').findAll('country');
-  // }),
-
-  provModel: [],
-
-  provinces: Ember.observer('country', function(){
-    this.get('DS').query('province', {filter: {'country': this.get('country')}}).then((provinces) => {
-
-      this.get('provModel').clear();
-
-      provinces.forEach((prov)=>{
-        this.get('provModel').pushObject(prov);
-      });
-
-    });
-  }),
-
-  cityModel: [],
-
-  cities: Ember.observer('province', function(){
-    this.get('DS').query('city', {filter: {'province': this.get('province')}}).then((cities) => {
-
-      this.get('cityModel').clear();
-
-      cities.forEach((rec)=>{
-        this.get('cityModel').pushObject(rec);
-      });
-
-    });
-  }),
-
-  genderModel: computed(function(){
-    return this.get('DS').findAll('gender');
-  }),
-
+  model: null,
+  AllPatients: null,
+  UserName: null,
+  Password: null,
+  FamilyName: null,
+  GivenName: null,
+  IEmail: null,
+  DateOfBirth: null,
+  PhoneNumber: null,
+  HealthCardNumber: null,
+  Occupation: null,
+  MaritalStatus: null,
+  Gender: null,
+  Country: null,
+  ICity: null,
+  Province: null,
+  StreetNumber: null,
+  StreetName: null,
+  PostalCode: null,
+  Appartment: null,
 
     actions: {
-      assignDate(date) {
-        this.set('selectedDate', date);
+      deny (){
+        $('.ui.register.modal').modal('hide');
       },
 
-      selectGender(gender) {
-        this.set('selectedGender', gender);
+      submit (){
+        const re = /^(([^<>()\[\]\\.,;:\s@"]+(\.[^<>()\[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/;
+        if (!re.test(this.get('Email'))) {
+          console.log("BAD EMAIL");
+          return false;
+        }
+
+        this.set("UserName", this.get('UName'));
+        this.set("Password", this.get('PWord'));
+        // this.set("FamilyName", this.get('FName'));
+        // this.set("GivenName", this.get('GName'));
+        this.set("IEmail", this.get('Email'));
+        // this.set("DateOfBirth", this.get('DOB'));
+        // this.set("PhoneNumber", this.get('PNumber'));
+        // this.set("HealthCardNumber", this.get('HCN'));
+        // this.set("Occupation", this.get('Occ'));
+        // this.set("MaritalStatus", this.get('MStatus'));
+        // this.set('Gender', this.get('GDer'));
+        // this.set("Country", this.get('Ctry'));
+        // this.set("ICity", this.get('City'));
+        // this.set("Province", this.get('Prov'));
+        // this.set("Appartment", this.get('Apptmnt'));
+        // this.set("StreetNumber", this.get('SNumber'));
+        // this.set("StreetName", this.get('SName'));
+        // this.set("PostalCode", this.get('PCode'));
+
+        let acc = {};
+        acc['userAccountName'] = this.UserName;
+        acc['encryptedPassword'] = this.Password;
+        console.log(this.Password);
+
+        // let client = this.get('DS').createRecord('patient', {
+        //   familyName: this.FamilyName,
+        //   givenName: this.GivenName,
+        //   email: this.IEmail,
+        //   dateOfBirth: this.DateOfBirth,
+        //   phoneNumber: this.PhoneNumber,
+        //   healthCardNumber: this.HealthCardNumber,
+        //   occupation: this.Occupation,
+        //   maritalStatus: this.MaritalStatus,
+        //   gender: this.Gender,
+        //   country: this.Country,
+        //   cities: this.ICity,
+        //   provinces: this.Province,
+        //   apartment: this.Appartment,
+        //   streetNumber: this.StreetNumber,
+        //   streetName: this.StreetName,
+        //   postalCode: this.PostalCode,
+        //   account: {
+        //     userAccountName: this.UserName,
+        //     encryptedPassword: this.Password
+        //   }
+        // });
+
+        console.log("djkjkfd");
+        //
+        // this.get("ajax").request("http://localhost:8082/patients",{
+        //   method: 'POST',
+        //   data:{
+        //     client: client
+        //   }
+        // })
+        localStorage.setItem("UName", this.get('UName'));
+        localStorage.setItem("Email", this.get('Email'));
+        localStorage.setItem("Pass", this.get('PWord'));
+        $('.ui.register.modal').modal('hide');
+        this.get('router').transitionTo('register');
+
+
+        // client.save().then((client) => {
+        //   this.get('router').transitionTo('register');
+        //   // $('.ui.register.modal').modal('hide');
+        //
+        // });
       },
 
-      submit() {
-        let self = this;
-
-        let patientAccount = {};
-        // patientAccount['userAccountName'] = localStorage.getItem('UName');
-        patientAccount['encryptedPassword'] = self.get('encryptedPassword');
-
-        let patient = this.get('DS').createRecord('patient', {
-          familyName: self.get('familyName'),
-          givenName: self.get('givenName'),
-          email: self.get('email'),
-          streetName: self.get('streetName'),
-          streetNumber: self.get('streetNumber'),
-          apartment: self.get('apartment'),
-          country: self.get('country'),
-          province: self.get('province'),
-          city: self.get('city'),
-          dateOfBirth: new Date(this.get('selectedDate')),
-          gender: self.get('selectedGender'),
-          phoneNumber: self.get('phoneNumber'),
-          postalCode: self.get('postalCode'),
-          account: patientAccount
-        });
-
-        patient.save().then((patient) =>{
-          localStorage.clear();
-          $('.ui.register.modal').modal('hide');
-          // localStorage.setItem('loggedIn', false);
-        });
-      },
-
-
-
-      openModal: function ()  {
+      openModal: function () {
+        console.log("model", this.model);
         $('.ui.register.modal').modal({
-          closable: false,
+          // closable: false,
+          // detachable: false,
 
-          onDeny: () => {
-            return true;
-          },
-
-        }).modal('show')
+        }).modal('show');
       },
     }
 

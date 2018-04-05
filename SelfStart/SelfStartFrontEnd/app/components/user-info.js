@@ -90,6 +90,10 @@ export default Component.extend({
     },
 
     submit() {
+      // this.set('accountValue', "completed");
+      // this.set('introValue', "active");
+      // this.set('intro', true);
+      // this.set('account', false);
 
       let self = this;
 
@@ -118,7 +122,6 @@ export default Component.extend({
         localStorage.clear();
         // localStorage.setItem('loggedIn', false);
       });
-
     },
     backToAccount() {
       this.set('accountValue', "active");

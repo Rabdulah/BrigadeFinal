@@ -83,10 +83,12 @@ export default Component.extend({
   Description: Ember.computed.oneWay('exerciseData.description'),
   Name: Ember.computed.oneWay('exerciseData.name'),
   AuthName: Ember.computed.oneWay('exerciseData.authorName'),
+  obj: Ember.computed.oneWay('exerciseData.objectives'),
   actionStep: Ember.computed.oneWay('exerciseData.actionSteps'),
-  sets: Ember.computed.oneWay('exerciseData.sets'),
-  reps: Ember.computed.oneWay('exerciseData.reps'),
+  Location: Ember.computed.oneWay('exerciseData.location'),
+  Frequency: Ember.computed.oneWay('exerciseData.frequency'),
   Duration: Ember.computed.oneWay('exerciseData.duration'),
+  TargetedDate: Ember.computed.oneWay('exerciseData.targetDate'),
   MMURL: Ember.computed.oneWay('exerciseData.multimediaURL'),
   Imgs: Ember.computed.oneWay('exerciseData.images'),
 
@@ -212,10 +214,12 @@ export default Component.extend({
             rec.set('name', this.get('Name'));
             rec.set('description', this.get('Description'));
             rec.set('authorName', this.get('AuthName'));
-            rec.set('sets', this.get('sets'));
-            rec.set('reps', this.get('reps'));
+            rec.set('objective', this.get('Objective'));
             rec.set('actionStep', this.get('ActionSteps'));
+            rec.set('location', this.get('Location'));
+            rec.set('frequency', this.get('Frequency'));
             rec.set('duration', this.get('Duration'));
+            rec.set('targetDate', this.get('TargetDate'));
             rec.set('MMURL', this.get('MMURL'));
             // rec.set('exercises', this.get('exercises'));
             // rec.set('assessmentTests', this.get('assessmentTests'));

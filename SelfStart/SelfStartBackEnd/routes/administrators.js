@@ -21,21 +21,21 @@ router.route('/')
             if(err) {
                 response.json({success: false, msg: 'Failed to register client'});
             } else{
-                response.json({administrator: administrator});
+                response.json({administrator: admin});
             }
         });
         // Administrators.save(function (error) {
         //     if (error) response.send(error);
-        //     response.json({administrator: administrator});
+        //     response.json({admin: admin});
         // });
     })
 
     .get( function (request, response) {
         let {limit, offset, sort, dir, queryPath, regex} = request.query;
         if(!limit) {
-            Administrators.Model.find(function (error, administrators) {
+            Administrators.Model.find(function (error, admins) {
                 if (error) response.send(error);
-                response.json({administrator: administrators});
+                response.json({administrator: admins});
             });
         }
         else {
@@ -64,9 +64,9 @@ router.route('/')
                 offset: offset,
                 limit: limit
             };
-            Administrators.Model.paginate(query, options, function (error, administrators) {
+            Administrators.Model.paginate(query, options, function (error, admins) {
                 if (error) response.send(error);
-                response.json({administrator: administrators.docs});
+                response.json({administrator: admins.docs});
             });
         }
     });
@@ -92,7 +92,7 @@ router.route('/:administrator_id')
                 response.send({error: error});
             }
             else {
-                response.json({administrator: administrator});
+                response.json({administrator: admin});
             }
         });
     })
@@ -104,19 +104,15 @@ router.route('/:administrator_id')
             else {
 
                 // update each attribute
-
-                administrator.ID = request.body.administrator.ID;
-
-                administrator.familyName = request.body.administrator.familyName;
-                administrator.givenName = request.body.administrator.givenName;
-                administrator.email = request.body.administrator.email;
-                administrator.dateHired = request.body.administrator.dateHired;
-                administrator.dateFired = request.body.administrator.dateFired;
-                administrator.phoneNumber = request.body.administrator.phoneNumber;
-                administrator.form = request.body.administrator.form;
-                administrator.account = request.body.administrator.account;
-                administrator.message = request.body.administrator.message;
-                console.log(request.body.administrator.message);
+                admin.ID = request.body.admin.ID;
+                admin.familyName = request.body.admin.familyName;
+                admin.givenName = request.body.admin.givenName;
+                admin.email = request.body.admin.email;
+                admin.dateHired = request.body.admin.dateHired;
+                admin.dateFired = request.body.admin.dateFired;
+                admin.phoneNumber = request.body.admin.phoneNumber;
+                admin.form = request.body.admin.form;
+                admin.account = request.body.admin.account;
 
 
                 administrator.save(function (error) {
@@ -124,7 +120,7 @@ router.route('/:administrator_id')
                         response.send({error: error});
                     }
                     else {
-                        response.json({administrator: administrator});
+                        response.json({administrator: admin});
                     }
                 });
             }

@@ -9,24 +9,23 @@ const jwt = require('jsonwebtoken');
 router.route('/')
     .post( function (request, response) {
         var patient = new Patients.Model(request.body.patient);
-        patient.save(function (error) {
-            if (error) response.send(error);
-                response.json({patient: patient});
-        });
-        // Patients.getUserByEmail(patient.email, (err, client) =>{
-        //     if(client) {
-        //         response.json({success: false, msg: 'User already registered'});
-        //     }
-        // });
-        // Patients.addClient(patient, (err, patient) => {
-        //     console.log("ASDJKkajsdkjsajkd");
-        //     if(err) {
-        //         response.json({success: false, msg: 'Failed to register client'});
-        //     } else{
-        //         response.json({patient: patient});
-        //     }
-        // });
 
+        Patients.getUserByEmail(patient.email, (err, client) =>{
+            if(client) {
+                response.json({success: false, msg: 'User already registered'});
+            }
+        });
+
+        Patients.addClient(patient, (err, patient) => {
+            console.log("ASDJKkajsdkjsajkd");
+            if(err) {
+                response.json({success: false, msg: 'Failed to register client'});
+            } else{
+                console.log("ewae");
+                Patients.sendEmail(patient);
+                response.json({patient: patient});
+            }
+        });
 
         // patient.save(function (error) {
         //     if (error) response.send(error);
@@ -36,7 +35,7 @@ router.route('/')
     })
     .get( function (request, response) {
         let {limit, offset, sort, dir, queryPath, regex} = request.query;
-        if(!limit && !regex) {
+        if(!limit) {
             Patients.Model.find(function (error, patients) {
                 if (error) response.send(error);
                 response.json({patient: patients});
@@ -138,7 +137,6 @@ router.route('/:patient_id')
                 response.send({error: error});
             }
             else {
-                console.log(patient);
                 response.json({patient: patient});
             }
         });
@@ -150,7 +148,6 @@ router.route('/:patient_id')
             }
             else {
 
-                console.log(request.body);
                 // update each attribute
                 patient.ID = request.body.patient.ID;
                 patient.familyName = request.body.patient.familyName;
@@ -168,10 +165,11 @@ router.route('/:patient_id')
                 patient.postalCode = request.body.patient.postalCode;
                 patient.appointments = request.body.patient.appointments;
                 patient.rehablink = request.body.patient.rehablink;
+                patient.introTest = request.body.patient.introTest;
 
                 patient.answer = request.body.patient.answer;
                 // patient.account = request.body.patient.account;
-
+                patient.transactions = request.body.patient.transactions;
                 patient.account = request.body.patient.account;
 
                 // patient.payments = request.body.patient.payments;

@@ -164,7 +164,6 @@ Main Components
   /*}*/
 /*}*/
 
-
 @media only screen and (min-width: 768px) {
   .cd-popular .cd-pricing-wrapper > li::before {
     /* hide table separator for .cd-popular table */
@@ -359,9 +358,7 @@ Main Components
     /* hide arrow */
     display: none;
   }
-
   .cd-pricing-footer {
-
     padding-bottom: 0;
   }
 }

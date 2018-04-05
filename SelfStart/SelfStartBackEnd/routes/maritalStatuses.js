@@ -9,7 +9,6 @@ router.route('/')
 
         status.save(function (error) {
             if (error) response.send(error);
-            console.log(request.body.maritalStatus.name);
             response.json({maritalStatus: status});
         });
     })
