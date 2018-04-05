@@ -6,6 +6,10 @@ var passwordsSchema = mongoose.Schema(
         encryptedPassword: String,
         passwordMustChanged : Boolean,
         passwordReset: Boolean,
+        firstUserInfoRegister: {
+            type: Boolean,
+            default: true
+        },
         admin: {type: mongoose.Schema.ObjectId, ref: ('Administrators')},
         practitioner: {type: mongoose.Schema.ObjectId, ref: ('Physiotherapests')},
         client: {type: mongoose.Schema.ObjectId, ref: ('PatientProfiles')}

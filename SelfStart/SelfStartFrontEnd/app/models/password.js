@@ -8,5 +8,6 @@ export default DS.Model.extend({
     passwordReset: DS.attr(),
     admin: DS.belongsTo('administrator'),
     practitioner: DS.belongsTo('physiotherapest'),
-    client: DS.belongsTo('patient')
+    client: DS.belongsTo('patient'),
+    firstUserInfoRegister: DS.attr()
 });

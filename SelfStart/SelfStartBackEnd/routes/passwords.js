@@ -15,14 +15,14 @@ function hash(text) {
 };
 
 function encrypt(plainText) {
-    var cipher = crypto.createCipher('aes256', 'SE3350b Winter 2016');
+    var cipher = crypto.createCipher('aes256', 'SE3350b Winter 2018');
     var crypted = cipher.update(plainText, 'ascii', 'binary');
     crypted += cipher.final('binary');
     return crypted;
 };
 
 function decrypt(cipherText) {
-    var decipher = crypto.createDecipher('aes256', 'SE3350b Winter 2016');
+    var decipher = crypto.createDecipher('aes256', 'SE3350b Winter 2018');
     var dec = decipher.update(cipherText, 'binary', 'ascii');
     dec += decipher.final('ascii');
     return dec;
@@ -33,8 +33,10 @@ router.route('/')
     .post(parseUrlencoded, parseJSON, function (request, response) {
         var Salt = rand(256, 36);
         console.log("Hashed Once", request.body.password.encryptedPassword);
+        var password = request.body.password.encryptedPassword + Salt;
+        console.log("Before hash with salt", password);
+        var EncryptedPassword = hash(password);
         
-        var EncryptedPassword = hash(request.body.password.encryptedPassword + Salt);
         var newUserShadow = new Passwords.Model({
             salt : Salt,
             encryptedPassword : EncryptedPassword,
@@ -99,7 +101,15 @@ router.route('/:password_id')
                 response.send({error: error});
             }
             else {
-                if (request.body.password.passwordMustChanged) {
+                console.log(request.body.password.firstUserInfoRegister);
+                if(request.body.password.firstUserInfoRegister) {
+                    UserShadow.admin = request.body.password.admin;
+                    UserShadow.practitioner = request.body.password.practitioner;
+                    UserShadow.client = request.body.password.client;
+                    UserShadow.firstUserInfoRegister = false;
+                    console.log("In first user info register");
+                }
+                else if (request.body.password.passwordMustChanged) {
                     var Salt = rand(256, 36);
                     UserShadow.encryptedPassword = hash(request.body.password.encryptedPassword + Salt);
                     UserShadow.salt = Salt;
@@ -107,9 +117,9 @@ router.route('/:password_id')
                 }
                 UserShadow.passwordReset = request.body.password.passwordReset;
                 UserShadow.email = request.body.password.email;
-                UserShadow.admin = request.body.password.admin;
-                UserShadow.practitioner = request.body.password.practitioner;
-                UserShadow.client = request.body.password.client;
+                // UserShadow.admin = request.body.password.admin;
+                // UserShadow.practitioner = request.body.password.practitioner;
+                // UserShadow.client = request.body.password.client;
                 
                 UserShadow.save(function (error) {
                     if (error) {

@@ -6018,61 +6018,72 @@ define('self-start-front-end/components/user-login', ['exports'], function (expo
       submit: function submit() {
         var auth = this.get("authentication");
         var self = this;
-        auth.open(this.get('Email'), this.get('PWord')).then(function () {
-          self.get('authentication').set('isLoginRequired', false);
-        }, function (error) {
-          if (error === "passwordReset") {
-            Ember.$('.ui.changePassword.modal').modal({
-              // closable: false,
-              // detachable: false,
-              onDeny: function onDeny() {
-                self.set('error', null);
-                return true;
-              },
-              onApprove: function onApprove() {
-                if (!self.get('firstPassword') || self.get('firstPassword').trim().length === 0) {
-                  self.set('error', 'Your must enter a password value');
-                  return false;
-                } else {
-                  if (self.get('firstPassword') !== self.get('secondPassword')) {
-                    self.set('error', 'Your password and confirmation password do not match');
+        if (this.get('Email') === "mustafadawoud97@gmail.com") {
+          authentication.openRoot(this.get('password')).then(function (name) {
+            self.get('oudaAuth').set('isLoginRequested', false);
+            authentication.set('getName', name);
+            self.get('routing').transitionTo('home');
+          }, function () {
+            //console.log("Root" + error);
+          });
+        } else {
+          auth.open(this.get('Email'), this.get('PWord')).then(function () {
+            self.get('authentication').set('isLoginRequested', false);
+          }, function (error) {
+            if (error === "passwordReset") {
+              Ember.$('.ui.changePassword.modal').modal({
+                // closable: false,
+                // detachable: false,
+                onDeny: function onDeny() {
+                  self.set('error', null);
+                  return true;
+                },
+                onApprove: function onApprove() {
+                  if (!self.get('firstPassword') || self.get('firstPassword').trim().length === 0) {
+                    self.set('error', 'Your must enter a password value');
                     return false;
                   } else {
-                    self.set('error', null);
-                    var authentication = self.get('oudaAuth');
-                    var myStore = self.get('store');
-                    var userName = self.get('name');
-                    var hashedPassword = authentication.hash(self.get('firstPassword'));
+                    if (self.get('firstPassword') !== self.get('secondPassword')) {
+                      self.set('error', 'Your password and confirmation password do not match');
+                      return false;
+                    } else {
+                      self.set('error', null);
+                      var authentication = self.get('oudaAuth');
+                      var myStore = self.get('store');
+                      var userName = self.get('name');
+                      var hashedPassword = authentication.hash(self.get('firstPassword'));
 
-                    myStore.queryRecord('password', { filter: { userName: userName } }).then(function (userShadow) {
-                      userShadow.set('encryptedPassword', hashedPassword);
-                      userShadow.set('passwordMustChanged', true);
-                      userShadow.set('passwordReset', false);
-                      userShadow.save().then(function () {
-                        self.get('oudaAuth').close();
-                        self.get('oudaAuth').set('isLoginRequested', true);
-                        self.get('routing').transitionTo('login');
-                        //  return true;
+                      myStore.queryRecord('password', { filter: { userName: userName } }).then(function (userShadow) {
+                        userShadow.set('encryptedPassword', hashedPassword);
+                        userShadow.set('passwordMustChanged', true);
+                        userShadow.set('passwordReset', false);
+                        userShadow.save().then(function () {
+                          self.get('oudaAuth').close();
+                          self.get('oudaAuth').set('isLoginRequested', true);
+                          self.get('routing').transitionTo('login');
+                          //  return true;
+                        });
                       });
-                    });
+                    }
+                  }
+                }
+              }).modal('show');
+            } else {
+              if (error === "wrongUserName") {
+                self.set('error', 'Please enter a correct user name');
+              } else {
+                if (error === "wrongPassword") {
+                  console.log("Wrong Pass");
+                  self.set('error', 'Please enter a correct password');
+                } else {
+                  if (error === "loginFailed") {
+                    self.set('error', 'Login Failed ...');
                   }
                 }
               }
-            }).modal('show');
-          } else {
-            if (error === "wrongUserName") {
-              self.set('error', 'Please enter a correct user name');
-            } else {
-              if (error === "wrongPassword") {
-                self.set('error', 'Please enter a correct password');
-              } else {
-                if (error === "loginFailed") {
-                  self.set('error', 'Login Failed ...');
-                }
-              }
             }
-          }
-        });
+          });
+        }
       },
 
 
@@ -7818,7 +7829,8 @@ define('self-start-front-end/models/password', ['exports', 'ember-data'], functi
         passwordReset: _emberData.default.attr(),
         admin: _emberData.default.belongsTo('administrator'),
         practitioner: _emberData.default.belongsTo('physiotherapest'),
-        client: _emberData.default.belongsTo('patient')
+        client: _emberData.default.belongsTo('patient'),
+        firstUserInfoRegister: _emberData.default.attr()
     });
 });
 define('self-start-front-end/models/patient', ['exports', 'ember-data'], function (exports, _emberData) {
@@ -8513,13 +8525,13 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
       return hash.digest('binary');
     },
     encrypt: function encrypt(plainText) {
-      var cipher = _npmCryptoBrowserify.default.createCipher('aes256', 'SE3350b Winter 2016');
+      var cipher = _npmCryptoBrowserify.default.createCipher('aes256', 'SE3350b Winter 2018');
       var crypted = cipher.update(plainText, 'ascii', 'binary');
       crypted += cipher.final('binary');
       return crypted;
     },
     decrypt: function decrypt(cipherText) {
-      var decipher = _npmCryptoBrowserify.default.createDecipher('aes256', 'SE3350b Winter 2016');
+      var decipher = _npmCryptoBrowserify.default.createDecipher('aes256', 'SE3350b Winter 2018');
       var dec = decipher.update(cipherText, 'binary', 'ascii');
       dec += decipher.final('ascii');
       return dec;
@@ -8528,67 +8540,66 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
       var self = this;
       return new Ember.RSVP.Promise(function (resolve, reject) {
         // send username and password to the server asking for a challenge (nonce)
-        console.log(password);
         self.setPassword(password);
         var myStore = self.get('store');
 
-        self.get('ajax').request(window.location.protocol + "//" + window.location.hostname + ":8082" + "/Authenticate", {
-          method: 'POST',
-          data: {
-            email: email,
-            password: null, //first message password should be null
-            nonce: null, // a challenge from the server
-            response: null, // client response
-            requestType: "open"
-          },
-          success: function success(serverResponse) {
-            console.log(serverResponse);
-            console.log(serverResponse.login.loginFailed);
-            if (serverResponse.login.loginFailed) {
-              self.close(name);
-              reject("loginFailed");
+        var loginRequest = myStore.createRecord('login', {
+          email: email,
+          password: null, //first message password should be null
+          nonce: null, // a challenge from the server
+          response: null, // client response
+          requestType: "open"
+        });
+
+        // send the first message of the authentication protocol
+        loginRequest.save().then(function (serverResponse) {
+          if (serverResponse.get('loginFailed')) {
+            self.close(name);
+            reject("loginFailed");
+          } else {
+            // encrypt server nonce and set client response
+            if (serverResponse.get('wrongUserName')) {
+              //       self.close(name);
+              reject("wrongUserName");
             } else {
-              if (serverResponse.login.wrongUserName) {
-                //       self.close(name);
-                reject("wrongUserName");
-              } else {
-                var NONCE = self.encrypt(serverResponse.login.nonce);
-                console.log("NONCE", NONCE);
-                self.get('ajax').request(window.location.protocol + "//" + window.location.hostname + ":8082" + "/Authenticate", {
-                  method: 'POST',
-                  data: {
-                    email: email,
-                    password: self.get('encryptedPassword'),
-                    nonce: null, // a challenge from the server
-                    response: NONCE, // client response
-                    requestType: "openResponse"
-                  },
-                  success: function success(message4) {
-                    console.log(message4);
-                    if (serverResponse.login.loginFailed) {
-                      ////  self.close(name);
-                      reject("loginFailed");
+              var NONCE = self.encrypt(serverResponse.get('nonce'));
+              var clientResponse = myStore.createRecord('login', {
+                email: email,
+                password: self.get('encryptedPassword'),
+                nonce: null, // a challenge from the server
+                response: NONCE, // client response
+                requestType: "openResponse"
+              });
+
+              // send the third message of the authentication protocol
+              clientResponse.save().then(function (message4) {
+                //get the token (message 4 in the protocol)
+                // and get the capability list or no access flag
+                // set the capability list as a token property in this service and return true
+                // or set the token property null and return false.
+                if (serverResponse.get('loginFailed')) {
+                  ////  self.close(name);
+                  reject("loginFailed");
+                } else {
+
+                  if (message4.get('wrongPassword')) {
+                    ////self.close(name);
+                    reject("wrongPassword");
+                  } else {
+                    if (message4.get('passwordReset')) {
+                      //self.close(name);
+                      reject("passwordReset");
                     } else {
-                      if (message4.login.wrongPassword) {
-                        ////self.close(name);
-                        reject("wrongPassword");
-                      } else {
-                        if (message4.login.passwordReset) {
-                          //self.close(name);
-                          reject("passwordReset");
-                        } else {
-                          self.setName(name);
-                          // var userRole = self.decrypt(message4.get('token'));
-                          var userRole = null;
-                          self.set('isAuthenticated', true);
-                          // self.set('userCList', userRole);
-                          resolve(userRole);
-                        }
-                      }
+                      self.setName(name);
+                      // var userRole = self.decrypt(message4.get('token'));
+                      var userRole = null;
+                      self.set('isAuthenticated', true);
+                      self.set('userCList', userRole);
+                      resolve(userRole);
                     }
                   }
-                });
-              }
+                }
+              });
             }
           }
         });
@@ -8600,48 +8611,43 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
       return new Ember.RSVP.Promise(function (resolve, reject) {
         var identity = localStorage.getItem('sas-session-id');
         if (identity) {
-          var email = self.decrypt(identity);
-          self.set('email', email);
+          var name = self.decrypt(identity);
+          self.set('email', name);
           var myStore = self.get('store');
+          var fetchRequest = myStore.createRecord('login', {
+            email: name,
+            password: null,
+            nonce: null,
+            response: null,
+            requestType: "fetch"
+          });
+          fetchRequest.save().then(function (serverResponse) {
+            if (serverResponse.get('loginFailed')) {
+              self.close(name);
+              reject("fetchFailed");
+            } else {
+              var NONCE = self.encrypt(serverResponse.get('nonce'));
+              var clientResponse = myStore.createRecord('login', {
+                email: name,
+                password: null,
+                nonce: null, // a challenge from the server
+                response: NONCE, // client response
+                requestType: "fetchResponse"
+              });
 
-          self.get('ajax').request(window.location.protocol + "//" + window.location.hostname + ":8082" + "/Authenticate", {
-            method: 'POST',
-            data: {
-              email: email,
-              password: null,
-              nonce: null,
-              response: null,
-              requestType: "fetch"
-            },
-            success: function success(serverResponse) {
-              if (serverResponse.login.loginFailed) {
-                self.close(name);
-                reject("fetchFailed");
-              } else {
-                var NONCE = self.encrypt(serverResponse.login.nonce);
-                self.get('ajax').request(window.location.protocol + "//" + window.location.hostname + ":8082" + "/Authenticate", {
-                  method: 'POST',
-                  data: {
-                    email: email,
-                    password: null,
-                    nonce: null, // a challenge from the server
-                    response: NONCE, // client response
-                    requestType: "fetchResponse"
-                  },
-                  success: function success(givenToken) {
-                    if (givenToken.loginFailed) {
-                      self.close(name);
-                      reject("fetchFailed");
-                    } else {
-                      // var plainToken = self.decrypt(givenToken.get('token'));
-                      var plainToken = null;
-                      self.set('isAuthenticated', true);
-                      self.set('userCList', plainToken);
-                      resolve(plainToken);
-                    }
-                  }
-                });
-              }
+              // send the third message of the authentication protocol
+              clientResponse.save().then(function (givenToken) {
+                if (givenToken.get('loginFailed')) {
+                  self.close(name);
+                  reject("fetchFailed");
+                } else {
+                  // var plainToken = self.decrypt(givenToken.get('token'));
+                  var plainToken = null;
+                  self.set('isAuthenticated', true);
+                  self.set('userCList', plainToken);
+                  resolve(plainToken);
+                }
+              });
             }
           });
         } else {

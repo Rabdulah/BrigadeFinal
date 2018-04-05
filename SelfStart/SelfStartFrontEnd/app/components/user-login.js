@@ -25,8 +25,17 @@ export default Component.extend({
     submit(){
       var auth = this.get("authentication");
       var self = this;
+      if (this.get('Email') === "mustafadawoud97@gmail.com") {
+        authentication.openRoot(this.get('password')).then(function (name) {
+          self.get('oudaAuth').set('isLoginRequested', false);
+          authentication.set('getName', name);
+          self.get('routing').transitionTo('home');
+        }, function () {
+          //console.log("Root" + error);
+        });
+      } else {
       auth.open(this.get('Email'), this.get('PWord')).then(function() {
-        self.get('authentication').set('isLoginRequired', false);
+        self.get('authentication').set('isLoginRequested', false);
       }, function(error) {
         if (error === "passwordReset") {
           Ember.$('.ui.changePassword.modal').modal({
@@ -72,6 +81,7 @@ export default Component.extend({
             self.set('error', 'Please enter a correct user name');
           } else {
             if (error === "wrongPassword") {
+              console.log("Wrong Pass");
               self.set('error', 'Please enter a correct password');
             } else {
               if (error === "loginFailed") {
@@ -81,6 +91,7 @@ export default Component.extend({
           }
         }
       });
+    }
     },
 
     logout: function() {

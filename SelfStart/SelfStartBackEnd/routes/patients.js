@@ -20,14 +20,14 @@ function hash(text) {
 };
 
 function encrypt(plainText) {
-    var cipher = crypto.createCipher('aes256', 'SE3350b Winter 2016');
+    var cipher = crypto.createCipher('aes256', 'SE3350b Winter 2018');
     var crypted = cipher.update(plainText, 'ascii', 'binary');
     crypted += cipher.final('binary');
     return crypted;
 };
 
 function decrypt(cipherText) {
-    var decipher = crypto.createDecipher('aes256', 'SE3350b Winter 2016');
+    var decipher = crypto.createDecipher('aes256', 'SE3350b Winter 2018');
     var dec = decipher.update(cipherText, 'binary', 'ascii');
     dec += decipher.final('ascii');
     return dec;
