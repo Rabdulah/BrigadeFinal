@@ -20,6 +20,5 @@ export default DS.Model.extend({
   appointments: DS.hasMany('appointment' ),
   account: DS.attr(),
   rehablink: DS.hasMany('rehab-client-link', { async: true }),
-  intakeForm: DS.belongsTo('assessment-test', { async: true }),
 });
 

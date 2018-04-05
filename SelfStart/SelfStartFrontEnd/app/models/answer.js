@@ -1,6 +1,7 @@
 import DS from 'ember-data';
 
 export default DS.Model.extend({
-  assessTest: DS.belongsTo("assessment-test"),
+  test: DS.belongsTo("assessment-test"),
+  question: DS.attr(),
   answer: DS.attr()
 });

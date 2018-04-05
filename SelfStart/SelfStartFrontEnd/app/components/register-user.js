@@ -102,70 +102,51 @@ export default Component.extend({
         this.set('selectedGender', gender);
       },
 
-
       submit() {
         let self = this;
 
-        var temp = [];
-        var questionList = [];
-
-        // this.get('DS').findAll('form').then((rec)=>{
-        //   rec.forEach((r)=>{
-        //     if(r.get('name') === 'Intake Form'){
-        //       thisForm = r;
-        //     }
-        //   })
-        // });
+         //var temp = [];
+         //var questionList = [];
 
 
-        this.get('DS').query('question-order', {filter: {'form': '5ac1ae2773e03d3f78384c92'}}).then((questions) => {
+        let patientAccount = {};
+        // patientAccount['userAccountName'] = localStorage.getItem('UName');
+        patientAccount['encryptedPassword'] = self.get('encryptedPassword');
 
-          // self.get('questionList').clear();
-
-          questions.forEach((q)=>{
-            temp.push("");
-            questionList.pushObject(q.get('question'));
-
-          });
-
+        let patient = this.get('DS').createRecord('patient', {
+          familyName: self.get('familyName'),
+          givenName: self.get('givenName'),
+          email: self.get('email'),
+          streetName: self.get('streetName'),
+          streetNumber: self.get('streetNumber'),
+          apartment: self.get('apartment'),
+          country: self.get('country'),
+          province: self.get('province'),
+          city: self.get('city'),
+          dateOfBirth: new Date(this.get('selectedDate')),
+          gender: self.get('selectedGender'),
+          phoneNumber: self.get('phoneNumber'),
+          postalCode: self.get('postalCode'),
+          account: patientAccount,
         });
 
-
-        let newTest = this.get('DS').createRecord('assessment-test', {
-          // form: thisForm,
-          questions: questionList,
-          answers: temp,
-          completed: false,
-        });
-        newTest.save().then(()=> {
+        patient.save().then((patient) =>{
+          this.get('DS').query('form', {filter: {'name': 'Intake Form'}}).then((intake) => {
 
 
-          let patientAccount = {};
-          // patientAccount['userAccountName'] = localStorage.getItem('UName');
-          patientAccount['encryptedPassword'] = self.get('encryptedPassword');
+            console.log(intake.get('firstObject'));
 
-          let patient = this.get('DS').createRecord('patient', {
-            familyName: self.get('familyName'),
-            givenName: self.get('givenName'),
-            email: self.get('email'),
-            streetName: self.get('streetName'),
-            streetNumber: self.get('streetNumber'),
-            apartment: self.get('apartment'),
-            country: self.get('country'),
-            province: self.get('province'),
-            city: self.get('city'),
-            dateOfBirth: new Date(this.get('selectedDate')),
-            gender: self.get('selectedGender'),
-            phoneNumber: self.get('phoneNumber'),
-            postalCode: self.get('postalCode'),
-            account: patientAccount,
-            intakeForm: newTest
-          });
-
-          patient.save().then((patient) =>{
-            localStorage.clear();
-            $('.ui.register.modal').modal('hide');
-            // localStorage.setItem('loggedIn', false);
+            let newTest = this.get('DS').createRecord('assessment-test', {
+              name: "Intake Form",
+              description: "Initial form before ou can book an appointment",
+              form: intake.get('firstObject'),
+              patient: patient
+            });
+            newTest.save().then(()=> {
+              localStorage.clear();
+              $('.ui.register.modal').modal('hide');
+              // localStorage.setItem('loggedIn', false);
+            });
           });
         });
       },

@@ -2,7 +2,6 @@ import Component from '@ember/component';
 import Ember from "ember";
 import { computed } from '@ember/object';
 
-
 export default Component.extend({
   store: Ember.inject.service(),
 
@@ -25,6 +24,46 @@ export default Component.extend({
 
   rehabModel: computed(function(){
     return this.get('store').findAll('rehabilitationplan' );
+  }),
+
+  link:[],
+
+  patientModel: computed(function(){
+    // this.get('store').query('rehab-client-link', {filter: {'Patient': '5ac557fa6ba71c2a4c0e367ec0e367e'}}).then((links) => {
+    //   //console.log(links);
+
+    //     console.log(links);
+
+    //   links.forEach((rec)=>{
+    //     this.get('link').pushObject(rec);
+    //     console.log(this.get('link'));
+    //   });
+    // });
+
+    // console.log(this.get('model').get('id'));
+    // this.get('store').findRecord('rehab-client-link', this.get('model').id).then((links) => {
+    //   //console.log(links);
+
+    //     console.log(links);
+
+    //   links.forEach((rec)=>{
+    //     this.get('link').pushObject(rec);
+    //     console.log(this.get('link'));
+    //   });
+    // });
+    var arr = [];
+    this.get('store').findAll("rehab-client-link").then((link) => {
+      console.log(link);
+      link.forEach((rec)=>{
+        console.log(rec.get("Patient"));
+        if(rec.get("Patient").get("id") === this.get("model").id){
+          console.log(rec);
+          arr.pushObject(rec);
+        }
+      });
+    });
+    console.log(arr);
+    return arr
   }),
 
   exerciseModel: Ember.observer('plan', function(){
@@ -54,7 +93,6 @@ export default Component.extend({
   disabled: "",
 
 
-
   activeModel: Ember.observer('offset', 'limit', 'sort', 'dir','flagDelete','flagAdd', function () {
     var self = this;
     console.log(this.plansModel);
@@ -65,6 +103,7 @@ export default Component.extend({
 
 
   }),
+
   isSelected: Ember.observer('plan', function () {
     this.set('isPlanSelected', true);
 
@@ -103,8 +142,9 @@ export default Component.extend({
     this.set('pageSize', 10);
     let self = this;
 
-    // this.set('listModel', this.get('store').findAll('exercise-list', this.get('planId')));
 
+
+    // this.set('listModel', this.get('store').findAll('exercise-list', this.get('planId')));
 
   },
 
@@ -147,6 +187,9 @@ export default Component.extend({
   },
 
   menusState: "active",
+  assessState: "",
+  assess:false,
+
   menus: true,
 
 
@@ -154,6 +197,7 @@ export default Component.extend({
 
 
   actions: {
+
 
     assign(){
       let assign = self.get('store').createRecord('rehab-client-link', {
@@ -169,7 +213,17 @@ export default Component.extend({
     menusView(){
       this.set('menus', true);
       this.set('menusState', "active");
+      this.set('assess', false);
+      this.set('assessState', "");
     },
+
+    assessView(){
+      this.set('assess', true);
+      this.set('assessState', "active");
+      this.set('menus', false);
+      this.set('menusState', "");
+    },
+
 
     toggleDetail(ID) {
 
@@ -224,22 +278,40 @@ export default Component.extend({
         onApprove: () => {
           let plan = this.get('plan');
 
+
           var planRecord = this.get('store').peekRecord('rehabilitationplan', plan);
 
-          let link = this.get('store').createRecord('rehab-client-link', {
-            terminated: this.get('plan.terminated'),
-            RehabilitationPlan: planRecord,
-            Patient: this.get('model'),
-            assigned: true
+          var self = this;
+
+          // var assess = this.get('store').peekRecord('assessment-test', '5ab92c228a4acc04487b157a');
+          let test = this.get('store').createRecord('assessment-test', {});
+          test.save().then((rec)=> {
+
+
+            let link = this.get('store').createRecord('rehab-client-link', {
+              terminated: this.get('plan.terminated'),
+              RehabilitationPlan: planRecord,
+              Patient: this.get('model'),
+              assigned: true,
+              assessmentTest: rec,
+              //In memory of Ouda
+            });
+
+            var peekTest = this.get('store').peekRecord('assessment-test', test.get("id"));
+            console.log(peekTest);
+            peekTest.set('rehabLink', link)
+            link.save().then(()=> {
+              peekTest.save();
+              this.set('assessmentTest', test)
+              $('.ui.' + this.get('modalName') + '.modal').modal('hide');
+              this.set('disabled', "disabled");
+
+            });
           });
-          link.save().then((res)=> {
-            $('.ui.' + this.get('modalName') + '.modal').modal('hide');
-            this.set('disabled', "disabled");
-          });
+
         }
       })
         .modal('show');
     },
-
   }
 });

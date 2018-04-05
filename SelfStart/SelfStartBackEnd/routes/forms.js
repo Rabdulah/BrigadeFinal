@@ -13,41 +13,53 @@ router.route('/')
         
         .get(function (request, response) {
             let {limit, offset, sort, dir, queryPath, regex} = request.query;
-            if(!limit){
-                Forms.Model.find(function (error, forms) {
+            let form = request.query.filter;
+
+            if (form) {
+                Forms.Model.find({"name": form.name}, function (error, forms) {
                     if (error) response.send(error);
                     response.json({form: forms});
                 });
             }
-            else{
-                offset = Number(offset || 0);
-                limit = Number(limit || 10);
-                dir = dir || 'asc';
-                sort = sort || 'id';
+            else {
 
-                let query = {};
-                if (regex !== '')
-                    query[queryPath] = new RegExp(regex, "i");
-
-                var sortOrder = sort;
-                if (sortOrder) {
-                    if (dir !== 'asc') {
-                        sortOrder = '-' + sort;
-                    }
+                if (!limit) {
+                    Forms.Model.find(function (error, forms) {
+                        if (error) response.send(error);
+                        response.json({form: forms});
+                    });
                 }
+                else {
+                    offset = Number(offset || 0);
+                    limit = Number(limit || 10);
+                    dir = dir || 'asc';
+                    sort = sort || 'id';
 
-                let options = {
-                    sort: sortOrder,
-                    lean: true,
-                    offset: offset,
-                    limit: limit
-                };
+                    let query = {};
+                    if (regex !== '')
+                        query[queryPath] = new RegExp(regex, "i");
 
-                Forms.Model.paginate(query, options, function (error, forms) {
-                    if (error) response.send(error);
-                    response.json({form: forms.docs});
-                });
+                    var sortOrder = sort;
+                    if (sortOrder) {
+                        if (dir !== 'asc') {
+                            sortOrder = '-' + sort;
+                        }
+                    }
+
+                    let options = {
+                        sort: sortOrder,
+                        lean: true,
+                        offset: offset,
+                        limit: limit
+                    };
+
+                    Forms.Model.paginate(query, options, function (error, forms) {
+                        if (error) response.send(error);
+                        response.json({form: forms.docs});
+                    });
+                }
             }
+
         });
 
 router.route('/:form_id')

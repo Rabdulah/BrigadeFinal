@@ -38,8 +38,7 @@ router.route('/:answer_id')
                 // update each attribute
                 answer.answer = request.body.answer.answer;
                 answer.question = request.body.answer.question;
-                answer.patient = request.body.answer.patient;
-                answer.form = request.body.answer.form;
+                answer.test = request.body.answer.test;
 
 
                 answer.save(function (error) {

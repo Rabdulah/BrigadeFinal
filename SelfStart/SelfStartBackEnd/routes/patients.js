@@ -168,7 +168,6 @@ router.route('/:patient_id')
                 patient.postalCode = request.body.patient.postalCode;
                 patient.appointments = request.body.patient.appointments;
                 patient.rehablink = request.body.patient.rehablink;
-                patient.intakeForm = request.body.patient.intakeForm;
 
                 patient.answer = request.body.patient.answer;
                 // patient.account = request.body.patient.account;

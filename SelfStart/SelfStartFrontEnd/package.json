@@ -17,7 +17,7 @@
     "test": "ember test"
   },
   "devDependencies": {
-    "broccoli-asset-rev": "^2.4.5",
+    "broccoli-asset-rev": "^2.7.0",
     "ember-ajax": "^3.1.0",
     "ember-calendar": "file:ember-calendar",
     "ember-cli": "~2.16.2",
@@ -49,7 +49,7 @@
     "ember-source": "~2.16.0",
     "ember-stylish-buttons": "0.0.17",
     "ember-truth-helpers": "^2.0.0",
-    "ember-welcome-page": "^3.0.0",
+    "ember-welcome-page": "^3.2.0",
     "eslint-plugin-ember": "^5.1.0",
     "liquid-fire": "^0.29.2",
     "loader.js": "^4.2.3",

@@ -1589,6 +1589,123 @@ define('self-start-front-end/components/ask-a-physio', ['exports'], function (ex
 
   });
 });
+define('self-start-front-end/components/assessment-table', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    store: Ember.inject.service(),
+
+    limit: 10,
+    offset: 0,
+    pageSize: 10,
+    sort: 'name',
+    dir: '',
+    query: null,
+    testModel: [],
+    INDEX: null,
+    queryPath: 'name',
+    scrolledLines: 0,
+
+    modelAttributes: [{ 'key': 'name', 'name': 'Assessment Test', 'dir': 'asc', 'class': 'left aligned seven wide column' }, { 'key': 'authorName', 'name': 'Author Name', 'dir': '', 'class': 'left aligned seven wide column' }],
+
+    activeModel: Ember.observer('offset', 'limit', 'sort', 'dir', 'flagDelete', 'flagAdd', function () {
+      var self = this;
+
+      var client = this.get('model').id;
+
+      this.get('store').query('assessment-test', { filter: { 'patient': client } }, this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
+        self.set('testModel', records.toArray());
+      });
+    }),
+
+    filtertests: Ember.observer('query', 'queryPath', function () {
+
+      var self = this;
+
+      var queryText = this.get('query');
+      if (queryText !== null && queryText.length > 0) {
+        this.set('regex', "^" + queryText);
+      } else {
+        this.set('regex', '');
+      }
+
+      var client = this.get('model').id;
+
+      this.get('store').query('assessment-test', { filter: { 'patient': client } }, this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
+        self.set('testModel', records.toArray());
+      });
+    }),
+
+    init: function init() {
+      this._super.apply(this, arguments);
+      this.set('limit', 10);
+      this.set('offset', 0);
+      this.set('pageSize', 10);
+      var self = this;
+      var client = this.get('model').id;
+
+      this.get('store').query('assessment-test', { filter: { 'patient': client } }, this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
+        self.set('testModel', records.toArray());
+      });
+    },
+
+
+    didInsertElement: function didInsertElement() {
+      this._super.apply(this, arguments);
+      this.bindScrolling();
+    },
+    willRemoveElement: function willRemoveElement() {
+      this._super.apply(this, arguments);
+      this.unbindScrolling();
+    },
+    scrolled: function scrolled() {
+      if (this.get('scrolledLines') < Ember.$("#myWindow").scrollTop()) {
+        this.set('scrolledLines', Ember.$("#myWindow").scrollTop());
+        this.set('limit', this.get('limit') + 10);
+      }
+    },
+
+    bindScrolling: function bindScrolling() {
+      var self = this;
+      var onScroll = function onScroll() {
+        Ember.run.debounce(self, self.scrolled, 500);
+      };
+      Ember.$("#myWindow").bind('touchmove', onScroll);
+      Ember.$("#myWindow").bind('scroll', onScroll);
+    },
+
+    unbindScrolling: function unbindScrolling() {
+      Ember.$("#myWindow").unbind('scroll');
+      Ember.$("#myWindow").unbind('touchmove');
+    },
+
+    actions: {
+      sortColumn: function sortColumn(columnName, direction) {
+        var _this = this;
+
+        this.get('modelAttributes').forEach(function (element) {
+          if (element.key === columnName) {
+            if (direction === 'asc') {
+              Ember.set(element, 'dir', 'desc');
+              _this.set('dir', 'desc');
+            } else if (direction === 'desc') {
+              Ember.set(element, 'dir', 'asc');
+              _this.set('dir', 'asc');
+            } else {
+              Ember.set(element, 'dir', 'asc');
+              _this.set('dir', 'asc');
+            }
+          } else Ember.set(element, 'dir', '');
+        });
+        this.set('sort', columnName);
+      }
+    }
+
+  });
+});
 define('self-start-front-end/components/assign-rehabplan', ['exports'], function (exports) {
   'use strict';
 
@@ -2296,16 +2413,58 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
       return this.get('store').findAll('rehabilitationplan');
     }),
 
-    exerciseModel: Ember.observer('plan', function () {
+    link: [],
+
+    patientModel: Ember.computed(function () {
       var _this = this;
+
+      // this.get('store').query('rehab-client-link', {filter: {'Patient': '5ac557fa6ba71c2a4c0e367ec0e367e'}}).then((links) => {
+      //   //console.log(links);
+
+      //     console.log(links);
+
+      //   links.forEach((rec)=>{
+      //     this.get('link').pushObject(rec);
+      //     console.log(this.get('link'));
+      //   });
+      // });
+
+      // console.log(this.get('model').get('id'));
+      // this.get('store').findRecord('rehab-client-link', this.get('model').id).then((links) => {
+      //   //console.log(links);
+
+      //     console.log(links);
+
+      //   links.forEach((rec)=>{
+      //     this.get('link').pushObject(rec);
+      //     console.log(this.get('link'));
+      //   });
+      // });
+      var arr = [];
+      this.get('store').findAll("rehab-client-link").then(function (link) {
+        console.log(link);
+        link.forEach(function (rec) {
+          console.log(rec.get("Patient"));
+          if (rec.get("Patient").get("id") === _this.get("model").id) {
+            console.log(rec);
+            arr.pushObject(rec);
+          }
+        });
+      });
+      console.log(arr);
+      return arr;
+    }),
+
+    exerciseModel: Ember.observer('plan', function () {
+      var _this2 = this;
 
       this.get('store').query('exercise-list', { filter: { 'rehabilitationPlan': this.get('plan') } }).then(function (exercises) {
 
-        _this.get('listModel').clear();
+        _this2.get('listModel').clear();
 
         exercises.forEach(function (exe) {
           // this.get('listModel').removeObject(exe.get('exercise'));
-          _this.get('listModel').pushObject(exe.get('exercise'));
+          _this2.get('listModel').pushObject(exe.get('exercise'));
         });
       });
     }),
@@ -2325,8 +2484,9 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
         self.set('plansModel', records.toArray());
       });
     }),
+
     isSelected: Ember.observer('plan', function () {
-      var _this2 = this;
+      var _this3 = this;
 
       this.set('isPlanSelected', true);
 
@@ -2337,9 +2497,9 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
         console.log(plan);
         console.log(update.content.length);
         if (update.content.length !== 0) {
-          _this2.set('disabled', "disabled");
+          _this3.set('disabled', "disabled");
         } else {
-          _this2.set('disabled', "");
+          _this3.set('disabled', "");
         }
       });
     }),
@@ -2365,7 +2525,6 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
       var self = this;
 
       // this.set('listModel', this.get('store').findAll('exercise-list', this.get('planId')));
-
     },
 
 
@@ -2405,6 +2564,9 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
     },
 
     menusState: "active",
+    assessState: "",
+    assess: false,
+
     menus: true,
 
     terminated: false,
@@ -2424,25 +2586,33 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
       menusView: function menusView() {
         this.set('menus', true);
         this.set('menusState', "active");
+        this.set('assess', false);
+        this.set('assessState', "");
+      },
+      assessView: function assessView() {
+        this.set('assess', true);
+        this.set('assessState', "active");
+        this.set('menus', false);
+        this.set('menusState', "");
       },
       toggleDetail: function toggleDetail(ID) {
 
         if (this.get('isShowing') === ID) this.set('isShowing', null);else this.set('isShowing', ID);
       },
       sortColumn: function sortColumn(columnName, direction) {
-        var _this3 = this;
+        var _this4 = this;
 
         this.get('modelAttributes').forEach(function (element) {
           if (element.key === columnName) {
             if (direction === 'asc') {
               Ember.set(element, 'dir', 'desc');
-              _this3.set('dir', 'desc');
+              _this4.set('dir', 'desc');
             } else if (direction === 'desc') {
               Ember.set(element, 'dir', 'asc');
-              _this3.set('dir', 'asc');
+              _this4.set('dir', 'asc');
             } else {
               Ember.set(element, 'dir', 'asc');
-              _this3.set('dir', 'asc');
+              _this4.set('dir', 'asc');
             }
           } else Ember.set(element, 'dir', '');
         });
@@ -2461,7 +2631,7 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
         }
       },
       openModal: function openModal() {
-        var _this4 = this;
+        var _this5 = this;
 
         $('.ui.' + this.get('modalName') + '.modal').modal({
           closable: false,
@@ -2472,24 +2642,38 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
             return true;
           },
           onApprove: function onApprove() {
-            var plan = _this4.get('plan');
+            var plan = _this5.get('plan');
 
-            var planRecord = _this4.get('store').peekRecord('rehabilitationplan', plan);
+            var planRecord = _this5.get('store').peekRecord('rehabilitationplan', plan);
 
-            var link = _this4.get('store').createRecord('rehab-client-link', {
-              terminated: _this4.get('plan.terminated'),
-              RehabilitationPlan: planRecord,
-              Patient: _this4.get('model'),
-              assigned: true
-            });
-            link.save().then(function (res) {
-              $('.ui.' + _this4.get('modalName') + '.modal').modal('hide');
-              _this4.set('disabled', "disabled");
+            var self = _this5;
+
+            // var assess = this.get('store').peekRecord('assessment-test', '5ab92c228a4acc04487b157a');
+            var test = _this5.get('store').createRecord('assessment-test', {});
+            test.save().then(function (rec) {
+
+              var link = _this5.get('store').createRecord('rehab-client-link', {
+                terminated: _this5.get('plan.terminated'),
+                RehabilitationPlan: planRecord,
+                Patient: _this5.get('model'),
+                assigned: true,
+                assessmentTest: rec
+                //In memory of Ouda
+              });
+
+              var peekTest = _this5.get('store').peekRecord('assessment-test', test.get("id"));
+              console.log(peekTest);
+              peekTest.set('rehabLink', link);
+              link.save().then(function () {
+                peekTest.save();
+                _this5.set('assessmentTest', test);
+                $('.ui.' + _this5.get('modalName') + '.modal').modal('hide');
+                _this5.set('disabled', "disabled");
+              });
             });
           }
         }).modal('show');
       }
-
     }
   });
 });
@@ -3348,16 +3532,49 @@ define('self-start-front-end/components/display-assessment', ['exports'], functi
 
     qNum: 0,
 
-    assessmentModel: Ember.computed(function () {
-      return this.get('DS').find('assessment-test', this.get('id'));
+    modalName: Ember.computed(function () {
+      return 'viewAnswers' + this.get('model').id;
     }),
 
-    actions: {
-      Submit: function Submit() {
-        // var x = this.get('DS').find('assessment-test', this.get('id'));
-        // console.log(x.get('questions'));
+    init: function init() {
+      this._super.apply(this, arguments);
+      this.get('DS').findAll('form');
+      var order = this.get('DS').findAll('question-order');
 
+      // this.get('DS').query('question-order', {filter: {'form': this.get('model').id}}).then((questions) => {
+      //
+      //   this.get('formModel').clear();
+      //
+      //   questions.forEach((q)=>{
+      //     // console.log(q.get('question'));
+      //     this.get('formModel').pushObject(q.get('question'));
+      //   });
+      //
+      // });
+    },
+
+
+    actions: {
+      openModal: function openModal() {
+
+        Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
+          // transition: 'horizontal flip',
+
+          // dimmerSettings: { opacity: 0.25 },
+
+
+          onDeny: function onDeny() {
+            return true;
+          }
+        }).modal('show');
       }
+
+      // Submit(){
+      //   this.get('DS').findRecord('assessment-test', this.get("id")).then((rec)=>{
+      //     rec.set("completed", true);
+      //     rec.save();
+      //   });
+      // },
     }
   });
 });
@@ -4759,224 +4976,265 @@ define('self-start-front-end/components/edit-status', ['exports'], function (exp
   });
 });
 define('self-start-front-end/components/get-answers', ['exports'], function (exports) {
-      'use strict';
+  'use strict';
 
-      Object.defineProperty(exports, "__esModule", {
-            value: true
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+
+    DS: Ember.inject.service('store'),
+    SAanswer: "",
+    rateValue: 0,
+    mcop1: 0,
+    mcop2: 0,
+    mcop3: 0,
+    mcop4: 0,
+    mcop5: 0,
+    mcop6: 0,
+
+    actions: {
+      ratingSave: function ratingSave(rv) {
+
+        this.set('rateValue', rv);
+
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+
+        temp[this.get("qNumber")] = this.get('rateValue');
+        this.get("assessment").get('answers').clear();
+
+        for (var x = 0; x < temp.length; x++) {
+
+          this.get("assessment").get('answers').push(temp[x]);
+        }
+
+        console.log(this.get("assessment").get('answers'));
+
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      TFtrue: function TFtrue() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+        temp[this.get("qNumber")] = "True";
+        this.get("assessment").get('answers').clear();
+
+        for (var x = 0; x < temp.length; x++) {
+
+          this.get("assessment").get('answers').push(temp[x]);
+        }
+
+        console.log(this.get("assessment").get('answers'));
+
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      TFfalse: function TFfalse() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+        temp[this.get("qNumber")] = "False";
+        this.get("assessment").get('answers').clear();
+
+        for (var x = 0; x < temp.length; x++) {
+
+          this.get("assessment").get('answers').push(temp[x]);
+        }
+
+        console.log(this.get("assessment").get('answers'));
+
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      saSave: function saSave() {
+
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+        temp[this.get("qNumber")] = this.get("SAanswer");
+        this.get("assessment").get('answers').clear();
+
+        for (var x = 0; x < temp.length; x++) {
+
+          this.get("assessment").get('answers').push(temp[x]);
+        }
+
+        console.log(this.get("assessment").get('answers'));
+
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      mcop1Save: function mcop1Save() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+        temp[this.get("qNumber")] = "0";
+        this.get("assessment").get('answers').clear();
+
+        for (var x = 0; x < temp.length; x++) {
+
+          this.get("assessment").get('answers').push(temp[x]);
+        }
+
+        console.log(this.get("assessment").get('answers'));
+
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      mcop2Save: function mcop2Save() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+        temp[this.get("qNumber")] = "1";
+        this.get("assessment").get('answers').clear();
+
+        for (var x = 0; x < temp.length; x++) {
+
+          this.get("assessment").get('answers').push(temp[x]);
+        }
+
+        console.log(this.get("assessment").get('answers'));
+
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      mcop3Save: function mcop3Save() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+        temp[this.get("qNumber")] = "2";
+        this.get("assessment").get('answers').clear();
+
+        for (var x = 0; x < temp.length; x++) {
+
+          this.get("assessment").get('answers').push(temp[x]);
+        }
+
+        console.log(this.get("assessment").get('answers'));
+
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      mcop4Save: function mcop4Save() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+
+        temp[this.get("qNumber")] = "3";
+        this.get("assessment").get('answers').clear();
+
+        for (var x = 0; x < temp.length; x++) {
+
+          this.get("assessment").get('answers').push(temp[x]);
+        }
+
+        console.log(this.get("assessment").get('answers'));
+
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      mcop5Save: function mcop5Save() {
+        var temp = [];
+        this.get("assessment").get('4').forEach(function (element) {
+          temp.push(element);
+        });
+
+        temp[this.get("qNumber")] = "True";
+        this.get("assessment").get('answers').clear();
+
+        for (var x = 0; x < temp.length; x++) {
+
+          this.get("assessment").get('answers').push(temp[x]);
+        }
+
+        console.log(this.get("assessment").get('answers'));
+
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      mcop6Save: function mcop6Save() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+
+        temp[this.get("qNumber")] = "5";
+        this.get("assessment").get('answers').clear();
+
+        for (var x = 0; x < temp.length; x++) {
+
+          this.get("assessment").get('answers').push(temp[x]);
+        }
+        console.log(this.get("assessment").get('answers'));
+
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      }
+    }
+
+  });
+});
+define('self-start-front-end/components/get-assessment-results', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+
+    DS: Ember.inject.service('store'),
+    ID: "5ac54ced216555175846b082",
+    open: false,
+    notOpen: true,
+    linker: null,
+
+    assessmentModel: Ember.computed(function () {
+      var id = this.get("linker").get("assessmentTest").get("id");
+      console.log(id);
+      return this.get('DS').find('assessment-test', id);
+    }),
+
+    fName: "",
+
+    init: function init() {
+      var _this = this;
+
+      this._super.apply(this, arguments);
+      var assessID = this.get("linker").get("assessmentTest").get("id");
+      this.get('DS').findRecord('assessment-test', assessID).then(function (rec) {
+        _this.set("fName", rec.get('formName'));
       });
-      exports.default = Ember.Component.extend({
+    },
 
-            DS: Ember.inject.service('store'),
-            SAanswer: "",
-            rateValue: 0,
-            mcop1: 0,
-            mcop2: 0,
-            mcop3: 0,
-            mcop4: 0,
-            mcop5: 0,
-            mcop6: 0,
 
-            actions: {
-                  ratingSave: function ratingSave(rv) {
-
-                        this.set('rateValue', rv);
-
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-
-                        temp[this.get("qNumber")] = this.get('rateValue');
-                        this.get("assessment").get('answers').clear();
-
-                        for (var x = 0; x < temp.length; x++) {
-
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
-
-                        console.log(this.get("assessment").get('answers'));
-
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  TFtrue: function TFtrue() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-                        temp[this.get("qNumber")] = "True";
-                        this.get("assessment").get('answers').clear();
-
-                        for (var x = 0; x < temp.length; x++) {
-
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
-
-                        console.log(this.get("assessment").get('answers'));
-
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  TFfalse: function TFfalse() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-                        temp[this.get("qNumber")] = "False";
-                        this.get("assessment").get('answers').clear();
-
-                        for (var x = 0; x < temp.length; x++) {
-
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
-
-                        console.log(this.get("assessment").get('answers'));
-
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  saSave: function saSave() {
-
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-                        temp[this.get("qNumber")] = this.get("SAanswer");
-                        this.get("assessment").get('answers').clear();
-
-                        for (var x = 0; x < temp.length; x++) {
-
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
-
-                        console.log(this.get("assessment").get('answers'));
-
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  mcop1Save: function mcop1Save() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-                        temp[this.get("qNumber")] = "0";
-                        this.get("assessment").get('answers').clear();
-
-                        for (var x = 0; x < temp.length; x++) {
-
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
-
-                        console.log(this.get("assessment").get('answers'));
-
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  mcop2Save: function mcop2Save() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-                        temp[this.get("qNumber")] = "1";
-                        this.get("assessment").get('answers').clear();
-
-                        for (var x = 0; x < temp.length; x++) {
-
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
-
-                        console.log(this.get("assessment").get('answers'));
-
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  mcop3Save: function mcop3Save() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-                        temp[this.get("qNumber")] = "2";
-                        this.get("assessment").get('answers').clear();
-
-                        for (var x = 0; x < temp.length; x++) {
-
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
-
-                        console.log(this.get("assessment").get('answers'));
-
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  mcop4Save: function mcop4Save() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-
-                        temp[this.get("qNumber")] = "3";
-                        this.get("assessment").get('answers').clear();
-
-                        for (var x = 0; x < temp.length; x++) {
-
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
-
-                        console.log(this.get("assessment").get('answers'));
-
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  mcop5Save: function mcop5Save() {
-                        var temp = [];
-                        this.get("assessment").get('4').forEach(function (element) {
-                              temp.push(element);
-                        });
-
-                        temp[this.get("qNumber")] = "True";
-                        this.get("assessment").get('answers').clear();
-
-                        for (var x = 0; x < temp.length; x++) {
-
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
-
-                        console.log(this.get("assessment").get('answers'));
-
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  mcop6Save: function mcop6Save() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-
-                        temp[this.get("qNumber")] = "5";
-                        this.get("assessment").get('answers').clear();
-
-                        for (var x = 0; x < temp.length; x++) {
-
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
-                        console.log(this.get("assessment").get('answers'));
-
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  }
-            }
-
-      });
+    actions: {
+      Open: function Open() {
+        this.set("open", true);
+        this.set("notOpen", false);
+      }
+    }
+  });
 });
 define("self-start-front-end/components/illiquid-model", ["exports", "liquid-fire/components/illiquid-model"], function (exports, _illiquidModel) {
   "use strict";
@@ -5148,7 +5406,7 @@ define('self-start-front-end/components/list-forms', ['exports'], function (expo
   });
   exports.default = Ember.Component.extend({
     DS: Ember.inject.service('store'),
-
+    assessID: "",
     modalName: Ember.computed(function () {
       return 'list-form' + this.get('ID');
     }),
@@ -5159,31 +5417,68 @@ define('self-start-front-end/components/list-forms', ['exports'], function (expo
 
     actions: {
       AddTest: function AddTest(thisForm, thisPlan) {
+        var _this = this;
 
         var temp = [];
-        thisForm.get("questions").forEach(function (element) {
-          temp.push("!!!!");
+        var questionList = [];
+
+        this.get('DS').query('question-order', { filter: { 'form': thisForm.get('id') } }).then(function (questions) {
+
+          // this.get('questionList').clear();
+          console.log(questions);
+          console.log("****************");
+          questions.forEach(function (q) {
+            console.log(q.get('question'));
+            temp.push("!!");
+            questionList.pushObject(q.get('question'));
+          });
+          console.log("****************");
         });
 
+        // thisForm.get("questionOrder").forEach(element => {
+        //   temp.push("!!!!");
+        //   questionList.pushObject(element.get("question"));
+        // });
+        console.log(temp);
+        console.log(questionList);
+        console.log("****************");
         var newTest = this.get('DS').createRecord('assessment-test', {
           form: thisForm,
-          questions: thisForm.get("questions"),
-          rehabPlan: thisPlan,
-          answers: temp
+          questions: questionList,
+          answers: temp,
+          completed: false,
+          formName: thisForm.get('name')
         });
         newTest.save().then(function () {
+          _this.set("assessID", newTest.get('id'));
+          console.log(newTest.get('questions')[0]);
           return true;
         });
       },
 
 
       openModal: function openModal() {
+        var _this2 = this;
+
         Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
           closeable: false,
           onDeny: function onDeny() {
             return true;
           },
           onApprove: function onApprove() {
+            var rehab = _this2.get('DS').peekRecord('rehabilitationplan', _this2.get('rehabPlan'));
+            var test = _this2.get('DS').peekRecord('assessment-test', _this2.get('assessID'));
+
+            var link = _this2.get('DS').createRecord('rehab-client-link', {
+              terminated: _this2.get('rehabPlan.terminated'),
+              RehabilitationPlan: rehab,
+              Patient: _this2.get('patient'),
+              assigned: true,
+              assessmentTest: test
+              //In memory of Ouda
+            });
+
+            link.save().then(function () {});
             return true;
           }
         }).modal('show');
@@ -6680,62 +6975,47 @@ define('self-start-front-end/components/register-user', ['exports'], function (e
 
         var self = this;
 
-        var temp = [];
-        var questionList = [];
-
-        // this.get('DS').findAll('form').then((rec)=>{
-        //   rec.forEach((r)=>{
-        //     if(r.get('name') === 'Intake Form'){
-        //       thisForm = r;
-        //     }
-        //   })
-        // });
+        //var temp = [];
+        //var questionList = [];
 
 
-        this.get('DS').query('question-order', { filter: { 'form': '5ac1ae2773e03d3f78384c92' } }).then(function (questions) {
+        var patientAccount = {};
+        // patientAccount['userAccountName'] = localStorage.getItem('UName');
+        patientAccount['encryptedPassword'] = self.get('encryptedPassword');
 
-          // self.get('questionList').clear();
-
-          questions.forEach(function (q) {
-            temp.push("");
-            questionList.pushObject(q.get('question'));
-          });
+        var patient = this.get('DS').createRecord('patient', {
+          familyName: self.get('familyName'),
+          givenName: self.get('givenName'),
+          email: self.get('email'),
+          streetName: self.get('streetName'),
+          streetNumber: self.get('streetNumber'),
+          apartment: self.get('apartment'),
+          country: self.get('country'),
+          province: self.get('province'),
+          city: self.get('city'),
+          dateOfBirth: new Date(this.get('selectedDate')),
+          gender: self.get('selectedGender'),
+          phoneNumber: self.get('phoneNumber'),
+          postalCode: self.get('postalCode'),
+          account: patientAccount
         });
 
-        var newTest = this.get('DS').createRecord('assessment-test', {
-          // form: thisForm,
-          questions: questionList,
-          answers: temp,
-          completed: false
-        });
-        newTest.save().then(function () {
+        patient.save().then(function (patient) {
+          _this3.get('DS').query('form', { filter: { 'name': 'Intake Form' } }).then(function (intake) {
 
-          var patientAccount = {};
-          // patientAccount['userAccountName'] = localStorage.getItem('UName');
-          patientAccount['encryptedPassword'] = self.get('encryptedPassword');
+            console.log(intake.get('firstObject'));
 
-          var patient = _this3.get('DS').createRecord('patient', {
-            familyName: self.get('familyName'),
-            givenName: self.get('givenName'),
-            email: self.get('email'),
-            streetName: self.get('streetName'),
-            streetNumber: self.get('streetNumber'),
-            apartment: self.get('apartment'),
-            country: self.get('country'),
-            province: self.get('province'),
-            city: self.get('city'),
-            dateOfBirth: new Date(_this3.get('selectedDate')),
-            gender: self.get('selectedGender'),
-            phoneNumber: self.get('phoneNumber'),
-            postalCode: self.get('postalCode'),
-            account: patientAccount,
-            intakeForm: newTest
-          });
-
-          patient.save().then(function (patient) {
-            localStorage.clear();
-            Ember.$('.ui.register.modal').modal('hide');
-            // localStorage.setItem('loggedIn', false);
+            var newTest = _this3.get('DS').createRecord('assessment-test', {
+              name: "Intake Form",
+              description: "Initial form before ou can book an appointment",
+              form: intake.get('firstObject'),
+              patient: patient
+            });
+            newTest.save().then(function () {
+              localStorage.clear();
+              Ember.$('.ui.register.modal').modal('hide');
+              // localStorage.setItem('loggedIn', false);
+            });
           });
         });
       },
@@ -9465,7 +9745,8 @@ define("self-start-front-end/models/answer", ["exports", "ember-data"], function
     value: true
   });
   exports.default = _emberData.default.Model.extend({
-    assessTest: _emberData.default.belongsTo("assessment-test"),
+    test: _emberData.default.belongsTo("assessment-test"),
+    question: _emberData.default.attr(),
     answer: _emberData.default.attr()
   });
 });
@@ -9503,11 +9784,12 @@ define('self-start-front-end/models/assessment-test', ['exports', 'ember-data'],
     value: true
   });
   exports.default = _emberData.default.Model.extend({
-    form: _emberData.default.belongsTo("form"),
-    questions: _emberData.default.hasMany('question'),
-    answers: _emberData.default.attr(),
+    name: _emberData.default.attr(),
+    description: _emberData.default.attr(),
+    authorName: _emberData.default.belongsTo('physiotherapest'),
     rehabPlan: _emberData.default.belongsTo('rehabilitationplan'),
-    completed: _emberData.default.attr()
+    form: _emberData.default.belongsTo('form'),
+    patient: _emberData.default.belongsTo('patient')
   });
 });
 define('self-start-front-end/models/city', ['exports', 'ember-data'], function (exports, _emberData) {
@@ -9651,8 +9933,7 @@ define('self-start-front-end/models/patient', ['exports', 'ember-data'], functio
     postalCode: _emberData.default.attr(),
     appointments: _emberData.default.hasMany('appointment'),
     account: _emberData.default.attr(),
-    rehablink: _emberData.default.hasMany('rehab-client-link', { async: true }),
-    intakeForm: _emberData.default.belongsTo('assessment-test', { async: true })
+    rehablink: _emberData.default.hasMany('rehab-client-link', { async: true })
   });
 });
 define("self-start-front-end/models/physiotherapest", ["exports", "ember-data"], function (exports, _emberData) {
@@ -12024,6 +12305,14 @@ define("self-start-front-end/templates/components/ask-a-physio", ["exports"], fu
   });
   exports.default = Ember.HTMLBars.template({ "id": "8hq1KFRX", "block": "{\"symbols\":[],\"statements\":[[6,\"a\"],[9,\"class\",\"ui large inverted basic button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  Ask a Therapist\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"ask\",\"ask tiny\"]],{\"statements\":[[0,\"\\n    \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"class\",\"ui fluid centered header\"],[9,\"style\",\"border-radius: 0.28571429rem;\"],[7],[0,\"Ask a therapist\"],[8],[0,\"\\n\\n    \"],[2,\"style=\\\"padding-bottom: 0\\\"\"],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n      \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"user\",\"text\",[20,[\"firstName\"]],\"First name\",true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"user\",\"text\",[20,[\"lastName\"]],\"Last Name\",true]]],false],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"email\",\"email\",[20,[\"email\"]],\"Email\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"textarea\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"message\",\"text\",[20,[\"comment\"]],\"Question\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"max-width: 100%; height: 50px;\"],[7],[0,\"Submit\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/ask-a-physio.hbs" } });
 });
+define("self-start-front-end/templates/components/assessment-table", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "60dbPgWR", "block": "{\"symbols\":[\"test\",\"column\",\"column\"],\"statements\":[[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"left twelve wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n      \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n        Assessment Tests\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n    \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n      \"],[6,\"tbody\"],[7],[0,\"\\n      \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"          \"],[6,\"th\"],[10,\"class\",[19,3,[\"class\"]],null],[3,\"action\",[[19,0,[]],\"sortColumn\",[19,3,[\"key\"]],[19,3,[\"dir\"]]]],[7],[1,[19,3,[\"name\"]],false],[0,\"\\n\"],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"asc\"],null]],null,{\"statements\":[[0,\"              \"],[6,\"i\"],[9,\"class\",\"sort ascending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"desc\"],null]],null,{\"statements\":[[0,\"              \"],[6,\"i\"],[9,\"class\",\"sort descending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"\"],null]],null,{\"statements\":[[0,\"              \"],[6,\"i\"],[9,\"class\",\"sort icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"          \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"        \"],[6,\"th\"],[9,\"class\",\"center aligned two wide  column\"],[7],[0,\"Actions\"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"id\",\"myWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n    \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n      \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"testModel\"]]],null,{\"statements\":[[0,\"\\n        \"],[6,\"tr\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"\\n            \"],[6,\"td\"],[10,\"class\",[19,2,[\"class\"]],null],[7],[0,\"\\n              \"],[1,[25,\"get\",[[19,1,[]],[19,2,[\"key\"]]],null],false],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"\\n          \"],[6,\"td\"],[9,\"class\",\"right aligned one wide column\"],[9,\"style\",\"padding-right: 0\"],[7],[0,\"\\n            \"],[6,\"p\"],[7],[1,[25,\"display-assessment\",null,[[\"model\"],[[19,1,[\"form\"]]]]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"td\"],[9,\"class\",\"left aligned one wide column\"],[9,\"style\",\"padding-left: 0\"],[7],[0,\"\\n            \"],[6,\"p\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/assessment-table.hbs" } });
+});
 define("self-start-front-end/templates/components/assign-rehabplan", ["exports"], function (exports) {
   "use strict";
 
@@ -12062,7 +12351,7 @@ define("self-start-front-end/templates/components/client-file", ["exports"], fun
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "0SLNetFW", "block": "{\"symbols\":[\"exercise\",\"column\",\"column\",\"plan\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[1,[20,[\"model\",\"givenName\"]],false],[0,\" \"],[1,[20,[\"model\",\"familyName\"]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui container\"],[9,\"style\",\"padding-top: 2em\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui top attached tabular stackable menu\"],[9,\"style\",\"padding-left: 20%;\"],[7],[0,\"\\n\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Assessment\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Notes\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Photos\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"menusState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"menusView\"]],[7],[0,\"\\n      Menus\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Documents\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Accounting\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui segment\"],[9,\"style\",\"background: transparent;border: none;box-shadow: none;\"],[7],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"menus\"]]],null,{\"statements\":[[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"left twelve wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n\\n          \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n            Menu Builder\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"right three wide column\"],[9,\"style\",\"padding-left: 30px;\"],[7],[0,\"\\n\"],[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\"],[4,\"ui-dropdown\",null,[[\"class\",\"onChange\"],[\"selection\",[25,\"action\",[[19,0,[]],[25,\"mut\",[[20,[\"plan\"]]],null]],null]]],{\"statements\":[[0,\"              \"],[6,\"div\"],[9,\"class\",\"default text\"],[7],[0,\"Select a menu\"],[8],[0,\"\\n              \"],[6,\"i\"],[9,\"class\",\"dropdown icon\"],[7],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"menu\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"rehabModel\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"div\"],[10,\"data-value\",[26,[[19,4,[\"id\"]]]]],[9,\"class\",\"item\"],[7],[0,\"\\n                    \"],[1,[19,4,[\"planName\"]],false],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[4]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n          \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"              \"],[6,\"th\"],[10,\"class\",[19,3,[\"class\"]],null],[3,\"action\",[[19,0,[]],\"sortColumn\",[19,3,[\"key\"]],[19,3,[\"dir\"]]]],[7],[1,[19,3,[\"name\"]],false],[0,\"\\n\"],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"asc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort ascending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"desc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort descending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"id\",\"myWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"listModel\"]]],null,{\"statements\":[[0,\"\\n\\n            \"],[6,\"tr\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"\\n                \"],[6,\"td\"],[10,\"class\",[19,2,[\"class\"]],null],[7],[0,\"\\n                  \"],[1,[25,\"get\",[[19,1,[]],[19,2,[\"key\"]]],null],false],[0,\"\\n                \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"            \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"isPlanSelected\"]]],null,{\"statements\":[[0,\"            \"],[6,\"div\"],[10,\"class\",[26,[\"ui \",[18,\"disabled\"],\" button\"]]],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n              Assign\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[9,\"href\",\"/assets/css/form-style.css\"],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Assign \"],[1,[20,[\"plansData\",\"planName\"]],false],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you want to assign this rehabilitation plan?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-file.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "aSilEvFP", "block": "{\"symbols\":[\"exercise\",\"column\",\"column\",\"plan\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[1,[20,[\"model\",\"givenName\"]],false],[0,\" \"],[1,[20,[\"model\",\"familyName\"]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui container\"],[9,\"style\",\"padding-top: 2em\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui top attached tabular stackable menu\"],[9,\"style\",\"padding-left: 20%;\"],[7],[0,\"\\n\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"assessState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"assessView\"]],[7],[0,\"\\n      Assessment\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Notes\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Photos\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"menusState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"menusView\"]],[7],[0,\"\\n      Menus\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Documents\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Accounting\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui segment\"],[9,\"style\",\"background: transparent;border: none;box-shadow: none;\"],[7],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"menus\"]]],null,{\"statements\":[[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"left twelve wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n              Menu Builder\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"right three wide column\"],[9,\"style\",\"padding-left: 30px;\"],[7],[0,\"\\n\"],[0,\"            \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\"],[4,\"ui-dropdown\",null,[[\"class\",\"onChange\"],[\"selection\",[25,\"action\",[[19,0,[]],[25,\"mut\",[[20,[\"plan\"]]],null]],null]]],{\"statements\":[[0,\"                \"],[6,\"div\"],[9,\"class\",\"default text\"],[7],[0,\"Select a menu\"],[8],[0,\"\\n                \"],[6,\"i\"],[9,\"class\",\"dropdown icon\"],[7],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"menu\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"rehabModel\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"div\"],[10,\"data-value\",[26,[[19,4,[\"id\"]]]]],[9,\"class\",\"item\"],[7],[0,\"\\n                      \"],[1,[19,4,[\"planName\"]],false],[0,\"\\n                    \"],[8],[0,\"\\n\"]],\"parameters\":[4]},null],[0,\"                \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n          \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n            \"],[6,\"tbody\"],[7],[0,\"\\n            \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"                \"],[6,\"th\"],[10,\"class\",[19,3,[\"class\"]],null],[3,\"action\",[[19,0,[]],\"sortColumn\",[19,3,[\"key\"]],[19,3,[\"dir\"]]]],[7],[1,[19,3,[\"name\"]],false],[0,\"\\n\"],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"asc\"],null]],null,{\"statements\":[[0,\"                    \"],[6,\"i\"],[9,\"class\",\"sort ascending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"desc\"],null]],null,{\"statements\":[[0,\"                    \"],[6,\"i\"],[9,\"class\",\"sort descending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"\"],null]],null,{\"statements\":[[0,\"                    \"],[6,\"i\"],[9,\"class\",\"sort icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"                \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"\\n            \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"id\",\"myWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n          \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n            \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"listModel\"]]],null,{\"statements\":[[0,\"\\n              \"],[6,\"tr\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"\\n                  \"],[6,\"td\"],[10,\"class\",[19,2,[\"class\"]],null],[7],[0,\"\\n                    \"],[1,[25,\"get\",[[19,1,[]],[19,2,[\"key\"]]],null],false],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"isPlanSelected\"]]],null,{\"statements\":[[0,\"              \"],[6,\"div\"],[10,\"class\",[26,[\"ui \",[18,\"disabled\"],\" button\"]]],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n                Assign\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"assess\"]]],null,{\"statements\":[[0,\"      \"],[1,[25,\"assessment-table\",null,[[\"model\"],[[20,[\"model\"]]]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[9,\"href\",\"/assets/css/form-style.css\"],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Assign \"],[1,[20,[\"plansData\",\"planName\"]],false],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you want to assign this rehabilitation plan?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[1,[25,\"list-forms\",null,[[\"rehabPlan\",\"patient\"],[[20,[\"plan\"]],[20,[\"model\"]]]]],false],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-file.hbs" } });
 });
 define("self-start-front-end/templates/components/client-nav", ["exports"], function (exports) {
   "use strict";
@@ -12078,7 +12367,7 @@ define("self-start-front-end/templates/components/client-welcome", ["exports"], 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "dlV5gyha", "block": "{\"symbols\":[\"admin\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg3\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[7],[0,\"Client Page\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"          \"],[6,\"span\"],[9,\"class\",\"tagline\"],[7],[0,\"\\n            \"],[1,[19,1,[\"message\"]],false],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui center aligned grid\"],[7],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui vertical stripe intro segment\"],[9,\"id\",\"about\"],[9,\"style\",\"border-bottom: 10px dotted whitesmoke; padding-top: 10em\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui very padded segment container\"],[9,\"style\",\"border: none; box-shadow: none; background-color: white;position: relative;z-index:  2;\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui four steps\"],[7],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"introValue\"],\" step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"sticky note icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Intake Form\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"photoValue\"],\"  step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"photo icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Upload Photos\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"appointmentValue\"],\"  step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"bookmark icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"confirmValue\"],\"  step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"check circle icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Confirmation\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui attached segment\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"intro\"]]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n\\n      \"],[1,[25,\"display-assessment\",null,[[\"id\"],[[20,[\"paitent\",\"intakeForm\",\"id\"]]]]],false],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToPhoto\"]],[7],[0,\"Next\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"photo\"]]],null,{\"statements\":[[0,\"    \"],[6,\"p\"],[7],[0,\"Photos go here!!\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToIntro\"]],[7],[0,\"Back\"],[8],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToAppointment\"]],[7],[0,\"Next\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"appointment\"]]],null,{\"statements\":[[0,\"    \"],[6,\"p\"],[7],[0,\"Appointment go here!!\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToPhoto\"]],[7],[0,\"Back\"],[8],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToConfirm\"]],[7],[0,\"Next\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"confirm\"]]],null,{\"statements\":[[0,\"    \"],[6,\"p\"],[7],[0,\"Confirmation Page Goes Here!!\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToAppointment\"]],[7],[0,\"Back\"],[8],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToPaypal\"]],[7],[0,\"Next\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-welcome.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "Upw1sukz", "block": "{\"symbols\":[\"admin\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg3\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[7],[0,\"Client Page\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"          \"],[6,\"span\"],[9,\"class\",\"tagline\"],[7],[0,\"\\n            \"],[1,[19,1,[\"message\"]],false],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui center aligned grid\"],[7],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui vertical stripe intro segment\"],[9,\"id\",\"about\"],[9,\"style\",\"border-bottom: 10px dotted whitesmoke; padding-top: 10em\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui very padded segment container\"],[9,\"style\",\"border: none; box-shadow: none; background-color: white;position: relative;z-index:  2;\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui four steps\"],[7],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"introValue\"],\" step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"sticky note icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Intake Form\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"photoValue\"],\"  step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"photo icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Upload Photos\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"appointmentValue\"],\"  step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"bookmark icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"confirmValue\"],\"  step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"check circle icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Confirmation\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui attached segment\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"intro\"]]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n\\n\"],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToPhoto\"]],[7],[0,\"Next\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"photo\"]]],null,{\"statements\":[[0,\"    \"],[6,\"p\"],[7],[0,\"Photos go here!!\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToIntro\"]],[7],[0,\"Back\"],[8],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToAppointment\"]],[7],[0,\"Next\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"appointment\"]]],null,{\"statements\":[[0,\"    \"],[6,\"p\"],[7],[0,\"Appointment go here!!\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToPhoto\"]],[7],[0,\"Back\"],[8],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToConfirm\"]],[7],[0,\"Next\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"confirm\"]]],null,{\"statements\":[[0,\"    \"],[6,\"p\"],[7],[0,\"Confirmation Page Goes Here!!\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToAppointment\"]],[7],[0,\"Back\"],[8],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToPaypal\"]],[7],[0,\"Next\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-welcome.hbs" } });
 });
 define("self-start-front-end/templates/components/config-selection", ["exports"], function (exports) {
   "use strict";
@@ -12206,7 +12495,7 @@ define("self-start-front-end/templates/components/display-assessment", ["exports
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "XNoRsxsI", "block": "{\"symbols\":[\"q\",\"index\"],\"statements\":[[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"assessmentModel\",\"questions\"]]],null,{\"statements\":[[0,\"    \"],[1,[25,\"get-answers\",null,[[\"question\",\"assessment\",\"qNumber\",\"assessid\"],[[19,1,[]],[20,[\"assessmentModel\"]],[19,2,[]],[20,[\"assessmentModel\",\"id\"]]]]],false],[0,\"\\n\"]],\"parameters\":[1,2]},null],[0,\"  \"],[6,\"button\"],[3,\"action\",[[19,0,[]],\"Submit\"]],[7],[0,\"\\n    Submit\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/display-assessment.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "v7FfUdfF", "block": "{\"symbols\":[\"question\"],\"statements\":[[6,\"p\"],[9,\"style\",\"cursor: pointer; \"],[9,\"title\",\"View Answers\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"img\"],[9,\"src\",\"/assets/images/eye-19.svg\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Form View\"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"scrolling content\"],[7],[0,\"\\n\\n\\n\\n\\n    \"],[6,\"form\"],[9,\"id\",\"edit\"],[9,\"class\",\"cd-form floating-labels\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"model\",\"questionOrder\"]]],null,{\"statements\":[[0,\"      \"],[1,[19,1,[\"order\"]],false],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/display-assessment.hbs" } });
 });
 define("self-start-front-end/templates/components/display-forms", ["exports"], function (exports) {
   "use strict";
@@ -12312,6 +12601,14 @@ define("self-start-front-end/templates/components/get-answers", ["exports"], fun
   });
   exports.default = Ember.HTMLBars.template({ "id": "Da6tBefL", "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"question\",\"sa\"]]],null,{\"statements\":[[0,\"    \"],[6,\"label\"],[7],[1,[20,[\"question\",\"questionText\"]],false],[8],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui input focus\"],[7],[0,\"\\n      \"],[6,\"li\"],[7],[1,[25,\"input\",null,[[\"type\",\"value\",\"focus-out\"],[\"text\",[20,[\"SAanswer\"]],\"saSave\"]]],false],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"question\",\"ra\"]]],null,{\"statements\":[[0,\"    \"],[6,\"label\"],[7],[1,[20,[\"question\",\"questionText\"]],false],[8],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[1,[25,\"ui-rating\",null,[[\"class\",\"maxRating\",\"onRate\"],[\"heart\",10,[25,\"action\",[[19,0,[]],\"ratingSave\"],[[\"rateValue\"],[[20,[\"value\"]]]]]]]],false],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"question\",\"tf\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"li\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"inline fields\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[1,[20,[\"question\",\"questionText\"]],false],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[1,[25,\"ui-radio\",null,[[\"name\",\"label\",\"value\",\"current\",\"onChange\"],[\"tf\",\"True\",\"True\",[20,[\"tf\"]],[25,\"action\",[[19,0,[]],\"TFtrue\"],null]]]],false],[0,\"\\n\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[1,[25,\"ui-radio\",null,[[\"name\",\"label\",\"value\",\"current\",\"onChange\"],[\"tf\",\"False\",\"False\",[20,[\"tf\"]],[25,\"action\",[[19,0,[]],\"TFfalse\"],null]]]],false],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"question\",\"mc\"]]],null,{\"statements\":[[0,\"    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"grouped fields\"],[7],[0,\"\\n      \"],[6,\"label\"],[7],[1,[20,[\"question\",\"questionText\"]],false],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[9,\"value\",\"mcop2\"],[7],[0,\"\\n          \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"mcop1Save\"],null],null],[7],[8],[0,\"\\n          \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[20,[\"question\",\"optionString\"]],0],null],false],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n          \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"mcop2Save\"],null],null],[7],[8],[0,\"\\n          \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[20,[\"question\",\"optionString\"]],1],null],false],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n          \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"mcop3Save\"],null],null],[7],[8],[0,\"\\n          \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[20,[\"question\",\"optionString\"]],2],null],false],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\"],[4,\"if\",[[25,\"number-of-mc\",[[20,[\"question\",\"optionNumber\"]],3],null]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n            \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"mcop4Save\"],null],null],[7],[8],[0,\"\\n            \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[20,[\"question\",\"optionString\"]],3],null],false],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"number-of-mc\",[[20,[\"question\",\"optionNumber\"]],4],null]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n            \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"mcop5Save\"],null],null],[7],[8],[0,\"\\n            \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[20,[\"question\",\"optionString\"]],4],null],false],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"number-of-mc\",[[20,[\"question\",\"optionNumber\"]],5],null]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui radio checkbox\"],[7],[0,\"\\n            \"],[6,\"input\"],[9,\"name\",\"mc\"],[9,\"type\",\"radio\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"mcop6Save\"],null],null],[7],[8],[0,\"\\n            \"],[6,\"label\"],[7],[1,[25,\"mc-display\",[[20,[\"question\",\"optionString\"]],5],null],false],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/get-answers.hbs" } });
 });
+define("self-start-front-end/templates/components/get-assessment-results", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "NAIqxyx3", "block": "{\"symbols\":[\"assess\",\"index\"],\"statements\":[[4,\"if\",[[20,[\"notOpen\"]]],null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui positive button\"],[3,\"action\",[[19,0,[]],\"Open\"]],[7],[0,\"\\n    \"],[1,[18,\"fName\"],false],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"open\"]]],null,{\"statements\":[[4,\"each\",[[20,[\"assessmentModel\",\"questions\"]]],null,{\"statements\":[[0,\"    \"],[1,[25,\"display-answers\",null,[[\"question\",\"qID\",\"assessment\",\"qNumber\",\"assessid\"],[[19,1,[]],[19,1,[\"id\"]],[20,[\"assessmentModel\"]],[19,2,[]],[20,[\"assessmentModel\",\"id\"]]]]],false],[0,\"\\n\"]],\"parameters\":[1,2]},null]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/get-assessment-results.hbs" } });
+});
 define("self-start-front-end/templates/components/list-forms", ["exports"], function (exports) {
   "use strict";
 
@@ -12406,7 +12703,7 @@ define("self-start-front-end/templates/components/payment-button", ["exports"], 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "YxkiDN0t", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[9,\"id\",\"paypal-button-container\"],[7],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/payment-button.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "kxpWGgIC", "block": "{\"symbols\":[],\"statements\":[[6,\"style\"],[7],[0,\"\\n  .paypal-button-text {\\n    display: inline-block;\\n    white-space: pre-wrap;\\n    color: transparent !important;\\n  }\\n\\n  .paypal-button .paypal-button-text {\\n    visibility: hidden;\\n    color: black !important;\\n  }\\n\"],[8],[0,\"\\n\"],[6,\"div\"],[9,\"id\",\"paypal-button-container\"],[7],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/payment-button.hbs" } });
 });
 define("self-start-front-end/templates/components/personal-menu", ["exports"], function (exports) {
   "use strict";
@@ -13506,6 +13803,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+6e232458"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+4afe42f7"});
 }
 //# sourceMappingURL=self-start-front-end.map

@@ -12,7 +12,7 @@
 <div class="ui container" style="padding-top: 2em">
   <div class="ui top attached tabular stackable menu" style="padding-left: 20%;">
 
-    <a class="item">
+    <a class="{{assessState}} item" {{action "assessView"}}>
       Assessment
     </a>
     <a class="item">
@@ -35,95 +35,94 @@
 
     {{#if menus}}
 
-    <div class="ui very padded container segment" id="top">
-      <div class="ui grid" style="margin-top: -30px;">
-        <div class="left twelve wide column" style="margin-top: -5px;">
+      <div class="ui very padded container segment" id="top">
+        <div class="ui grid" style="margin-top: -30px;">
+          <div class="left twelve wide column" style="margin-top: -5px;">
+            <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">
+              Menu Builder
+            </p>
+          </div>
+          <div class="right three wide column" style="padding-left: 30px;">
+            {{!--{{add-rehabplan flagAdd=flagAdd}}--}}
+            <div class="ui form" >
+              {{#ui-dropdown class="selection" onChange=(action (mut plan))}}
+                <div class="default text">Select a menu</div>
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                  {{#each rehabModel as |plan|}}
+                    <div data-value="{{plan.id}}" class="item">
+                      {{plan.planName}}
+                    </div>
+                  {{/each}}
+                </div>
+              {{/ui-dropdown}}
 
-          <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">
-            Menu Builder
-          </p>
-        </div>
-        <div class="right three wide column" style="padding-left: 30px;">
-          {{!--{{add-rehabplan flagAdd=flagAdd}}--}}
-          <div class="ui form" >
-            {{#ui-dropdown class="selection" onChange=(action (mut plan))}}
-              <div class="default text">Select a menu</div>
-              <i class="dropdown icon"></i>
-              <div class="menu">
-                {{#each rehabModel as |plan|}}
-                  <div data-value="{{plan.id}}" class="item">
-                    {{plan.planName}}
-                  </div>
-                {{/each}}
-              </div>
-            {{/ui-dropdown}}
-
+            </div>
           </div>
         </div>
-      </div>
-      <br><br><br><br>
+        <br><br><br><br>
 
+        <div style="display: inline">
+          <table class="ui fixed table" style="border: none;border-color: white;">
+            <tbody >
+            <tr style="font-weight: bold;">
+              {{#each modelAttributes as |column|}}
+                <th class={{column.class}} {{action 'sortColumn' column.key column.dir}}>{{column.name}}
+                  {{#if (eq column.dir 'asc')}}
+                    <i class="sort ascending icon"></i>
+                  {{/if}}
+                  {{#if (eq column.dir 'desc')}}
+                    <i class="sort descending icon"></i>
+                  {{/if}}
+                  {{#if (eq column.dir '')}}
+                    <i class="sort icon"></i>
+                  {{/if}}
+                </th>
+              {{/each}}
 
-      <div style="display: inline">
-        <table class="ui fixed table" style="border: none;border-color: white;">
-          <tbody >
-          <tr style="font-weight: bold;">
+            </tr>
+            </tbody>
+          </table>
+        </div>
 
-            {{#each modelAttributes as |column|}}
-              <th class={{column.class}} {{action 'sortColumn' column.key column.dir}}>{{column.name}}
-                {{#if (eq column.dir 'asc')}}
-                  <i class="sort ascending icon"></i>
-                {{/if}}
-                {{#if (eq column.dir 'desc')}}
-                  <i class="sort descending icon"></i>
-                {{/if}}
-                {{#if (eq column.dir '')}}
-                  <i class="sort icon"></i>
-                {{/if}}
-              </th>
+        <div class="ui divider"></div>
+
+        <div  id="myWindow" style="height:500px; overflow-y: scroll; overflow-x: hidden;">
+          <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
+            <tbody >
+            {{#each listModel as |exercise|}}
+
+              <tr>
+
+                {{#each modelAttributes as |column|}}
+
+                  <td class={{column.class}}>
+                    {{get exercise column.key}}
+                  </td>
+                {{/each}}
+              </tr>
             {{/each}}
 
-          </tr>
-          </tbody>
-        </table>
+            {{#if isPlanSelected}}
+              <div class="ui {{disabled}} button" {{action "openModal"}}>
+                Assign
+              </div>
+            {{/if}}
+
+
+            </tbody>
+          </table>
+        </div>
       </div>
+    {{/if}}
 
-      <div class="ui divider"></div>
-
-      <div  id="myWindow" style="height:500px; overflow-y: scroll; overflow-x: hidden;">
-        <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
-          <tbody >
-          {{#each listModel as |exercise|}}
-
-
-            <tr>
-
-              {{#each modelAttributes as |column|}}
-
-                <td class={{column.class}}>
-                  {{get exercise column.key}}
-                </td>
-              {{/each}}
-            </tr>
-          {{/each}}
-
-          {{#if isPlanSelected}}
-            <div class="ui {{disabled}} button" {{action "openModal"}}>
-              Assign
-            </div>
-          {{/if}}
-
-
-          </tbody>
-        </table>
-      </div>
-
-    </div>
+    {{#if assess}}
+      {{assessment-table model=model}}
     {{/if}}
 
   </div>
 </div>
-  <br><br><br><br>
+<br><br><br><br>
 
 {{#ui-modal name=modalName class=modalName }}
   <i class="close icon"></i>
@@ -136,7 +135,7 @@
     <p>Are you sure you want to assign this rehabilitation plan?</p>
   </div>
   <br>
-
+  {{list-forms rehabPlan = plan patient = model}}
   <div class="actions" style="padding:0">
 
     <div class="ok " style="padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Yes</div>
