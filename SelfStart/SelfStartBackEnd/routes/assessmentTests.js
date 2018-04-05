@@ -86,6 +86,7 @@ router.route('/:assessment_id')
                 assessmentTest.authorName = request.body.assessmentTest.authorName;
                 assessmentTest.form = request.body.assessmentTest.form;
                 assessmentTest.patient = request.body.assessmentTest.patient;
+                assessmentTest.answer = request.body.assessmentTest.answer;
 
                 assessmentTest.save(function (error) {
                     if (error) {

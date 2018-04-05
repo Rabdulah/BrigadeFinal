@@ -4,22 +4,82 @@
 
 {{#ui-modal name=modalName class=modalName }}
   <i class="close icon"></i>
-  <link integrity="" rel="stylesheet" href="{{rootURL}}../assets/css/form-style.css"> <!-- Resource style -->
 
 
   <div class="header">Form View</div>
   <div class="scrolling content" >
 
 
+    {{#each orders as |q|}}
+    <div class="ui form">
+      <br>
+      {{#if q.question.sa}}
+        <label>{{q.question.questionText}}</label>
+        <br><br>
+        <div class="ui disabled input focus">
+          {{input type="text" value=SAanswer}}
+        </div>
+      {{/if}}
+      {{#if q.question.ra}}
+        <label>{{q.question.questionText}}</label>
+        <br><br>
+        {{ui-rating
+          class="heart"
+          maxRating=10
+          initialRating = Rating
+          interactive = false
+        }}
+      {{/if}}
 
+      {{#if q.question.tf}}
+        <br><br>
+        <li>
+          <div class="inline fields">
+            <label>{{q.question.questionText}}</label>
+            <div class="field">
+              {{ui-checkbox label="True" checked=checkTrue disabled = true}}
+            </div>
+            <div class="field">
+              {{ui-checkbox label="True" checked=checkFalse disabled = true }}
+            </div>
+          </div>
+        </li>
+      {{/if}}
 
-    <form id="edit" class="cd-form floating-labels">
-
-    {{#each model.questionOrder as |question|}}
-      {{question.order}}
+      {{#if q.question.mc}}
+        <br><br>
+        <div class="grouped fields">
+          <label>{{q.question.questionText}}</label>
+          <div class="field">
+            {{ui-checkbox label=mcop1 checked=checkmcop1 disabled = true }}
+          </div>
+          <div class="field">
+            {{ui-checkbox label=mcop2 checked=checkmcop2 disabled = true }}
+          </div>
+          <div class="field">
+            {{ui-checkbox label=mcop3 checked=checkmcop3 disabled = true }}
+          </div>
+          {{#if (number-of-mc q.question.optionNumber 3)}}
+            <div class="field">
+              {{ui-checkbox label=mcop4 checked=checkmcop4 disabled = true }}
+            </div>
+          {{/if}}
+          {{#if (number-of-mc q.question.optionNumber 4)}}
+            <div class="field">
+              {{ui-checkbox label=mcop5 checked=checkmcop5 disabled = true }}
+            </div>
+          {{/if}}
+          {{#if (number-of-mc q.question.optionNumber 5)}}
+            <div class="field">
+              {{ui-checkbox label=mcop6 checked=checkmcop6 disabled = true }}
+            </div>
+          {{/if}}
+        </div>
+      {{/if}}
+    </div>
     {{/each}}
 
-    </form>
+
   </div>
 {{/ui-modal}}
 

@@ -13,18 +13,23 @@ export default Component.extend({
   mcop5: 0,
   mcop6: 0,
 
+  init(){
+    this._super(...arguments);
+    console.get(this.get("assessment").get('answer').get('answer'));
+  },
+
   actions: {
     ratingSave(rv) {
 
       this.set('rateValue', rv);
 
       var temp = [];
-      this.get("assessment").get('answers').forEach(element => {
-        temp.push(element);
+      this.get("assessment").get('answer').forEach(element => {
+        temp.push(element.get('answer'));
       });
 
       temp[this.get("qNumber")] = this.get('rateValue');
-      this.get("assessment").get('answers').clear();
+      // this.get("assessment").get('answers').clear();
 
       for(var x = 0; x < temp.length; x++){
 

@@ -7,7 +7,8 @@ export default DS.Model.extend({
   authorName: DS.belongsTo('physiotherapest'),
   rehabPlan: DS.belongsTo('rehabilitationplan'),
   form:DS.belongsTo('form'),
-  patient:DS.belongsTo('patient')
+  patient:DS.belongsTo('patient'),
+  answer:DS.hasMany('answer')
 });
 
 //SEND FORM BUTTON

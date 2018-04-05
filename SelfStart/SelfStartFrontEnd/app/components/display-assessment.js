@@ -13,12 +13,36 @@ export default Component.extend({
   }),
 
 
+
+  orders:[],
+
+   questionModel: computed(function () {
+
+   }),
+
   init(){
     this._super(...arguments);
     this.get('DS').findAll('form');
-    var order = this.get('DS').findAll('question-order');
+    this.get('DS').findAll('question-order');
+    this.get('DS').findAll('question');
+    var self = this;
 
+    this.get('DS').query('question-order', {filter: {'form': this.get('model').id}}).then((records) => {
+      self.set('orders', records.toArray());
+    });
 
+    // console.log(this.get('model').get('questionOrder'));
+    //
+    // this.get('model').get('questionOrder').then((rec)=>{
+    //   console.log(rec.canonicalState);
+    //   var array = rec.canonicalState;
+    //   console.log(array);
+    //   array.forEach((r)=>{
+    //     this.get('questions').pushObject(r);
+    //     console.log(r);
+    //   })
+
+    //})
     // this.get('DS').query('question-order', {filter: {'form': this.get('model').id}}).then((questions) => {
     //
     //   this.get('formModel').clear();
