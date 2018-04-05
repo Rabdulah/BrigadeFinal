@@ -184,9 +184,9 @@ export default Component.extend({
       //temp client until we get token
       //laptop
 
-      // let client = '5ab9649cc7f3c62814754951';
+       let client = '5ac534f93d763c33cc978c39';
       //desktop
-      let client = '5a88738e1f0fdc2b94498e81';
+      //let client = '5a88738e1f0fdc2b94498e81';
       let physio = self.get('selectphysio');
       let booking = this.get('DS').createRecord('appointment', {
         reason: self.get('Reason'),
@@ -195,10 +195,10 @@ export default Component.extend({
         endDate: self.get('selectedbookedTime').end
       });
       self.get('DS').findRecord('patient', client).then(function (src) {
-        console.log(src);
+        console.log(JSON.stringify(src));
         booking.set('patient', src);
-        src.get('appointments').pushObject(booking);
         booking.save().then(function (){
+          src.get('appointments').pushObject(booking);
           src.save().then(()=>{
             self.get('DS').findRecord('physiotherapest',self.get('selectedPhysioId')).then(function (a) {
               a.get('appointments').pushObject(booking);

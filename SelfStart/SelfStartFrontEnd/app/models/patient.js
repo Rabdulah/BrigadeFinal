@@ -17,8 +17,9 @@ export default DS.Model.extend({
   gender: DS.attr(),
   phoneNumber: DS.attr(),
   postalCode: DS.attr(),
-  appointments: DS.hasMany('appointment', { async: true }),
+  appointments: DS.hasMany('appointment' ),
   account: DS.attr(),
   rehablink: DS.hasMany('rehab-client-link', { async: true }),
+  intakeForm: DS.belongsTo('assessment-test', { async: true }),
 });
 

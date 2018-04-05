@@ -8,12 +8,10 @@ const jwt = require('jsonwebtoken');
 
 router.route('/')
     .post( function (request, response) {
-        console.log(request.body.patient);
         var patient = new Patients.Model(request.body.patient);
-
         patient.save(function (error) {
             if (error) response.send(error);
-            response.json({patient: patient});
+                response.json({patient: patient});
         });
         // Patients.getUserByEmail(patient.email, (err, client) =>{
         //     if(client) {
@@ -140,6 +138,7 @@ router.route('/:patient_id')
                 response.send({error: error});
             }
             else {
+                console.log(patient);
                 response.json({patient: patient});
             }
         });
@@ -151,6 +150,7 @@ router.route('/:patient_id')
             }
             else {
 
+                console.log(request.body);
                 // update each attribute
                 patient.ID = request.body.patient.ID;
                 patient.familyName = request.body.patient.familyName;
@@ -168,6 +168,7 @@ router.route('/:patient_id')
                 patient.postalCode = request.body.patient.postalCode;
                 patient.appointments = request.body.patient.appointments;
                 patient.rehablink = request.body.patient.rehablink;
+                patient.intakeForm = request.body.patient.intakeForm;
 
                 patient.answer = request.body.patient.answer;
                 // patient.account = request.body.patient.account;

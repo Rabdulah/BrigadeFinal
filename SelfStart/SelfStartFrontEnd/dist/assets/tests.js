@@ -217,7 +217,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/display-assessment.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/display-assessment.js should pass ESLint\n\n4:7 - \'Ember\' is not defined. (no-undef)\n9:20 - \'Ember\' is not defined. (no-undef)\n18:7 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/display-assessment.js should pass ESLint\n\n4:7 - \'Ember\' is not defined. (no-undef)\n9:20 - \'Ember\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/display-forms.js', function (assert) {
@@ -372,7 +372,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/register-user.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/register-user.js should pass ESLint\n\n129:30 - \'patient\' is defined but never used. (no-unused-vars)');
+    assert.ok(false, 'components/register-user.js should pass ESLint\n\n165:32 - \'patient\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/rehab-plan.js', function (assert) {
