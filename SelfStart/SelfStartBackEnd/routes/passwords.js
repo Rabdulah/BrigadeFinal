@@ -111,19 +111,17 @@ router.route('/:password_id')
                 }
                 else if (request.body.password.passwordMustChanged) {
                     console.log("IN THE Update")
-                    // var Salt = rand(256, 36);
-                    // console.log(request.body.password.encryptedPassword);
-                    // UserShadow.encryptedPassword = hash(request.body.password.encryptedPassword + Salt);
-                    // UserShadow.salt = Salt;
+                    var Salt = rand(256, 36);
+                    console.log(request.body.password.encryptedPassword);
+                    UserShadow.encryptedPassword = hash(request.body.password.encryptedPassword + Salt);
+                    UserShadow.salt = Salt;
                     UserShadow.passwordMustChanged = false;
-                    // console.log("at put salt", Salt);
+                    console.log("at put salt", Salt);
+                    
                 }
                 UserShadow.passwordReset = request.body.password.passwordReset;
                 UserShadow.email = request.body.password.email;
-                // UserShadow.admin = request.body.password.admin;
-                // UserShadow.practitioner = request.body.password.practitioner;
-                // UserShadow.client = request.body.password.client;
-                
+                               
                 UserShadow.save(function (error) {
                     if (error) {
                         response.send({error: error});

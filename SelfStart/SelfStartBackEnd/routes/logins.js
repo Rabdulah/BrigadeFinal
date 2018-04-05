@@ -414,11 +414,11 @@ router.route('/')
                                                 storedPassword = UserShadow.encryptedPassword;
                                                 salt = UserShadow.salt;
                                                 var saltedPassword = hash(recievedPassword);
-                                                console.log("One hash + salt", recievedPassword);
+                                                // console.log("One hash + salt", recievedPassword);
                                                 console.log("SALTED", saltedPassword);
-                                                console.log("RECIEVED", request.body.login.password);
+                                                // console.log("RECIEVED", request.body.login.password);
                                                 console.log("STORED", storedPassword);
-                                                console.log("SALT", UserShadow.salt);
+                                                // console.log("SALT", UserShadow.salt);
 
                                                 if (saltedPassword === storedPassword) {
                                                     // Now the user is authenticated.

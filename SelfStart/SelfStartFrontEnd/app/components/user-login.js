@@ -59,11 +59,14 @@ export default Component.extend({
                   // var ourAuth = self.get('authent')
                   var myStore = self.get('DS');
                   var userName = self.get('name');
+                  console.log()
                   var hashedPassword = auth.hash(self.get('firstPassword'));
                   console.log("BEfore");
                   console.log(self.get('Email'));
                   myStore.queryRecord('password', {filter: {"email": self.get('Email')}}).then(function (userShadow) {
+                    console.log("hashedPassword", hashedPassword);
                     auth.set('encryptedPassword', hashedPassword);
+                    userShadow.set('encryptedPassword', hashedPassword);
                     userShadow.set('passwordMustChanged', true);
                     console.log(userShadow);
                     userShadow.set('passwordReset', false);
