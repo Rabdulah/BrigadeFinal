@@ -58,6 +58,7 @@ Router.map(function() {
     this.route('exercise-menu');
     this.route('resources');
     this.route('settings');
+    this.route('upload-photos');
   });
 });
 
