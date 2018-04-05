@@ -288,7 +288,9 @@
       <br>
 
       <label class="header">Payment history:</label>
-
+      {{#each model.transactions as |transaction|}} 
+        <label>Package #{{transaction.package}}, Date: {{transaction.date}}, Price: ${{transaction.amount}}</label>
+      {{/each}}
 
       <br><br><br>
 

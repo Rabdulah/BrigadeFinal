@@ -31,6 +31,12 @@ var patientProfilesSchema = mongoose.Schema(
                         default: "0"
                     }
                 },
+        transactions: [{
+            package: String,
+            date: Date,
+            amount: Number
+        }],
+
         appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],
         rehablink: [{type: mongoose.Schema.ObjectId, ref: 'RehabClientLink'}], 
         introTest: {type: mongoose.Schema.ObjectId, ref: 'AssessmentTests'}, 
