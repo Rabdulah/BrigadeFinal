@@ -147,7 +147,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/client-settings.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'components/client-settings.js should pass ESLint\n\n');
+    assert.ok(false, 'components/client-settings.js should pass ESLint\n\n19:7 - \'Ember\' is not defined. (no-undef)\n21:16 - \'Ember\' is not defined. (no-undef)\n23:7 - \'Ember\' is not defined. (no-undef)\n25:16 - \'Ember\' is not defined. (no-undef)\n27:7 - \'Ember\' is not defined. (no-undef)\n29:16 - \'Ember\' is not defined. (no-undef)\n31:8 - \'Ember\' is not defined. (no-undef)\n33:16 - \'Ember\' is not defined. (no-undef)\n164:11 - \'old\' is assigned a value but never used. (no-unused-vars)\n167:11 - \'self\' is assigned a value but never used. (no-unused-vars)\n171:9 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/client-upload-photos.js', function (assert) {

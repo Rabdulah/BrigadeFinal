@@ -12,9 +12,8 @@
 <link integrity="" rel="stylesheet" href="/assets/css/form-style.css"> <!-- Resource style -->
 
 
+
 <form class="cd-form floating-labels" {{action "save" on="submit"}} style="padding-right: 10em; padding-left: 10em">
-
-
   <label class="cd-label">Select Physiotherapist</label>
   <p class="cd-select icon">
     <select class="people" value ={{selectphysio}} onchange={{action "updateValue" value="target.value"}} >
@@ -26,20 +25,21 @@
       {{/each}}
     </select>
   </p>
+  <br>
+  <br>
+  {{as-calendar
+    title="Schedule"
+    occurrences=occurrences
+    defaultTimeZoneQuery="Toronto|New York"
+    dayStartingTime="8:00"
+    dayEndingTime="20:00"
+    timeSlotDuration="00:30"
+    onAddOccurrence=(action "calendarAddOccurrence")
+    onUpdateOccurrence=(action "calendarUpdateOccurrence")
+    onRemoveOccurrence=(action "calendarRemoveOccurrence")}}
 
 </form>
 <br><br>
-{{as-calendar
-  title="Schedule"
-  occurrences=occurrences
-  defaultTimeZoneQuery="Toronto|New York"
-  dayStartingTime="8:00"
-  dayEndingTime="20:00"
-  timeSlotDuration="00:30"
-  onAddOccurrence=(action "calendarAddOccurrence")
-  onUpdateOccurrence=(action "calendarUpdateOccurrence")
-  onRemoveOccurrence=(action "calendarRemoveOccurrence")}}
-
 
 
 {{#ui-modal name= modalName class= 'bk'}}
@@ -89,6 +89,7 @@
           </select>
         </p>
 
+        <br>
         <div>
           <button class="ui fluid negative button" {{action "cancel_appointment"}}>Cancel</button>
           <button class="ui fluid positive button" {{action "book_appointment"}}>Submit</button>
