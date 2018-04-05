@@ -188,10 +188,10 @@ link:[],
 
   menusState: "active",
   assessState: "",
+  reportState: "",
   assess:false,
-
   menus: true,
-
+  reports: false,
 
   terminated: false,
 
@@ -210,11 +210,14 @@ link:[],
         return true;
       });
     },
+
     menusView(){
       this.set('menus', true);
       this.set('menusState', "active");
       this.set('assess', false);
       this.set('assessState', "");
+      this.set('reports', false);
+      this.set('reportState', "");
     },
 
     assessView(){
@@ -222,8 +225,18 @@ link:[],
         this.set('assessState', "active");
         this.set('menus', false);
         this.set('menusState', "");
+        this.set('reports', false);
+        this.set('reportState', "");
     },
 
+    reportView(){
+      this.set('assess', false);
+      this.set('assessState', "");
+      this.set('menus', false);
+      this.set('menusState', "");
+      this.set('reports', true);
+      this.set('reportState', "active");
+  },
 
     toggleDetail(ID) {
 
@@ -266,6 +279,27 @@ link:[],
 
       }
     },
+
+    openFeedback: function() {
+      $('.ui.' + 'feedback' + '.modal').modal({
+        closable: false,
+
+        transition: 'fly down',
+
+        onDeny: () => {
+          return true;
+        },
+        onApprove: () => {
+          window.print();
+        }
+      }).modal('show');
+    
+    },
+
+    openSummary: function () {
+
+    },
+
     openModal: function () {
       $('.ui.' + this.get('modalName') + '.modal').modal({
         closable: false,

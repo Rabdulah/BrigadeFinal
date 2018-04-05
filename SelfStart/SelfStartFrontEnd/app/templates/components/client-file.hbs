@@ -10,13 +10,16 @@
 </div>
 
 <div class="ui container" style="padding-top: 2em">
-  <div class="ui top attached tabular stackable menu" style="padding-left: 20%;">
+  <div class="ui top attached tabular stackable menu" style="padding-left: 15%;">
   
     <a class="{{assessState}} item" {{action "assessView"}}>
       Assessment
     </a>
     <a class="item">
       Notes
+    </a>
+    <a class="{{reportState}} item"  {{action "reportView"}}>
+      Reports
     </a>
     <a class="item">
       Photos
@@ -116,11 +119,80 @@
     </div>
     {{/if}}
 
-{{#if assess}}
-  {{#each patientModel as |link index|}}
-     {{get-assessment-results linker = link count = index}}  
-  {{/each}}
-{{/if}}
+    {{#if reports}}
+
+<div class="ui very padded container segment" id="top">
+      <div class="ui grid" style="margin-top: -30px;">
+        <div class="left twelve wide column" style="margin-top: -5px;">
+          <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">
+            Reports
+          </p>
+        </div>
+        <div class="right three wide column" style="padding-left: 30px;">
+          {{!-- <div class="ui form" >
+            <button class="ui small blue labeled icon button">
+              <i class="file alternate icon"></i>
+              Generate Reports
+            </button>
+          </div> --}}
+        </div>
+      </div>
+      <br><br><br><br>
+
+      <div style="display: inline">
+        <table class="ui fixed table" style="border: none;border-color: white;">
+          <tbody >
+          <tr style="font-weight: bold;">
+        <th class>
+          Report Type
+        </th>
+        <th class>
+          Actions
+        </th>
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ui divider"></div>
+
+      <div style="display: inline">
+        <table class="ui fixed table" style="border: none;border-color: white;">
+          <tbody>
+            <tr>
+              <th class>
+                Feedback Report
+              </th>
+              <th class>
+                <button class="circular ui icon button" {{action "openFeedback"}}>
+                  <i class="file alternate icon"></i>
+                </button>
+              </th>
+            </tr>
+            
+            <br><br>
+             <tr>
+              <th class>
+                Summary Report
+              </th>
+              <th class>
+                <button class="circular ui icon button" {{action "openSummary"}}>
+                  <i class="file alternate icon"></i>
+                </button>
+              </th>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      
+    </div>
+    {{/if}}
+
+    {{#if assess}}
+      {{#each patientModel as |link index|}}
+        {{get-assessment-results linker = link count = index}}  
+      {{/each}}
+    {{/if}}
 
   </div>
 </div>
@@ -143,5 +215,29 @@
     <div class="ok " style="padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Yes</div>
     <div class="cancel " style="padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">No</div>
   </div>
+{{/ui-modal}}
+
+{{#ui-modal name="feedback" class="feedback"}}
+  <i class="close icon"></i>
+  {{!-- <link integrity="" rel="stylesheet" href="/assets/css/form-style.css"> <!-- Resource style --> --}}
+  <label class="text"></label>
+  <br>
+  <div class="ui form">
+    <div class="field">
+      <label>Summarise examination findings: </label>
+      <textarea></textarea>
+      <br><br><br>
+      <label>Summarise treatment plan: </label>
+      <textarea></textarea>
+    </div>
+  </div>
+  <br>
+
+  <div class="actions" style="padding:0">
+
+    <div class="ok" style="padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Print/Save</div>
+    <div class="cancel" style="padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">No</div>
+  </div>
+
 {{/ui-modal}}
 
