@@ -13,6 +13,7 @@ var patientProfilesSchema = mongoose.Schema(
         familyName: String,
         givenName: String,
         email: String,
+        encryptedPassword: {type: mongoose.Schema.ObjectId, ref: 'Passwords'},
         dateOfBirth: Date,
         phoneNumber: String,
         healthCardNumber: String,
@@ -32,7 +33,6 @@ var patientProfilesSchema = mongoose.Schema(
             default: true
         },
         account: {
-            encryptedPassword: [{type: mongoose.Schema.ObjectId, ref: 'Passwords'}],
             //New----------------------------------------
             nonce: String,
             response: String,

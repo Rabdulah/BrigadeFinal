@@ -6,6 +6,7 @@ export default DS.Model.extend({
   familyName: DS.attr(),
   givenName: DS.attr(),
   email: DS.attr(),
+  encryptedPassword: DS.belongsTo('password'),
   streetName: DS.attr(),
   streetNumber: DS.attr('Number'),
   apartment: DS.attr('Number'),

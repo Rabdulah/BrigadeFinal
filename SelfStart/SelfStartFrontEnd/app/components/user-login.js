@@ -10,38 +10,14 @@ export default Component.extend({
   ajax: Ember.inject.service(),
   temp: false,
   authentication: inject('auth'),
+  error: null,
 
-  authentication() {
-    var self= this;
-    if(localStorage.getItem('temp')) {
-      return this.get('ajax').request('http://localhost:8082/Authenticate', {
-        method: 'POST',
-        data: {
-          email: this.get('Email'),
-          password: this.get('PWord')
-        },
-        success: function(res) {
-          localStorage.setItem('id_token', res.token);
-          localStorage.setItem('user_level', res.user.account.accType);
-          localStorage.setItem('_id', res.user._id);
-          localStorage.setItem('loggedIn', true);
-          $('.ui.login.modal').modal('hide');
-          this.get('router').transitionTo('dashboard');
-
-        }
-      });
-
-    } else {
-      console.log("NOT AN ACC");
-    }
-  },
-
-
+  errorMessage: Ember.computed('error', function () {
+    return this.get('error');
+  }),
+ 
   actions: {
-    goToInfo(){
-
-    },
-
+   
     deny(){
       $('.ui.login.modal').modal('hide');
     },
@@ -52,6 +28,58 @@ export default Component.extend({
       auth.open(this.get('Email'), this.get('PWord')).then(function() {
         self.get('authentication').set('isLoginRequired', false);
       }, function(error) {
+        if (error === "passwordReset") {
+          Ember.$('.ui.changePassword.modal').modal({
+            // closable: false,
+            // detachable: false,
+            onDeny: function () {
+              self.set('error', null);
+              return true;
+            },
+            onApprove: function () {
+              if (!self.get('firstPassword') || self.get('firstPassword').trim().length === 0) {
+                self.set('error', 'Your must enter a password value');
+                return false;
+              } else {
+                if (self.get('firstPassword') !== self.get('secondPassword')) {
+                  self.set('error', 'Your password and confirmation password do not match');
+                  return false;
+                } else {
+                  self.set('error', null);
+                  var authentication = self.get('oudaAuth');
+                  var myStore = self.get('store');
+                  var userName = self.get('name');
+                  var hashedPassword = authentication.hash(self.get('firstPassword'));
+
+                  myStore.queryRecord('password', {filter: {userName: userName}}).then(function (userShadow) {
+                    userShadow.set('encryptedPassword', hashedPassword);
+                    userShadow.set('passwordMustChanged', true);
+                    userShadow.set('passwordReset', false);
+                    userShadow.save().then(function () {
+                      self.get('oudaAuth').close();
+                      self.get('oudaAuth').set('isLoginRequested', true);
+                      self.get('routing').transitionTo('login');
+                    //  return true;
+                    });
+                  });
+                }
+              }
+            }
+          })
+            .modal('show');
+        } else {
+          if (error === "wrongUserName") {
+            self.set('error', 'Please enter a correct user name');
+          } else {
+            if (error === "wrongPassword") {
+              self.set('error', 'Please enter a correct password');
+            } else {
+              if (error === "loginFailed") {
+                self.set('error', 'Login Failed ...');
+              }
+            }
+          }
+        }
       });
     },
 

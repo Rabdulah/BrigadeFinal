@@ -101,11 +101,15 @@ export default Component.extend({
         passwordReset:true,
       });
 
+      console.log("password b4 sent", passwords.get("encryptedPassword"));
+
       passwords.save().then((passwords) => {
+        console.log("Password returned to front end after save", passwords); 
         let patient = this.get('DS').createRecord('patient', {
           familyName: self.get('familyName'),
           givenName: self.get('givenName'),
           email: self.get('email'),
+          encryptedPassword: passwords,
           streetName: self.get('streetName'),
           streetNumber: self.get('streetNumber'),
           apartment: self.get('apartment'),
@@ -115,7 +119,7 @@ export default Component.extend({
           dateOfBirth: new Date(this.get('selectedDate')),
           gender: self.get('selectedGender'),
           phoneNumber: self.get('phoneNumber'),
-          postalCode: self.get('postalCode')
+          postalCode: self.get('postalCode'),
         });
 
         patient.save().then((res) => {
@@ -130,6 +134,7 @@ export default Component.extend({
           } else{
             console.log("SUCCESS", res);
             passwords.set('client', res);
+            passwords.save();
           }
         });
 

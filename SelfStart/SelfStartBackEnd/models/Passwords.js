@@ -13,4 +13,11 @@ var passwordsSchema = mongoose.Schema(
 );
 
 var Passwords = mongoose.model('password', passwordsSchema);
-exports.Model = Passwords;
+const Pass = exports.Model = Passwords;
+
+//----------------------------Get User By Email--------------------------------//
+exports.getUserByEmail = function(email, callback) {
+    const query = {email: email};
+    Pass.findOne(query, callback);
+};
+//----------------------------------------------------------------------------//

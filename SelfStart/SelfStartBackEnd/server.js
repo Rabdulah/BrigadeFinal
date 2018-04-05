@@ -11,6 +11,8 @@ var bodyParser = require('body-parser');
 var app = express(); // define our app using express
 var port = 8082;        // set our port
 var router = express.Router(); // get an instance of the express Router
+var parseUrlencoded = bodyParser.urlencoded({extended: false});
+var parseJSON = bodyParser.json();
 
 //Get Instances of a few models for the purpose of the route
 var Administrators = require('./models/Administrators');
@@ -133,66 +135,72 @@ function decrypt(cipherText) {
 };
 
 function failedLogin() {
-    var failed = new Logins({
+    var failed = new Logins.Model({
         nonce: null,
         token: null,
         loginFailed: true
     });
+    return failed;
 
-    failed.save(function (error) {
-        if (error) return console.error(error);
-        return failed;
-    });
+    // failed.save(function (error) {
+    //     console.log("HI");
+    //     if (error) console.log(error);
+    //     return failed;
+    // });
 
 };
 
-function getToken(UserShadow, callback) {
-    UserRoles.Model.find({"user": UserShadow.user}, function (error, userRoles) {
-        if (error) response.json({login: failedLogin()});
-        var token = ["home"];
-        var k = 1;
-        var n = 0;
-        var UserRolesSize = Object.keys(userRoles).length;
-        if (UserRolesSize === 0) {
-            callback(token);
-        } else {
-            for (i = 0; i < UserRolesSize; i++) {
-                var roleID = userRoles[i].role;
-                RolePermissions.Model.find({"roleCodes": roleID}, function (error, features) {
-                    n++;
-                    if (error) response.json({login: failedLogin()});
-                    var FeaturesSize = Object.keys(features).length;
-                    if (FeaturesSize === 0) {
-                        callback(token);
-                    } else {
-                        for (j = 0; j < FeaturesSize; j++) {
-                            token[k++] = features[j].code;
-                            if (n === UserRolesSize) {
-                                if (j === FeaturesSize - 1) {
-                                    callback(token);
-                                }
-                            }
-                        }
-                    }
-                });
-            }
-        }
+// function getToken(UserShadow, callback) {
+//     UserRoles.Model.find({"user": UserShadow.user}, function (error, userRoles) {
+//         if (error) response.json({login: failedLogin()});
+//         var token = ["home"];
+//         var k = 1;
+//         var n = 0;
+//         var UserRolesSize = Object.keys(userRoles).length;
+//         if (UserRolesSize === 0) {
+//             callback(token);
+//         } else {
+//             for (i = 0; i < UserRolesSize; i++) {
+//                 var roleID = userRoles[i].role;
+//                 RolePermissions.Model.find({"roleCodes": roleID}, function (error, features) {
+//                     n++;
+//                     if (error) response.json({login: failedLogin()});
+//                     var FeaturesSize = Object.keys(features).length;
+//                     if (FeaturesSize === 0) {
+//                         callback(token);
+//                     } else {
+//                         for (j = 0; j < FeaturesSize; j++) {
+//                             token[k++] = features[j].code;
+//                             if (n === UserRolesSize) {
+//                                 if (j === FeaturesSize - 1) {
+//                                     callback(token);
+//                                 }
+//                             }
+//                         }
+//                     }
+//                 });
+//             }
+//         }
 
-    });
-};
+//     });
+// };
 //--------------------------------------------------------------------------
 
 //Routes for our API
 router.route('/authenticate')
-    .post(function (request, response, next) {
+    .post(parseUrlencoded, parseJSON, function (request, response, next) {
         const email = request.body.email;
         const password = request.body.password;
         const nonce = request.body.nonce;
         const res = request.body.response;
         const requestType = request.body.requestType;
-
-        Passwords.findOne({"email": email}, function (error, UserShadow) {
-            if(err || !UserShadow){
+        console.log(email);
+        Passwords.getUserByEmail(email, function (error, UserShadow) {
+            console.log("usershadow:", UserShadow)
+            if(error || !UserShadow){
+                console.log("HI");
+                console.log(error);
+                // console.log(UserShadow);
                 var badUserName = new Logins.Model({
                     email: email,
                     password: null,
@@ -203,6 +211,14 @@ router.route('/authenticate')
                 });
                 response.json({login: badUserName});
             } else {
+                Logins.Model.find({"email": email}, function (error, oldLogins) {
+                    oldLogins.forEach(function (record) {
+                        Logins.Model.findByIdAndRemove(record.id,
+                            function (error, deleted) {
+                            }
+                        );
+                    });
+                });
                 if(UserShadow.admin) {
                     Administrators.findById(UserShadow.admin, function (error, user) {
                         if (requestType === "open") {// first message in the authentication protocol
@@ -228,6 +244,8 @@ router.route('/authenticate')
                                     var storedNonce = null;
                                     Logins.Model.findOne({"email": email}, (error, message4) =>{
                                         if(!error){
+                                            console.log("THIS IS MESSAGE4", messsage4);
+                                            console.log("THIS IS THE PASSWORD RECE", password);
                                             storedNonce = message4.nonce;
                                             if (recievedNonce === storedNonce) {
                                                 var recievedPassword = password;
@@ -438,7 +456,8 @@ router.route('/authenticate')
                         }
                     });
                 } else if(UserShadow.client){
-                    Clients.findById(UserShadow.client, function (error, user) {
+                    Clients.getUserByID(UserShadow.client, function (error, user) {
+                        console.log("hola");
                         if (requestType === "open") {// first message in the authentication protocol
                             var newLogin = new Logins.Model({
                                 email: email,
@@ -457,19 +476,35 @@ router.route('/authenticate')
                         
                         else {
                             if(requestType == "openResponse") {
+                                console.log("OPENRESPONSE", res);
+                                
                                 if(res) {
+                                    console.log("BRO WORK")
                                     var recievedNonce = decrypt(res);
                                     var storedNonce = null;
                                     Logins.Model.findOne({"email": email}, (error, message4) =>{
+                                        console.log("THIS IS MESSAGE", message4);
+                                        console.log("THIS IS THE ERROR", error);
+                                        console.log("This is the salt", UserShadow.salt);
+                                        console.log("THIS IS THE SENT PASS BEFORE HASH", password)
+                                        var newPass = hash(password + UserShadow.salt);
+                                        console.log("THIS IS THE SENT PASS AFTER THE HASH", newPass);
+                                        console.log("THIS IS THE USERSHADOW PASS", UserShadow.encryptedPassword);
                                         if(!error){
+                                            console.log(!error);
                                             storedNonce = message4.nonce;
+                                            console.log(recievedNonce);
+                                            console.log(storedNonce);
                                             if (recievedNonce === storedNonce) {
                                                 var recievedPassword = password;
                                                 var storedPassword = null;
                                                 var salt = null;
                                                 storedPassword = UserShadow.encryptedPassword;
                                                 salt = UserShadow.salt;
+                                                // console.log("THIS IS THE rec pass", recievedPassword)
                                                 var saltedPassword = hash(recievedPassword + salt);
+                                                // console.log("THIS IS SALT", saltedPassword);
+                                                // console.log("THIS IS STORED", storedPassword);
                                                 if (saltedPassword === storedPassword) {
                                                     if (UserShadow.passwordReset) {
                                                         message4.token = null;
@@ -478,6 +513,7 @@ router.route('/authenticate')
                                                             token : null,
                                                             passwordReset : true
                                                         });
+                                                        console.log("IN HERE");
                                                         response.json({login: rec});
                                                     } else {
                                                         // getToken(UserShadow, function (token) {
@@ -492,7 +528,7 @@ router.route('/authenticate')
                                                                     sessionIsActive : true,
                                                                     loginFailed : false
                                                                 });
-
+                                                                console.log("IN HERE!!");
                                                                 response.json({login: rec});
                                                             // });
                                                         // });
@@ -504,7 +540,7 @@ router.route('/authenticate')
                                                     message4.response = null;
                                                     message4.wrongPassword = true;
                                                     //console.log("wrong password");
-
+                                                    console.log("IN BAD");
                                                     var rec = new Logins.Model({
                                                         token : null,
                                                         nonce : null,
@@ -515,7 +551,10 @@ router.route('/authenticate')
                                                 }
                                             }
                                             else {
-                                                response.json({login: failedLogin()});
+                                                console.log("FAILES LOGIN");
+                                                var failed = failedLogin();
+                                                console.log(failed);
+                                                response.json({login: failed});
                                             }
                                         }
                                         else {

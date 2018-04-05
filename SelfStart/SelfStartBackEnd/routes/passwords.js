@@ -32,6 +32,8 @@ function decrypt(cipherText) {
 router.route('/')
     .post(parseUrlencoded, parseJSON, function (request, response) {
         var Salt = rand(256, 36);
+        console.log("Hashed Once", request.body.password.encryptedPassword);
+        
         var EncryptedPassword = hash(request.body.password.encryptedPassword + Salt);
         var newUserShadow = new Passwords.Model({
             salt : Salt,
@@ -97,7 +99,7 @@ router.route('/:password_id')
                 response.send({error: error});
             }
             else {
-                if (request.body.passwords.passwordMustChanged) {
+                if (request.body.password.passwordMustChanged) {
                     var Salt = rand(256, 36);
                     UserShadow.encryptedPassword = hash(request.body.password.encryptedPassword + Salt);
                     UserShadow.salt = Salt;
@@ -105,6 +107,9 @@ router.route('/:password_id')
                 }
                 UserShadow.passwordReset = request.body.password.passwordReset;
                 UserShadow.email = request.body.password.email;
+                UserShadow.admin = request.body.password.admin;
+                UserShadow.practitioner = request.body.password.practitioner;
+                UserShadow.client = request.body.password.client;
                 
                 UserShadow.save(function (error) {
                     if (error) {

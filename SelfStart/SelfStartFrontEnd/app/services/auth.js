@@ -54,6 +54,7 @@ export default Ember.Service.extend({
     var self = this;
     return new Ember.RSVP.Promise(function (resolve, reject) {
       // send username and password to the server asking for a challenge (nonce)
+      console.log(password)
       self.setPassword(password);
       var myStore = self.get('store');
       
@@ -67,15 +68,18 @@ export default Ember.Service.extend({
           requestType: "open"
         },
         success: function(serverResponse) {
-          if (serverResponse.get('loginFailed')) {
+          console.log(serverResponse)
+          console.log(serverResponse.login.loginFailed);
+          if (serverResponse.login.loginFailed) {
             self.close(name);
             reject("loginFailed");
           } else {
-            if (serverResponse.get('wrongUserName')) {
+            if (serverResponse.login.wrongUserName) {
               //       self.close(name);
               reject("wrongUserName");
             } else {
-              var NONCE = self.encrypt(serverResponse.get('nonce'));
+              var NONCE = self.encrypt(serverResponse.login.nonce);
+              console.log("NONCE", NONCE);
               self.get('ajax').request(window.location.protocol + "//" +  window.location.hostname + ":8082" + "/Authenticate", {
                 method: 'POST',
                 data: {
@@ -86,15 +90,16 @@ export default Ember.Service.extend({
                   requestType: "openResponse"
                 },
                 success: function(message4) {
-                  if (serverResponse.get('loginFailed')) {
+                  console.log(message4);
+                  if (serverResponse.login.loginFailed) {
                     ////  self.close(name);
                     reject("loginFailed");
                   } else {
-                    if (message4.get('wrongPassword')) {
+                    if (message4.login.wrongPassword) {
                       ////self.close(name);
                       reject("wrongPassword");
                     } else {
-                      if (message4.get('passwordReset')) {
+                      if (message4.login.passwordReset) {
                         //self.close(name);
                         reject("passwordReset");
                       } else {
@@ -138,11 +143,11 @@ export default Ember.Service.extend({
                   requestType: "fetch"
                 },
                 success: function(serverResponse) {
-                  if (serverResponse.get('loginFailed')) {
+                  if (serverResponse.login.loginFailed) {
                     self.close(name);
                     reject("fetchFailed");
                   } else {
-                    var NONCE = self.encrypt(serverResponse.get('nonce'));
+                    var NONCE = self.encrypt(serverResponse.login.nonce);
                     self.get('ajax').request(window.location.protocol + "//" +  window.location.hostname + ":8082" + "/Authenticate", {
                       method: 'POST',
                       data: {
@@ -153,11 +158,12 @@ export default Ember.Service.extend({
                       requestType: "fetchResponse"
                       },
                       success: function(givenToken) {
-                        if (givenToken.get('loginFailed')) {
+                        if (givenToken.loginFailed) {
                           self.close(name);
                           reject("fetchFailed");
                         } else {
-                          var plainToken = self.decrypt(givenToken.get('token'));
+                          // var plainToken = self.decrypt(givenToken.get('token'));
+                          var plainToken = null;
                           self.set('isAuthenticated', true);
                           self.set('userCList', plainToken);
                           resolve(plainToken);

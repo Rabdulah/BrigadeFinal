@@ -3,7 +3,12 @@ var router = express.Router();
 // var UserRoles = require('../models/userRoles');
 var Passwords = require('../models/Passwords');
 var Logins = require('../models/Logins');
-// var Users = require('../models/users');
+
+//Get Instances of a few models for the purpose of the route
+var Administrators = require('./models/Administrators');
+var Clients = require('./models/PatientProfiles');
+var Physiotherapests = require('./models/Physiotherapests');
+
 // var RolePermissions = require('../models/rolePermissions');
 
 

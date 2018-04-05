@@ -29,7 +29,8 @@
               <a class="item">Blog</a>
               <a class="item">Contact</a>
               {{#if loggedOut}}
-                <a id="login" class="item" {{action 'openModal'}}>Log in</a>
+                {{!-- <a id="login" class="item" {{action 'openModal'}}>Log in</a> --}}
+                {{user-login}}
               {{else}}
                 <a class="item" {{action "logout"}}>Logout</a>
                 {{/if}}
@@ -45,7 +46,7 @@
 
 </div>
 
-{{#ui-modal name="login" class="login tiny"}}
+{{!-- {{#ui-modal name="login" class="login tiny"}}
 
   {{#if loggingIn}}
 
@@ -103,4 +104,4 @@
     </div>
   {{/if}}
 
-{{/ui-modal}}
+{{/ui-modal}} --}}

@@ -5951,11 +5951,15 @@ define('self-start-front-end/components/user-info', ['exports'], function (expor
           passwordReset: true
         });
 
+        console.log("password b4 sent", passwords.get("encryptedPassword"));
+
         passwords.save().then(function (passwords) {
+          console.log("Password returned to front end after save", passwords);
           var patient = _this.get('DS').createRecord('patient', {
             familyName: self.get('familyName'),
             givenName: self.get('givenName'),
             email: self.get('email'),
+            encryptedPassword: passwords,
             streetName: self.get('streetName'),
             streetNumber: self.get('streetNumber'),
             apartment: self.get('apartment'),
@@ -5980,6 +5984,7 @@ define('self-start-front-end/components/user-info', ['exports'], function (expor
             } else {
               console.log("SUCCESS", res);
               passwords.set('client', res);
+              passwords.save();
             }
           });
         });
@@ -5993,75 +5998,94 @@ define('self-start-front-end/components/user-login', ['exports'], function (expo
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-
-  var _EmberComponent$exte;
-
-  function _defineProperty(obj, key, value) {
-    if (key in obj) {
-      Object.defineProperty(obj, key, {
-        value: value,
-        enumerable: true,
-        configurable: true,
-        writable: true
-      });
-    } else {
-      obj[key] = value;
-    }
-
-    return obj;
-  }
-
-  exports.default = Ember.Component.extend((_EmberComponent$exte = {
+  exports.default = Ember.Component.extend({
     DS: Ember.inject.service('store'),
     router: Ember.inject.service('-routing'),
     model: null,
     ajax: Ember.inject.service(),
     temp: false,
-    authentication: Ember.inject.service('auth')
+    authentication: Ember.inject.service('auth'),
+    error: null,
 
-  }, _defineProperty(_EmberComponent$exte, 'authentication', function authentication() {
-    var self = this;
-    if (localStorage.getItem('temp')) {
-      return this.get('ajax').request('http://localhost:8082/Authenticate', {
-        method: 'POST',
-        data: {
-          email: this.get('Email'),
-          password: this.get('PWord')
-        },
-        success: function success(res) {
-          localStorage.setItem('id_token', res.token);
-          localStorage.setItem('user_level', res.user.account.accType);
-          localStorage.setItem('_id', res.user._id);
-          localStorage.setItem('loggedIn', true);
-          Ember.$('.ui.login.modal').modal('hide');
-          this.get('router').transitionTo('dashboard');
-        }
-      });
-    } else {
-      console.log("NOT AN ACC");
+    errorMessage: Ember.computed('error', function () {
+      return this.get('error');
+    }),
+
+    actions: {
+      deny: function deny() {
+        Ember.$('.ui.login.modal').modal('hide');
+      },
+      submit: function submit() {
+        var auth = this.get("authentication");
+        var self = this;
+        auth.open(this.get('Email'), this.get('PWord')).then(function () {
+          self.get('authentication').set('isLoginRequired', false);
+        }, function (error) {
+          if (error === "passwordReset") {
+            Ember.$('.ui.changePassword.modal').modal({
+              // closable: false,
+              // detachable: false,
+              onDeny: function onDeny() {
+                self.set('error', null);
+                return true;
+              },
+              onApprove: function onApprove() {
+                if (!self.get('firstPassword') || self.get('firstPassword').trim().length === 0) {
+                  self.set('error', 'Your must enter a password value');
+                  return false;
+                } else {
+                  if (self.get('firstPassword') !== self.get('secondPassword')) {
+                    self.set('error', 'Your password and confirmation password do not match');
+                    return false;
+                  } else {
+                    self.set('error', null);
+                    var authentication = self.get('oudaAuth');
+                    var myStore = self.get('store');
+                    var userName = self.get('name');
+                    var hashedPassword = authentication.hash(self.get('firstPassword'));
+
+                    myStore.queryRecord('password', { filter: { userName: userName } }).then(function (userShadow) {
+                      userShadow.set('encryptedPassword', hashedPassword);
+                      userShadow.set('passwordMustChanged', true);
+                      userShadow.set('passwordReset', false);
+                      userShadow.save().then(function () {
+                        self.get('oudaAuth').close();
+                        self.get('oudaAuth').set('isLoginRequested', true);
+                        self.get('routing').transitionTo('login');
+                        //  return true;
+                      });
+                    });
+                  }
+                }
+              }
+            }).modal('show');
+          } else {
+            if (error === "wrongUserName") {
+              self.set('error', 'Please enter a correct user name');
+            } else {
+              if (error === "wrongPassword") {
+                self.set('error', 'Please enter a correct password');
+              } else {
+                if (error === "loginFailed") {
+                  self.set('error', 'Login Failed ...');
+                }
+              }
+            }
+          }
+        });
+      },
+
+
+      logout: function logout() {
+        localStorage.clear();
+      },
+
+      openModal: function openModal() {
+        Ember.$('.ui.login.modal').modal({}).modal('show');
+      }
     }
-  }), _defineProperty(_EmberComponent$exte, 'actions', {
-    goToInfo: function goToInfo() {},
-    deny: function deny() {
-      Ember.$('.ui.login.modal').modal('hide');
-    },
-    submit: function submit() {
-      var auth = this.get("authentication");
-      var self = this;
-      auth.open(this.get('Email'), this.get('PWord')).then(function () {
-        self.get('authentication').set('isLoginRequired', false);
-      }, function (error) {});
-    },
 
-
-    logout: function logout() {
-      localStorage.clear();
-    },
-
-    openModal: function openModal() {
-      Ember.$('.ui.login.modal').modal({}).modal('show');
-    }
-  }), _EmberComponent$exte));
+  });
 });
 define('self-start-front-end/components/view-appointment', ['exports'], function (exports) {
   'use strict';
@@ -7809,6 +7833,7 @@ define('self-start-front-end/models/patient', ['exports', 'ember-data'], functio
     familyName: _emberData.default.attr(),
     givenName: _emberData.default.attr(),
     email: _emberData.default.attr(),
+    encryptedPassword: _emberData.default.belongsTo('password'),
     streetName: _emberData.default.attr(),
     streetNumber: _emberData.default.attr('Number'),
     apartment: _emberData.default.attr('Number'),
@@ -8503,6 +8528,7 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
       var self = this;
       return new Ember.RSVP.Promise(function (resolve, reject) {
         // send username and password to the server asking for a challenge (nonce)
+        console.log(password);
         self.setPassword(password);
         var myStore = self.get('store');
 
@@ -8516,15 +8542,18 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
             requestType: "open"
           },
           success: function success(serverResponse) {
-            if (serverResponse.get('loginFailed')) {
+            console.log(serverResponse);
+            console.log(serverResponse.login.loginFailed);
+            if (serverResponse.login.loginFailed) {
               self.close(name);
               reject("loginFailed");
             } else {
-              if (serverResponse.get('wrongUserName')) {
+              if (serverResponse.login.wrongUserName) {
                 //       self.close(name);
                 reject("wrongUserName");
               } else {
-                var NONCE = self.encrypt(serverResponse.get('nonce'));
+                var NONCE = self.encrypt(serverResponse.login.nonce);
+                console.log("NONCE", NONCE);
                 self.get('ajax').request(window.location.protocol + "//" + window.location.hostname + ":8082" + "/Authenticate", {
                   method: 'POST',
                   data: {
@@ -8535,15 +8564,16 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
                     requestType: "openResponse"
                   },
                   success: function success(message4) {
-                    if (serverResponse.get('loginFailed')) {
+                    console.log(message4);
+                    if (serverResponse.login.loginFailed) {
                       ////  self.close(name);
                       reject("loginFailed");
                     } else {
-                      if (message4.get('wrongPassword')) {
+                      if (message4.login.wrongPassword) {
                         ////self.close(name);
                         reject("wrongPassword");
                       } else {
-                        if (message4.get('passwordReset')) {
+                        if (message4.login.passwordReset) {
                           //self.close(name);
                           reject("passwordReset");
                         } else {
@@ -8584,11 +8614,11 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
               requestType: "fetch"
             },
             success: function success(serverResponse) {
-              if (serverResponse.get('loginFailed')) {
+              if (serverResponse.login.loginFailed) {
                 self.close(name);
                 reject("fetchFailed");
               } else {
-                var NONCE = self.encrypt(serverResponse.get('nonce'));
+                var NONCE = self.encrypt(serverResponse.login.nonce);
                 self.get('ajax').request(window.location.protocol + "//" + window.location.hostname + ":8082" + "/Authenticate", {
                   method: 'POST',
                   data: {
@@ -8599,11 +8629,12 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
                     requestType: "fetchResponse"
                   },
                   success: function success(givenToken) {
-                    if (givenToken.get('loginFailed')) {
+                    if (givenToken.loginFailed) {
                       self.close(name);
                       reject("fetchFailed");
                     } else {
-                      var plainToken = self.decrypt(givenToken.get('token'));
+                      // var plainToken = self.decrypt(givenToken.get('token'));
+                      var plainToken = null;
                       self.set('isAuthenticated', true);
                       self.set('userCList', plainToken);
                       resolve(plainToken);
@@ -10676,7 +10707,7 @@ define("self-start-front-end/templates/components/nav-bar", ["exports"], functio
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "C1wW5RHz", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"div\"],[9,\"id\",\"window\"],[7],[0,\"\\n\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/home-style.css\"]]],[7],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",[26,[\"following bar \",[18,\"stickyValue\"]]]],[9,\"id\",\"header\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[9,\"id\",\"menu\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n                    \"],[4,\"link-to\",[\"home\"],null,{\"statements\":[[6,\"img\"],[9,\"class\",\"ui image selfStart\"],[9,\"src\",\"assets/images/home/Header.png\"],[7],[8]],\"parameters\":[]},null],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n\\n            \"],[6,\"div\"],[10,\"class\",[26,[\"right menu \",[18,\"invertedValue\"]]]],[7],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item scroll\"],[9,\"href\",\"#about\"],[7],[0,\"About\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"How it Works\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Services\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Assessment\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Blog\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Contact\"],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"loggedOut\"]]],null,{\"statements\":[[0,\"                \"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"Log in\"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                \"],[6,\"a\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"logout\"]],[7],[0,\"Logout\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[11,1],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"login\",\"login tiny\"]],{\"statements\":[[0,\"\\n\"],[4,\"if\",[[20,[\"loggingIn\"]]],null,{\"statements\":[[0,\"\\n    \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"class\",\"ui fluid centered header\"],[9,\"style\",\"border-radius: 0.28571429rem;\"],[7],[0,\"Sign in\"],[8],[0,\"\\n\\n\\n    \"],[6,\"div\"],[9,\"id\",\"ui container\"],[9,\"style\",\"height: 355px; padding-left:5%; padding-right: 5%; padding-top: 2%\"],[7],[0,\"\\n      \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"email\",\"email\",[20,[\"Email\"]],\"Email\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"lock\",\"password\",[20,[\"PWord\"]],\"Password\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"input\"],[9,\"type\",\"checkbox\"],[9,\"id\",\"cd-checkbox-1\"],[7],[8],[0,\"\\n          \"],[6,\"label\"],[9,\"for\",\"cd-checkbox-1\"],[7],[0,\"Remember me\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"max-width: 100%; height: 50px;\"],[7],[0,\"Login\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"cursor: pointer; text-align: center;  text-decoration: underline; padding-top: 65px\"],[3,\"action\",[[19,0,[]],\"forgotPassword\"]],[7],[0,\"forgot your password?\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"    \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"class\",\"ui fluid centered header\"],[9,\"style\",\"border-radius: 0.28571429rem;\"],[7],[0,\"Sign in\"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"id\",\"ui container\"],[9,\"style\",\"height: 260px; padding-left:5%; padding-right: 5%; padding-top: 3%\"],[7],[0,\"\\n    \"],[6,\"p\"],[9,\"style\",\"text-align: center;\"],[7],[0,\"Lost your password? Please enter your email address. You will receive a link to create a new password.\"],[8],[0,\"\\n      \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"email\",\"email\",[20,[\"Email\"]],\"Email\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"max-width: 100%; height: 50px;\"],[9,\"value\",\"Submit\"],[7],[0,\"Reset Password\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"cursor: pointer; text-align: center;  text-decoration: underline; padding-top: 65px\"],[3,\"action\",[[19,0,[]],\"login\"]],[7],[0,\"Back to log-in\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/nav-bar.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "Mn2clYqs", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"div\"],[9,\"id\",\"window\"],[7],[0,\"\\n\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/home-style.css\"]]],[7],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",[26,[\"following bar \",[18,\"stickyValue\"]]]],[9,\"id\",\"header\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[9,\"id\",\"menu\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n                    \"],[4,\"link-to\",[\"home\"],null,{\"statements\":[[6,\"img\"],[9,\"class\",\"ui image selfStart\"],[9,\"src\",\"assets/images/home/Header.png\"],[7],[8]],\"parameters\":[]},null],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n\\n            \"],[6,\"div\"],[10,\"class\",[26,[\"right menu \",[18,\"invertedValue\"]]]],[7],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item scroll\"],[9,\"href\",\"#about\"],[7],[0,\"About\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"How it Works\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Services\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Assessment\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Blog\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"Contact\"],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"loggedOut\"]]],null,{\"statements\":[[0,\"                \"],[1,[18,\"user-login\"],false],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                \"],[6,\"a\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"logout\"]],[7],[0,\"Logout\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[11,1],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/nav-bar.hbs" } });
 });
 define("self-start-front-end/templates/components/parse-question", ["exports"], function (exports) {
   "use strict";
@@ -10892,7 +10923,7 @@ define("self-start-front-end/templates/components/user-login", ["exports"], func
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "Z5hxyboC", "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"Log in\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"login\",\"login\"]],{\"statements\":[[0,\"  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"h2\"],[9,\"class\",\"ui fluid centered header\"],[7],[0,\"Login\"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"id\",\"ui container\"],[9,\"style\",\"height: 250px; padding-left:5%; padding-right: 5%; padding-top: 2%\"],[7],[0,\"\\n  \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Email\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Email\"]],\"Email\"]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Password\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"password\",[20,[\"PWord\"]],\"Password\"]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"inline\"],[7],[0,\"\\n      \"],[6,\"button\"],[9,\"class\",\"ui blue button \"],[3,\"action\",[[19,0,[]],\"submit\"]],[7],[0,\"Login\"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/user-login.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "7qgPGCOQ", "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"Log in\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"login\",\"login\"]],{\"statements\":[[0,\"  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"h2\"],[9,\"class\",\"ui fluid centered header\"],[7],[0,\"Login\"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"id\",\"ui container\"],[9,\"style\",\"height: 250px; padding-left:5%; padding-right: 5%; padding-top: 2%\"],[7],[0,\"\\n  \"],[6,\"form\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Email\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"text\",[20,[\"Email\"]],\"Email\"]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Password\"],[8],[0,\"\\n      \"],[1,[25,\"input\",null,[[\"type\",\"value\",\"placeholder\"],[\"password\",[20,[\"PWord\"]],\"Password\"]]],false],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"inline\"],[7],[0,\"\\n      \"],[6,\"button\"],[9,\"class\",\"ui blue button \"],[3,\"action\",[[19,0,[]],\"submit\"]],[7],[0,\"Login\"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"changePassword\",\"changePassword\"]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"\\n    Please change your password and login again\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"inline field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Password\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"value\",\"type\",\"placeholder\"],[[20,[\"firstPassword\"]],\"password\",\"enter password\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"inline field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Reenter Password\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"value\",\"type\",\"placeholder\"],[[20,[\"secondPassword\"]],\"password\",\"re-enter password\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui black deny button\"],[7],[0,\"\\n      Cancel\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui positive right labeled icon button\"],[7],[0,\"\\n      Save\\n      \"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui center aligned container\"],[7],[0,\"\\n      \"],[6,\"p\"],[9,\"style\",\"color: #ca1010\"],[7],[0,\" \"],[1,[18,\"errorMessage\"],false],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/user-login.hbs" } });
 });
 define("self-start-front-end/templates/components/view-appointment", ["exports"], function (exports) {
   "use strict";
