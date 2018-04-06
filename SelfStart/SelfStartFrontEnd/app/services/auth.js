@@ -20,6 +20,7 @@ export default Ember.Service.extend({
   }),
 
   setName(name) {
+    console.log(name);
     this.set('email', name.toLowerCase());
     var identity = this.encrypt(this.get('email'));
     localStorage.setItem('sas-session-id', identity);
@@ -57,7 +58,7 @@ export default Ember.Service.extend({
       // send username and password to the server asking for a challenge (nonce)
       self.setPassword(password);
       var myStore = self.get('store');
-      
+
       var loginRequest = myStore.createRecord('login', {
         email: email,
         password: null, //first message password should be null
@@ -105,7 +106,7 @@ export default Ember.Service.extend({
                       reject("passwordReset");
                     } else {
                       console.log("In else");
-                      self.setName(name);
+                      self.setName(message4.get('email'));
                       // var userRole = self.decrypt(message4.get('token'));
                       var userRole = null;
                       self.set('isAuthenticated', true);
@@ -169,7 +170,7 @@ export default Ember.Service.extend({
               }
             });
 
-          } 
+          }
 
         });
       } else {

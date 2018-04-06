@@ -72,45 +72,59 @@ router.route('/')
         // });
     })
     .get(parseUrlencoded, parseJSON, function (request, response) {
+        let patient = request.query.filter;
         let {limit, offset, sort, dir, queryPath, regex} = request.query;
-        if(!limit) {
-            Patients.Model.find(function (error, patients) {
+        console.log(patient);
+        if (!patient){
+
+            if(!limit) {
+                Patients.Model.find(function (error, patients) {
+                    if (error) response.send(error);
+                    response.json({patient: patients});
+                });
+            }
+            else {
+                //  let users = schema.users.all().models;
+                //  let users = Users.Model;
+
+                offset = Number(offset || 0);
+                limit = Number(limit || 10);
+                dir = dir || 'asc';
+                sort = sort || 'id';
+
+                let query = {};
+                if (regex !== '')
+                    query[queryPath] = new RegExp(regex, "i");
+
+                var sortOrder = sort;
+                if (sortOrder) {
+                    if (dir !== 'asc') {
+                        sortOrder = '-' + sort;
+                    }
+                }
+
+                let options = {
+                    sort: sortOrder,
+                    lean: true,
+                    offset: offset,
+                    limit: limit
+                };
+
+                Patients.Model.paginate(query, options, function (error, patients) {
+                    if (error) response.send(error);
+                    response.json({patient: patients.docs});
+                });
+            }
+        }
+        else{
+
+            Patients.Model.find({"email": patient.email}, function (error, patients) {
                 if (error) response.send(error);
                 response.json({patient: patients});
             });
+
         }
-        else {
-            //  let users = schema.users.all().models;
-            //  let users = Users.Model;
 
-            offset = Number(offset || 0);
-            limit = Number(limit || 10);
-            dir = dir || 'asc';
-            sort = sort || 'id';
-
-            let query = {};
-            if (regex !== '')
-                query[queryPath] = new RegExp(regex, "i");
-
-            var sortOrder = sort;
-            if (sortOrder) {
-                if (dir !== 'asc') {
-                    sortOrder = '-' + sort;
-                }
-            }
-
-            let options = {
-                sort: sortOrder,
-                lean: true,
-                offset: offset,
-                limit: limit
-            };
-
-            Patients.Model.paginate(query, options, function (error, patients) {
-                if (error) response.send(error);
-                response.json({patient: patients.docs});
-            });
-        }
     });
 
 router.route('/:patient_id')

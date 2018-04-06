@@ -17,13 +17,13 @@ export default Component.extend({
   actions: {
 
 
-    bookAppointment(){
-      this.set('isEditing', true);
-    },
-
-    cancelbookingappointment(){
-      this.set('isEditing', false);
-    },
+    // bookAppointment(){
+    //   this.set('isEditing', true);
+    // },
+    //
+    // cancelbookingappointment(){
+    //   this.set('isEditing', false);
+    // },
 
     updateValue(physio){
       this.set('selectedphysio', this.get('DS').peekRecord('physiotherapest', physio));
