@@ -885,6 +885,7 @@ define('self-start-front-end/components/add-physiotherapist', ['exports'], funct
     DS: Ember.inject.service('store'),
     flagAdd: null,
     tagName: '',
+    authentication: Ember.inject.service('auth'),
 
     init: function init() {
       this._super.apply(this, arguments);
@@ -936,33 +937,51 @@ define('self-start-front-end/components/add-physiotherapist', ['exports'], funct
 
         var self = this;
 
-        var physioAccount = {};
-        physioAccount['encryptedPassword'] = self.get('encryptedPassword');
-
-        var physiotherapist = this.get('DS').createRecord('physiotherapest', {
-          familyName: self.get('familyName'),
-          givenName: self.get('givenName'),
+        var passwords = this.get('DS').createRecord('password', {
           email: self.get('email'),
-          dateHired: new Date(this.get('selectedHiredDate')),
-          dateFired: new Date(this.get('selectedFiredDate')),
-          gender: self.get('selectedGender'),
-          phoneNumber: self.get('phoneNumber'),
-          //treatment: self.get('treatment'),
-          account: physioAccount
-
+          encryptedPassword: self.get('authentication').hash(self.get('encryptedPassword')),
+          passwordMustChanged: true,
+          passwordReset: true
         });
-        physiotherapist.save().then(function () {
-          Ember.$('.ui.newPhysio.modal').modal('hide');
-          _this.set('familyName', '');
-          _this.set('givenName', '');
-          _this.set('email', '');
-          _this.set('selectedGender', '');
-          _this.set('dateHired', '');
-          _this.set('dateFired', '');
-          _this.set('phoneNumber', '');
-          _this.set('encryptedPassword', '');
-          if (_this.get('flagAdd') === true) _this.set('flagAdd', false);else _this.set('flagAdd', true);
-          return true;
+
+        passwords.save().then(function (passwords) {
+          var physiotherapist = _this.get('DS').createRecord('physiotherapest', {
+            familyName: self.get('familyName'),
+            givenName: self.get('givenName'),
+            email: self.get('email'),
+            encryptedPassword: passwords,
+            dateHired: new Date(_this.get('selectedHiredDate')),
+            dateFired: new Date(_this.get('selectedFiredDate')),
+            gender: self.get('selectedGender'),
+            phoneNumber: self.get('phoneNumber')
+            //treatment: self.get('treatment'),
+          });
+          physiotherapist.save().then(function (res) {
+            console.log('this is the response', res);
+            console.log(res.get("success"));
+            if (!res.get("success")) {
+              console.log("FAILED");
+              res.destroyRecord().then(function (o) {
+                console.log("destroyed", o);
+              });
+              passwords.destroyRecord().then(function (o) {});
+            } else {
+              console.log("SUCCESS", res);
+              passwords.set('practitioner', res);
+              passwords.save();
+            }
+            Ember.$('.ui.newPhysio.modal').modal('hide');
+            _this.set('familyName', '');
+            _this.set('givenName', '');
+            _this.set('email', '');
+            _this.set('selectedGender', '');
+            _this.set('dateHired', '');
+            _this.set('dateFired', '');
+            _this.set('phoneNumber', '');
+            _this.set('encryptedPassword', '');
+            if (_this.get('flagAdd') === true) _this.set('flagAdd', false);else _this.set('flagAdd', true);
+            return true;
+          });
         });
       },
 
@@ -9352,8 +9371,8 @@ define('self-start-front-end/mixins/promise-resolver', ['exports', 'ember-promis
     }
   });
 });
-define("self-start-front-end/models/administrator", ["exports", "ember-data"], function (exports, _emberData) {
-  "use strict";
+define('self-start-front-end/models/administrator', ['exports', 'ember-data'], function (exports, _emberData) {
+  'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
@@ -9362,11 +9381,13 @@ define("self-start-front-end/models/administrator", ["exports", "ember-data"], f
     ID: _emberData.default.attr(),
     familyName: _emberData.default.attr(),
     givenName: _emberData.default.attr(),
+    encryptedPassword: _emberData.default.belongsTo('password'),
     email: _emberData.default.attr(),
     dateHired: _emberData.default.attr("Date"),
     dateFired: _emberData.default.attr("Date"),
     phoneNumber: _emberData.default.attr(),
-    account: _emberData.default.attr()
+    account: _emberData.default.attr(),
+    success: _emberData.default.attr()
   });
 });
 define("self-start-front-end/models/answer", ["exports", "ember-data"], function (exports, _emberData) {
@@ -9610,8 +9631,8 @@ define('self-start-front-end/models/patient', ['exports', 'ember-data'], functio
     success: _emberData.default.attr()
   });
 });
-define("self-start-front-end/models/physiotherapest", ["exports", "ember-data"], function (exports, _emberData) {
-    "use strict";
+define('self-start-front-end/models/physiotherapest', ['exports', 'ember-data'], function (exports, _emberData) {
+    'use strict';
 
     Object.defineProperty(exports, "__esModule", {
         value: true
@@ -9620,6 +9641,7 @@ define("self-start-front-end/models/physiotherapest", ["exports", "ember-data"],
         ID: _emberData.default.attr(),
         familyName: _emberData.default.attr(),
         givenName: _emberData.default.attr(),
+        encryptedPassword: _emberData.default.belongsTo('password'),
         email: _emberData.default.attr(),
         dateHired: _emberData.default.attr("Date"),
         dateFired: _emberData.default.attr("Date"),
@@ -9627,6 +9649,7 @@ define("self-start-front-end/models/physiotherapest", ["exports", "ember-data"],
         gender: _emberData.default.attr(),
         treatment: _emberData.default.attr(),
         account: _emberData.default.attr(),
+        success: _emberData.default.attr(),
         appointments: _emberData.default.hasMany('appointment', { async: true })
     });
 });
@@ -10326,6 +10349,7 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
     store: Ember.inject.service(),
     isLoginRequested: false,
     userCList: null,
+    accountType: null,
     ajax: Ember.inject.service(),
 
     getName: Ember.computed(function () {
@@ -10349,6 +10373,11 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
       var identity = this.encrypt(this.get('email'));
       localStorage.setItem('sas-session-id', identity);
       console.log("In set item", this.get('email'));
+    },
+    setAccountType: function setAccountType(value) {
+      this.set("accountType", value);
+      var accType = this.encrypt(this.get("accountType"));
+      localStorage.setItem("accType", accType);
     },
     setPassword: function setPassword(password) {
       this.set('encryptedPassword', this.hash(password));
@@ -10426,6 +10455,7 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
                     } else {
                       console.log("In else");
                       self.setName(message4.get('email'));
+
                       // var userRole = self.decrypt(message4.get('token'));
                       var userRole = null;
                       self.set('isAuthenticated', true);
@@ -10514,9 +10544,6 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
       myStore.queryRecord('login', { filter: { "email": email } }).then(function (Login) {
         if (Login) {
           Login.destroyRecord();
-          // Login.forEach((record) => {
-          //   record.destroyRecord();
-          // });
         }
       });
       window.localStorage.removeItem('sas-session-id');

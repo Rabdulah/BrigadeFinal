@@ -8,6 +8,7 @@ export default Ember.Service.extend({
   store: Ember.inject.service(),
   isLoginRequested: false,
   userCList: null,
+  accountType: null,
   ajax: Ember.inject.service(),
 
   getName: Ember.computed(function () {
@@ -34,6 +35,11 @@ export default Ember.Service.extend({
     console.log("In set item", this.get('email'));
   },
 
+  setAccountType(value){
+    this.set("accountType", value);
+    var accType = this.encrypt(this.get("accountType"));
+    localStorage.setItem("accType", accType);
+  },
 
   setPassword(password) {
     this.set('encryptedPassword', this.hash(password));
@@ -114,6 +120,7 @@ export default Ember.Service.extend({
                     } else {
                       console.log("In else");
                       self.setName(message4.get('email'));
+
                       // var userRole = self.decrypt(message4.get('token'));
                       var userRole = null;
                       self.set('isAuthenticated', true);
@@ -213,9 +220,6 @@ export default Ember.Service.extend({
     myStore.queryRecord('login', {filter: {"email": email}}).then(function (Login) {
       if (Login) {
         Login.destroyRecord();
-        // Login.forEach((record) => {
-        //   record.destroyRecord();
-        // });
       }
     });
     window.localStorage.removeItem('sas-session-id');

@@ -102,11 +102,12 @@ router.route('/')
                     token: null,
                     wrongUserName: true
                 });
-
+                badUserName.save();
                 response.json({login: badUserName});
             } else {
                 if(UserShadow.admin) {
-                    Administrators.findById(UserShadow.admin, function (error, user) {
+                    Administrators.getUserByID(UserShadow.admin, function (error, user) {
+                        console.log("In client");
                         if (request.body.login.requestType === "open") {// first message in the authentication protocol
                             // make sure to delete any leftover logins from any previous session for the same user if any.
                             Logins.Model.find({"email": request.body.login.email}, function (error, oldLogins) {
@@ -138,15 +139,23 @@ router.route('/')
                                     var storedNonce = null;
                                     Logins.Model.findOne({"email": request.body.login.email}, function (error, message4) {
                                         if (!error) {
+                                            console.log("message4 ", message4);
+                                            console.log("USERSHADOW", UserShadow);
                                             storedNonce = message4.nonce;
                                             if (recievedNonce === storedNonce) {
                                                 // Now this session is confirmed fresh. Let us authenticate the user.
-                                                var recievedPassword = request.body.login.password;
+                                                var recievedPassword = request.body.login.password + UserShadow.salt;
                                                 var storedPassword = null;
                                                 var salt = null;
                                                 storedPassword = UserShadow.encryptedPassword;
                                                 salt = UserShadow.salt;
-                                                var saltedPassword = hash(recievedPassword + salt);
+                                                var saltedPassword = hash(recievedPassword);
+                                                // console.log("One hash + salt", recievedPassword);
+                                                console.log("SALTED", saltedPassword);
+                                                // console.log("RECIEVED", request.body.login.password);
+                                                console.log("STORED", storedPassword);
+                                                // console.log("SALT", UserShadow.salt);
+
                                                 if (saltedPassword === storedPassword) {
                                                     // Now the user is authenticated.
                                                     //
@@ -162,7 +171,7 @@ router.route('/')
                                                             token : null,
                                                             passwordReset : true
                                                         });
-
+                                                        rec.save();
                                                         response.json({login: rec});
                                                     } else {
                                                         // get the user role
@@ -179,7 +188,7 @@ router.route('/')
                                                                     sessionIsActive : true,
                                                                     loginFailed : false
                                                                 });
-                                                                console.log("rec", rec);
+                                                                rec.save();
                                                                 response.json({login: rec});
                                                             });
                                                         // });
@@ -198,6 +207,7 @@ router.route('/')
                                                         response : null,
                                                         wrongPassword : true
                                                     });
+                                                    rec.save();
                                                     response.json({login: rec});
                                                 }
                                             } else {
@@ -238,7 +248,8 @@ router.route('/')
                         }
                     });
                 } else if(UserShadow.practitioner) {
-                    Physiotherapests.findById(UserShadow.practitioner, function (error, user) {
+                    Physiotherapests.getUserByID(UserShadow.practitioner, function (error, user) {
+                        console.log("In Practitioner");
                         if (request.body.login.requestType === "open") {// first message in the authentication protocol
                             // make sure to delete any leftover logins from any previous session for the same user if any.
                             Logins.Model.find({"email": request.body.login.email}, function (error, oldLogins) {
@@ -270,15 +281,23 @@ router.route('/')
                                     var storedNonce = null;
                                     Logins.Model.findOne({"email": request.body.login.email}, function (error, message4) {
                                         if (!error) {
+                                            console.log("message4 ", message4);
+                                            console.log("USERSHADOW", UserShadow);
                                             storedNonce = message4.nonce;
                                             if (recievedNonce === storedNonce) {
                                                 // Now this session is confirmed fresh. Let us authenticate the user.
-                                                var recievedPassword = request.body.login.password;
+                                                var recievedPassword = request.body.login.password + UserShadow.salt;
                                                 var storedPassword = null;
                                                 var salt = null;
                                                 storedPassword = UserShadow.encryptedPassword;
                                                 salt = UserShadow.salt;
-                                                var saltedPassword = hash(recievedPassword + salt);
+                                                var saltedPassword = hash(recievedPassword);
+                                                // console.log("One hash + salt", recievedPassword);
+                                                console.log("SALTED", saltedPassword);
+                                                // console.log("RECIEVED", request.body.login.password);
+                                                console.log("STORED", storedPassword);
+                                                // console.log("SALT", UserShadow.salt);
+
                                                 if (saltedPassword === storedPassword) {
                                                     // Now the user is authenticated.
                                                     //
@@ -294,7 +313,7 @@ router.route('/')
                                                             token : null,
                                                             passwordReset : true
                                                         });
-
+                                                        rec.save();
                                                         response.json({login: rec});
                                                     } else {
                                                         // get the user role
@@ -309,9 +328,9 @@ router.route('/')
                                                                 var rec = new Logins.Model({
                                                                     // token : encrypt(JSON.stringify(token)),
                                                                     sessionIsActive : true,
-                                                                    oginFailed : false
+                                                                    loginFailed : false
                                                                 });
-
+                                                                rec.save();
                                                                 response.json({login: rec});
                                                             });
                                                         // });
@@ -330,6 +349,7 @@ router.route('/')
                                                         response : null,
                                                         wrongPassword : true
                                                     });
+                                                    rec.save();
                                                     response.json({login: rec});
                                                 }
                                             } else {

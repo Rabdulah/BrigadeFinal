@@ -5,9 +5,21 @@ var Physiotherapest = require('../models/Physiotherapests.js');
 router.route('/')
     .post(function (request, response) {
         var physiotherapest = new Physiotherapest.Model(request.body.physiotherapest);
-        physiotherapest.save(function (error) {
-            if (error) response.send(error);
-            response.json({physiotherapest: physiotherapest});
+        Physiotherapest.getUserByEmail(physiotherapest.email, (err, practiioner) => {
+            console.log("THIS IS THE PHSIO THE RAPER", practiioner);
+            console.log("This the line after the raper", physiotherapest);
+            if(err) {
+                practiioner.success = false;
+            }
+            else if(practiioner) {
+                console.log("ERROR");
+                practiioner.success = false;
+            }
+            physiotherapest.save(function (error) {
+                console.log(error);
+                if (error) response.send(error);
+                response.json({physiotherapest: physiotherapest});
+            }); 
         });
     })
 
