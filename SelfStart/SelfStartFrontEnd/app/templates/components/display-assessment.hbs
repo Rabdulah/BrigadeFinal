@@ -13,7 +13,7 @@
     <form id="edit" class="cd-form floating-labels">
 
     {{#each orders as |q index|}}
-      {{display-answers question=q.question assessment=assessment qNumber=index assessid=assessment.id}}
+      {{display-answers answers = ans question=q.question assessment=assessment qNumber=index assessid=assessment.id}}
     {{/each}}
 
     </form>

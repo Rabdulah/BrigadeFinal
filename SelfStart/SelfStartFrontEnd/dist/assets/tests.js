@@ -222,12 +222,12 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/display-answers.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/display-answers.js should pass ESLint\n\n7:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n100:7 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/display-answers.js should pass ESLint\n\n7:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n27:15 - \'checkFalse\' is not defined. (no-undef)\n29:15 - \'checkTrue\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/display-assessment.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/display-assessment.js should pass ESLint\n\n33:5 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/display-assessment.js should pass ESLint\n\n4:8 - \'Ember\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/display-forms.js', function (assert) {
@@ -297,7 +297,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/get-answers.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/get-answers.js should pass ESLint\n\n28:86 - \'ans\' is defined but never used. (no-unused-vars)\n39:86 - \'ans\' is defined but never used. (no-unused-vars)\n50:86 - \'ans\' is defined but never used. (no-unused-vars)\n62:11 - Unexpected console statement. (no-console)\n63:68 - \'ans\' is defined but never used. (no-unused-vars)\n76:86 - \'ans\' is defined but never used. (no-unused-vars)\n87:86 - \'ans\' is defined but never used. (no-unused-vars)\n98:86 - \'ans\' is defined but never used. (no-unused-vars)\n109:86 - \'ans\' is defined but never used. (no-unused-vars)\n120:86 - \'ans\' is defined but never used. (no-unused-vars)\n131:86 - \'ans\' is defined but never used. (no-unused-vars)');
+    assert.ok(false, 'components/get-answers.js should pass ESLint\n\n19:5 - Unexpected console statement. (no-console)\n28:86 - \'ans\' is defined but never used. (no-unused-vars)\n39:86 - \'ans\' is defined but never used. (no-unused-vars)\n50:86 - \'ans\' is defined but never used. (no-unused-vars)\n62:11 - Unexpected console statement. (no-console)\n63:68 - \'ans\' is defined but never used. (no-unused-vars)\n76:86 - \'ans\' is defined but never used. (no-unused-vars)\n87:86 - \'ans\' is defined but never used. (no-unused-vars)\n98:86 - \'ans\' is defined but never used. (no-unused-vars)\n109:86 - \'ans\' is defined but never used. (no-unused-vars)\n120:86 - \'ans\' is defined but never used. (no-unused-vars)\n131:86 - \'ans\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/get-assessment-results.js', function (assert) {

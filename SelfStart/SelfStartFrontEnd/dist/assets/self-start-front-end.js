@@ -3533,64 +3533,59 @@ define('self-start-front-end/components/display-answers', ['exports'], function 
 
       this._super.apply(this, arguments);
       var self = this;
-      var a = [];
 
-      this.get('DS').query('answer', { filter: { 'test': this.get('assessid') } }).then(function (ans) {
-        ans.forEach(function (rec) {
-          a.pushObject(rec.get('answer'));
+      if (this.get('question').get('type') === "Short answer") {
+        this.get("answers").forEach(function (rec) {
+          if (rec.get("question") === _this.get("question").get("questionText")) {
+            _this.set("SAanswer", rec.get("answer"));
+          }
         });
+      }
+      if (this.get('question').get('type') === "Rating") {
+        this.get("answers").forEach(function (rec) {
+          if (rec.get("question") === _this.get("question").get("questionText")) {
+            _this.set("Rating", rec.get("answer"));
+          }
+        });
+      }
+      if (this.get('question').get('type') === "True/False") {
+        this.get("answers").forEach(function (rec) {
+          if (rec.get("question") === _this.get("question").get("questionText")) {
+            if (rec.get("answer") == "No") checkFalse = true;else checkTrue = true;
+          }
+        });
+      }
+      if (this.get('question').get('type') === "Multiple choice") {
+        var breakdown = this.get('question').get("optionString").split('+++');
+        var length = breakdown.length;
+        this.set("mcop1", breakdown[0]);
+        this.set("mcop2", breakdown[1]);
+        if (length > 2) {
+          this.set("mcop3", breakdown[2]);
+        }
+        if (length > 3) {
 
-        if (_this.get('question').get('type') === "Short answer") {
-          _this.set("SAanswer", a[_this.get('qNumber')]);
+          this.set("mcop4", breakdown[3]);
         }
-        if (_this.get('question').get('type') === "Rating") {
-          _this.set("Rating", a[_this.get('qNumber')]);
+        if (length > 4) {
+          this.set("mcop5", breakdown[4]);
         }
-        if (_this.get('question').get('type') === "True/False") {
-          if (a[_this.get('qNumber')] === "Yes") {
-            _this.set("checkTrue", true);
-          } else {
-            _this.set("checkFalse", true);
-          }
+        if (length > 5) {
+          this.set("mcop6", breakdown[5]);
         }
-        if (_this.get('question').get('type') === "Multiple choice") {
-          var breakdown = _this.get('question').get("optionString").split('+++');
-          var length = breakdown.length;
-          _this.set("mcop1", breakdown[0]);
-          _this.set("mcop2", breakdown[1]);
-          if (length > 2) {
-            _this.set("mcop3", breakdown[2]);
-          }
-          if (length > 3) {
 
-            _this.set("mcop4", breakdown[3]);
+        this.get("answers").forEach(function (rec) {
+          if (rec.get("question") === _this.get("question").get("questionText")) {
+            if (rec.get("answer") == "0") _this.set("checkmcop1", true);
+            if (rec.get("answer") == "1") _this.set("checkmcop2", true);
+            if (rec.get("answer") == "2") _this.set("checkmcop3", true);
+            if (rec.get("answer") == "3") _this.set("checkmcop4", true);
+            if (rec.get("answer") == "4") _this.set("checkmcop5", true);
+            if (rec.get("answer") == "5") _this.set("checkmcop6", true);
           }
-          if (length > 4) {
-            _this.set("mcop5", breakdown[4]);
-          }
-          if (length > 5) {
-            _this.set("mcop6", breakdown[5]);
-          }
-
-          if (a[_this.get('qNumber')] === "0") {
-            _this.set("checkmcop1", true);
-          } else if (a[_this.get('qNumber')] === "1") {
-            _this.set("checkmcop2", true);
-          } else if (a[_this.get('qNumber')] === "2") {
-            _this.set("checkmcop3", true);
-          } else if (a[_this.get('qNumber')] === "3") {
-            _this.set("checkmcop4", true);
-          } else if (a[_this.get('qNumber')] === "4") {
-            _this.set("checkmcop5", true);
-          } else {
-            _this.set("checkmcop6", true);
-          }
-        }
-        //});
-      });
+        });
+      }
     },
-
-    // let question =  this.get('DS').findRecord('question', this.get('question').id).then((rec)=>{
 
 
     DS: Ember.inject.service('store'),
@@ -3611,14 +3606,7 @@ define('self-start-front-end/components/display-answers', ['exports'], function 
     mcop3: "",
     mcop4: "",
     mcop5: "",
-    mcop6: "",
-
-    actions: {
-      tf: function tf() {
-        console.log("f");
-      }
-    }
-
+    mcop6: ""
   });
 });
 define('self-start-front-end/components/display-assessment', ['exports'], function (exports) {
@@ -3651,64 +3639,12 @@ define('self-start-front-end/components/display-assessment', ['exports'], functi
     mcop6: "",
     index: 0,
     onChange: 1,
-
-    activeModel: Ember.observer('onChange', function () {
-      console.log('im here!');
-      // let question =  this.get('DS').findRecord('question', this.get('question').id).then((rec)=>{
-      if (this.get('orders')[this.get("onChange")].get('question').get('type') === "Short answer") {
-        this.set("SAanswer", this.get('assessment').get('answer')[this.get('onChange')].get('answer'));
-      }
-      if (this.get('orders')[this.get("onChange")].get('question').get('type') === "Rating") {
-        this.set("Rating", this.get('assessment').get('answer')[this.get('onChange')].get('answer'));
-      }
-      if (this.get('orders')[this.get("onChange")].get('question').get('type') === "True/False") {
-        if (this.get('assessment').get('answer')[this.get('onChange').get('answer')] === "True") {
-          this.set("checkTrue", true);
-        } else {
-          this.set("checkFalse", true);
-        }
-      }
-      if (this.get('orders')[this.get("onChange")].get('question').get('type') === "Multiple choice") {
-        var breakdown = this.get('orders')[this.get("onChange")].get('question').get("optionString").split('+++');
-        var length = breakdown.length;
-        this.set("mcop1", breakdown[0]);
-        this.set("mcop2", breakdown[1]);
-        if (length > 2) {
-          this.set("mcop3", breakdown[2]);
-        }
-        if (length > 3) {
-          this.set("mcop4", breakdown[3]);
-        }
-        if (length > 4) {
-          this.set("mcop5", breakdown[4]);
-        }
-        if (length > 5) {
-          this.set("mcop6", breakdown[5]);
-        }
-
-        if (this.get('assessment').get('answer')[this.get('onChange').get('answer')] === "0") {
-          this.set("checkmcop1", true);
-        } else if (this.get('assessment').get('answer')[this.get('onChange').get('answer')] === "1") {
-          this.set("checkmcop2", true);
-        } else if (this.get('assessment').get('answer')[this.get('onChange').get('answer')] === "2") {
-          this.set("checkmcop3", true);
-        } else if (this.get('assessment').get('answer')[this.get('onChange').get('answer')] === "3") {
-          this.set("checkmcop4", true);
-        } else if (this.get('assessment').get('answer')[this.get('onChange').get('answer')] === "4") {
-          this.set("checkmcop5", true);
-        } else {
-          this.set("checkmcop6", true);
-        }
-      }
-      if (this.get("onChange") < this.get("model").get("questionOrder").length) this.set("onChange", this.get("onChange") + 1);
-      //});
-    }),
-
     modalName: Ember.computed(function () {
       return 'viewAnswers' + this.get('model').id;
     }),
 
     orders: [],
+    ans: [],
 
     questionModel: Ember.computed(function () {}),
 
@@ -3721,6 +3657,10 @@ define('self-start-front-end/components/display-assessment', ['exports'], functi
 
       this.get('DS').query('question-order', { filter: { 'form': this.get('model').id } }).then(function (records) {
         self.set('orders', records.toArray());
+      });
+
+      this.get('DS').query('answer', { filter: { 'test': this.get('assessid') } }).then(function (records) {
+        self.set('ans', records.toArray());
       });
 
       this.set('onChange', 0);
@@ -5169,7 +5109,7 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
     init: function init() {
       this._super.apply(this, arguments);
       //console.get(this.get("assessment"));
-      //console.log(this.get("answers"));
+      console.log(this.get("answers"));
     },
 
 
@@ -12438,7 +12378,7 @@ define("self-start-front-end/templates/components/assessment-table", ["exports"]
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "I439xdk+", "block": "{\"symbols\":[\"test\",\"column\",\"column\"],\"statements\":[[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"left twelve wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n      \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n        Assessment Tests\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n    \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n      \"],[6,\"tbody\"],[7],[0,\"\\n      \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"          \"],[6,\"th\"],[10,\"class\",[19,3,[\"class\"]],null],[3,\"action\",[[19,0,[]],\"sortColumn\",[19,3,[\"key\"]],[19,3,[\"dir\"]]]],[7],[1,[19,3,[\"name\"]],false],[0,\"\\n\"],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"asc\"],null]],null,{\"statements\":[[0,\"              \"],[6,\"i\"],[9,\"class\",\"sort ascending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"desc\"],null]],null,{\"statements\":[[0,\"              \"],[6,\"i\"],[9,\"class\",\"sort descending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"\"],null]],null,{\"statements\":[[0,\"              \"],[6,\"i\"],[9,\"class\",\"sort icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"          \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"        \"],[6,\"th\"],[9,\"class\",\"center aligned two wide  column\"],[7],[0,\"Actions\"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"id\",\"myWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n    \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n      \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"testModel\"]]],null,{\"statements\":[[0,\"\\n        \"],[6,\"tr\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"\\n            \"],[6,\"td\"],[10,\"class\",[19,2,[\"class\"]],null],[7],[0,\"\\n              \"],[1,[25,\"get\",[[19,1,[]],[19,2,[\"key\"]]],null],false],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"\\n          \"],[6,\"td\"],[9,\"class\",\"right aligned one wide column\"],[9,\"style\",\"padding-right: 0\"],[7],[0,\"\\n            \"],[6,\"p\"],[7],[1,[25,\"display-assessment\",null,[[\"model\",\"assessment\"],[[19,1,[\"form\"]],[19,1,[]]]]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"td\"],[9,\"class\",\"left aligned one wide column\"],[9,\"style\",\"padding-left: 0\"],[7],[0,\"\\n            \"],[6,\"p\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[1,[18,\"get-assessment-results\"],false],[0,\"\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/assessment-table.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "wwKgvqCj", "block": "{\"symbols\":[\"test\",\"column\",\"column\"],\"statements\":[[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"left twelve wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n      \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n        Assessment Tests\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n    \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n      \"],[6,\"tbody\"],[7],[0,\"\\n      \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"          \"],[6,\"th\"],[10,\"class\",[19,3,[\"class\"]],null],[3,\"action\",[[19,0,[]],\"sortColumn\",[19,3,[\"key\"]],[19,3,[\"dir\"]]]],[7],[1,[19,3,[\"name\"]],false],[0,\"\\n\"],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"asc\"],null]],null,{\"statements\":[[0,\"              \"],[6,\"i\"],[9,\"class\",\"sort ascending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"desc\"],null]],null,{\"statements\":[[0,\"              \"],[6,\"i\"],[9,\"class\",\"sort descending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,3,[\"dir\"]],\"\"],null]],null,{\"statements\":[[0,\"              \"],[6,\"i\"],[9,\"class\",\"sort icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"          \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"        \"],[6,\"th\"],[9,\"class\",\"center aligned two wide  column\"],[7],[0,\"Actions\"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"id\",\"myWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n    \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n      \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"testModel\"]]],null,{\"statements\":[[0,\"\\n        \"],[6,\"tr\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"\\n            \"],[6,\"td\"],[10,\"class\",[19,2,[\"class\"]],null],[7],[0,\"\\n              \"],[1,[25,\"get\",[[19,1,[]],[19,2,[\"key\"]]],null],false],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"\\n          \"],[6,\"td\"],[9,\"class\",\"right aligned one wide column\"],[9,\"style\",\"padding-right: 0\"],[7],[0,\"\\n            \"],[6,\"p\"],[7],[1,[25,\"display-assessment\",null,[[\"model\",\"assessment\",\"assessid\"],[[19,1,[\"form\"]],[19,1,[]],[19,1,[\"id\"]]]]],false],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"td\"],[9,\"class\",\"left aligned one wide column\"],[9,\"style\",\"padding-left: 0\"],[7],[0,\"\\n            \"],[6,\"p\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[1,[18,\"get-assessment-results\"],false],[0,\"\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/assessment-table.hbs" } });
 });
 define("self-start-front-end/templates/components/assign-rehabplan", ["exports"], function (exports) {
   "use strict";
@@ -12630,7 +12570,7 @@ define("self-start-front-end/templates/components/display-assessment", ["exports
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "tiq4+BES", "block": "{\"symbols\":[\"q\",\"index\"],\"statements\":[[6,\"p\"],[9,\"style\",\"cursor: pointer; \"],[9,\"title\",\"View Answers\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"img\"],[9,\"src\",\"/assets/images/eye-19.svg\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"      \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Form View\"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"scrolling content\"],[7],[0,\"\\n\\n    \"],[6,\"form\"],[9,\"id\",\"edit\"],[9,\"class\",\"cd-form floating-labels\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"orders\"]]],null,{\"statements\":[[0,\"      \"],[1,[25,\"display-answers\",null,[[\"question\",\"assessment\",\"qNumber\",\"assessid\"],[[19,1,[\"question\"]],[20,[\"assessment\"]],[19,2,[]],[20,[\"assessment\",\"id\"]]]]],false],[0,\"\\n\"]],\"parameters\":[1,2]},null],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n\\n\\n\\n\"],[0,\"      \\n      \\n\\n   \\n\\n\"],[0,\"  \\n\\n\\n\"]],\"parameters\":[]},null],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/display-assessment.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "HViz0NZ2", "block": "{\"symbols\":[\"q\",\"index\"],\"statements\":[[6,\"p\"],[9,\"style\",\"cursor: pointer; \"],[9,\"title\",\"View Answers\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  \"],[6,\"img\"],[9,\"src\",\"/assets/images/eye-19.svg\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"      \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Form View\"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"scrolling content\"],[7],[0,\"\\n\\n    \"],[6,\"form\"],[9,\"id\",\"edit\"],[9,\"class\",\"cd-form floating-labels\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"orders\"]]],null,{\"statements\":[[0,\"      \"],[1,[25,\"display-answers\",null,[[\"answers\",\"question\",\"assessment\",\"qNumber\",\"assessid\"],[[20,[\"ans\"]],[19,1,[\"question\"]],[20,[\"assessment\"]],[19,2,[]],[20,[\"assessment\",\"id\"]]]]],false],[0,\"\\n\"]],\"parameters\":[1,2]},null],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n\\n\\n\\n\"],[0,\"      \\n      \\n\\n   \\n\\n\"],[0,\"  \\n\\n\\n\"]],\"parameters\":[]},null],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/display-assessment.hbs" } });
 });
 define("self-start-front-end/templates/components/display-forms", ["exports"], function (exports) {
   "use strict";

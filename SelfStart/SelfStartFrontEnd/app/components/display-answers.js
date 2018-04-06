@@ -5,27 +5,30 @@ export default Component.extend({
   init() {
     this._super(...arguments);
     var self =this;
-    var a = [];
-
-    this.get('DS').query('answer', {filter: {'test': this.get('assessid')}}).then((ans) => {
-      ans.forEach((rec)=>{
-        a.pushObject(rec.get('answer'));
-      })
-      
 
       if(this.get('question').get('type') === "Short answer"){
-        this.set("SAanswer", a[this.get('qNumber')]);
+        this.get("answers").forEach((rec) =>{
+          if(rec.get("question") === this.get("question").get("questionText")){
+            this.set("SAanswer", rec.get("answer"));
+          }
+        });
       }
       if(this.get('question').get('type') === "Rating"){
-        this.set("Rating", a[this.get('qNumber')]);
+         this.get("answers").forEach((rec) =>{
+          if(rec.get("question") === this.get("question").get("questionText")){
+            this.set("Rating", rec.get("answer"));
+          }
+        });
       }
       if(this.get('question').get('type') === "True/False"){
-        if(a[this.get('qNumber')] === "Yes"){
-          this.set("checkTrue", true);
-        }
-        else{
-          this.set("checkFalse", true);
-        }
+        this.get("answers").forEach((rec) =>{
+          if(rec.get("question") === this.get("question").get("questionText")){
+            if(rec.get("answer") == "No")
+              checkFalse = true;
+            else 
+              checkTrue = true;
+          }
+        });
       }
       if(this.get('question').get('type') === "Multiple choice"){
         let breakdown = this.get('question').get("optionString").split('+++');
@@ -46,35 +49,26 @@ export default Component.extend({
           this.set("mcop6", breakdown[5]);
         }
 
+        this.get("answers").forEach((rec) =>{
+          if(rec.get("question") === this.get("question").get("questionText")){
+            if(rec.get("answer") == "0")
+              this.set("checkmcop1", true);
+            if(rec.get("answer") == "1")
+              this.set("checkmcop2", true);
+            if(rec.get("answer") == "2")
+              this.set("checkmcop3", true);
+            if(rec.get("answer") == "3")
+              this.set("checkmcop4", true);
+            if(rec.get("answer") == "4")
+              this.set("checkmcop5", true);
+            if(rec.get("answer") == "5")
+              this.set("checkmcop6", true);
+          }
+        });
     
-    
-        if(a[this.get('qNumber')] === "0"){
-          this.set("checkmcop1", true);
-        }
-        else if(a[this.get('qNumber')] === "1"){
-          this.set("checkmcop2", true);
-        }
-        else if(a[this.get('qNumber')] === "2"){
-          this.set("checkmcop3", true);
-        }
-        else if(a[this.get('qNumber')] === "3"){
-          this.set("checkmcop4", true);
-        }
-        else if(a[this.get('qNumber')] === "4"){
-          this.set("checkmcop5", true);
-        }
-        else{
-          this.set("checkmcop6", true);
-        }
       }
-    //});
-
-    });
   },
-    // let question =  this.get('DS').findRecord('question', this.get('question').id).then((rec)=>{
-      
-
-
+   
   DS: inject('store'),
   tf: true,
   SAanswer: "",
@@ -94,11 +88,4 @@ export default Component.extend({
   mcop4: "",
   mcop5: "",
   mcop6: "",
-
-  actions: {
-    tf(){
-      console.log("f");
-    }
-  },
-
 });

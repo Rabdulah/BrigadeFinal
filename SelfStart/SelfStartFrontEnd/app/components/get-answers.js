@@ -16,7 +16,7 @@ export default Component.extend({
   init(){
     this._super(...arguments);
     //console.get(this.get("assessment"));
-    //console.log(this.get("answers"));
+    console.log(this.get("answers"));
   },
 
   actions: {
