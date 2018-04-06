@@ -18,6 +18,7 @@ export default Component.extend({
   plan: null,
   isPlanSelected: false,
   model: null,
+  ratingQuestions: [],
 
   modalName: computed(function () {
     return 'editAssign' + this.get('plan');
@@ -30,28 +31,6 @@ export default Component.extend({
 link:[],
 
   patientModel: computed(function(){
-    // this.get('store').query('rehab-client-link', {filter: {'Patient': '5ac557fa6ba71c2a4c0e367ec0e367e'}}).then((links) => {
-    //   //console.log(links);
-
-    //     console.log(links);
-
-    //   links.forEach((rec)=>{
-    //     this.get('link').pushObject(rec);
-    //     console.log(this.get('link'));
-    //   });
-   // });
-
-    // console.log(this.get('model').get('id'));
-    // this.get('store').findRecord('rehab-client-link', this.get('model').id).then((links) => {
-    //   //console.log(links);
-
-    //     console.log(links);
-
-    //   links.forEach((rec)=>{
-    //     this.get('link').pushObject(rec);
-    //     console.log(this.get('link'));
-    //   });
-    // });
     var arr = [];
     this.get('store').findAll("rehab-client-link").then((link) => {
 
@@ -88,6 +67,20 @@ link:[],
         this.get('listModel').pushObject(exe.get('exercise'));
       });
 
+    });
+  }),
+
+  questionModel: computed( function(){
+    this.get('store').findAll('question').then((questions) => {
+      let self = this;
+      console.log(questions);
+      let ratingQs = [];
+      questions.forEach((q) => {
+        if (q.get('type') == "Rating") {
+          ratingQs.pushObject(q);
+        }
+      })
+      self.set('ratingQuestions', ratingQs);
     });
   }),
 
@@ -333,6 +326,21 @@ link:[],
         },
         onApprove: () => {
           window.print();
+        }
+      }).modal('show');
+    },
+
+    openData: function () {
+      $('.ui.' + 'data' + '.modal').modal({
+        closable: false,
+
+        transition: 'fly down',
+
+        onDeny: () => {
+          return true;
+        },
+        onApprove: () => {
+          return true;
         }
       }).modal('show');
     },

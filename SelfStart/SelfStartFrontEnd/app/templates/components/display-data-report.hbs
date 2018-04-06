@@ -1,0 +1,17 @@
+<button {{action "openModal"}}>Display data</button> 
+
+
+{{#ui-modal name="dataModal" class="dataModal"}}
+  <i class="close icon"></i>
+  <label>Answers to "</label>{{question.questionText}}<label>":</label><br>
+    
+    {{#each matchedAnswers as |ans|}}
+        <label>{{ans.answer}}</label>
+    {{/each}}
+  <div class="actions" style="padding:0">
+
+    <div class="ok" style="padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Save Report</div>
+    <div class="cancel" style="padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">Exit</div>
+  </div>
+
+  {{/ui-modal}}

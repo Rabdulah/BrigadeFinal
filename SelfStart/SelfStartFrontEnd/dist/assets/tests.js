@@ -127,7 +127,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/client-file.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/client-file.js should pass ESLint\n\n110:5 - Unexpected console statement. (no-console)\n126:7 - Unexpected console statement. (no-console)\n127:7 - Unexpected console statement. (no-console)\n155:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n165:5 - Unexpected console statement. (no-console)\n218:11 - \'assign\' is assigned a value but never used. (no-unused-vars)\n224:7 - \'rehabplan\' is not defined. (no-undef)\n310:7 - \'$\' is not defined. (no-undef)\n326:7 - \'$\' is not defined. (no-undef)\n341:7 - \'$\' is not defined. (no-undef)\n355:15 - \'self\' is assigned a value but never used. (no-unused-vars)\n372:10 - Unexpected console statement. (no-console)\n377:15 - \'$\' is not defined. (no-undef)');
+    assert.ok(false, 'components/client-file.js should pass ESLint\n\n76:7 - Unexpected console statement. (no-console)\n103:5 - Unexpected console statement. (no-console)\n119:7 - Unexpected console statement. (no-console)\n120:7 - Unexpected console statement. (no-console)\n148:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n158:5 - Unexpected console statement. (no-console)\n211:11 - \'assign\' is assigned a value but never used. (no-unused-vars)\n217:7 - \'rehabplan\' is not defined. (no-undef)\n303:7 - \'$\' is not defined. (no-undef)\n319:7 - \'$\' is not defined. (no-undef)\n334:7 - \'$\' is not defined. (no-undef)\n349:7 - \'$\' is not defined. (no-undef)\n363:15 - \'self\' is assigned a value but never used. (no-unused-vars)\n380:10 - Unexpected console statement. (no-console)\n385:15 - \'$\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/client-nav.js', function (assert) {
@@ -238,6 +238,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('components/display-assessment.js', function (assert) {
     assert.expect(1);
     assert.ok(false, 'components/display-assessment.js should pass ESLint\n\n4:7 - \'Ember\' is not defined. (no-undef)\n8:20 - \'Ember\' is not defined. (no-undef)');
+  });
+
+  QUnit.test('components/display-data-report.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/display-data-report.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n76:13 - \'$\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/display-forms.js', function (assert) {
@@ -2218,6 +2223,35 @@ define('self-start-front-end/tests/integration/components/display-assessment-tes
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/display-data-report-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('display-data-report', 'Integration | Component | display data report', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "cHekrDIj",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"display-data-report\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "FRdG0LWo",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"display-data-report\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/display-forms-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -3767,6 +3801,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('integration/components/display-assessment-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/display-assessment-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/display-data-report-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/display-data-report-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/display-forms-test.js', function (assert) {

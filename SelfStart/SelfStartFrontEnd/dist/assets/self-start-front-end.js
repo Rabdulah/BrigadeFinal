@@ -2060,6 +2060,7 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
     plan: null,
     isPlanSelected: false,
     model: null,
+    ratingQuestions: [],
 
     modalName: Ember.computed(function () {
       return 'editAssign' + this.get('plan');
@@ -2074,28 +2075,6 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
     patientModel: Ember.computed(function () {
       var _this = this;
 
-      // this.get('store').query('rehab-client-link', {filter: {'Patient': '5ac557fa6ba71c2a4c0e367ec0e367e'}}).then((links) => {
-      //   //console.log(links);
-
-      //     console.log(links);
-
-      //   links.forEach((rec)=>{
-      //     this.get('link').pushObject(rec);
-      //     console.log(this.get('link'));
-      //   });
-      // });
-
-      // console.log(this.get('model').get('id'));
-      // this.get('store').findRecord('rehab-client-link', this.get('model').id).then((links) => {
-      //   //console.log(links);
-
-      //     console.log(links);
-
-      //   links.forEach((rec)=>{
-      //     this.get('link').pushObject(rec);
-      //     console.log(this.get('link'));
-      //   });
-      // });
       var arr = [];
       this.get('store').findAll("rehab-client-link").then(function (link) {
 
@@ -2138,6 +2117,22 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
       });
     }),
 
+    questionModel: Ember.computed(function () {
+      var _this4 = this;
+
+      this.get('store').findAll('question').then(function (questions) {
+        var self = _this4;
+        console.log(questions);
+        var ratingQs = [];
+        questions.forEach(function (q) {
+          if (q.get('type') == "Rating") {
+            ratingQs.pushObject(q);
+          }
+        });
+        self.set('ratingQuestions', ratingQs);
+      });
+    }),
+
     modelAttributes: [{ 'key': 'sets', 'name': 'Sets', 'dir': 'asc', 'class': 'left aligned two wide column' }, { 'key': 'reps', 'name': 'Reps', 'dir': '', 'class': 'left aligned two wide column' }, { 'key': 'duration', 'name': 'Duration', 'dir': '', 'class': 'left aligned three wide column' }, { 'key': 'name', 'name': 'Exercise', 'dir': '', 'class': 'left aligned five wide column' }],
 
     plansModel: [],
@@ -2155,7 +2150,7 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
     }),
 
     isSelected: Ember.observer('plan', function () {
-      var _this4 = this;
+      var _this5 = this;
 
       this.set('isPlanSelected', true);
 
@@ -2166,9 +2161,9 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
         console.log(plan);
         console.log(update.content.length);
         if (update.content.length !== 0) {
-          _this4.set('disabled', "disabled");
+          _this5.set('disabled', "disabled");
         } else {
-          _this4.set('disabled', "");
+          _this5.set('disabled', "");
         }
       });
     }),
@@ -2295,19 +2290,19 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
         if (this.get('isShowing') === ID) this.set('isShowing', null);else this.set('isShowing', ID);
       },
       sortColumn: function sortColumn(columnName, direction) {
-        var _this5 = this;
+        var _this6 = this;
 
         this.get('modelAttributes').forEach(function (element) {
           if (element.key === columnName) {
             if (direction === 'asc') {
               Ember.set(element, 'dir', 'desc');
-              _this5.set('dir', 'desc');
+              _this6.set('dir', 'desc');
             } else if (direction === 'desc') {
               Ember.set(element, 'dir', 'asc');
-              _this5.set('dir', 'asc');
+              _this6.set('dir', 'asc');
             } else {
               Ember.set(element, 'dir', 'asc');
-              _this5.set('dir', 'asc');
+              _this6.set('dir', 'asc');
             }
           } else Ember.set(element, 'dir', '');
         });
@@ -2356,8 +2351,23 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
         }).modal('show');
       },
 
+      openData: function openData() {
+        $('.ui.' + 'data' + '.modal').modal({
+          closable: false,
+
+          transition: 'fly down',
+
+          onDeny: function onDeny() {
+            return true;
+          },
+          onApprove: function onApprove() {
+            return true;
+          }
+        }).modal('show');
+      },
+
       openModal: function openModal() {
-        var _this6 = this;
+        var _this7 = this;
 
         $('.ui.' + this.get('modalName') + '.modal').modal({
           closable: false,
@@ -2368,33 +2378,33 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
             return true;
           },
           onApprove: function onApprove() {
-            var plan = _this6.get('plan');
+            var plan = _this7.get('plan');
 
-            var planRecord = _this6.get('store').peekRecord('rehabilitationplan', plan);
+            var planRecord = _this7.get('store').peekRecord('rehabilitationplan', plan);
 
-            var self = _this6;
+            var self = _this7;
 
             // var assess = this.get('store').peekRecord('assessment-test', '5ab92c228a4acc04487b157a');
-            var test = _this6.get('store').createRecord('assessment-test', {});
+            var test = _this7.get('store').createRecord('assessment-test', {});
             test.save().then(function (rec) {
 
-              var link = _this6.get('store').createRecord('rehab-client-link', {
-                terminated: _this6.get('plan.terminated'),
+              var link = _this7.get('store').createRecord('rehab-client-link', {
+                terminated: _this7.get('plan.terminated'),
                 RehabilitationPlan: planRecord,
-                Patient: _this6.get('model'),
+                Patient: _this7.get('model'),
                 assigned: true,
                 assessmentTest: rec
                 //In memory of Ouda
               });
 
-              var peekTest = _this6.get('store').peekRecord('assessment-test', test.get("id"));
+              var peekTest = _this7.get('store').peekRecord('assessment-test', test.get("id"));
               console.log(peekTest);
               peekTest.set('rehabLink', link);
               link.save().then(function () {
                 peekTest.save();
-                _this6.set('assessmentTest', test);
-                $('.ui.' + _this6.get('modalName') + '.modal').modal('hide');
-                _this6.set('disabled', "disabled");
+                _this7.set('assessmentTest', test);
+                $('.ui.' + _this7.get('modalName') + '.modal').modal('hide');
+                _this7.set('disabled', "disabled");
               });
             });
           }
@@ -3472,6 +3482,84 @@ define('self-start-front-end/components/display-assessment', ['exports'], functi
       }
     }
   });
+});
+define('self-start-front-end/components/display-data-report', ['exports'], function (exports) {
+    'use strict';
+
+    Object.defineProperty(exports, "__esModule", {
+        value: true
+    });
+    exports.default = Ember.Component.extend({
+        store: Ember.inject.service(),
+        allAnswers: [],
+        matchedAnswers: [],
+        averageRating: 0,
+        ratingGroupCount: [10],
+
+        init: function init() {
+            var _this = this;
+
+            this._super.apply(this, arguments);
+            var self = this;
+
+            this.get('store').findAll('answer').then(function (ans) {
+                self.set('allAnswers', ans.toArray());
+            });
+
+            this.get('allAnswers').forEach(function (element) {
+                if (element.get('question') === self.get('question').get('questionText') && self.get('question').get('type') == "Rating") {
+                    self.get('matchedAnswers').pushObject(element);
+                }
+            });
+
+            this.get('matchedAnswers').forEach(function (ans) {
+                self.set('averageRating', self.get('averageRating') + ans.get('answer'));
+
+                if (ans.get('answer') == 1) {
+                    _this.set('ratingGroupCount'[0], _this.get('ratingGroupCount'[0]) + 1);
+                } else if (ans.get('answer') == 2) {
+                    _this.set('ratingGroupCount'[1], _this.get('ratingGroupCount'[1]) + 1);
+                } else if (ans.get('answer') == 3) {
+                    _this.set('ratingGroupCount'[2], _this.get('ratingGroupCount'[2]) + 1);
+                } else if (ans.get('answer') == 4) {
+                    _this.set('ratingGroupCount'[3], _this.get('ratingGroupCount'[3]) + 1);
+                } else if (ans.get('answer') == 5) {
+                    _this.set('ratingGroupCount'[4], _this.get('ratingGroupCount'[4]) + 1);
+                } else if (ans.get('answer') == 6) {
+                    _this.set('ratingGroupCount'[5], _this.get('ratingGroupCount'[5]) + 1);
+                } else if (ans.get('answer') == 7) {
+                    _this.set('ratingGroupCount'[6], _this.get('ratingGroupCount'[6]) + 1);
+                } else if (ans.get('answer') == 8) {
+                    _this.set('ratingGroupCount'[7], _this.get('ratingGroupCount'[7]) + 1);
+                } else if (ans.get('answer') == 9) {
+                    _this.set('ratingGroupCount'[8], _this.get('ratingGroupCount'[8]) + 1);
+                } else if (ans.get('answer') == 10) {
+                    _this.set('ratingGroupCount'[9], _this.get('ratingGroupCount'[9]) + 1);
+                }
+            });
+
+            self.set('averageRating', self.get('averageRating') / self.get('matchedAnswers').length);
+        },
+
+        actions: {
+            openModal: function openModal() {
+                $('.ui.' + 'dataModal' + '.modal').modal({
+                    closable: false,
+
+                    transition: 'fly down',
+
+                    onDeny: function onDeny() {
+                        return true;
+                    },
+
+                    onApprove: function onApprove() {
+                        window.print();
+                    }
+
+                }).modal('show');
+            }
+        }
+    });
 });
 define("self-start-front-end/components/display-forms", ["exports"], function (exports) {
   "use strict";
@@ -12341,7 +12429,7 @@ define("self-start-front-end/templates/components/client-file", ["exports"], fun
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "ZOAgaYJ1", "block": "{\"symbols\":[\"transaction\",\"app\",\"link\",\"link\",\"index\",\"exercise\",\"column\",\"exercise\",\"column\",\"column\",\"plan\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[1,[20,[\"model\",\"givenName\"]],false],[0,\" \"],[1,[20,[\"model\",\"familyName\"]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui container\"],[9,\"style\",\"padding-top: 2em\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui top attached tabular stackable menu\"],[9,\"style\",\"padding-left: 15%;\"],[7],[0,\"\\n  \\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"assessState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"assessView\"]],[7],[0,\"\\n      Assessment\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Notes\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"reportState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"reportView\"]],[7],[0,\"\\n      Reports\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Photos\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"menusState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"menusView\"]],[7],[0,\"\\n      Menus\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Documents\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"accountingState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"accountingView\"]],[7],[0,\"\\n      Accounting\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui segment\"],[9,\"style\",\"background: transparent;border: none;box-shadow: none;\"],[7],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"menus\"]]],null,{\"statements\":[[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"left twelve wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n            Menu Builder\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"right three wide column\"],[9,\"style\",\"padding-left: 30px;\"],[7],[0,\"\\n\"],[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\"],[4,\"ui-dropdown\",null,[[\"class\",\"onChange\"],[\"selection\",[25,\"action\",[[19,0,[]],[25,\"mut\",[[20,[\"plan\"]]],null]],null]]],{\"statements\":[[0,\"              \"],[6,\"div\"],[9,\"class\",\"default text\"],[7],[0,\"Select a menu\"],[8],[0,\"\\n              \"],[6,\"i\"],[9,\"class\",\"dropdown icon\"],[7],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"menu\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"rehabModel\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"div\"],[10,\"data-value\",[26,[[19,11,[\"id\"]]]]],[9,\"class\",\"item\"],[7],[0,\"\\n                    \"],[1,[19,11,[\"planName\"]],false],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[11]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n          \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"              \"],[6,\"th\"],[10,\"class\",[19,10,[\"class\"]],null],[3,\"action\",[[19,0,[]],\"sortColumn\",[19,10,[\"key\"]],[19,10,[\"dir\"]]]],[7],[1,[19,10,[\"name\"]],false],[0,\"\\n\"],[4,\"if\",[[25,\"eq\",[[19,10,[\"dir\"]],\"asc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort ascending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,10,[\"dir\"]],\"desc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort descending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,10,[\"dir\"]],\"\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[10]},null],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"id\",\"myWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"listModel\"]]],null,{\"statements\":[[0,\"\\n            \"],[6,\"tr\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"\\n                \"],[6,\"td\"],[10,\"class\",[19,9,[\"class\"]],null],[7],[0,\"\\n                  \"],[1,[25,\"get\",[[19,8,[]],[19,9,[\"key\"]]],null],false],[0,\"\\n                \"],[8],[0,\"\\n\"]],\"parameters\":[9]},null],[0,\"            \"],[8],[0,\"\\n\"]],\"parameters\":[8]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"isPlanSelected\"]]],null,{\"statements\":[[0,\"            \"],[6,\"div\"],[10,\"class\",[26,[\"ui \",[18,\"disabled\"],\" button\"]]],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n              Assign\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"reports\"]]],null,{\"statements\":[[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"left twelve wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n            Reports\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"right three wide column\"],[9,\"style\",\"padding-left: 30px;\"],[7],[0,\"\\n\"],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n          \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n        \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n          Report Type\\n        \"],[8],[0,\"\\n        \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n          Actions\\n        \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n            \"],[6,\"tr\"],[7],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                Feedback Report\\n              \"],[8],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"circular ui icon button\"],[3,\"action\",[[19,0,[]],\"openFeedback\"]],[7],[0,\"\\n                  \"],[6,\"i\"],[9,\"class\",\"file alternate icon\"],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \\n            \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n             \"],[6,\"tr\"],[7],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                Summary Report\\n              \"],[8],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"circular ui icon button\"],[3,\"action\",[[19,0,[]],\"openSummary\"]],[7],[0,\"\\n                  \"],[6,\"i\"],[9,\"class\",\"file alternate icon\"],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n             \"],[6,\"tr\"],[7],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                Data Report\\n              \"],[8],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"circular ui icon button\"],[3,\"action\",[[19,0,[]],\"openData\"]],[7],[0,\"\\n                  \"],[6,\"i\"],[9,\"class\",\"file alternate icon\"],[7],[8],[0,\" \\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"accountingmenus\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"left five wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"Trasnactions\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"right three wide column\"],[9,\"style\",\"padding-left: 30px; margin-top: -5px;\"],[7],[0,\"\\n            \"],[6,\"p\"],[7],[0,\"remaining: \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"td\"],[9,\"class\",\"right aligned one wide column \"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"cursor: pointer; \"],[9,\"title\",\"Edit\"],[7],[0,\"\\n              \"],[6,\"img\"],[9,\"src\",\"/assets/images/pencil.svg\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n          \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n            \"],[6,\"tbody\"],[7],[0,\"\\n            \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n              \"],[6,\"th\"],[7],[0,\" test \"],[8],[0,\"\\n              \"],[6,\"th\"],[7],[0,\" test2 \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"id\",\"myWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n          \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n            \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"listModel\"]]],null,{\"statements\":[[0,\"\\n\\n              \"],[6,\"tr\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"\\n                  \"],[6,\"td\"],[10,\"class\",[19,7,[\"class\"]],null],[7],[0,\"\\n                    \"],[1,[25,\"get\",[[19,6,[]],[19,7,[\"key\"]]],null],false],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[7]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[6]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"isPlanSelected\"]]],null,{\"statements\":[[0,\"              \"],[6,\"div\"],[10,\"class\",[26,[\"ui \",[18,\"disabled\"],\" button\"]]],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n                Assign\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"assess\"]]],null,{\"statements\":[[4,\"each\",[[20,[\"patientModel\"]]],null,{\"statements\":[[0,\"        \"],[1,[25,\"get-assessment-results\",null,[[\"linker\",\"count\"],[[19,4,[]],[19,5,[]]]]],false],[0,\"  \\n\"]],\"parameters\":[4,5]},null]],\"parameters\":[]},null],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[9,\"href\",\"/assets/css/form-style.css\"],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Assign \"],[1,[20,[\"plansData\",\"planName\"]],false],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you want to assign this rehabilitation plan?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[1,[25,\"list-forms\",null,[[\"rehabPlan\",\"patient\"],[[20,[\"plan\"]],[20,[\"model\"]]]]],false],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"feedback\",\"feedback\"]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n\"],[0,\"  \"],[6,\"label\"],[9,\"class\",\"text\"],[7],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Summarise examination findings: \"],[8],[0,\"\\n      \"],[6,\"textarea\"],[7],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Summarise treatment plan: \"],[8],[0,\"\\n      \"],[6,\"textarea\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok\"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Print/Save\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel\"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"summary\",\"summary\"]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n\"],[0,\"  \"],[6,\"label\"],[9,\"class\",\"text\"],[7],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Patient information:\"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Name: \"],[1,[20,[\"model\",\"givenName\"]],false],[0,\" \"],[1,[20,[\"model\",\"familyName\"]],false],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Date of birth: \"],[1,[20,[\"model\",\"dateOfBirth\"]],false],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Gender: \"],[1,[20,[\"model\",\"gender\"]],false],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Address: \"],[1,[20,[\"model\",\"streetNumber\"]],false],[0,\" \"],[1,[20,[\"model\",\"streetName\"]],false],[0,\", #\"],[1,[20,[\"model\",\"apartment\"]],false],[0,\", \"],[1,[20,[\"model\",\"postalCode\"]],false],[0,\"  \"],[1,[20,[\"model\",\"city\"]],false],[0,\", \"],[1,[20,[\"model\",\"province\"]],false],[0,\", \"],[1,[20,[\"model\",\"country\"]],false],[0,\" \"],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Email: \"],[1,[20,[\"model\",\"email\"]],false],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Phone: \"],[1,[20,[\"model\",\"phoneNumber\"]],false],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Diagnosed case:\"],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Injury: \"],[8],[0,\"\\n\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Treatments:\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"patientModel\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[1,[19,3,[\"RehabilitationPlan\",\"planName\"]],false],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n      \\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Appointment history:\"],[8],[0,\"\\n      \"],[1,[18,\"appointmentModel\"],false],[0,\"\\n\"],[4,\"each\",[[20,[\"appointments\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[1,[19,2,[\"reason\"]],false],[0,\" \"],[1,[19,2,[\"date\"]],false],[0,\" \"],[1,[19,2,[\"endDate\"]],false],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"      \"],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Payment history:\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\",\"transactions\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[0,\"Package #\"],[1,[19,1,[\"package\"]],false],[0,\", Date: \"],[1,[19,1,[\"date\"]],false],[0,\", Price: $\"],[1,[19,1,[\"amount\"]],false],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"label\"],[7],[0,\"Final outcomes: \"],[8],[0,\"\\n      \"],[6,\"textarea\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok\"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Print/Save\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel\"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-file.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "YBO4Urei", "block": "{\"symbols\":[\"q\",\"transaction\",\"app\",\"link\",\"link\",\"index\",\"exercise\",\"column\",\"exercise\",\"column\",\"column\",\"plan\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[1,[20,[\"model\",\"givenName\"]],false],[0,\" \"],[1,[20,[\"model\",\"familyName\"]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui container\"],[9,\"style\",\"padding-top: 2em\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui top attached tabular stackable menu\"],[9,\"style\",\"padding-left: 15%;\"],[7],[0,\"\\n  \\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"assessState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"assessView\"]],[7],[0,\"\\n      Assessment\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Notes\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"reportState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"reportView\"]],[7],[0,\"\\n      Reports\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Photos\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"menusState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"menusView\"]],[7],[0,\"\\n      Menus\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Documents\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"accountingState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"accountingView\"]],[7],[0,\"\\n      Accounting\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui segment\"],[9,\"style\",\"background: transparent;border: none;box-shadow: none;\"],[7],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"menus\"]]],null,{\"statements\":[[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"left twelve wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n            Menu Builder\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"right three wide column\"],[9,\"style\",\"padding-left: 30px;\"],[7],[0,\"\\n\"],[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\"],[4,\"ui-dropdown\",null,[[\"class\",\"onChange\"],[\"selection\",[25,\"action\",[[19,0,[]],[25,\"mut\",[[20,[\"plan\"]]],null]],null]]],{\"statements\":[[0,\"              \"],[6,\"div\"],[9,\"class\",\"default text\"],[7],[0,\"Select a menu\"],[8],[0,\"\\n              \"],[6,\"i\"],[9,\"class\",\"dropdown icon\"],[7],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"menu\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"rehabModel\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"div\"],[10,\"data-value\",[26,[[19,12,[\"id\"]]]]],[9,\"class\",\"item\"],[7],[0,\"\\n                    \"],[1,[19,12,[\"planName\"]],false],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[12]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n          \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"              \"],[6,\"th\"],[10,\"class\",[19,11,[\"class\"]],null],[3,\"action\",[[19,0,[]],\"sortColumn\",[19,11,[\"key\"]],[19,11,[\"dir\"]]]],[7],[1,[19,11,[\"name\"]],false],[0,\"\\n\"],[4,\"if\",[[25,\"eq\",[[19,11,[\"dir\"]],\"asc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort ascending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,11,[\"dir\"]],\"desc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort descending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,11,[\"dir\"]],\"\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[11]},null],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"id\",\"myWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"listModel\"]]],null,{\"statements\":[[0,\"\\n            \"],[6,\"tr\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"\\n                \"],[6,\"td\"],[10,\"class\",[19,10,[\"class\"]],null],[7],[0,\"\\n                  \"],[1,[25,\"get\",[[19,9,[]],[19,10,[\"key\"]]],null],false],[0,\"\\n                \"],[8],[0,\"\\n\"]],\"parameters\":[10]},null],[0,\"            \"],[8],[0,\"\\n\"]],\"parameters\":[9]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"isPlanSelected\"]]],null,{\"statements\":[[0,\"            \"],[6,\"div\"],[10,\"class\",[26,[\"ui \",[18,\"disabled\"],\" button\"]]],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n              Assign\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"reports\"]]],null,{\"statements\":[[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"left twelve wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n            Reports\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"right three wide column\"],[9,\"style\",\"padding-left: 30px;\"],[7],[0,\"\\n\"],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n          \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n        \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n          Report Type\\n        \"],[8],[0,\"\\n        \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n          Actions\\n        \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n            \"],[6,\"tr\"],[7],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                Feedback Report\\n              \"],[8],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"circular ui icon button\"],[3,\"action\",[[19,0,[]],\"openFeedback\"]],[7],[0,\"\\n                  \"],[6,\"i\"],[9,\"class\",\"file alternate icon\"],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \\n            \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n             \"],[6,\"tr\"],[7],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                Summary Report\\n              \"],[8],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"circular ui icon button\"],[3,\"action\",[[19,0,[]],\"openSummary\"]],[7],[0,\"\\n                  \"],[6,\"i\"],[9,\"class\",\"file alternate icon\"],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n             \"],[6,\"tr\"],[7],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                Data Report\\n              \"],[8],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"circular ui icon button\"],[3,\"action\",[[19,0,[]],\"openData\"]],[7],[0,\"\\n                  \"],[6,\"i\"],[9,\"class\",\"file alternate icon\"],[7],[8],[0,\" \\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"accountingmenus\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"left five wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"Trasnactions\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"right three wide column\"],[9,\"style\",\"padding-left: 30px; margin-top: -5px;\"],[7],[0,\"\\n            \"],[6,\"p\"],[7],[0,\"remaining: \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"td\"],[9,\"class\",\"right aligned one wide column \"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"cursor: pointer; \"],[9,\"title\",\"Edit\"],[7],[0,\"\\n              \"],[6,\"img\"],[9,\"src\",\"/assets/images/pencil.svg\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n          \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n            \"],[6,\"tbody\"],[7],[0,\"\\n            \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n              \"],[6,\"th\"],[7],[0,\" test \"],[8],[0,\"\\n              \"],[6,\"th\"],[7],[0,\" test2 \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"id\",\"myWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n          \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n            \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"listModel\"]]],null,{\"statements\":[[0,\"\\n\\n              \"],[6,\"tr\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"\\n                  \"],[6,\"td\"],[10,\"class\",[19,8,[\"class\"]],null],[7],[0,\"\\n                    \"],[1,[25,\"get\",[[19,7,[]],[19,8,[\"key\"]]],null],false],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[8]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[7]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"isPlanSelected\"]]],null,{\"statements\":[[0,\"              \"],[6,\"div\"],[10,\"class\",[26,[\"ui \",[18,\"disabled\"],\" button\"]]],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n                Assign\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"assess\"]]],null,{\"statements\":[[4,\"each\",[[20,[\"patientModel\"]]],null,{\"statements\":[[0,\"        \"],[1,[25,\"get-assessment-results\",null,[[\"linker\",\"count\"],[[19,5,[]],[19,6,[]]]]],false],[0,\"  \\n\"]],\"parameters\":[5,6]},null]],\"parameters\":[]},null],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[9,\"href\",\"/assets/css/form-style.css\"],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Assign \"],[1,[20,[\"plansData\",\"planName\"]],false],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you want to assign this rehabilitation plan?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[1,[25,\"list-forms\",null,[[\"rehabPlan\",\"patient\"],[[20,[\"plan\"]],[20,[\"model\"]]]]],false],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"feedback\",\"feedback\"]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n\"],[0,\"  \"],[6,\"label\"],[9,\"class\",\"text\"],[7],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Summarise examination findings: \"],[8],[0,\"\\n      \"],[6,\"textarea\"],[7],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Summarise treatment plan: \"],[8],[0,\"\\n      \"],[6,\"textarea\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok\"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Save Report\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel\"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"Exit\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"summary\",\"summary\"]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n\"],[0,\"  \"],[6,\"label\"],[9,\"class\",\"text\"],[7],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Patient information:\"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Name: \"],[1,[20,[\"model\",\"givenName\"]],false],[0,\" \"],[1,[20,[\"model\",\"familyName\"]],false],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Date of birth: \"],[1,[20,[\"model\",\"dateOfBirth\"]],false],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Gender: \"],[1,[20,[\"model\",\"gender\"]],false],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Address: \"],[1,[20,[\"model\",\"streetNumber\"]],false],[0,\" \"],[1,[20,[\"model\",\"streetName\"]],false],[0,\" #\"],[1,[20,[\"model\",\"apartment\"]],false],[0,\", \"],[1,[20,[\"model\",\"postalCode\"]],false],[0,\"  \"],[1,[20,[\"model\",\"city\"]],false],[0,\", \"],[1,[20,[\"model\",\"province\"]],false],[0,\", \"],[1,[20,[\"model\",\"country\"]],false],[0,\" \"],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Email: \"],[1,[20,[\"model\",\"email\"]],false],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Phone: \"],[1,[20,[\"model\",\"phoneNumber\"]],false],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Diagnosed case:\"],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Injury: \"],[8],[0,\"\\n\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Treatments:\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"patientModel\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[1,[19,4,[\"RehabilitationPlan\",\"planName\"]],false],[8],[0,\"\\n\"]],\"parameters\":[4]},null],[0,\"\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n      \\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Appointment history:\"],[8],[0,\"\\n      \"],[1,[18,\"appointmentModel\"],false],[0,\"\\n\"],[4,\"each\",[[20,[\"appointments\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[1,[19,3,[\"reason\"]],false],[0,\" \"],[1,[19,3,[\"date\"]],false],[0,\" \"],[1,[19,3,[\"endDate\"]],false],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"      \"],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Payment history:\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\",\"transactions\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[0,\"Package #\"],[1,[19,2,[\"package\"]],false],[0,\", Date: \"],[1,[19,2,[\"date\"]],false],[0,\", Price: $\"],[1,[19,2,[\"amount\"]],false],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"label\"],[7],[0,\"Final outcomes: \"],[8],[0,\"\\n      \"],[6,\"textarea\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok\"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Save Report\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel\"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"Exit\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"data\",\"data\"]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"Questions:\"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[1,[18,\"questionModel\"],false],[0,\"\\n\"],[4,\"each\",[[20,[\"ratingQuestions\"]]],null,{\"statements\":[[0,\"    \"],[6,\"label\"],[7],[1,[19,1,[\"questionText\"]],false],[8],[0,\" \\n    \"],[1,[25,\"display-data-report\",null,[[\"question\"],[[19,1,[]]]]],false],[6,\"br\"],[7],[8],[0,\" \\n\"]],\"parameters\":[1]},null],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n\"],[0,\"    \"],[6,\"div\"],[9,\"class\",\"cancel\"],[9,\"style\",\"padding:.6em; float:left; width: 100%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"Exit\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-file.hbs" } });
 });
 define("self-start-front-end/templates/components/client-nav", ["exports"], function (exports) {
   "use strict";
@@ -12518,6 +12606,14 @@ define("self-start-front-end/templates/components/display-assessment", ["exports
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "XNoRsxsI", "block": "{\"symbols\":[\"q\",\"index\"],\"statements\":[[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"assessmentModel\",\"questions\"]]],null,{\"statements\":[[0,\"    \"],[1,[25,\"get-answers\",null,[[\"question\",\"assessment\",\"qNumber\",\"assessid\"],[[19,1,[]],[20,[\"assessmentModel\"]],[19,2,[]],[20,[\"assessmentModel\",\"id\"]]]]],false],[0,\"\\n\"]],\"parameters\":[1,2]},null],[0,\"  \"],[6,\"button\"],[3,\"action\",[[19,0,[]],\"Submit\"]],[7],[0,\"\\n    Submit\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/display-assessment.hbs" } });
+});
+define("self-start-front-end/templates/components/display-data-report", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "Kw/y4adi", "block": "{\"symbols\":[\"ans\"],\"statements\":[[6,\"button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"Display data\"],[8],[0,\" \\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"dataModal\",\"dataModal\"]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"Answers to \\\"\"],[8],[1,[20,[\"question\",\"questionText\"]],false],[6,\"label\"],[7],[0,\"\\\":\"],[8],[6,\"br\"],[7],[8],[0,\"\\n    \\n\"],[4,\"each\",[[20,[\"matchedAnswers\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[1,[19,1,[\"answer\"]],false],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok\"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Save Report\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel\"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"Exit\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/display-data-report.hbs" } });
 });
 define("self-start-front-end/templates/components/display-forms", ["exports"], function (exports) {
   "use strict";
