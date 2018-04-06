@@ -960,9 +960,6 @@ define('self-start-front-end/tests/helpers/ember-power-select', ['exports', 'emb
   exports.touchTrigger = touchTrigger;
   exports.selectChoose = selectChoose;
 });
-define('self-start-front-end/tests/helpers/ember-sortable/test-helpers', ['ember-sortable/helpers/drag', 'ember-sortable/helpers/reorder'], function () {
-  'use strict';
-});
 define('self-start-front-end/tests/helpers/module-for-acceptance', ['exports', 'qunit', 'self-start-front-end/tests/helpers/start-app', 'self-start-front-end/tests/helpers/destroy-app'], function (exports, _qunit, _startApp, _destroyApp) {
   'use strict';
 

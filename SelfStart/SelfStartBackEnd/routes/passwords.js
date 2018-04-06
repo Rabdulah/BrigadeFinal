@@ -76,6 +76,7 @@ router.route('/')
                     Passwords.Model.findOne({"email": Password.email}, function (error, UserShadow) {
                         if (error) response.send(error);
                         response.json({password: UserShadow});
+                        //
                     });
                 }
             }
