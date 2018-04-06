@@ -296,8 +296,6 @@ export default Component.extend({
             });
           });
         });
-
-
-    },
+   },
   }
 });
