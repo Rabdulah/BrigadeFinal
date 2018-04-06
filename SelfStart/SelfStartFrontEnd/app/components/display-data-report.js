@@ -7,7 +7,7 @@ export default Component.extend({
     allAnswers: [],
     matchedAnswers: [],
     averageRating: 0,
-    ratingGroupCount: [10],
+    ratingGroupCount: [],
 
     init() {
         this._super(...arguments);
