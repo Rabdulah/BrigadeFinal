@@ -2684,6 +2684,10 @@ a img {
   pointer-events: none;
   opacity: 0.75; }
 
+.disabled {
+  pointer-events: none;
+  opacity: 0.75; }
+
 #selectIcon {
   /* arrow icon for select element */
   content: '';

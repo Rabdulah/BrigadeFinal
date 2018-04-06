@@ -5,16 +5,25 @@ var Answers = require('../models/Answers');
 router.route('/')
     .post( function (request, response) {
         var answer = new Answers.Model(request.body.answer);
-        Answers.save(function (error) {
+        answer.save(function (error) {
             if (error) response.send(error);
             response.json({answer: answer});
         });
     })
     .get( function (request, response) {
-        Answers.Model.find(function (error, answers) {
-            if (error) response.send(error);
-            response.json({answer: answers});
-        });
+        var list =  request.query.filter;
+        if (!list){
+            Answers.Model.find(function (error, answers) {
+                if (error) response.send(error);
+                response.json({answer: answers});
+            });
+        }
+        else{
+            Answers.Model.find({"test": list.test}, function (error, answers) {
+                if (error) response.send(error);
+                response.json({answer: answers});
+            }); 
+    }
     });
 
 router.route('/:answer_id')

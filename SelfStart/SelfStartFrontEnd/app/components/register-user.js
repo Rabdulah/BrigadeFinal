@@ -132,6 +132,10 @@ export default Component.extend({
 
         patient.save().then((patient) =>{
           this.get('DS').query('form', {filter: {'name': 'Intake Form'}}).then((intake) => {
+            
+            var ans = [];
+
+    
 
 
             console.log(intake.get('firstObject'));
@@ -140,9 +144,27 @@ export default Component.extend({
               name: "Intake Form",
               description: "Initial form before ou can book an appointment",
               form: intake.get('firstObject'),
-              patient: patient
+              patient: patient,
+              
             });
             newTest.save().then(()=> {
+            
+
+              this.get('DS').query('question-order', {filter: {'form': intake.get('firstObject').id}}).then((rec)=>{
+
+                rec.forEach((r)=>{
+                  console.log(r.get('question').content.get('questionText'));
+                  let answer = this.get('DS').createRecord('answer', {
+                    question: "",
+                    answer: "",
+                    test: newTest
+                  });
+                  answer.save();
+                  
+                })
+               
+              });
+
               localStorage.clear();
               $('.ui.register.modal').modal('hide');
               // localStorage.setItem('loggedIn', false);

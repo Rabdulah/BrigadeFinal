@@ -47,6 +47,7 @@ require('./config/passportAdmin')(passport);
 require('./config/passportPhysio')(passport);
 
 //IMPORT OUR ROUTES ---------------------------------
+var answers = require('./routes/answers');
 var photos = require('./routes/images');
 var patients = require('./routes/patients');
 var cities = require('./routes/cities');
@@ -70,6 +71,7 @@ var questionOrder = require('./routes/questionOrder');
 
 
 // REGISTER OUR ROUTES -------------------------------
+app.use('/answers', answers);
 app.use('/images', photos);
 app.use('/genders', genders);
 app.use('/patients', patients);

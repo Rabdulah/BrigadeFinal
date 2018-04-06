@@ -3,50 +3,34 @@
 </p>
 
 {{#ui-modal name=modalName class=modalName }}
-  <i class="close icon"></i>
+      <i class="close icon"></i>
+  <link integrity="" rel="stylesheet" href="{{rootURL}}../assets/css/form-style.css"> <!-- Resource style -->
 
 
   <div class="header">Form View</div>
   <div class="scrolling content" >
 
+    <form id="edit" class="cd-form floating-labels">
 
-    {{#each orders as |q|}}
-    <div class="ui form">
-      <br>
-      {{#if q.question.sa}}
-        <label>{{q.question.questionText}}</label>
-        <br><br>
-        <div class="ui disabled input focus">
-          {{input type="text" value=SAanswer}}
-        </div>
-      {{/if}}
-      {{#if q.question.ra}}
-        <label>{{q.question.questionText}}</label>
-        <br><br>
-        {{ui-rating
-          class="heart"
-          maxRating=10
-          initialRating = Rating
-          interactive = false
-        }}
-      {{/if}}
+    {{#each orders as |q index|}}
+      {{display-answers question=q.question assessment=assessment qNumber=index assessid=assessment.id}}
+    {{/each}}
 
-      {{#if q.question.tf}}
-        <br><br>
-        <li>
-          <div class="inline fields">
-            <label>{{q.question.questionText}}</label>
-            <div class="field">
-              {{ui-checkbox label="True" checked=checkTrue disabled = true}}
-            </div>
-            <div class="field">
-              {{ui-checkbox label="True" checked=checkFalse disabled = true }}
-            </div>
-          </div>
-        </li>
-      {{/if}}
+    </form>
+  </div>
 
-      {{#if q.question.mc}}
+
+
+
+
+    {{!-- <div class="ui form">
+      <br> --}}
+      
+      
+
+   
+
+      {{!-- {{#if q.question.mc}}
         <br><br>
         <div class="grouped fields">
           <label>{{q.question.questionText}}</label>
@@ -75,12 +59,11 @@
             </div>
           {{/if}}
         </div>
-      {{/if}}
-    </div>
-    {{/each}}
+      {{/if}} --}}
+    {{!-- </div> --}}
+  
 
 
-  </div>
 {{/ui-modal}}
 
 {{!--<div class="ui form">-->

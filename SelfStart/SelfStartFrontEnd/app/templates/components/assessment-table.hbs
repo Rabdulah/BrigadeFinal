@@ -48,7 +48,7 @@
           {{/each}}
 
           <td class="right aligned one wide column" style="padding-right: 0">
-            <p>{{display-assessment model=test.form assessmentModel=test}}</p>
+            <p>{{display-assessment model=test.form assessment=test}}</p>
           </td>
 
           <td class="left aligned one wide column" style="padding-left: 0">
@@ -61,5 +61,6 @@
 
       </tbody>
     </table>
+    {{get-assessment-results}}
   </div>
 </div>
