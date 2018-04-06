@@ -118,7 +118,7 @@ router.route('/')
         }
         else{
 
-            Patients.Model.find({"email": patient.email}, function (error, patients) {
+            Patients.Model.findOne({"email": patient.email}, function (error, patients) {
                 if (error) response.send(error);
                 response.json({patient: patients});
             });

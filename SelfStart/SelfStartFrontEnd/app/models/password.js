@@ -9,5 +9,7 @@ export default DS.Model.extend({
     admin: DS.belongsTo('administrator'),
     practitioner: DS.belongsTo('physiotherapest'),
     client: DS.belongsTo('patient'),
-    firstUserInfoRegister: DS.attr()
+    firstUserInfoRegister: DS.attr(),
+    newPass: DS.attr(),
+    updatePassword: DS.attr(),
 });

@@ -11,10 +11,19 @@ router.route('/')
         });
     })
     .get( function (request, response) {
-        Appointments.Model.find(function (error, appointments) {
-            if (error) response.send(error);
-            response.json({appointment: appointments});
-        });
+        let patient = request.query.filter;
+        if (!patient) {
+            Appointments.Model.find(function (error, appointments) {
+                if (error) response.send(error);
+                response.json({appointment: appointments});
+            });
+        }
+        else{
+            Appointments.Model.find({"patient": patient.id}, function (error, appointments) {
+                if (error) response.send(error);
+                response.json({appointment: appointments});
+            });
+        }
     });
 
 router.route('/:appointment_id')
@@ -41,6 +50,7 @@ router.route('/:appointment_id')
                 appointment.other = request.body.appointment.other;
                 appointment.patient = request.body.appointment.patient;
                 appointment.endDate = request.body.appointment.endDate;
+                appointment.pName = request.body.appointment.pName;
 
                 appointment.save(function (error) {
                     if (error) {

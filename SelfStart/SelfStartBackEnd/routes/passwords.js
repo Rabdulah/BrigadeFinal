@@ -74,6 +74,7 @@ router.route('/')
             } else {
                 if (Password.email){
                     Passwords.Model.findOne({"email": Password.email}, function (error, UserShadow) {
+                        console.log('asdfasdf');
                         if (error) response.send(error);
                         response.json({password: UserShadow});
                     });
@@ -101,35 +102,55 @@ router.route('/:password_id')
                 response.send({error: error});
             }
             else {
-                console.log(request.body.password.firstUserInfoRegister);
-                if(request.body.password.firstUserInfoRegister) {
-                    UserShadow.admin = request.body.password.admin;
-                    UserShadow.practitioner = request.body.password.practitioner;
-                    UserShadow.client = request.body.password.client;
-                    UserShadow.firstUserInfoRegister = false;
-                    console.log("In first user info register");
-                }
-                else if (request.body.password.passwordMustChanged) {
-                    console.log("IN THE Update")
-                    var Salt = rand(256, 36);
-                    console.log(request.body.password.encryptedPassword);
-                    UserShadow.encryptedPassword = hash(request.body.password.encryptedPassword + Salt);
-                    UserShadow.salt = Salt;
-                    UserShadow.passwordMustChanged = false;
-                    console.log("at put salt", Salt);
-                    
-                }
-                UserShadow.passwordReset = request.body.password.passwordReset;
-                UserShadow.email = request.body.password.email;
-                               
-                UserShadow.save(function (error) {
-                    if (error) {
-                        response.send({error: error});
+                if (request.body.password.updatePassword) {
+                    let body = request.body.password;
+                    oldpass = hash(body.encryptedPassword + body.salt);
+                    if (oldpass === UserShadow.encryptedPassword) {
+                        console.log("Match");
+                        let Salt = rand(256, 36);
+                        let newP = hash(body.newPass + Salt);
+                        UserShadow.encryptedPassword = newP;
+                        UserShadow.salt = Salt;
+                        UserShadow.save().then((o)=>{
+                            response.json({password: o, success: true});
+                        });
+                    } else{
+                        console.log("Not match");
+                        response.json({password: body, success: false});
                     }
-                    else {
-                        response.json({password: UserShadow});
+                    UserShadow.updatePassword = false;
+
+                } else {
+                    console.log(request.body.password.firstUserInfoRegister);
+                    if (request.body.password.firstUserInfoRegister) {
+                        UserShadow.admin = request.body.password.admin;
+                        UserShadow.practitioner = request.body.password.practitioner;
+                        UserShadow.client = request.body.password.client;
+                        UserShadow.firstUserInfoRegister = false;
+                        console.log("In first user info register");
                     }
-                });
+                    else if (request.body.password.passwordMustChanged) {
+                        console.log("IN THE Update")
+                        var Salt = rand(256, 36);
+                        console.log(request.body.password.encryptedPassword);
+                        UserShadow.encryptedPassword = hash(request.body.password.encryptedPassword + Salt);
+                        UserShadow.salt = Salt;
+                        UserShadow.passwordMustChanged = false;
+                        console.log("at put salt", Salt);
+
+                    }
+                    UserShadow.passwordReset = request.body.password.passwordReset;
+                    UserShadow.email = request.body.password.email;
+
+                    UserShadow.save(function (error) {
+                        if (error) {
+                            response.send({error: error});
+                        }
+                        else {
+                            response.json({password: UserShadow});
+                        }
+                    });
+                }
             }
         });
     })

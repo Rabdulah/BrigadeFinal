@@ -1783,6 +1783,9 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
     client: null,
 
     physioPicked: false,
+    physioName: Ember.computed(function () {
+      return this.get('givenName') + " " + this.get('familyName');
+    }),
 
     getphysio: Ember.computed(function () {
       return this.get('DS').findAll('physiotherapest');
@@ -1935,7 +1938,7 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
         var self = this;
         //temp client until we get token
         //laptop
-        var client = '5ab9649cc7f3c62814754951';
+        // let client = '5ab9649cc7f3c62814754951';
         //desktop
         // let client = '5a88738e1f0fdc2b94498e81';
         var physio = self.get('selectphysio');
@@ -1943,86 +1946,86 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
           reason: self.get('Reason'),
           other: self.get('Other'),
           date: self.get('selectedbookedTime').time,
-          endDate: self.get('selectedbookedTime').end
+          endDate: self.get('selectedbookedTime').end,
+          pName: self.get('physioName')
         });
-        self.get('DS').findRecord('patient', client).then(function (src) {
-          console.log(src);
-          booking.set('patient', src);
-          src.get('appointments').pushObject(booking);
-          booking.save().then(function () {
-            src.save().then(function () {
-              self.get('DS').findRecord('physiotherapest', self.get('selectedPhysioId')).then(function (a) {
-                a.get('appointments').pushObject(booking);
-                a.save().then(function () {
-                  //{"title":"Book Appointment","startsAt":"2018-03-16T13:00:00.000Z","endsAt":"2018-03-16T17:30:00.000Z","tempid":"5aa9d71c004e3909bc597bba"}
-                  var usedBlock = self.get('selectedappointmentBlock');
-                  //time":"2018-03-16T13:00:00.000Z","end":"2018-03-16T14:30:00.000Z","value":"09:00
-                  var bookedTime = self.get('selectedbookedTime');
-                  //remove the block you used
+        var src = self.get('client');
+        console.log(src);
+        booking.set('patient', src);
+        src.get('appointments').pushObject(booking);
+        booking.save().then(function () {
+          src.save().then(function () {
+            self.get('DS').findRecord('physiotherapest', self.get('selectedPhysioId')).then(function (a) {
+              a.get('appointments').pushObject(booking);
+              a.save().then(function () {
+                //{"title":"Book Appointment","startsAt":"2018-03-16T13:00:00.000Z","endsAt":"2018-03-16T17:30:00.000Z","tempid":"5aa9d71c004e3909bc597bba"}
+                var usedBlock = self.get('selectedappointmentBlock');
+                //time":"2018-03-16T13:00:00.000Z","end":"2018-03-16T14:30:00.000Z","value":"09:00
+                var bookedTime = self.get('selectedbookedTime');
+                //remove the block you used
 
-                  //case 1 if the slots are exact
-                  if ((0, _moment.default)(usedBlock.startsAt).isSame(bookedTime.time) && (0, _moment.default)(usedBlock.endsAt).isSame(bookedTime.end)) {
-                    console.log("case 1");
+                //case 1 if the slots are exact
+                if ((0, _moment.default)(usedBlock.startsAt).isSame(bookedTime.time) && (0, _moment.default)(usedBlock.endsAt).isSame(bookedTime.end)) {
+                  console.log("case 1");
+                  self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
+                    old.destroyRecord().then(function () {
+                      Ember.$('.ui.bk.modal').modal('hide');
+                      // window.location.reload();
+                    });
+                  });
+                }
+                //case 2 booked at the start block
+                else if ((0, _moment.default)(usedBlock.startsAt).isSame(bookedTime.time)) {
+                    console.log("case 2");
                     self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
-                      old.destroyRecord().then(function () {
+                      old.set('date', bookedTime.end);
+                      old.save().then(function () {
                         Ember.$('.ui.bk.modal').modal('hide');
                         // window.location.reload();
                       });
                     });
                   }
-                  //case 2 booked at the start block
-                  else if ((0, _moment.default)(usedBlock.startsAt).isSame(bookedTime.time)) {
-                      console.log("case 2");
+                  //case 3 booked at the end block
+                  else if ((0, _moment.default)(usedBlock.endsAt).isSame(bookedTime.end)) {
+                      console.log("case 3");
                       self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
-                        old.set('date', bookedTime.end);
+                        old.set('endDate', bookedTime.time);
                         old.save().then(function () {
                           Ember.$('.ui.bk.modal').modal('hide');
                           // window.location.reload();
                         });
                       });
                     }
-                    //case 3 booked at the end block
-                    else if ((0, _moment.default)(usedBlock.endsAt).isSame(bookedTime.end)) {
-                        console.log("case 3");
-                        self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
-                          old.set('endDate', bookedTime.time);
-                          old.save().then(function () {
-                            Ember.$('.ui.bk.modal').modal('hide');
-                            // window.location.reload();
-                          });
+                    //case 4 booked in between
+                    else {
+                        //create 2 segmented block
+                        var topappo = self.get('DS').createRecord('appointment', {
+                          date: usedBlock.startsAt,
+                          endDate: bookedTime.time
                         });
-                      }
-                      //case 4 booked in between
-                      else {
-                          //create 2 segmented block
-                          var topappo = self.get('DS').createRecord('appointment', {
-                            date: usedBlock.startsAt,
-                            endDate: bookedTime.time
-                          });
-                          var bottomappo = self.get('DS').createRecord('appointment', {
-                            date: bookedTime.end,
-                            endDate: usedBlock.endsAt
-                          });
-                          topappo.save().then(function () {
-                            bottomappo.save().then(function () {
-                              a.get('appointments').pushObject(topappo);
-                              a.get('appointments').pushObject(bottomappo);
-                              a.save().then(function () {
-                                //remove old block
-                                self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (rec) {
-                                  a.get('appointments').removeObject(rec);
-                                  a.save().then(function () {
-                                    rec.destroyRecord().then(function () {
-                                      Ember.$('.ui.bk.modal').modal('hide');
-                                      // window.location.reload();
-                                    });
+                        var bottomappo = self.get('DS').createRecord('appointment', {
+                          date: bookedTime.end,
+                          endDate: usedBlock.endsAt
+                        });
+                        topappo.save().then(function () {
+                          bottomappo.save().then(function () {
+                            a.get('appointments').pushObject(topappo);
+                            a.get('appointments').pushObject(bottomappo);
+                            a.save().then(function () {
+                              //remove old block
+                              self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (rec) {
+                                a.get('appointments').removeObject(rec);
+                                a.save().then(function () {
+                                  rec.destroyRecord().then(function () {
+                                    Ember.$('.ui.bk.modal').modal('hide');
+                                    // window.location.reload();
                                   });
                                 });
                               });
                             });
                           });
-                        }
-                });
+                        });
+                      }
               });
             });
           });
@@ -2474,7 +2477,7 @@ define('self-start-front-end/components/client-settings', ['exports', 'moment'],
     value: true
   });
   exports.default = Ember.Component.extend({
-
+    auth: Ember.inject.service('auth'),
     DS: Ember.inject.service('store'),
     routing: Ember.inject.service('-routing'),
     onProfile: true,
@@ -2485,6 +2488,10 @@ define('self-start-front-end/components/client-settings', ['exports', 'moment'],
     onAccountColor: "#747474",
     onHistoryColor: "#747474",
     onAppointmentColor: "#747474",
+
+    pateintsData: null,
+    appointmentHistory: Ember.A(),
+
     OPC: Ember.computed('onProfileColor', function () {
       var color = this.get('onProfileColor');
       return new Ember.String.htmlSafe("color: " + color);
@@ -2502,13 +2509,6 @@ define('self-start-front-end/components/client-settings', ['exports', 'moment'],
       return new Ember.String.htmlSafe("color: " + color);
     }),
 
-    modelAttributes: [{ 'key': 'givenName', 'name': 'First Name', 'dir': 'asc', 'class': 'left aligned two wide column' }, { 'key': 'familyName', 'name': 'Last Name', 'dir': '', 'class': 'left aligned two wide column' }, { 'key': 'dateOfBirth', 'name': 'Date of Birth', 'dir': '', 'class': 'left aligned five wide column' },
-    // {'key': 'address', 'name':'Address'},
-    { 'key': 'email', 'name': 'Email', 'dir': '', 'class': 'left aligned four wide column' }],
-    // {'key': 'phoneNumber', 'name':'Phone Number'}],
-
-
-    pateintsData: null,
     didRender: function didRender() {
       this._super.apply(this, arguments);
 
@@ -2537,10 +2537,23 @@ define('self-start-front-end/components/client-settings', ['exports', 'moment'],
     init: function init() {
       this._super.apply(this, arguments);
       var self = this;
-      this.set('pateintsData', this.get('DS').findRecord('patient', '5ac534f93d763c33cc978c39')).then(function () {
+      var eemail = localStorage.getItem('sas-session-id');
+      eemail = this.get('auth').decrypt(eemail);
+      console.log(eemail);
+
+      self.get('DS').queryRecord('patient', { filter: { 'email': eemail } }).then(function (temp) {
+
+        self.set('pateintsData', temp);
         var dateString = (0, _moment.default)(self.get('pateintsData').get('dateOfBirth'), 'DD-MM-YYYY').toISOString().substring(0, 10);
-        // var dateString = date.toISOString().substring(0, 10);
         self.set('selectedDate', dateString);
+
+        var client = self.get('pateintsData');
+        self.get('DS').query('appointment', { filter: { 'id': client.get('id') } }).then(function (obj) {
+          obj.forEach(function (temp) {
+            temp.set('date', (0, _moment.default)(temp.get('date')).format('YYYY-MM-DD hh:mm A'));
+            self.get('appointmentHistory').pushObject(temp);
+          });
+        });
       });
     },
 
@@ -2602,37 +2615,69 @@ define('self-start-front-end/components/client-settings', ['exports', 'moment'],
         this.set('onHistoryColor', '#747474');
       },
       saveChange: function saveChange() {
-        var _this = this;
+        //check for email first
+        var rec = this.get('pateintsData');
+        rec.set('familyName', this.get('pateintsData.familyName'));
+        rec.set('givenName', this.get('pateintsData.givenName'));
+        rec.set('email', this.get('pateintsData.email'));
+        rec.set('streetName', this.get('pateintsData.streetName'));
+        rec.set('streetNumber', this.get('pateintsData.streetNumber'));
+        rec.set('apartment', this.get('pateintsData.apartment'));
+        rec.set('country', this.get('selectedCountry'));
+        rec.set('province', this.get('pateintsData.province'));
+        rec.set('city', this.get('pateintsData.city'));
+        rec.set('gender', this.get('selectedGender'));
+        rec.set('dateOfBirth', new Date(this.get('selectedDate')));
+        rec.set('phoneNumber', this.get('pateintsData.phoneNumber'));
+        rec.set('postalCode', this.get('pateintsData.postalCode'));
 
-        this.get('DS').findRecord('patient', '5ac534f93d763c33cc978c39').then(function (rec) {
-
-          rec.set('familyName', _this.get('pateintsData.familyName'));
-          rec.set('givenName', _this.get('pateintsData.givenName'));
-          rec.set('email', _this.get('pateintsData.email'));
-          rec.set('streetName', _this.get('pateintsData.streetName'));
-          rec.set('streetNumber', _this.get('pateintsData.streetNumber'));
-          rec.set('apartment', _this.get('pateintsData.apartment'));
-          rec.set('country', _this.get('selectedCountry'));
-          rec.set('province', _this.get('pateintsData.province'));
-          rec.set('city', _this.get('pateintsData.city'));
-          rec.set('gender', _this.get('selectedGender'));
-          rec.set('dateOfBirth', new Date(_this.get('selectedDate')));
-          rec.set('phoneNumber', _this.get('pateintsData.phoneNumber'));
-          rec.set('postalCode', _this.get('pateintsData.postalCode'));
-
-          rec.save().then(function () {
-            alert("Saved");
-          });
+        rec.save().then(function () {
+          alert("Saved");
         });
       },
       savePassword: function savePassword() {
+
+        var self = this;
+        var auth = this.get('auth');
+
         var old = this.get('oldPassword');
+        var hashedold = auth.hash(old);
+
         var newp = this.get('newPassword');
         var confp = this.get('confirmPassword');
-        var self = this;
+
+        var cliente = this.get('pateintsData').get('email');
+        console.log(cliente);
 
         if (newp !== confp) {
-          console.log('adsf');
+          alert("wrong password or new password does not match");
+        } else {
+          newp = auth.hash(newp);
+          self.get('DS').queryRecord('password', { filter: { 'email': cliente } }).then(function (obj) {
+            console.log(obj);
+
+            obj.set('encryptedPassword', hashedold);
+            obj.set('updatePassword', true);
+            obj.set('newPass', newp);
+            obj.save().then(function (res) {
+              console.log(res);
+              alert("worked");
+            });
+
+            // console.log(obj);
+            // hashedold = auth.hash(hashedold+ obj.get('salt'));
+            // console.log(hashedold);
+            // if (hashedold === obj.get('encryptedPassword')){
+            //   obj.set('encryptedPassword', auth.hash(newp));
+            //   obj.set('passwordMustChanged', true);
+            //   obj.save((res)=>{
+            //     alert("saved new password");
+            //   });
+            // }
+            // else{
+            //   alert("wrong password or new password does not match");
+            // }
+          });
         }
       }
     }
@@ -9084,6 +9129,24 @@ define('self-start-front-end/helpers/task', ['exports', 'ember-concurrency/helpe
     }
   });
 });
+define('self-start-front-end/helpers/types-appointment', ['exports', 'moment'], function (exports, _moment) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.typesAppointment = typesAppointment;
+  function typesAppointment(_start) {
+
+    var start = (0, _moment.default)(_start[0], 'YYYY-MM-DD hh:mm A');
+    var end = (0, _moment.default)(_start[1]);
+
+    var a = _moment.default.duration(end.diff(start));
+    if (a > 3600000) return "Initial Assessment";else return "Physiotherapy Treatment";
+  }
+
+  exports.default = Ember.Helper.helper(typesAppointment);
+});
 define('self-start-front-end/helpers/unix', ['exports', 'ember-moment/helpers/unix'], function (exports, _unix) {
   'use strict';
 
@@ -9417,6 +9480,7 @@ define('self-start-front-end/models/appointment', ['exports', 'ember-data'], fun
     endDate: _emberData.default.attr(),
     reason: _emberData.default.attr(),
     other: _emberData.default.attr(),
+    pName: _emberData.default.attr(),
     patient: _emberData.default.belongsTo('patient')
   });
 });
@@ -9602,7 +9666,9 @@ define('self-start-front-end/models/password', ['exports', 'ember-data'], functi
         admin: _emberData.default.belongsTo('administrator'),
         practitioner: _emberData.default.belongsTo('physiotherapest'),
         client: _emberData.default.belongsTo('patient'),
-        firstUserInfoRegister: _emberData.default.attr()
+        firstUserInfoRegister: _emberData.default.attr(),
+        newPass: _emberData.default.attr(),
+        updatePassword: _emberData.default.attr()
     });
 });
 define('self-start-front-end/models/patient', ['exports', 'ember-data'], function (exports, _emberData) {
@@ -12352,7 +12418,7 @@ define("self-start-front-end/templates/components/client-settings", ["exports"],
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "Hzuk8VeU", "block": "{\"symbols\":[\"patient\",\"column\",\"column\",\"oneCountry\",\"oneGender\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Settings\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui bottom attached segment pushable\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui visible inverted left vertical sidebar menu\"],[7],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[10,\"style\",[18,\"OPC\"],null],[3,\"action\",[[19,0,[]],\"ProfileClick\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"address card icon\"],[7],[8],[0,\"\\n      Profile\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[10,\"style\",[18,\"OAC\"],null],[3,\"action\",[[19,0,[]],\"settingsClick\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"block icon settings\"],[7],[8],[0,\"\\n      Account\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[10,\"style\",[18,\"OHC\"],null],[3,\"action\",[[19,0,[]],\"historyClick\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"calendar icon\"],[7],[8],[0,\"\\n      Transaction History\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[10,\"style\",[18,\"OAPC\"],null],[3,\"action\",[[19,0,[]],\"appointmentClick\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"calendar icon\"],[7],[8],[0,\"\\n      Appointment History\\n    \"],[8],[0,\"\\n    \"],[2,\"<a class=\\\"item\\\">\"],[0,\"\\n      \"],[2,\"<i class=\\\"calendar icon\\\"></i>\"],[0,\"\\n      \"],[2,\"History\"],[0,\"\\n    \"],[2,\"</a>\"],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"pusher\"],[9,\"style\",\"min-height: 700px;\"],[7],[0,\"\\n    \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"padding-right: 10em;\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"onProfile\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui basic segment\"],[7],[0,\"\\n          \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n          \"],[6,\"legend\"],[7],[0,\"Personal Info\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"First Name\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"text\",[20,[\"pateintsData\",\"givenName\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Last Name\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"text\",[20,[\"pateintsData\",\"familyName\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Date of Birth\"],[8],[0,\"\\n              \"],[6,\"input\"],[9,\"class\",\"date\"],[9,\"type\",\"date\"],[10,\"value\",[18,\"selectedDate\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"assignDate\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"h4\"],[7],[0,\"Gender\"],[8],[0,\"\\n              \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n                \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectGender\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"genderModel\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"option\"],[10,\"value\",[19,5,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"pateintsData\",\"gender\"]],[19,5,[\"name\"]]],null],null],[7],[0,\"\\n                      \"],[1,[19,5,[\"name\"]],false],[0,\"\\n                    \"],[8],[0,\"\\n\"]],\"parameters\":[5]},null],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"legend\"],[7],[0,\"Address\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Number\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"home\",\"text\",[20,[\"pateintsData\",\"streetNumber\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Street Name\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"home\",\"text\",[20,[\"pateintsData\",\"streetName\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Unit\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"bookmark\",\"text\",[20,[\"pateintsData\",\"apartment\"]]]]],false],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Postal/ZIP Code\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"flag\",\"text\",[20,[\"pateintsData\",\"postalCode\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui three column grid\"],[9,\"id\",\"grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"h4\"],[7],[0,\"Country\"],[8],[0,\"\\n              \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n                \"],[6,\"select\"],[9,\"class\",\"world\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectCountry\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"conutryModel\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"option\"],[10,\"value\",[19,4,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"pateintsData\",\"country\"]],[19,4,[\"name\"]]],null],null],[7],[0,\"\\n                      \"],[1,[19,4,[\"name\"]],false],[0,\"\\n                    \"],[8],[0,\"\\n\"]],\"parameters\":[4]},null],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"h4\"],[7],[0,\"Province\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"world\",\"text\",[20,[\"pateintsData\",\"province\"]],\"Province/State\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"h4\"],[7],[0,\"City\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"world\",\"text\",[20,[\"pateintsData\",\"city\"]],\"City\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"legend\"],[7],[0,\"Contact Info\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Phone Number\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"phone\",\"text\",[20,[\"pateintsData\",\"phoneNumber\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-email\"],[7],[0,\"Email\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"email\",\"email\",[20,[\"pateintsData\",\"email\"]],true]]],false],[0,\"\\n\\n            \"],[8],[0,\"\\n\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"three wide field\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"saveChange\"]],[7],[0,\"\\n              Save Changes\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"onAccount\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui basic segment\"],[7],[0,\"\\n          \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n          \"],[6,\"legend\"],[7],[0,\"Change Password\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Old Password\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"oldPassword\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"New Password\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"newPassword\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Confirm Password\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"confirmPassword\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"three wide field\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"savePassword\"]],[7],[0,\"\\n              Save Changes\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"onHistory\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui basic segment\"],[7],[0,\"\\n          \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n          \"],[6,\"legend\"],[7],[0,\"Transaction History\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Old Password\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"oldPassword\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"New Password\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"newPassword\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Confirm Password\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"confirmPassword\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"three wide field\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"savePassword\"]],[7],[0,\"\\n              Save Changes\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"onAppointment\"]]],null,{\"statements\":[[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"left thirteen wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n              Appointment History\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n          \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n            \"],[6,\"tbody\"],[7],[0,\"\\n            \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"left aligned one wide column \"],[7],[0,\" \"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"                \"],[6,\"th\"],[7],[0,\"Date\"],[8],[0,\"\\n                \"],[6,\"th\"],[7],[0,\"Practitioner \"],[8],[0,\"\\n                \"],[6,\"th\"],[7],[0,\"Date\"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"            \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"id\",\"clientWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n\\n          \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n            \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"patientsModel\"]]],null,{\"statements\":[[0,\"              \"],[6,\"tr\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"td\"],[10,\"class\",[19,2,[\"class\"]],null],[7],[0,\"\\n                    \"],[1,[25,\"get\",[[19,1,[]],[19,2,[\"key\"]]],null],false],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null],[0,\"\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-settings.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "r1mn2eld", "block": "{\"symbols\":[\"aHistory\",\"oneCountry\",\"oneGender\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Settings\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui bottom attached segment pushable\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui visible inverted left vertical sidebar menu\"],[7],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[10,\"style\",[18,\"OPC\"],null],[3,\"action\",[[19,0,[]],\"ProfileClick\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"address card icon\"],[7],[8],[0,\"\\n      Profile\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[10,\"style\",[18,\"OAC\"],null],[3,\"action\",[[19,0,[]],\"settingsClick\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"block icon settings\"],[7],[8],[0,\"\\n      Account\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[10,\"style\",[18,\"OHC\"],null],[3,\"action\",[[19,0,[]],\"historyClick\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"calendar icon\"],[7],[8],[0,\"\\n      Transaction History\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[10,\"style\",[18,\"OAPC\"],null],[3,\"action\",[[19,0,[]],\"appointmentClick\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"calendar icon\"],[7],[8],[0,\"\\n      Appointment History\\n    \"],[8],[0,\"\\n    \"],[2,\"<a class=\\\"item\\\">\"],[0,\"\\n      \"],[2,\"<i class=\\\"calendar icon\\\"></i>\"],[0,\"\\n      \"],[2,\"History\"],[0,\"\\n    \"],[2,\"</a>\"],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"pusher\"],[9,\"style\",\"min-height: 700px;\"],[7],[0,\"\\n    \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"padding-right: 10em;\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"onProfile\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui basic segment\"],[7],[0,\"\\n          \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n          \"],[6,\"legend\"],[7],[0,\"Personal Info\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"First Name\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"text\",[20,[\"pateintsData\",\"givenName\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Last Name\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"text\",[20,[\"pateintsData\",\"familyName\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Date of Birth\"],[8],[0,\"\\n              \"],[6,\"input\"],[9,\"class\",\"date\"],[9,\"type\",\"date\"],[10,\"value\",[18,\"selectedDate\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"assignDate\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"h4\"],[7],[0,\"Gender\"],[8],[0,\"\\n              \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n                \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectGender\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"genderModel\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"option\"],[10,\"value\",[19,3,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"pateintsData\",\"gender\"]],[19,3,[\"name\"]]],null],null],[7],[0,\"\\n                      \"],[1,[19,3,[\"name\"]],false],[0,\"\\n                    \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"legend\"],[7],[0,\"Address\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Number\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"home\",\"text\",[20,[\"pateintsData\",\"streetNumber\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Street Name\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"home\",\"text\",[20,[\"pateintsData\",\"streetName\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Unit\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"bookmark\",\"text\",[20,[\"pateintsData\",\"apartment\"]]]]],false],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Postal/ZIP Code\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"flag\",\"text\",[20,[\"pateintsData\",\"postalCode\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui three column grid\"],[9,\"id\",\"grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"h4\"],[7],[0,\"Country\"],[8],[0,\"\\n              \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n                \"],[6,\"select\"],[9,\"class\",\"world\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectCountry\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"conutryModel\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"option\"],[10,\"value\",[19,2,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"pateintsData\",\"country\"]],[19,2,[\"name\"]]],null],null],[7],[0,\"\\n                      \"],[1,[19,2,[\"name\"]],false],[0,\"\\n                    \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"h4\"],[7],[0,\"Province\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"world\",\"text\",[20,[\"pateintsData\",\"province\"]],\"Province/State\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"h4\"],[7],[0,\"City\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"world\",\"text\",[20,[\"pateintsData\",\"city\"]],\"City\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"legend\"],[7],[0,\"Contact Info\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Phone Number\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"phone\",\"text\",[20,[\"pateintsData\",\"phoneNumber\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-email\"],[7],[0,\"Email\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"email\",\"email\",[20,[\"pateintsData\",\"email\"]],true]]],false],[0,\"\\n\\n            \"],[8],[0,\"\\n\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"three wide field\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"saveChange\"]],[7],[0,\"\\n              Save Changes\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"onAccount\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui basic segment\"],[7],[0,\"\\n          \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n          \"],[6,\"legend\"],[7],[0,\"Change Password\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Old Password\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"oldPassword\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"New Password\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"newPassword\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Confirm Password\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"confirmPassword\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"three wide field\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"savePassword\"]],[7],[0,\"\\n              Save Changes\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"onHistory\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui basic segment\"],[7],[0,\"\\n          \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n          \"],[6,\"legend\"],[7],[0,\"Transaction History\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Old Password\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"oldPassword\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"New Password\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"newPassword\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Confirm Password\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"confirmPassword\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"three wide field\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"savePassword\"]],[7],[0,\"\\n              Save Changes\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"onAppointment\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"ui container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"left thirteen wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n              Appointment History\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n          \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n            \"],[6,\"tbody\"],[7],[0,\"\\n            \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n              \"],[6,\"th\"],[7],[0,\"Date\"],[8],[0,\"\\n              \"],[6,\"th\"],[7],[0,\"Practitioner\"],[8],[0,\"\\n              \"],[6,\"th\"],[7],[0,\"Reason\"],[8],[0,\"\\n              \"],[6,\"th\"],[7],[0,\"Appointment type\"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"id\",\"clientWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n\\n          \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n            \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"appointmentHistory\"]]],null,{\"statements\":[[0,\"              \"],[6,\"tr\"],[7],[0,\"\\n                \"],[6,\"td\"],[7],[1,[19,1,[\"date\"]],false],[8],[0,\"\\n                \"],[6,\"td\"],[7],[1,[19,1,[\"pName\"]],false],[8],[0,\"\\n                \"],[6,\"td\"],[7],[1,[19,1,[\"reason\"]],false],[8],[0,\"\\n                \"],[6,\"td\"],[7],[1,[25,\"types-appointment\",[[19,1,[\"date\"]],[19,1,[\"endDate\"]]],null],false],[8],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null],[0,\"\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-settings.hbs" } });
 });
 define("self-start-front-end/templates/components/client-upload-photos", ["exports"], function (exports) {
   "use strict";
@@ -13804,6 +13870,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+659ace09"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+45105cf5"});
 }
 //# sourceMappingURL=self-start-front-end.map

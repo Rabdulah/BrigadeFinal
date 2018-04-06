@@ -10,6 +10,11 @@ var passwordsSchema = mongoose.Schema(
             type: Boolean,
             default: true
         },
+        updatePassword: {
+            type: Boolean,
+            default: false
+        },
+        newPass: String,
         admin: {type: mongoose.Schema.ObjectId, ref: ('Administrators')},
         practitioner: {type: mongoose.Schema.ObjectId, ref: ('Physiotherapests')},
         client: {type: mongoose.Schema.ObjectId, ref: ('PatientProfiles')}

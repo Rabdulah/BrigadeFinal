@@ -5,6 +5,7 @@ var appointmentsSchema = mongoose.Schema({
     endDate: Date,
     reason: String,
     other: String,
+    pName: String,
     patient: {type: mongoose.Schema.ObjectId, ref: 'Patients'}
 });
 var AppointmentsSchema = mongoose.model('appointment', appointmentsSchema);
