@@ -11,10 +11,10 @@ router.route('/')
         });
     })
     .get( function (request, response) {
-        Appointments.Model.find(function (error, appointments) {
-            if (error) response.send(error);
-            response.json({appointment: appointments});
-        });
+            Appointments.Model.find(function (error, appointments) {
+                if (error) response.send(error);
+                response.json({appointment: appointments});
+            });
     });
 
 router.route('/:appointment_id')

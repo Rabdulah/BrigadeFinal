@@ -14,6 +14,7 @@ export default Component.extend({
   flagDelete: false,
   flagAdd: false,
   listModel: [],
+  appointments: [],
   plan: null,
   isPlanSelected: false,
   model: null,
@@ -53,17 +54,28 @@ link:[],
     // });
     var arr = [];
     this.get('store').findAll("rehab-client-link").then((link) => {
-      console.log(link);
+
       link.forEach((rec)=>{
-        console.log(rec.get("Patient"));
+
         if(rec.get("Patient").get("id") === this.get("model").id){
-          console.log(rec);
+
           arr.pushObject(rec);
         }
         });
     })
-    console.log(arr);
+
     return arr
+  }),
+
+  appointmentModel: computed( function(){
+    this.get('store').findAll('appointment').then((apps) => {
+      let self = this;
+      apps.forEach(function (appoint) {
+        if (appoint.get('patient').get('id') == self.model.id) {
+          self.get('appointments').pushObject(appoint);
+        }
+      })
+    });
   }),
 
   exerciseModel: Ember.observer('plan', function(){

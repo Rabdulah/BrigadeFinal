@@ -343,9 +343,12 @@
       {{/each}}
 
       <br>
-
+      
       <label class="header">Appointment history:</label>
-
+      {{appointmentModel}}
+      {{#each appointments as |app|}}
+        <label>{{app.reason}} {{app.date}} {{app.endDate}}</label>
+      {{/each}}
       <br>
 
       <label class="header">Payment history:</label>

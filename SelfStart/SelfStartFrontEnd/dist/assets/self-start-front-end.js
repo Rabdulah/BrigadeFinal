@@ -1935,7 +1935,7 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
         var self = this;
         //temp client until we get token
         //laptop
-        var client = '5ab9649cc7f3c62814754951';
+        // let client = '5ab9649cc7f3c62814754951';
         //desktop
         // let client = '5a88738e1f0fdc2b94498e81';
         var physio = self.get('selectphysio');
@@ -1945,84 +1945,83 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
           date: self.get('selectedbookedTime').time,
           endDate: self.get('selectedbookedTime').end
         });
-        self.get('DS').findRecord('patient', client).then(function (src) {
-          console.log(src);
-          booking.set('patient', src);
-          src.get('appointments').pushObject(booking);
-          booking.save().then(function () {
-            src.save().then(function () {
-              self.get('DS').findRecord('physiotherapest', self.get('selectedPhysioId')).then(function (a) {
-                a.get('appointments').pushObject(booking);
-                a.save().then(function () {
-                  //{"title":"Book Appointment","startsAt":"2018-03-16T13:00:00.000Z","endsAt":"2018-03-16T17:30:00.000Z","tempid":"5aa9d71c004e3909bc597bba"}
-                  var usedBlock = self.get('selectedappointmentBlock');
-                  //time":"2018-03-16T13:00:00.000Z","end":"2018-03-16T14:30:00.000Z","value":"09:00
-                  var bookedTime = self.get('selectedbookedTime');
-                  //remove the block you used
+        var src = self.get('client');
+        console.log(src);
+        booking.set('patient', src);
+        src.get('appointments').pushObject(booking);
+        booking.save().then(function () {
+          src.save().then(function () {
+            self.get('DS').findRecord('physiotherapest', self.get('selectedPhysioId')).then(function (a) {
+              a.get('appointments').pushObject(booking);
+              a.save().then(function () {
+                //{"title":"Book Appointment","startsAt":"2018-03-16T13:00:00.000Z","endsAt":"2018-03-16T17:30:00.000Z","tempid":"5aa9d71c004e3909bc597bba"}
+                var usedBlock = self.get('selectedappointmentBlock');
+                //time":"2018-03-16T13:00:00.000Z","end":"2018-03-16T14:30:00.000Z","value":"09:00
+                var bookedTime = self.get('selectedbookedTime');
+                //remove the block you used
 
-                  //case 1 if the slots are exact
-                  if ((0, _moment.default)(usedBlock.startsAt).isSame(bookedTime.time) && (0, _moment.default)(usedBlock.endsAt).isSame(bookedTime.end)) {
-                    console.log("case 1");
+                //case 1 if the slots are exact
+                if ((0, _moment.default)(usedBlock.startsAt).isSame(bookedTime.time) && (0, _moment.default)(usedBlock.endsAt).isSame(bookedTime.end)) {
+                  console.log("case 1");
+                  self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
+                    old.destroyRecord().then(function () {
+                      Ember.$('.ui.bk.modal').modal('hide');
+                      // window.location.reload();
+                    });
+                  });
+                }
+                //case 2 booked at the start block
+                else if ((0, _moment.default)(usedBlock.startsAt).isSame(bookedTime.time)) {
+                    console.log("case 2");
                     self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
-                      old.destroyRecord().then(function () {
+                      old.set('date', bookedTime.end);
+                      old.save().then(function () {
                         Ember.$('.ui.bk.modal').modal('hide');
                         // window.location.reload();
                       });
                     });
                   }
-                  //case 2 booked at the start block
-                  else if ((0, _moment.default)(usedBlock.startsAt).isSame(bookedTime.time)) {
-                      console.log("case 2");
+                  //case 3 booked at the end block
+                  else if ((0, _moment.default)(usedBlock.endsAt).isSame(bookedTime.end)) {
+                      console.log("case 3");
                       self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
-                        old.set('date', bookedTime.end);
+                        old.set('endDate', bookedTime.time);
                         old.save().then(function () {
                           Ember.$('.ui.bk.modal').modal('hide');
                           // window.location.reload();
                         });
                       });
                     }
-                    //case 3 booked at the end block
-                    else if ((0, _moment.default)(usedBlock.endsAt).isSame(bookedTime.end)) {
-                        console.log("case 3");
-                        self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
-                          old.set('endDate', bookedTime.time);
-                          old.save().then(function () {
-                            Ember.$('.ui.bk.modal').modal('hide');
-                            // window.location.reload();
-                          });
+                    //case 4 booked in between
+                    else {
+                        //create 2 segmented block
+                        var topappo = self.get('DS').createRecord('appointment', {
+                          date: usedBlock.startsAt,
+                          endDate: bookedTime.time
                         });
-                      }
-                      //case 4 booked in between
-                      else {
-                          //create 2 segmented block
-                          var topappo = self.get('DS').createRecord('appointment', {
-                            date: usedBlock.startsAt,
-                            endDate: bookedTime.time
-                          });
-                          var bottomappo = self.get('DS').createRecord('appointment', {
-                            date: bookedTime.end,
-                            endDate: usedBlock.endsAt
-                          });
-                          topappo.save().then(function () {
-                            bottomappo.save().then(function () {
-                              a.get('appointments').pushObject(topappo);
-                              a.get('appointments').pushObject(bottomappo);
-                              a.save().then(function () {
-                                //remove old block
-                                self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (rec) {
-                                  a.get('appointments').removeObject(rec);
-                                  a.save().then(function () {
-                                    rec.destroyRecord().then(function () {
-                                      Ember.$('.ui.bk.modal').modal('hide');
-                                      // window.location.reload();
-                                    });
+                        var bottomappo = self.get('DS').createRecord('appointment', {
+                          date: bookedTime.end,
+                          endDate: usedBlock.endsAt
+                        });
+                        topappo.save().then(function () {
+                          bottomappo.save().then(function () {
+                            a.get('appointments').pushObject(topappo);
+                            a.get('appointments').pushObject(bottomappo);
+                            a.save().then(function () {
+                              //remove old block
+                              self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (rec) {
+                                a.get('appointments').removeObject(rec);
+                                a.save().then(function () {
+                                  rec.destroyRecord().then(function () {
+                                    Ember.$('.ui.bk.modal').modal('hide');
+                                    // window.location.reload();
                                   });
                                 });
                               });
                             });
                           });
-                        }
-                });
+                        });
+                      }
               });
             });
           });
@@ -2057,6 +2056,7 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
     flagDelete: false,
     flagAdd: false,
     listModel: [],
+    appointments: [],
     plan: null,
     isPlanSelected: false,
     model: null,
@@ -2098,29 +2098,42 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
       // });
       var arr = [];
       this.get('store').findAll("rehab-client-link").then(function (link) {
-        console.log(link);
+
         link.forEach(function (rec) {
-          console.log(rec.get("Patient"));
+
           if (rec.get("Patient").get("id") === _this.get("model").id) {
-            console.log(rec);
+
             arr.pushObject(rec);
           }
         });
       });
-      console.log(arr);
+
       return arr;
     }),
 
-    exerciseModel: Ember.observer('plan', function () {
+    appointmentModel: Ember.computed(function () {
       var _this2 = this;
+
+      this.get('store').findAll('appointment').then(function (apps) {
+        var self = _this2;
+        apps.forEach(function (appoint) {
+          if (appoint.get('patient').get('id') == self.model.id) {
+            self.get('appointments').pushObject(appoint);
+          }
+        });
+      });
+    }),
+
+    exerciseModel: Ember.observer('plan', function () {
+      var _this3 = this;
 
       this.get('store').query('exercise-list', { filter: { 'rehabilitationPlan': this.get('plan') } }).then(function (exercises) {
 
-        _this2.get('listModel').clear();
+        _this3.get('listModel').clear();
 
         exercises.forEach(function (exe) {
           // this.get('listModel').removeObject(exe.get('exercise'));
-          _this2.get('listModel').pushObject(exe.get('exercise'));
+          _this3.get('listModel').pushObject(exe.get('exercise'));
         });
       });
     }),
@@ -2142,7 +2155,7 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
     }),
 
     isSelected: Ember.observer('plan', function () {
-      var _this3 = this;
+      var _this4 = this;
 
       this.set('isPlanSelected', true);
 
@@ -2153,9 +2166,9 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
         console.log(plan);
         console.log(update.content.length);
         if (update.content.length !== 0) {
-          _this3.set('disabled', "disabled");
+          _this4.set('disabled', "disabled");
         } else {
-          _this3.set('disabled', "");
+          _this4.set('disabled', "");
         }
       });
     }),
@@ -2282,19 +2295,19 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
         if (this.get('isShowing') === ID) this.set('isShowing', null);else this.set('isShowing', ID);
       },
       sortColumn: function sortColumn(columnName, direction) {
-        var _this4 = this;
+        var _this5 = this;
 
         this.get('modelAttributes').forEach(function (element) {
           if (element.key === columnName) {
             if (direction === 'asc') {
               Ember.set(element, 'dir', 'desc');
-              _this4.set('dir', 'desc');
+              _this5.set('dir', 'desc');
             } else if (direction === 'desc') {
               Ember.set(element, 'dir', 'asc');
-              _this4.set('dir', 'asc');
+              _this5.set('dir', 'asc');
             } else {
               Ember.set(element, 'dir', 'asc');
-              _this4.set('dir', 'asc');
+              _this5.set('dir', 'asc');
             }
           } else Ember.set(element, 'dir', '');
         });
@@ -2344,7 +2357,7 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
       },
 
       openModal: function openModal() {
-        var _this5 = this;
+        var _this6 = this;
 
         $('.ui.' + this.get('modalName') + '.modal').modal({
           closable: false,
@@ -2355,33 +2368,33 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
             return true;
           },
           onApprove: function onApprove() {
-            var plan = _this5.get('plan');
+            var plan = _this6.get('plan');
 
-            var planRecord = _this5.get('store').peekRecord('rehabilitationplan', plan);
+            var planRecord = _this6.get('store').peekRecord('rehabilitationplan', plan);
 
-            var self = _this5;
+            var self = _this6;
 
             // var assess = this.get('store').peekRecord('assessment-test', '5ab92c228a4acc04487b157a');
-            var test = _this5.get('store').createRecord('assessment-test', {});
+            var test = _this6.get('store').createRecord('assessment-test', {});
             test.save().then(function (rec) {
 
-              var link = _this5.get('store').createRecord('rehab-client-link', {
-                terminated: _this5.get('plan.terminated'),
+              var link = _this6.get('store').createRecord('rehab-client-link', {
+                terminated: _this6.get('plan.terminated'),
                 RehabilitationPlan: planRecord,
-                Patient: _this5.get('model'),
+                Patient: _this6.get('model'),
                 assigned: true,
                 assessmentTest: rec
                 //In memory of Ouda
               });
 
-              var peekTest = _this5.get('store').peekRecord('assessment-test', test.get("id"));
+              var peekTest = _this6.get('store').peekRecord('assessment-test', test.get("id"));
               console.log(peekTest);
               peekTest.set('rehabLink', link);
               link.save().then(function () {
                 peekTest.save();
-                _this5.set('assessmentTest', test);
-                $('.ui.' + _this5.get('modalName') + '.modal').modal('hide');
-                _this5.set('disabled', "disabled");
+                _this6.set('assessmentTest', test);
+                $('.ui.' + _this6.get('modalName') + '.modal').modal('hide');
+                _this6.set('disabled', "disabled");
               });
             });
           }
@@ -12328,7 +12341,7 @@ define("self-start-front-end/templates/components/client-file", ["exports"], fun
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "3FAoDwc4", "block": "{\"symbols\":[\"transaction\",\"link\",\"link\",\"index\",\"exercise\",\"column\",\"exercise\",\"column\",\"column\",\"plan\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[1,[20,[\"model\",\"givenName\"]],false],[0,\" \"],[1,[20,[\"model\",\"familyName\"]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui container\"],[9,\"style\",\"padding-top: 2em\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui top attached tabular stackable menu\"],[9,\"style\",\"padding-left: 15%;\"],[7],[0,\"\\n  \\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"assessState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"assessView\"]],[7],[0,\"\\n      Assessment\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Notes\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"reportState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"reportView\"]],[7],[0,\"\\n      Reports\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Photos\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"menusState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"menusView\"]],[7],[0,\"\\n      Menus\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Documents\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"accountingState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"accountingView\"]],[7],[0,\"\\n      Accounting\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui segment\"],[9,\"style\",\"background: transparent;border: none;box-shadow: none;\"],[7],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"menus\"]]],null,{\"statements\":[[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"left twelve wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n            Menu Builder\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"right three wide column\"],[9,\"style\",\"padding-left: 30px;\"],[7],[0,\"\\n\"],[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\"],[4,\"ui-dropdown\",null,[[\"class\",\"onChange\"],[\"selection\",[25,\"action\",[[19,0,[]],[25,\"mut\",[[20,[\"plan\"]]],null]],null]]],{\"statements\":[[0,\"              \"],[6,\"div\"],[9,\"class\",\"default text\"],[7],[0,\"Select a menu\"],[8],[0,\"\\n              \"],[6,\"i\"],[9,\"class\",\"dropdown icon\"],[7],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"menu\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"rehabModel\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"div\"],[10,\"data-value\",[26,[[19,10,[\"id\"]]]]],[9,\"class\",\"item\"],[7],[0,\"\\n                    \"],[1,[19,10,[\"planName\"]],false],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[10]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n          \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"              \"],[6,\"th\"],[10,\"class\",[19,9,[\"class\"]],null],[3,\"action\",[[19,0,[]],\"sortColumn\",[19,9,[\"key\"]],[19,9,[\"dir\"]]]],[7],[1,[19,9,[\"name\"]],false],[0,\"\\n\"],[4,\"if\",[[25,\"eq\",[[19,9,[\"dir\"]],\"asc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort ascending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,9,[\"dir\"]],\"desc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort descending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,9,[\"dir\"]],\"\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[9]},null],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"id\",\"myWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"listModel\"]]],null,{\"statements\":[[0,\"\\n            \"],[6,\"tr\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"\\n                \"],[6,\"td\"],[10,\"class\",[19,8,[\"class\"]],null],[7],[0,\"\\n                  \"],[1,[25,\"get\",[[19,7,[]],[19,8,[\"key\"]]],null],false],[0,\"\\n                \"],[8],[0,\"\\n\"]],\"parameters\":[8]},null],[0,\"            \"],[8],[0,\"\\n\"]],\"parameters\":[7]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"isPlanSelected\"]]],null,{\"statements\":[[0,\"            \"],[6,\"div\"],[10,\"class\",[26,[\"ui \",[18,\"disabled\"],\" button\"]]],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n              Assign\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"reports\"]]],null,{\"statements\":[[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"left twelve wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n            Reports\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"right three wide column\"],[9,\"style\",\"padding-left: 30px;\"],[7],[0,\"\\n\"],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n          \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n        \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n          Report Type\\n        \"],[8],[0,\"\\n        \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n          Actions\\n        \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n            \"],[6,\"tr\"],[7],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                Feedback Report\\n              \"],[8],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"circular ui icon button\"],[3,\"action\",[[19,0,[]],\"openFeedback\"]],[7],[0,\"\\n                  \"],[6,\"i\"],[9,\"class\",\"file alternate icon\"],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \\n            \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n             \"],[6,\"tr\"],[7],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                Summary Report\\n              \"],[8],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"circular ui icon button\"],[3,\"action\",[[19,0,[]],\"openSummary\"]],[7],[0,\"\\n                  \"],[6,\"i\"],[9,\"class\",\"file alternate icon\"],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n             \"],[6,\"tr\"],[7],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                Data Report\\n              \"],[8],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"circular ui icon button\"],[3,\"action\",[[19,0,[]],\"openData\"]],[7],[0,\"\\n                  \"],[6,\"i\"],[9,\"class\",\"file alternate icon\"],[7],[8],[0,\" \\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"accountingmenus\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"left five wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"Trasnactions\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"right three wide column\"],[9,\"style\",\"padding-left: 30px; margin-top: -5px;\"],[7],[0,\"\\n            \"],[6,\"p\"],[7],[0,\"remaining: \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"td\"],[9,\"class\",\"right aligned one wide column \"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"cursor: pointer; \"],[9,\"title\",\"Edit\"],[7],[0,\"\\n              \"],[6,\"img\"],[9,\"src\",\"/assets/images/pencil.svg\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n          \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n            \"],[6,\"tbody\"],[7],[0,\"\\n            \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n              \"],[6,\"th\"],[7],[0,\" test \"],[8],[0,\"\\n              \"],[6,\"th\"],[7],[0,\" test2 \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"id\",\"myWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n          \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n            \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"listModel\"]]],null,{\"statements\":[[0,\"\\n\\n              \"],[6,\"tr\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"\\n                  \"],[6,\"td\"],[10,\"class\",[19,6,[\"class\"]],null],[7],[0,\"\\n                    \"],[1,[25,\"get\",[[19,5,[]],[19,6,[\"key\"]]],null],false],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[6]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[5]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"isPlanSelected\"]]],null,{\"statements\":[[0,\"              \"],[6,\"div\"],[10,\"class\",[26,[\"ui \",[18,\"disabled\"],\" button\"]]],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n                Assign\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"assess\"]]],null,{\"statements\":[[4,\"each\",[[20,[\"patientModel\"]]],null,{\"statements\":[[0,\"        \"],[1,[25,\"get-assessment-results\",null,[[\"linker\",\"count\"],[[19,3,[]],[19,4,[]]]]],false],[0,\"  \\n\"]],\"parameters\":[3,4]},null]],\"parameters\":[]},null],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[9,\"href\",\"/assets/css/form-style.css\"],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Assign \"],[1,[20,[\"plansData\",\"planName\"]],false],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you want to assign this rehabilitation plan?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[1,[25,\"list-forms\",null,[[\"rehabPlan\",\"patient\"],[[20,[\"plan\"]],[20,[\"model\"]]]]],false],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"feedback\",\"feedback\"]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n\"],[0,\"  \"],[6,\"label\"],[9,\"class\",\"text\"],[7],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Summarise examination findings: \"],[8],[0,\"\\n      \"],[6,\"textarea\"],[7],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Summarise treatment plan: \"],[8],[0,\"\\n      \"],[6,\"textarea\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok\"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Print/Save\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel\"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"summary\",\"summary\"]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n\"],[0,\"  \"],[6,\"label\"],[9,\"class\",\"text\"],[7],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Patient information:\"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Name: \"],[1,[20,[\"model\",\"givenName\"]],false],[0,\" \"],[1,[20,[\"model\",\"familyName\"]],false],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Date of birth: \"],[1,[20,[\"model\",\"dateOfBirth\"]],false],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Gender: \"],[1,[20,[\"model\",\"gender\"]],false],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Address: \"],[1,[20,[\"model\",\"streetNumber\"]],false],[0,\" \"],[1,[20,[\"model\",\"streetName\"]],false],[0,\", #\"],[1,[20,[\"model\",\"apartment\"]],false],[0,\", \"],[1,[20,[\"model\",\"postalCode\"]],false],[0,\"  \"],[1,[20,[\"model\",\"city\"]],false],[0,\", \"],[1,[20,[\"model\",\"province\"]],false],[0,\", \"],[1,[20,[\"model\",\"country\"]],false],[0,\" \"],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Email: \"],[1,[20,[\"model\",\"email\"]],false],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Phone: \"],[1,[20,[\"model\",\"phoneNumber\"]],false],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Diagnosed case:\"],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Injury: \"],[8],[0,\"\\n\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Treatments:\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"patientModel\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[1,[19,2,[\"RehabilitationPlan\",\"planName\"]],false],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Appointment history:\"],[8],[0,\"\\n\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Payment history:\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\",\"transactions\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[0,\"Package #\"],[1,[19,1,[\"package\"]],false],[0,\", Date: \"],[1,[19,1,[\"date\"]],false],[0,\", Price: $\"],[1,[19,1,[\"amount\"]],false],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"label\"],[7],[0,\"Final outcomes: \"],[8],[0,\"\\n      \"],[6,\"textarea\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok\"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Print/Save\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel\"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-file.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "ZOAgaYJ1", "block": "{\"symbols\":[\"transaction\",\"app\",\"link\",\"link\",\"index\",\"exercise\",\"column\",\"exercise\",\"column\",\"column\",\"plan\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[1,[20,[\"model\",\"givenName\"]],false],[0,\" \"],[1,[20,[\"model\",\"familyName\"]],false],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui container\"],[9,\"style\",\"padding-top: 2em\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui top attached tabular stackable menu\"],[9,\"style\",\"padding-left: 15%;\"],[7],[0,\"\\n  \\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"assessState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"assessView\"]],[7],[0,\"\\n      Assessment\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Notes\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"reportState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"reportView\"]],[7],[0,\"\\n      Reports\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Photos\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"menusState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"menusView\"]],[7],[0,\"\\n      Menus\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[7],[0,\"\\n      Documents\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[10,\"class\",[26,[[18,\"accountingState\"],\" item\"]]],[3,\"action\",[[19,0,[]],\"accountingView\"]],[7],[0,\"\\n      Accounting\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui segment\"],[9,\"style\",\"background: transparent;border: none;box-shadow: none;\"],[7],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"menus\"]]],null,{\"statements\":[[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"left twelve wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n            Menu Builder\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"right three wide column\"],[9,\"style\",\"padding-left: 30px;\"],[7],[0,\"\\n\"],[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n\"],[4,\"ui-dropdown\",null,[[\"class\",\"onChange\"],[\"selection\",[25,\"action\",[[19,0,[]],[25,\"mut\",[[20,[\"plan\"]]],null]],null]]],{\"statements\":[[0,\"              \"],[6,\"div\"],[9,\"class\",\"default text\"],[7],[0,\"Select a menu\"],[8],[0,\"\\n              \"],[6,\"i\"],[9,\"class\",\"dropdown icon\"],[7],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"menu\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"rehabModel\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"div\"],[10,\"data-value\",[26,[[19,11,[\"id\"]]]]],[9,\"class\",\"item\"],[7],[0,\"\\n                    \"],[1,[19,11,[\"planName\"]],false],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[11]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n          \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"              \"],[6,\"th\"],[10,\"class\",[19,10,[\"class\"]],null],[3,\"action\",[[19,0,[]],\"sortColumn\",[19,10,[\"key\"]],[19,10,[\"dir\"]]]],[7],[1,[19,10,[\"name\"]],false],[0,\"\\n\"],[4,\"if\",[[25,\"eq\",[[19,10,[\"dir\"]],\"asc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort ascending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,10,[\"dir\"]],\"desc\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort descending icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[25,\"eq\",[[19,10,[\"dir\"]],\"\"],null]],null,{\"statements\":[[0,\"                  \"],[6,\"i\"],[9,\"class\",\"sort icon\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[10]},null],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"id\",\"myWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"listModel\"]]],null,{\"statements\":[[0,\"\\n            \"],[6,\"tr\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"\\n                \"],[6,\"td\"],[10,\"class\",[19,9,[\"class\"]],null],[7],[0,\"\\n                  \"],[1,[25,\"get\",[[19,8,[]],[19,9,[\"key\"]]],null],false],[0,\"\\n                \"],[8],[0,\"\\n\"]],\"parameters\":[9]},null],[0,\"            \"],[8],[0,\"\\n\"]],\"parameters\":[8]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"isPlanSelected\"]]],null,{\"statements\":[[0,\"            \"],[6,\"div\"],[10,\"class\",[26,[\"ui \",[18,\"disabled\"],\" button\"]]],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n              Assign\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"reports\"]]],null,{\"statements\":[[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"left twelve wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n            Reports\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"right three wide column\"],[9,\"style\",\"padding-left: 30px;\"],[7],[0,\"\\n\"],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n          \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n        \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n          Report Type\\n        \"],[8],[0,\"\\n        \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n          Actions\\n        \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n        \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n          \"],[6,\"tbody\"],[7],[0,\"\\n            \"],[6,\"tr\"],[7],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                Feedback Report\\n              \"],[8],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"circular ui icon button\"],[3,\"action\",[[19,0,[]],\"openFeedback\"]],[7],[0,\"\\n                  \"],[6,\"i\"],[9,\"class\",\"file alternate icon\"],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \\n            \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n             \"],[6,\"tr\"],[7],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                Summary Report\\n              \"],[8],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"circular ui icon button\"],[3,\"action\",[[19,0,[]],\"openSummary\"]],[7],[0,\"\\n                  \"],[6,\"i\"],[9,\"class\",\"file alternate icon\"],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n             \"],[6,\"tr\"],[7],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                Data Report\\n              \"],[8],[0,\"\\n              \"],[6,\"th\"],[9,\"class\",\"\"],[7],[0,\"\\n                \"],[6,\"button\"],[9,\"class\",\"circular ui icon button\"],[3,\"action\",[[19,0,[]],\"openData\"]],[7],[0,\"\\n                  \"],[6,\"i\"],[9,\"class\",\"file alternate icon\"],[7],[8],[0,\" \\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"accountingmenus\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin-top: -30px;\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"left five wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"Trasnactions\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"right three wide column\"],[9,\"style\",\"padding-left: 30px; margin-top: -5px;\"],[7],[0,\"\\n            \"],[6,\"p\"],[7],[0,\"remaining: \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"td\"],[9,\"class\",\"right aligned one wide column \"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"cursor: pointer; \"],[9,\"title\",\"Edit\"],[7],[0,\"\\n              \"],[6,\"img\"],[9,\"src\",\"/assets/images/pencil.svg\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n          \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n            \"],[6,\"tbody\"],[7],[0,\"\\n            \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n              \"],[6,\"th\"],[7],[0,\" test \"],[8],[0,\"\\n              \"],[6,\"th\"],[7],[0,\" test2 \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"id\",\"myWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n          \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n            \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"listModel\"]]],null,{\"statements\":[[0,\"\\n\\n              \"],[6,\"tr\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"modelAttributes\"]]],null,{\"statements\":[[0,\"\\n                  \"],[6,\"td\"],[10,\"class\",[19,7,[\"class\"]],null],[7],[0,\"\\n                    \"],[1,[25,\"get\",[[19,6,[]],[19,7,[\"key\"]]],null],false],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[7]},null],[0,\"              \"],[8],[0,\"\\n\"]],\"parameters\":[6]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"isPlanSelected\"]]],null,{\"statements\":[[0,\"              \"],[6,\"div\"],[10,\"class\",[26,[\"ui \",[18,\"disabled\"],\" button\"]]],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n                Assign\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"assess\"]]],null,{\"statements\":[[4,\"each\",[[20,[\"patientModel\"]]],null,{\"statements\":[[0,\"        \"],[1,[25,\"get-assessment-results\",null,[[\"linker\",\"count\"],[[19,4,[]],[19,5,[]]]]],false],[0,\"  \\n\"]],\"parameters\":[4,5]},null]],\"parameters\":[]},null],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[9,\"href\",\"/assets/css/form-style.css\"],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui icon header\"],[7],[0,\"\\n    Assign \"],[1,[20,[\"plansData\",\"planName\"]],false],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"p\"],[7],[0,\"Are you sure you want to assign this rehabilitation plan?\"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[1,[25,\"list-forms\",null,[[\"rehabPlan\",\"patient\"],[[20,[\"plan\"]],[20,[\"model\"]]]]],false],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok \"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Yes\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel \"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"feedback\",\"feedback\"]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n\"],[0,\"  \"],[6,\"label\"],[9,\"class\",\"text\"],[7],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Summarise examination findings: \"],[8],[0,\"\\n      \"],[6,\"textarea\"],[7],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Summarise treatment plan: \"],[8],[0,\"\\n      \"],[6,\"textarea\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok\"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Print/Save\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel\"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"summary\",\"summary\"]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n\"],[0,\"  \"],[6,\"label\"],[9,\"class\",\"text\"],[7],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Patient information:\"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Name: \"],[1,[20,[\"model\",\"givenName\"]],false],[0,\" \"],[1,[20,[\"model\",\"familyName\"]],false],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Date of birth: \"],[1,[20,[\"model\",\"dateOfBirth\"]],false],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Gender: \"],[1,[20,[\"model\",\"gender\"]],false],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Address: \"],[1,[20,[\"model\",\"streetNumber\"]],false],[0,\" \"],[1,[20,[\"model\",\"streetName\"]],false],[0,\", #\"],[1,[20,[\"model\",\"apartment\"]],false],[0,\", \"],[1,[20,[\"model\",\"postalCode\"]],false],[0,\"  \"],[1,[20,[\"model\",\"city\"]],false],[0,\", \"],[1,[20,[\"model\",\"province\"]],false],[0,\", \"],[1,[20,[\"model\",\"country\"]],false],[0,\" \"],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Email: \"],[1,[20,[\"model\",\"email\"]],false],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Phone: \"],[1,[20,[\"model\",\"phoneNumber\"]],false],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Diagnosed case:\"],[8],[0,\"\\n      \"],[6,\"label\"],[7],[0,\"Injury: \"],[8],[0,\"\\n\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Treatments:\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"patientModel\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[1,[19,3,[\"RehabilitationPlan\",\"planName\"]],false],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"\\n      \"],[6,\"br\"],[7],[8],[0,\"\\n      \\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Appointment history:\"],[8],[0,\"\\n      \"],[1,[18,\"appointmentModel\"],false],[0,\"\\n\"],[4,\"each\",[[20,[\"appointments\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[1,[19,2,[\"reason\"]],false],[0,\" \"],[1,[19,2,[\"date\"]],false],[0,\" \"],[1,[19,2,[\"endDate\"]],false],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"      \"],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"label\"],[9,\"class\",\"header\"],[7],[0,\"Payment history:\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\",\"transactions\"]]],null,{\"statements\":[[0,\"        \"],[6,\"label\"],[7],[0,\"Package #\"],[1,[19,1,[\"package\"]],false],[0,\", Date: \"],[1,[19,1,[\"date\"]],false],[0,\", Price: $\"],[1,[19,1,[\"amount\"]],false],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"label\"],[7],[0,\"Final outcomes: \"],[8],[0,\"\\n      \"],[6,\"textarea\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok\"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Print/Save\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel\"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"No\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-file.hbs" } });
 });
 define("self-start-front-end/templates/components/client-nav", ["exports"], function (exports) {
   "use strict";
@@ -13804,6 +13817,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+659ace09"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+7948c4d8"});
 }
 //# sourceMappingURL=self-start-front-end.map
