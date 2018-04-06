@@ -27,11 +27,12 @@
               <a class="item" href="#services">Services</a>
               <a class="item" href="#FAQs">FAQs</a>
               <a class="item" href="#contact">Contact</a>
-              {{#if loggedOut}}
+              {{#if auth.isAuthenticated}}
                 {{!-- <a id="login" class="item" {{action 'openModal'}}>Log in</a> --}}
-                {{user-login}}
-              {{else}}
                 <a class="item" {{action "logout"}}>Logout</a>
+              {{else}}
+              {{user-login}}
+                {{!-- <a class="item" {{action "logout"}}>Logout</a> --}}
                 {{/if}}
             </div>
           </div>

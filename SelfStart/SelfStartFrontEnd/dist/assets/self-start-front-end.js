@@ -6026,7 +6026,7 @@ define('self-start-front-end/components/nav-bar', ['exports'], function (exports
   exports.default = Ember.Component.extend({
 
     DS: Ember.inject.service('store'),
-
+    auth: Ember.inject.service('auth'),
     model: null,
     loggedOut: !localStorage.getItem('loggedIn'),
     ajax: Ember.inject.service(),
@@ -6118,9 +6118,12 @@ define('self-start-front-end/components/nav-bar', ['exports'], function (exports
 
 
       logout: function logout() {
-        localStorage.clear();
+        // localStorage.clear();
         // localStorage.setItem('loggedIn', false);
-        this.set('loggedOut', true);
+        this.get('auth').closeNoParams();
+        // this.get('routing').transitionTo('home');
+        // this.set('loggedOut', true);
+        // this.get("auth").set('isAuthenticated', false);
         // console.log(this.loggedOut)
       },
       deny: function deny() {
@@ -10334,6 +10337,12 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
       }
     }),
 
+    init: function init() {
+      this._super.apply(this, arguments);
+      if (localStorage.getItem('sas-session-id')) {
+        this.set("isAuthenticated", true);
+      }
+    },
     setName: function setName(name) {
       console.log(name);
       this.set('email', name.toLowerCase());
@@ -10488,6 +10497,26 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
           Login.forEach(function (record) {
             record.destroyRecord();
           });
+        }
+      });
+      window.localStorage.removeItem('sas-session-id');
+      this.set('getName', null);
+      this.set('email', null);
+      this.set('encryptedPassword', null);
+      this.set('isAuthenticated', false);
+      this.set('isLoginRequested', false);
+    },
+    closeNoParams: function closeNoParams() {
+      console.log(localStorage.getItem('sas-session-id'));
+      var email = this.decrypt(localStorage.getItem('sas-session-id'));
+      console.log(email);
+      var myStore = this.get('store');
+      myStore.queryRecord('login', { filter: { "email": email } }).then(function (Login) {
+        if (Login) {
+          Login.destroyRecord();
+          // Login.forEach((record) => {
+          //   record.destroyRecord();
+          // });
         }
       });
       window.localStorage.removeItem('sas-session-id');
@@ -12659,7 +12688,7 @@ define("self-start-front-end/templates/components/nav-bar", ["exports"], functio
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "mAUp3ctE", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"div\"],[9,\"id\",\"window\"],[7],[0,\"\\n\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/home-style.css\"]]],[7],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",[26,[\"following bar \",[18,\"stickyValue\"]]]],[9,\"id\",\"header\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[9,\"id\",\"menu\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                  \"],[6,\"a\"],[9,\"class\",\"active ui side\"],[9,\"href\",\"#home\"],[7],[0,\"\\n                    \"],[6,\"img\"],[9,\"class\",\"ui image selfStart\"],[9,\"src\",\"assets/images/home/Header.png\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n\\n            \"],[6,\"div\"],[10,\"class\",[26,[\"right menu \",[18,\"invertedValue\"]]]],[7],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item scroll\"],[9,\"href\",\"#about\"],[7],[0,\"About\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#howItWorks\"],[7],[0,\"How it Works\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#services\"],[7],[0,\"Services\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#FAQs\"],[7],[0,\"FAQs\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#contact\"],[7],[0,\"Contact\"],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"loggedOut\"]]],null,{\"statements\":[[0,\"                \"],[1,[18,\"user-login\"],false],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                \"],[6,\"a\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"logout\"]],[7],[0,\"Logout\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[11,1],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/nav-bar.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "GoSzpLSf", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"div\"],[9,\"id\",\"window\"],[7],[0,\"\\n\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/home-style.css\"]]],[7],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",[26,[\"following bar \",[18,\"stickyValue\"]]]],[9,\"id\",\"header\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[9,\"id\",\"menu\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                  \"],[6,\"a\"],[9,\"class\",\"active ui side\"],[9,\"href\",\"#home\"],[7],[0,\"\\n                    \"],[6,\"img\"],[9,\"class\",\"ui image selfStart\"],[9,\"src\",\"assets/images/home/Header.png\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n\\n            \"],[6,\"div\"],[10,\"class\",[26,[\"right menu \",[18,\"invertedValue\"]]]],[7],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item scroll\"],[9,\"href\",\"#about\"],[7],[0,\"About\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#howItWorks\"],[7],[0,\"How it Works\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#services\"],[7],[0,\"Services\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#FAQs\"],[7],[0,\"FAQs\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#contact\"],[7],[0,\"Contact\"],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"auth\",\"isAuthenticated\"]]],null,{\"statements\":[[0,\"                \"],[6,\"a\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"logout\"]],[7],[0,\"Logout\"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"              \"],[1,[18,\"user-login\"],false],[0,\"\\n\"]],\"parameters\":[]}],[0,\"            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[11,1],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/nav-bar.hbs" } });
 });
 define("self-start-front-end/templates/components/parse-question", ["exports"], function (exports) {
   "use strict";

@@ -435,7 +435,7 @@ router.route('/')
                                                             token : null,
                                                             passwordReset : true
                                                         });
-
+                                                        rec.save();
                                                         response.json({login: rec});
                                                     } else {
                                                         // get the user role
@@ -452,7 +452,7 @@ router.route('/')
                                                                     sessionIsActive : true,
                                                                     loginFailed : false
                                                                 });
-
+                                                                rec.save();
                                                                 response.json({login: rec});
                                                             });
                                                         // });
@@ -471,6 +471,7 @@ router.route('/')
                                                         response : null,
                                                         wrongPassword : true
                                                     });
+                                                    rec.save();
                                                     response.json({login: rec});
                                                 }
                                             } else {

@@ -7,7 +7,7 @@ import $ from 'jquery';
 export default Component.extend({
 
   DS: inject('store'),
-
+  auth: inject('auth'),
   model: null,
   loggedOut: !localStorage.getItem('loggedIn'),
   ajax: Ember.inject.service(),
@@ -118,9 +118,12 @@ export default Component.extend({
     },
 
     logout: function () {
-      localStorage.clear();
+      // localStorage.clear();
       // localStorage.setItem('loggedIn', false);
-      this.set('loggedOut', true);
+      this.get('auth').closeNoParams();
+      // this.get('routing').transitionTo('home');
+      // this.set('loggedOut', true);
+      // this.get("auth").set('isAuthenticated', false);
       // console.log(this.loggedOut)
     },
     deny(){

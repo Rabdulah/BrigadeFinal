@@ -19,6 +19,13 @@ export default Ember.Service.extend({
     }
   }),
 
+  init(){
+    this._super(...arguments);
+    if(localStorage.getItem('sas-session-id')){
+      this.set("isAuthenticated", true);
+    }
+  },
+
   setName(name) {
     console.log(name);
     this.set('email', name.toLowerCase());
@@ -187,6 +194,28 @@ export default Ember.Service.extend({
         Login.forEach((record) => {
           record.destroyRecord();
         });
+      }
+    });
+    window.localStorage.removeItem('sas-session-id');
+    this.set('getName', null);
+    this.set('email', null);
+    this.set('encryptedPassword', null);
+    this.set('isAuthenticated', false);
+    this.set('isLoginRequested', false);
+  },
+
+  closeNoParams()
+  {
+    console.log(localStorage.getItem('sas-session-id'))
+    var email = this.decrypt(localStorage.getItem('sas-session-id'));
+    console.log(email);
+    var myStore = this.get('store');
+    myStore.queryRecord('login', {filter: {"email": email}}).then(function (Login) {
+      if (Login) {
+        Login.destroyRecord();
+        // Login.forEach((record) => {
+        //   record.destroyRecord();
+        // });
       }
     });
     window.localStorage.removeItem('sas-session-id');
