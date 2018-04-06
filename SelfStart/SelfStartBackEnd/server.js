@@ -33,8 +33,8 @@ var rand = require('csprng');
 
 //Setting ssl options
 var sslOptions = {
-    key: fs.readFileSync("c:/certificate/server.key"),
-    cert: fs.readFileSync('c:/certificate/server.crt')
+    key: fs.readFileSync("./certificate/server.key"),
+    cert: fs.readFileSync('./certificate/server.crt')
 };
 //-------------------------------------------------------------------------------
 

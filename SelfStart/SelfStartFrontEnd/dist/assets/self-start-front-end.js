@@ -5094,224 +5094,224 @@ define('self-start-front-end/components/generate-reports', ['exports'], function
     });
 });
 define('self-start-front-end/components/get-answers', ['exports'], function (exports) {
-      'use strict';
+  'use strict';
 
-      Object.defineProperty(exports, "__esModule", {
-            value: true
-      });
-      exports.default = Ember.Component.extend({
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
 
-            DS: Ember.inject.service('store'),
-            SAanswer: "",
-            rateValue: 0,
-            mcop1: 0,
-            mcop2: 0,
-            mcop3: 0,
-            mcop4: 0,
-            mcop5: 0,
-            mcop6: 0,
+    DS: Ember.inject.service('store'),
+    SAanswer: "",
+    rateValue: 0,
+    mcop1: 0,
+    mcop2: 0,
+    mcop3: 0,
+    mcop4: 0,
+    mcop5: 0,
+    mcop6: 0,
 
-            actions: {
-                  ratingSave: function ratingSave(rv) {
+    actions: {
+      ratingSave: function ratingSave(rv) {
 
-                        this.set('rateValue', rv);
+        this.set('rateValue', rv);
 
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
 
-                        temp[this.get("qNumber")] = this.get('rateValue');
-                        this.get("assessment").get('answers').clear();
+        temp[this.get("qNumber")] = this.get('rateValue');
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
+          this.get("assessment").get('answers').push(temp[x]);
+        }
 
-                        console.log(this.get("assessment").get('answers'));
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  TFtrue: function TFtrue() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-                        temp[this.get("qNumber")] = "True";
-                        this.get("assessment").get('answers').clear();
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      TFtrue: function TFtrue() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+        temp[this.get("qNumber")] = "True";
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
+          this.get("assessment").get('answers').push(temp[x]);
+        }
 
-                        console.log(this.get("assessment").get('answers'));
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  TFfalse: function TFfalse() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-                        temp[this.get("qNumber")] = "False";
-                        this.get("assessment").get('answers').clear();
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      TFfalse: function TFfalse() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+        temp[this.get("qNumber")] = "False";
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
+          this.get("assessment").get('answers').push(temp[x]);
+        }
 
-                        console.log(this.get("assessment").get('answers'));
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  saSave: function saSave() {
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      saSave: function saSave() {
 
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-                        temp[this.get("qNumber")] = this.get("SAanswer");
-                        this.get("assessment").get('answers').clear();
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+        temp[this.get("qNumber")] = this.get("SAanswer");
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
+          this.get("assessment").get('answers').push(temp[x]);
+        }
 
-                        console.log(this.get("assessment").get('answers'));
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  mcop1Save: function mcop1Save() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-                        temp[this.get("qNumber")] = "0";
-                        this.get("assessment").get('answers').clear();
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      mcop1Save: function mcop1Save() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+        temp[this.get("qNumber")] = "0";
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
+          this.get("assessment").get('answers').push(temp[x]);
+        }
 
-                        console.log(this.get("assessment").get('answers'));
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  mcop2Save: function mcop2Save() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-                        temp[this.get("qNumber")] = "1";
-                        this.get("assessment").get('answers').clear();
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      mcop2Save: function mcop2Save() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+        temp[this.get("qNumber")] = "1";
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
+          this.get("assessment").get('answers').push(temp[x]);
+        }
 
-                        console.log(this.get("assessment").get('answers'));
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  mcop3Save: function mcop3Save() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
-                        temp[this.get("qNumber")] = "2";
-                        this.get("assessment").get('answers').clear();
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      mcop3Save: function mcop3Save() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
+        temp[this.get("qNumber")] = "2";
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
+          this.get("assessment").get('answers').push(temp[x]);
+        }
 
-                        console.log(this.get("assessment").get('answers'));
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  mcop4Save: function mcop4Save() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      mcop4Save: function mcop4Save() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
 
-                        temp[this.get("qNumber")] = "3";
-                        this.get("assessment").get('answers').clear();
+        temp[this.get("qNumber")] = "3";
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
+          this.get("assessment").get('answers').push(temp[x]);
+        }
 
-                        console.log(this.get("assessment").get('answers'));
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  mcop5Save: function mcop5Save() {
-                        var temp = [];
-                        this.get("assessment").get('4').forEach(function (element) {
-                              temp.push(element);
-                        });
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      mcop5Save: function mcop5Save() {
+        var temp = [];
+        this.get("assessment").get('4').forEach(function (element) {
+          temp.push(element);
+        });
 
-                        temp[this.get("qNumber")] = "True";
-                        this.get("assessment").get('answers').clear();
+        temp[this.get("qNumber")] = "True";
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
+          this.get("assessment").get('answers').push(temp[x]);
+        }
 
-                        console.log(this.get("assessment").get('answers'));
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  },
-                  mcop6Save: function mcop6Save() {
-                        var temp = [];
-                        this.get("assessment").get('answers').forEach(function (element) {
-                              temp.push(element);
-                        });
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      },
+      mcop6Save: function mcop6Save() {
+        var temp = [];
+        this.get("assessment").get('answers').forEach(function (element) {
+          temp.push(element);
+        });
 
-                        temp[this.get("qNumber")] = "5";
-                        this.get("assessment").get('answers').clear();
+        temp[this.get("qNumber")] = "5";
+        this.get("assessment").get('answers').clear();
 
-                        for (var x = 0; x < temp.length; x++) {
+        for (var x = 0; x < temp.length; x++) {
 
-                              this.get("assessment").get('answers').push(temp[x]);
-                        }
-                        console.log(this.get("assessment").get('answers'));
+          this.get("assessment").get('answers').push(temp[x]);
+        }
+        console.log(this.get("assessment").get('answers'));
 
-                        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
-                              rec.save().then(function () {});
-                        });
-                  }
-            }
+        this.get('DS').findRecord('assessment-test', this.assessid).then(function (rec) {
+          rec.save().then(function () {});
+        });
+      }
+    }
 
-      });
+  });
 });
 define('self-start-front-end/components/get-assessment-results', ['exports'], function (exports) {
     'use strict';
@@ -14007,6 +14007,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+3c19dd74"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+659ace09"});
 }
 //# sourceMappingURL=self-start-front-end.map
