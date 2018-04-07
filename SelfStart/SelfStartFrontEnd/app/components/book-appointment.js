@@ -48,10 +48,10 @@ export default Component.extend({
     console.log(eemail);
 
 
-    self.get('DS').query('patient', {filter: {'email' : eemail}}).then(function (obj) {
-      obj.forEach(function (temp){
-        self.set('client', temp);
-      });
+    self.get('DS').queryRecord('patient', {filter: {'email' : eemail}}).then(function (obj) {
+
+      self.set('client', obj);
+
     });
   },
 
