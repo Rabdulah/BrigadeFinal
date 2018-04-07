@@ -2195,13 +2195,46 @@ define('self-start-front-end/components/bubble-chart', ['exports', 'ember-charts
   });
   exports.default = _bubbleChart.default;
 });
-define('self-start-front-end/components/client-exercise-menu', ['exports'], function (exports) {
+define('self-start-front-end/components/client-exercise-menu', ['exports', 'moment'], function (exports, _moment) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.Component.extend({});
+  exports.default = Ember.Component.extend({
+    auth: Ember.inject.service('auth'),
+    DS: Ember.inject.service('store'),
+    routing: Ember.inject.service('-routing'),
+
+    clientData: null,
+    exerciseList: Ember.A(),
+    init: function init() {
+      this._super.apply(this, arguments);
+      var self = this;
+      var eemail = localStorage.getItem('sas-session-id');
+      eemail = this.get('auth').decrypt(eemail);
+      console.log(eemail);
+
+      self.get('DS').queryRecord('patient', { filter: { 'email': eemail } }).then(function (temp) {
+
+        self.set('clientData', temp);
+
+        temp.get('rehablink').forEach(function (rehab) {
+          self.get();
+        });
+        var dateString = (0, _moment.default)(self.get('clientData').get('dateOfBirth'), 'DD-MM-YYYY').toISOString().substring(0, 10);
+        self.set('selectedDate', dateString);
+
+        var client = self.get('clientData');
+        self.get('DS').query('appointment', { filter: { 'id': client.get('id') } }).then(function (obj) {
+          obj.forEach(function (temp) {
+            temp.set('date', (0, _moment.default)(temp.get('date')).format('YYYY-MM-DD hh:mm A'));
+            self.get('appointmentHistory').pushObject(temp);
+          });
+        });
+      });
+    }
+  });
 });
 define('self-start-front-end/components/client-file', ['exports'], function (exports) {
   'use strict';
@@ -13007,7 +13040,7 @@ define("self-start-front-end/templates/components/client-exercise-menu", ["expor
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "rtiJhLCI", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Exercise Menu\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-exercise-menu.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "hpDCZV/8", "block": "{\"symbols\":[\"aHistory\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Exercise Menu\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"left thirteen wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n      \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n        Exercise List\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n    \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n      \"],[6,\"tbody\"],[7],[0,\"\\n      \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n        \"],[6,\"th\"],[7],[0,\"Date\"],[8],[0,\"\\n        \"],[6,\"th\"],[7],[0,\"Practitioner\"],[8],[0,\"\\n        \"],[6,\"th\"],[7],[0,\"Reason\"],[8],[0,\"\\n        \"],[6,\"th\"],[7],[0,\"Appointment type\"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"id\",\"clientWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n\\n    \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n      \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"appointmentHistory\"]]],null,{\"statements\":[[0,\"        \"],[6,\"tr\"],[7],[0,\"\\n          \"],[6,\"td\"],[7],[1,[19,1,[\"date\"]],false],[8],[0,\"\\n          \"],[6,\"td\"],[7],[1,[19,1,[\"pName\"]],false],[8],[0,\"\\n          \"],[6,\"td\"],[7],[1,[19,1,[\"reason\"]],false],[8],[0,\"\\n          \"],[6,\"td\"],[7],[1,[25,\"types-appointment\",[[19,1,[\"date\"]],[19,1,[\"endDate\"]]],null],false],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-exercise-menu.hbs" } });
 });
 define("self-start-front-end/templates/components/client-file", ["exports"], function (exports) {
   "use strict";
@@ -14499,6 +14532,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+b7ee0bbb"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+721f9390"});
 }
 //# sourceMappingURL=self-start-front-end.map

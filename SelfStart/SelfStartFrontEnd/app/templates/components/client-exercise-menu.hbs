@@ -8,3 +8,46 @@
   </div>
 </div>
 
+<div class="ui container segment" id="top" >
+  <div class="ui grid">
+    <div class="left thirteen wide column" style="margin-top: -5px;">
+      <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">
+        Exercise List
+      </p>
+    </div>
+  </div>
+  <br><br><br><br>
+
+  <div style="display: inline">
+    <table class="ui fixed table" style="border: none;border-color: white;">
+      <tbody >
+      <tr style="font-weight: bold;">
+        <th>Date</th>
+        <th>Practitioner</th>
+        <th>Reason</th>
+        <th>Appointment type</th>
+      </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="ui divider"></div>
+
+  <div  id="clientWindow" style="height:500px; overflow-y: scroll; overflow-x: hidden;">
+
+    <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
+      <tbody >
+      {{#each appointmentHistory as |aHistory|}}
+        <tr>
+          <td>{{aHistory.date}}</td>
+          <td>{{aHistory.pName}}</td>
+          <td>{{aHistory.reason}}</td>
+          <td>{{types-appointment aHistory.date aHistory.endDate}}</td>
+        </tr>
+      {{/each}}
+      </tbody>
+    </table>
+  </div>
+</div>
+<br><br><br><br>
+

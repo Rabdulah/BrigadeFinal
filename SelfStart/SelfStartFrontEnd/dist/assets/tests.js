@@ -127,7 +127,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/client-exercise-menu.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'components/client-exercise-menu.js should pass ESLint\n\n');
+    assert.ok(false, 'components/client-exercise-menu.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n11:18 - \'Ember\' is not defined. (no-undef)\n17:5 - Unexpected console statement. (no-console)\n23:47 - \'rehab\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/client-file.js', function (assert) {
