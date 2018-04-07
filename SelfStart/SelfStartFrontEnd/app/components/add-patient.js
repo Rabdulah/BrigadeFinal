@@ -6,6 +6,7 @@ import $ from 'jquery';
 export default Component.extend({
   DS: inject('store'),
   routing: inject('-routing'),
+  authentication: inject('auth'),
 
   tagName: '',
   flagAdd: null,
@@ -89,37 +90,57 @@ export default Component.extend({
     submit(){
       let self = this;
 
-      
-      let patientAccount = {};
-      patientAccount['userAccountName'] = self.get('userAccountName');
-      patientAccount['encryptedPassword'] = self.get('encryptedPassword');
-
-      let patient = this.get('DS').createRecord('patient', {
-        familyName: self.get('familyName'),
-        givenName: self.get('givenName'),
+      let passwords = this.get('DS').createRecord('password', {
         email: self.get('email'),
-        streetName: self.get('streetName'),
-        streetNumber: self.get('streetNumber'),
-        apartment: self.get('apartment'),
-        country: self.get('selectedCountry'),
-        province: self.get('province'),
-        city: self.get('city'),
-        dateOfBirth: new Date(this.get('selectedDate')),
-        healthCardNumber: self.get('healthCardNumber'),
-        gender: self.get('selectedGender'),
-        phoneNumber: self.get('phoneNumber'),
-        postalCode: self.get('postalCode'),
-        account: patientAccount
+        encryptedPassword: self.get('authentication').hash(self.get('encryptedPassword')),
+        passwordMustChanged : true,
+        passwordReset:true,
       });
 
-      patient.save().then(() => {
-        $('.ui.newPatient.modal').modal('hide');
-        if (this.get('flagAdd')=== true)
-          this.set('flagAdd', false);
-        else
-          this.set('flagAdd', true);
-        return true;
-      });
+      console.log("password b4 sent", passwords.get("encryptedPassword"));
+
+      passwords.save().then((passwords) => {
+        console.log("Password returned to front end after save", passwords); 
+        let patient = this.get('DS').createRecord('patient', {
+          familyName: self.get('familyName'),
+          givenName: self.get('givenName'),
+          email: self.get('email'),
+          encryptedPassword: passwords,
+          streetName: self.get('streetName'),
+          streetNumber: self.get('streetNumber'),
+          apartment: self.get('apartment'),
+          country: self.get('selectedCountry'),
+          province: self.get('province'),
+          city: self.get('city'),
+          dateOfBirth: new Date(this.get('selectedDate')),
+          gender: self.get('selectedGender'),
+          phoneNumber: self.get('phoneNumber'),
+          postalCode: self.get('postalCode'),
+        });
+
+        patient.save().then((res) => {
+          console.log('this is the response', res);
+          console.log(res.get("success"));
+          if(!res.get("success")) {
+            console.log("FAILED")
+            patient.destroyRecord().then(o => {
+              console.log("destroyed", o);
+            });
+            passwords.destroyRecord().then(o => {});
+          } else{
+            $('.ui.newPatient.modal').modal('hide');
+            if (this.get('flagAdd')=== true)
+              this.set('flagAdd', false);
+            else
+              this.set('flagAdd', true);
+            // return true;
+            console.log("SUCCESS", res);
+            passwords.set('client', res);
+            passwords.save();
+          }
+        });
+
+      })
     },
 
     openModal: function ()  {

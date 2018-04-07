@@ -46,7 +46,7 @@ function failedLogin() {
     });
 
     failed.save(function (error) {
-        if (error) return console.error(error);
+        // if (error) return console.error(error);
         return failed;
     });
 
@@ -91,6 +91,7 @@ router.route('/')
     .post(parseUrlencoded, parseJSON, function (request, response) {
         console.log("Hi");
         Passwords.getUserByEmail(request.body.login.email, function (error, UserShadow) {
+            console.log("this is user shadow", UserShadow);
             if(error || !UserShadow){
                 console.log("Error - User shadow not found");
                 console.log("error", error);
@@ -102,6 +103,7 @@ router.route('/')
                     token: null,
                     wrongUserName: true
                 });
+                
                 badUserName.save();
                 response.json({login: badUserName});
             } else {

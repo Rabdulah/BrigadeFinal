@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import crypto from "npm:crypto-browserify";
+import { inject } from '@ember/service';
 
 export default Ember.Service.extend({
   email: null,
@@ -9,6 +10,7 @@ export default Ember.Service.extend({
   isLoginRequested: false,
   userCList: null,
   accountType: null,
+  router: inject('-routing'),
   ajax: Ember.inject.service(),
 
   getName: Ember.computed(function () {
@@ -125,6 +127,7 @@ export default Ember.Service.extend({
                       var userRole = null;
                       self.set('isAuthenticated', true);
                       self.set('userCList', userRole);
+                      // self.get('router').transitionTo('client');
                       resolve(userRole);
                     }
                   }

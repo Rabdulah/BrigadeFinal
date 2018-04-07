@@ -62,7 +62,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/add-patient.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'components/add-patient.js should pass ESLint\n\n');
+    assert.ok(false, 'components/add-patient.js should pass ESLint\n\n100:7 - Unexpected console statement. (no-console)\n103:9 - Unexpected console statement. (no-console)\n122:11 - Unexpected console statement. (no-console)\n123:11 - Unexpected console statement. (no-console)\n125:13 - Unexpected console statement. (no-console)\n127:15 - Unexpected console statement. (no-console)\n129:44 - \'o\' is defined but never used. (no-unused-vars)\n137:13 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/add-physiotherapist.js', function (assert) {
@@ -427,7 +427,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/user-login.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/user-login.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n10:9 - \'Ember\' is not defined. (no-undef)\n16:17 - \'Ember\' is not defined. (no-undef)\n42:11 - \'Ember\' is not defined. (no-undef)\n61:23 - \'userName\' is assigned a value but never used. (no-unused-vars)\n62:19 - Unexpected console statement. (no-console)\n64:19 - Unexpected console statement. (no-console)\n65:19 - Unexpected console statement. (no-console)\n67:21 - Unexpected console statement. (no-console)\n71:21 - Unexpected console statement. (no-console)\n76:23 - Unexpected console statement. (no-console)\n91:15 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/user-login.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n10:9 - \'Ember\' is not defined. (no-undef)\n15:3 - Duplicate key \'router\'. (no-dupe-keys)\n17:17 - \'Ember\' is not defined. (no-undef)\n43:11 - \'Ember\' is not defined. (no-undef)\n62:23 - \'userName\' is assigned a value but never used. (no-unused-vars)\n64:19 - Unexpected console statement. (no-console)\n65:19 - Unexpected console statement. (no-console)\n67:21 - Unexpected console statement. (no-console)\n71:21 - Unexpected console statement. (no-console)\n76:23 - Unexpected console statement. (no-console)\n91:15 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/view-appointment.js', function (assert) {
@@ -882,7 +882,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('services/auth.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'services/auth.js should pass ESLint\n\n31:5 - Unexpected console statement. (no-console)\n35:5 - Unexpected console statement. (no-console)\n121:23 - Unexpected console statement. (no-console)\n216:5 - Unexpected console statement. (no-console)\n218:5 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'services/auth.js should pass ESLint\n\n33:5 - Unexpected console statement. (no-console)\n37:5 - Unexpected console statement. (no-console)\n123:23 - Unexpected console statement. (no-console)\n219:5 - Unexpected console statement. (no-console)\n221:5 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('services/doc.js', function (assert) {

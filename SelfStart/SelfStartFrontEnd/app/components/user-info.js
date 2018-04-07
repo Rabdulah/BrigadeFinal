@@ -98,7 +98,7 @@ export default Component.extend({
         email: self.get('email'),
         encryptedPassword: self.get('authentication').hash(self.get('encryptedPassword')),
         passwordMustChanged : true,
-        passwordReset:true,
+        passwordReset:false,
       });
 
       console.log("password b4 sent", passwords.get("encryptedPassword"));
