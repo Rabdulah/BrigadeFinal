@@ -12,15 +12,24 @@ export default Component.extend({
   authentication: inject('auth'),
   authent: inject('auth'),
   error: null,
+  loggingIn: true,
 
   errorMessage: Ember.computed('error', function () {
     return this.get('error');
   }),
- 
+
   actions: {
-   
+
+    forgotPassword() {
+      this.set('loggingIn', false);
+    },
+
+    login() {
+      this.set('loggingIn', true);
+    },
+
     deny(){
-      $('.ui.login.modal').modal('hide');
+      $('.ui.login.modal.tiny').modal('hide');
     },
 
     submit(){
@@ -106,7 +115,7 @@ export default Component.extend({
     },
 
     openModal: function ()  {
-      $('.ui.login.modal').modal({}).modal('show')
+      $('.ui.login.modal.tiny').modal({}).modal('show')
     },
   }
 

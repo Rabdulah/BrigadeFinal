@@ -77,7 +77,7 @@ router.route('/')
         console.log(patient);
         if (!patient){
 
-            if(!limit) {
+            if(!limit && !regex) {
                 Patients.Model.find(function (error, patients) {
                     if (error) response.send(error);
                     response.json({patient: patients});

@@ -12,9 +12,9 @@ router.route('/')
     })
 
     .get( function (request, response) {
-        let {sort, dir, queryPath, regex} = request.query;
+        let {limit, offset, sort, dir, queryPath, regex} = request.query;
 
-        if(!regex) {
+        if(!limit && !regex) {
             Exercise.Model.find(function (error, exercises) {
                 if (error) response.send(error);
                 response.json({exercise: exercises});
@@ -22,6 +22,8 @@ router.route('/')
         }
          else {
 
+            offset = Number(offset || 0);
+            limit = Number(limit || 10);
             dir = dir || 'asc';
             sort = sort || 'id';
 
@@ -39,6 +41,8 @@ router.route('/')
             let options = {
                 sort: sortOrder,
                 lean: true,
+                offset: offset,
+                limit: limit
             };
             Exercise.Model.paginate(query, options, function (error, exercises) {
                 if (error) response.send(error);

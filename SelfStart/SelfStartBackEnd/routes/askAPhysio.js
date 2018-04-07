@@ -4,67 +4,66 @@ var AskAPhysio = require('../models/AskAPhysio');
 
 router.route('/')
     .post( function (request, response) {
-        var ask = new AskAPhysio.Model(request.body.ask);
-        ask.save(function (error) {
+        var askPhysio = new AskAPhysio.Model(request.body.askPhysio);
+        askPhysio.save(function (error) {
             if (error) response.send(error);
-            response.json({ask: ask});
+            response.json({askPhysio: askPhysio});
         });
     })
     .get( function (request, response) {
-        AskAPhysio.Model.find(function (error, asks) {
+        AskAPhysio.Model.find(function (error, askPhysios) {
             if (error) response.send(error);
-            response.json({ask: asks});
+            response.json({askPhysio: askPhysios});
         });
     });
 
-router.route('/:askAPhysio_id')
+router.route('/:askPhysio_id')
     .get( function (request, response) {
-        AskAPhysio.Model.findById(request.params.askAPhysio_id, function (error, ask) {
+        AskAPhysio.Model.findById(request.params.askPhysio_id, function (error, askPhysio) {
             if (error) {
                 response.send({error: error});
             }
             else {
-                response.json({ask: ask});
+                response.json({askPhysio: askPhysio});
             }
         });
     })
     .put( function (request, response) {
-        AskAPhysio.Model.findById(request.params.askAPhysio_id, function (error, ask) {
+        AskAPhysio.Model.findById(request.params.askPhysio_id, function (error, askPhysio) {
             if (error) {
                 response.send({error: error});
             }
             else {
 
                 // update each attribute
-                ask.firstName = request.body.ask.time;
-                ask.lastName = request.body.ask.lastName;
-                ask.email = request.body.ask.email;
-                ask.comment = request.body.ask.comment;
-                ask.patient = request.body.ask.patient;
-  
-                
-                //SHOULD WE ADD FORM HERE?                
-                ask.save(function (error) {
+                askPhysio.firstName = request.body.askPhysio.time;
+                askPhysio.lastName = request.body.askPhysio.lastName;
+                askPhysio.email = request.body.askPhysio.email;
+                askPhysio.comment = request.body.askPhysio.comment;
+
+
+                //SHOULD WE ADD FORM HERE?
+                askPhysio.save(function (error) {
                     if (error) {
                         response.send({error: error});
                     }
                     else {
-                        response.json({ask: ask});
+                        response.json({askPhysio: askPhysio});
                     }
                 });
             }
         });
     })
     .delete( function (request, response) {
-        AskAPhysio.Model.findByIdAndRemove(request.params.askAPhysio_id,
+        AskAPhysio.Model.findByIdAndRemove(request.params.askPhysio_id,
             function (error, deleted) {
                 if (!error) {
-                    response.json({ask: deleted});
+                    response.json({askPhysio: deleted});
                 }
             }
         );
     });
-    
-    
+
+
 
 module.exports = router;

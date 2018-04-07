@@ -8,5 +8,6 @@ export default DS.Model.extend({
   dateHired: DS.attr("Date"),
   dateFired: DS.attr("Date"),
   phoneNumber: DS.attr(),
+  message: DS.attr(),
   account: DS.attr(),
 });

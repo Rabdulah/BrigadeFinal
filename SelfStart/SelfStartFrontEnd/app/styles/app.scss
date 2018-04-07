@@ -10,6 +10,8 @@
 /*width: 1400px;*/
 /*}*/
 
+
+
 body{
   font-family: 'Lato', 'Helvetica Neue', Arial, Helvetica, sans-serif !important;
 }
@@ -57,18 +59,20 @@ body{
   left: 0;
 }
 
-.login.tiny.ui.modal {
-  position: fixed !important;
-  top: 7.7em !important;
-}
+//.login.tiny.ui.modal {
+//  position: fixed !important;
+//
+//  top: 7.7em !important;
+//
+//}
 
 //.ui.centered.very.padded.raised.segment.container {
 //  width: 1600px;
 //}
 
 .ui.grid > .column:not(.row) {
-   padding-top: 0;
-   padding-bottom: 0;
+  padding-top: 0;
+  padding-bottom: 0;
 }
 
 .ui.grid + .grid {
@@ -227,6 +231,11 @@ a img {
   opacity: 0.75;
 }
 
+.disabled{
+  pointer-events: none;
+  opacity: 0.75;
+}
+
 #selectIcon{
   /* arrow icon for select element */
   content: '';
@@ -244,3 +253,42 @@ a img {
   font-size: 0;
 }
 
+#countrySelect{
+  background: url('/assets/images/form/world.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+  height: 51px;
+  line-height: 1.5em;
+  min-width: 100%;
+  padding-left: 50px;
+}
+
+#provinceSelect{
+  background: url('/assets/images/form/world.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+  height: 51px;
+  line-height: 1.5em;
+  min-width: 100%;
+  padding-left: 50px;
+}
+
+#citySelect{
+  background: url('/assets/images/form/world.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+  height: 51px;
+  line-height: 1.5em;
+  min-width: 100%;
+  padding-left: 50px;
+}
+
+#addSelect{
+  background: url('/assets/images/form/world.svg') no-repeat 12px 12px;
+  height: 51px;
+  line-height: 1.5em;
+  min-width: 100%;
+  padding-left: 50px;
+
+}
+
+.ui.checkbox input:checked ~ .box:after, .ui.checkbox input:checked ~ label:after {
+  opacity: 1;
+  color: white !important;
+  font-size: 10px;
+
+}

@@ -81,8 +81,6 @@ var recommendation = require('./routes/recommendation');
 var rehabilitationplans = require('./routes/rehabilitationplans');
 var countries = require('./routes/countries');
 var questions = require('./routes/questions');
-var admin = require('./routes/administrators');
-var physio = require('./routes/physiotherapests');
 var treatments = require('./routes/treatments');
 var genders = require('./routes/genders');
 var rehabClientLinks = require('./routes/rehabClientLinks');
@@ -90,7 +88,9 @@ var pass = require('./routes/passwords');
 var log = require('./routes/logins');
 var exerciseList = require('./routes/exerciseList');
 var questionOrder = require('./routes/questionOrder');
-
+var answers = require('./routes/answers');
+var administrators = require('./routes/administrators');
+var physiotherapests = require('./routes/physiotherapests');
 
 // REGISTER OUR ROUTES -------------------------------
 app.use('/images', photos);
@@ -101,18 +101,21 @@ app.use('/assessmentTests', assessments);
 app.use('/forms', forms);
 app.use('/questions', questions);
 app.use('/appointments', appointments);
-app.use('/askAPhysio', askAPhysio);
+app.use('/askPhysios', askAPhysio);
 app.use('/exercises', excercise);
 app.use('/provinces', provinces);
 app.use('/recommendation', recommendation);
 app.use('/rehabilitationplans', rehabilitationplans);
 app.use('/countries', countries);
-app.use('/administrators', admin);
 app.use('/treatments', treatments);
-app.use('/physiotherapests', physio);
 app.use('/rehabClientLinks', rehabClientLinks);
 app.use('/passwords', pass);
 app.use('/logins', log);
+app.use('/answers', answers);
+app.use('/administrators', administrators);
+app.use('/physiotherapests', physiotherapests);
+app.use('/exerciseLists', exerciseList);
+app.use('/questionOrders', questionOrder);
 
 //Crypto-----------------------------------------------------------
 // const crypto = require('crypto');

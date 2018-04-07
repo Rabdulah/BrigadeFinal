@@ -12,10 +12,53 @@ router.route('/')
         });
     })
     .get( function (request, response) {
-        AssessmentTests.Model.find(function (error, assessmentTests) {
-            if (error) response.send(error);
-            response.json({assessmentTest: assessmentTests});
-        });
+        let {limit, offset, sort, dir, queryPath, regex} = request.query;
+        let form = request.query.filter;
+
+        if (form) {
+            AssessmentTests.Model.find({"patient": form.patient}, function (error, assessmentTests) {
+                if (error) response.send(error);
+                response.json({assessmentTest: assessmentTests});
+            });
+        }
+        else {
+
+            if (!limit) {
+                AssessmentTests.Model.find(function (error, assessmentTests) {
+                    if (error) response.send(error);
+                    response.json({assessmentTest: assessmentTests});
+                });
+            }
+            else {
+                offset = Number(offset || 0);
+                limit = Number(limit || 10);
+                dir = dir || 'asc';
+                sort = sort || 'id';
+
+                let query = {};
+                if (regex !== '')
+                    query[queryPath] = new RegExp(regex, "i");
+
+                var sortOrder = sort;
+                if (sortOrder) {
+                    if (dir !== 'asc') {
+                        sortOrder = '-' + sort;
+                    }
+                }
+
+                let options = {
+                    sort: sortOrder,
+                    lean: true,
+                    offset: offset,
+                    limit: limit
+                };
+
+                AssessmentTests.Model.paginate(query, options, function (error, assessmentTests) {
+                    if (error) response.send(error);
+                    response.json({assessmentTest: assessmentTests.docs});
+                });
+            }
+        }
     });
 
 router.route('/:assessment_id')
@@ -37,12 +80,13 @@ router.route('/:assessment_id')
             else {
 
                 // update each attribute
-                assessmentTest.questions = request.body.assessmentTest.questions;
+                assessmentTest.name = request.body.assessmentTest.name;
+                assessmentTest.description = request.body.assessmentTest.description;
+                assessmentTest.rehabPlan = request.body.assessmentTest.rehabPlan;
+                assessmentTest.authorName = request.body.assessmentTest.authorName;
                 assessmentTest.form = request.body.assessmentTest.form;
-                assessmentTest.rehablink = request.body.assessmentTest.rehablink;
-                assessmentTest.answers = request.body.assessmentTest.answers;
-                assessmentTest.completed = request.body.assessmentTest.completed;
-                assessmentTest.formName = request.body.assessmentTest.formName;
+                assessmentTest.patient = request.body.assessmentTest.patient;
+                assessmentTest.answer = request.body.assessmentTest.answer;
 
                 assessmentTest.save(function (error) {
                     if (error) {

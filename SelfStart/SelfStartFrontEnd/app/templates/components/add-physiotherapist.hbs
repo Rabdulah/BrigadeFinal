@@ -43,20 +43,16 @@
         </div>
 
         <div class="column " style="margin: 1em 0;">
-          <input class="date" type="date" placeholder="Date of release" value= {{selectedFiredDate}}  onchange={{action 'assignFiredDate' value="target.value"}}>
+          <p class="cd-select icon">
+            <select class="people" onchange={{action 'selectGender' value="target.value"}}>
+              {{#each genderModel as |oneGender|}}
+                <option value={{oneGender.name}} selected={{eq gender oneGender.name}}>
+                  {{oneGender.name}}
+                </option>
+              {{/each}}
+            </select>
+          </p>
         </div>
-      </div>
-
-      <div class="field" style="margin: 1em 0;">
-        <p class="cd-select icon">
-          <select class="people" onchange={{action 'selectGender' value="target.value"}}>
-            {{#each genderModel as |oneGender|}}
-              <option value={{oneGender.name}} selected={{eq gender oneGender.name}}>
-                {{oneGender.name}}
-              </option>
-            {{/each}}
-          </select>
-        </p>
       </div>
 
       <div class="field" style="margin: 1em 0;">

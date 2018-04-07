@@ -34,24 +34,20 @@
         </div>
 
         <div class="column " style="margin: 1em 0;">
-          <label class="cd-label">Date Released</label>
-          <input class="date" type="date" value= {{selectedFiredDate}}  onchange={{action 'assignFiredDate' value="target.value"}}>
+          <h4>Gender</h4>
+          <p class="cd-select icon">
+            <select class="people" onchange={{action 'selectGender' value="target.value"}}>
+              {{#each genderModel as |oneGender|}}
+                <option value={{oneGender.name}} selected={{eq physiosData.gender oneGender.name}}>
+                  {{oneGender.name}}
+                </option>
+              {{/each}}
+            </select>
+          </p>
         </div>
 
       </div>
 
-      <div class="field" style="margin: 1em 0;">
-        <h4>Gender</h4>
-        <p class="cd-select icon">
-          <select class="people" onchange={{action 'selectGender' value="target.value"}}>
-            {{#each genderModel as |oneGender|}}
-              <option value={{oneGender.name}} selected={{eq physiosData.gender oneGender.name}}>
-                {{oneGender.name}}
-              </option>
-            {{/each}}
-          </select>
-        </p>
-      </div>
 
       <div class="ui hidden divider"></div>
       <div class="ui hidden divider"></div>

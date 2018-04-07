@@ -2,6 +2,7 @@ var mongoose = require('mongoose');
 
 var answersSchema = mongoose.Schema({
     answer: String,
+    question: String,
     test: {type: mongoose.Schema.ObjectId, ref: 'AssessmentTest'}
 });
 

@@ -11,7 +11,7 @@
 
 <div class="ui container" style="padding-top: 2em">
   <div class="ui top attached tabular stackable menu" style="padding-left: 15%;">
-  
+
     <a class="{{assessState}} item" {{action "assessView"}}>
       Assessment
     </a>
@@ -168,7 +168,7 @@
                 </button>
               </th>
             </tr>
-            
+
             <br><br>
              <tr>
               <th class>
@@ -188,14 +188,14 @@
               </th>
               <th class>
                 <button class="circular ui icon button" {{action "openData"}}>
-                  <i class="file alternate icon"></i> 
+                  <i class="file alternate icon"></i>
                 </button>
               </th>
             </tr>
           </tbody>
         </table>
       </div>
-      
+
     </div>
     {{/if}}
     {{#if accountingmenus}}
@@ -262,9 +262,7 @@
     {{/if}}
 
     {{#if assess}}
-      {{#each patientModel as |link index|}}
-        {{get-assessment-results linker = link count = index}}  
-      {{/each}}
+      {{assessment-table model=model}}
     {{/if}}
 
   </div>
@@ -343,7 +341,7 @@
       {{/each}}
 
       <br>
-      
+
       <label class="header">Appointment history:</label>
       {{appointmentModel}}
       {{#each appointments as |app|}}
@@ -352,7 +350,7 @@
       <br>
 
       <label class="header">Payment history:</label>
-      {{#each model.transactions as |transaction|}} 
+      {{#each model.transactions as |transaction|}}
         <label>Package #{{transaction.package}}, Date: {{transaction.date}}, Price: ${{transaction.amount}}</label>
       {{/each}}
 

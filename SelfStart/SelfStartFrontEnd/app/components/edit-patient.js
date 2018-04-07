@@ -103,9 +103,8 @@ init(){
         rec.set('phoneNumber', this.get('pateintsData.phoneNumber'));
         rec.set('postalCode', this.get('pateintsData.postalCode'));
 
-        rec.save().then(()=>{
-          return true;
-
+        rec.save().then(()=> {
+          $('.ui.' + this.get('modalName') + '.modal').modal('hide');
         });
       });
     },

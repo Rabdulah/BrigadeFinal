@@ -58,33 +58,27 @@ export default Component.extend({
   },
 
 
-  conutryModel: computed(function(){
-    return this.get('DS').findAll('country');
+  provModel: [],
+
+  provinces: Ember.observer('country', function(){
+    this.get('DS').query('province', {filter: {'country': this.get('country')}}).then((provinces) => {
+
+      this.get('provModel').clear();
+
+      provinces.forEach((prov)=>{
+        this.get('provModel').pushObject(prov);
+      });
+
+    });
   }),
 
   genderModel: computed(function(){
     return this.get('DS').findAll('gender');
   }),
 
-  accountValue: "active",
-  introValue: "disabled",
-  appointmentValue: "disabled",
-  paymentValue: "disabled",
-  confirmValue: "disabled",
-
-  account: true,
-  intro: false,
-  appointment: false,
-  payment: false,
-  confirm: false,
-
   actions: {
     assignDate(date) {
       this.set('selectedDate', date);
-    },
-
-    selectCountry(country) {
-      this.set('selectedCountry', country);
     },
 
     selectGender(gender) {
@@ -93,7 +87,7 @@ export default Component.extend({
 
     submit() {
       let self = this;
-      
+
       let passwords = this.get('DS').createRecord('password', {
         email: self.get('email'),
         encryptedPassword: self.get('authentication').hash(self.get('encryptedPassword')),
@@ -104,7 +98,7 @@ export default Component.extend({
       console.log("password b4 sent", passwords.get("encryptedPassword"));
 
       passwords.save().then((passwords) => {
-        console.log("Password returned to front end after save", passwords); 
+        console.log("Password returned to front end after save", passwords);
         let patient = this.get('DS').createRecord('patient', {
           familyName: self.get('familyName'),
           givenName: self.get('givenName'),
@@ -126,7 +120,7 @@ export default Component.extend({
           console.log('this is the response', res);
           console.log(res.get("success"));
           if(!res.get("success")) {
-            console.log("FAILED")
+            console.log("FAILED");
             patient.destroyRecord().then(o => {
               console.log("destroyed", o);
             });
@@ -136,9 +130,58 @@ export default Component.extend({
             passwords.set('client', res);
             passwords.save();
           }
+
+          this.get('DS').query('form', {filter: {'name': 'Intake Form'}}).then((intake) => {
+            var ans = [];
+
+            let newTest = this.get('DS').createRecord('assessment-test', {
+              name: "Intake Form",
+              description: "Initial form before ou can book an appointment",
+              form: intake.get('firstObject'),
+              patient: res,
+
+            });
+            newTest.save().then(() => {
+
+              this.get('DS').query('question-order', {filter: {'form': intake.get('firstObject').id}}).then((rec) => {
+
+                rec.forEach((r) => {
+                  var q = r.get('question');
+                  var s = q.get('data');
+                  //console.log(q.get('data.questionText'));
+                  //console.log(q.get('questionText'));
+
+
+                  let answer = this.get('DS').createRecord('answer', {
+                    question: "",
+                    answer: "",
+                    test: newTest
+                  });
+                  answer.save();
+
+                });
+
+              });
+            });
+          });
+
+          $('.ui.register.modal').modal('hide');
         });
 
       })
+    },
+
+    openModal: function () {
+      console.log("model", this.model);
+      $('.ui.register.modal').modal({
+        // closable: false,
+        // detachable: false,
+
+        onDeny:()=>{
+         return true
+        },
+
+      }).modal('show');
     },
   }
 });

@@ -2,12 +2,13 @@ import DS from 'ember-data';
 import { empty } from '@ember/object/computed';
 
 export default DS.Model.extend({
-  form: DS.belongsTo("form"),
-  questions: DS.hasMany('question'),
-  answers: DS.attr(),
-  rehablink: DS.belongsTo('rehab-client-link'),
-  completed: DS.attr(),
-  formName: DS.attr(),
+  name: DS.attr(),
+  description: DS.attr(),
+  authorName: DS.belongsTo('physiotherapest'),
+  rehabPlan: DS.belongsTo('rehabilitationplan'),
+  form:DS.belongsTo('form'),
+  patient:DS.belongsTo('patient'),
+  answer:DS.hasMany('answer')
 });
 
 //SEND FORM BUTTON

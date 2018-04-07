@@ -30,28 +30,6 @@ export default Component.extend({
 link:[],
 
   patientModel: computed(function(){
-    // this.get('store').query('rehab-client-link', {filter: {'Patient': '5ac557fa6ba71c2a4c0e367ec0e367e'}}).then((links) => {
-    //   //console.log(links);
-
-    //     console.log(links);
-
-    //   links.forEach((rec)=>{
-    //     this.get('link').pushObject(rec);
-    //     console.log(this.get('link'));
-    //   });
-   // });
-
-    // console.log(this.get('model').get('id'));
-    // this.get('store').findRecord('rehab-client-link', this.get('model').id).then((links) => {
-    //   //console.log(links);
-
-    //     console.log(links);
-
-    //   links.forEach((rec)=>{
-    //     this.get('link').pushObject(rec);
-    //     console.log(this.get('link'));
-    //   });
-    // });
     var arr = [];
     this.get('store').findAll("rehab-client-link").then((link) => {
 
@@ -229,9 +207,14 @@ link:[],
     menusView(){
       this.set('menus', true);
       this.set('accountingmenus', false);
-      this.set('menusState', "active");
+      this.set('reports', false);
+      this.set('assess', false);
 
+      this.set('menusState', "active");
       this.set('accountingState', "");
+      this.set('reportState', "");
+      this.set('assessState', "");
+
     },
 
     accountingView(){
@@ -253,6 +236,7 @@ link:[],
         this.set('menusState', "");
         this.set('reports', false);
         this.set('reportState', "");
+      this.set('accountingState', "");
     },
 
     reportView(){
@@ -262,6 +246,7 @@ link:[],
       this.set('menusState', "");
       this.set('reports', true);
       this.set('reportState', "active");
+      this.set('accountingState', "");
   },
 
     toggleDetail(ID) {

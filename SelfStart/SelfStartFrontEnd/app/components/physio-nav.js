@@ -19,7 +19,7 @@ export default Component.extend({
       "element": "SkypeButton_Call",
       "participants": ["ramzi_abdullahi"],
       "imageSize": 24,
-      "imageColor": "white"
+      "imageColor": "black"
     });
 
     $('body')
@@ -57,8 +57,6 @@ export default Component.extend({
   },
 
   actions: {
-    logout: function() {
-      
-    }
+
   },
 });

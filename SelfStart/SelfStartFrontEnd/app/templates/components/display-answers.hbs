@@ -1,69 +1,75 @@
-<script type="text/javascript">$(document).ready(function(){$(".rating").rating();});</script>
 
-<div class="ui form">
-  <br>
-  {{#if question.sa}}
-    <label>{{question.questionText}}</label>
-    <br><br>
-    <div class="ui disabled input focus">
-      {{input type="text" value=SAanswer}}
-    </div>
-  {{/if}}
+{{#if question.sa}}
+  <div class="field" style="margin: 1em 0;">
+    <label class="cd-label">{{question.questionText}}</label>
+    {{input class="disabled message" type="text" value = SAanswer required = true}}
+  </div>
+{{/if}}
 
-  {{#if question.ra}}
-    <label>{{question.questionText}}</label>
-    <br><br>
+{{#if question.ra}}
+  <div class="field" style="margin: 1em 0;">
+    <label class="cd-label">{{question.questionText}}</label>
     {{ui-rating
-      class="heart"
-      maxRating=10
+      class="ui massive star rating"
       initialRating = Rating
-      interactive = false
-    }}
-  {{/if}}
+      maxRating=10
+      interactive = false}}
+  </div>
+{{/if}}
 
-  {{#if question.tf}}
-    <br><br>
-    <li>
-      <div class="inline fields">
-        <label>{{question.questionText}}</label>
-        <div class="field">
-            {{ui-checkbox label="True" checked=checkTrue disabled = true}}
-        </div>
-        <div class="field">
-           {{ui-checkbox label="True" checked=checkFalse disabled = true }}
-        </div>
-      </div>
-    </li>
-  {{/if}}
 
-  {{#if question.mc}}
-    <br><br>
-    <div class="grouped fields">
-      <label>{{question.questionText}}</label>
-      <div class="field">
-            {{ui-checkbox label=mcop1 checked=checkmcop1 disabled = true }}
-      </div>
-      <div class="field">
-            {{ui-checkbox label=mcop2 checked=checkmcop2 disabled = true }}
-      </div>
-      <div class="field">
-            {{ui-checkbox label=mcop3 checked=checkmcop3 disabled = true }}
-      </div>
+{{#if question.tf}}
+  <div class="field" style="margin: 1em 0;">
+    <h4>{{question.questionText}}</h4>
+
+    <div class="field">
+      {{ui-checkbox label="Yes" checked=checkTrue disabled = true}}
+    </div>
+
+    <div class="field">
+      {{ui-checkbox label="No" checked=checkFalse disabled = true }}
+    </div>
+
+  </div>
+{{/if}}
+
+
+
+
+{{#if question.mc}}
+  <div class="ui form" style="margin: 1em 0;">
+
+    <h4>{{question.questionText}}</h4>
+    <ul class="cd-form-list">
+      <li>
+        {{ui-checkbox label=mcop1 checked=checkmcop1 disabled = true }}
+      </li>
+
+      <li>
+        {{ui-checkbox label=mcop2 checked=checkmcop2 disabled = true }}
+      </li>
+
+      <li>
+        {{ui-checkbox label=mcop3 checked=checkmcop3 disabled = true }}
+      </li>
+
+
       {{#if (number-of-mc question.optionNumber 3)}}
-        <div class="field">
-            {{ui-checkbox label=mcop4 checked=checkmcop4 disabled = true }}                 
-        </div>
+        <li>
+          {{ui-checkbox label=mcop4 checked=checkmcop4 disabled = true }}
+        </li>
       {{/if}}
       {{#if (number-of-mc question.optionNumber 4)}}
-        <div class="field">
-            {{ui-checkbox label=mcop5 checked=checkmcop5 disabled = true }}
-        </div>
+        <li>
+          {{ui-checkbox label=mcop5 checked=checkmcop5 disabled = true }}
+        </li>
       {{/if}}
       {{#if (number-of-mc question.optionNumber 5)}}
-        <div class="field">
-            {{ui-checkbox label=mcop6 checked=checkmcop6 disabled = true }}   
-        </div>
+        <li>
+          {{ui-checkbox label=mcop6 checked=checkmcop6 disabled = true }}
+        </li>
       {{/if}}
-    </div>
-  {{/if}}
-</div>
+
+    </ul>
+  </div>
+{{/if}}
