@@ -7,13 +7,17 @@ var administratorsSchema = mongoose.Schema({
     familyName: String,
     givenName: String,
     email: String,
+    encryptedPassword: {type: mongoose.Schema.ObjectId, ref: 'Passwords'},
     phoneNumber: String,
     dateHired: Date,
     dateFired: Date,
     message: String,
+    success: {
+        type: Boolean,
+        default: true
+    },
     form: [{type: mongoose.Schema.ObjectId, ref: 'Forms'}],
     account: {
-        encryptedPassword: [{type: mongoose.Schema.ObjectId, ref: 'Passwords'}],
         //New----------------------------------------
         nonce: String,
         response: String,

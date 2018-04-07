@@ -11,6 +11,7 @@ var bodyParser = require('body-parser');
 var app = express(); // define our app using express
 var port = 8082;        // set our port
 var router = express.Router(); // get an instance of the express Router
+var logger = require('./logger');
 var parseUrlencoded = bodyParser.urlencoded({extended: false});
 var parseJSON = bodyParser.json();
 
@@ -93,6 +94,7 @@ var administrators = require('./routes/administrators');
 var physiotherapests = require('./routes/physiotherapests');
 
 // REGISTER OUR ROUTES -------------------------------
+app.use(logger);
 app.use('/images', photos);
 app.use('/genders', genders);
 app.use('/patients', patients);
@@ -698,7 +700,7 @@ mongoose.connect('mongodb://localhost/selfStart', { useMongoClient: true });
 // START THE SERVER
 // =============================================================================
 var httpServer = http.createServer(app); 
-var httpsServer = https.createServer(sslOptions, app).listen(8443);
+var httpsServer = https.createServer(sslOptions, app);//.listen(8443);
 httpServer.listen(port, function() {
     console.log('Magic happens on port ' + port);
 });

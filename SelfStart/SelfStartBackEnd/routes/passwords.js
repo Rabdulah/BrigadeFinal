@@ -77,6 +77,7 @@ router.route('/')
                         console.log('asdfasdf');
                         if (error) response.send(error);
                         response.json({password: UserShadow});
+                        //
                     });
                 }
             }

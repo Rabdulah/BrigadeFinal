@@ -12,7 +12,10 @@ export default Component.extend({
   authentication: inject('auth'),
   authent: inject('auth'),
   error: null,
+
   loggingIn: true,
+
+  router: inject('-routing'),
 
   errorMessage: Ember.computed('error', function () {
     return this.get('error');
@@ -41,7 +44,7 @@ export default Component.extend({
           auth.set('getName', name);
           self.get('routing').transitionTo('home');
         }, function () {
-          //console.log("Root" + error);
+          // console.log("Root" + error);
         });
       } else {
       auth.open(this.get('Email'), this.get('PWord')).then(function() {
@@ -68,7 +71,6 @@ export default Component.extend({
                   // var ourAuth = self.get('authent')
                   var myStore = self.get('DS');
                   var userName = self.get('name');
-                  console.log()
                   var hashedPassword = auth.hash(self.get('firstPassword'));
                   console.log("BEfore");
                   console.log(self.get('Email'));
@@ -107,6 +109,7 @@ export default Component.extend({
           }
         }
       });
+      // this.get('router').transitionTo('client.welcome-client');
     }
     },
 

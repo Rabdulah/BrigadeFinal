@@ -10,6 +10,7 @@ define('self-start-front-end/adapters/application', ['exports', 'ember-data'], f
   });
   exports.default = _emberData.default.RESTAdapter.extend({
     host: 'http://localhost:8082'
+    // host: 'https://localhost:8443'
   });
 });
 define('self-start-front-end/app', ['exports', 'self-start-front-end/resolver', 'ember-load-initializers', 'self-start-front-end/config/environment'], function (exports, _resolver, _emberLoadInitializers, _environment) {
@@ -746,6 +747,7 @@ define('self-start-front-end/components/add-patient', ['exports'], function (exp
   exports.default = Ember.Component.extend({
     DS: Ember.inject.service('store'),
     routing: Ember.inject.service('-routing'),
+    authentication: Ember.inject.service('auth'),
 
     tagName: '',
     flagAdd: null,
@@ -824,32 +826,52 @@ define('self-start-front-end/components/add-patient', ['exports'], function (exp
 
         var self = this;
 
-        var patientAccount = {};
-        patientAccount['userAccountName'] = self.get('userAccountName');
-        patientAccount['encryptedPassword'] = self.get('encryptedPassword');
-
-        var patient = this.get('DS').createRecord('patient', {
-          familyName: self.get('familyName'),
-          givenName: self.get('givenName'),
+        var passwords = this.get('DS').createRecord('password', {
           email: self.get('email'),
-          streetName: self.get('streetName'),
-          streetNumber: self.get('streetNumber'),
-          apartment: self.get('apartment'),
-          country: self.get('selectedCountry'),
-          province: self.get('province'),
-          city: self.get('city'),
-          dateOfBirth: new Date(this.get('selectedDate')),
-          healthCardNumber: self.get('healthCardNumber'),
-          gender: self.get('selectedGender'),
-          phoneNumber: self.get('phoneNumber'),
-          postalCode: self.get('postalCode'),
-          account: patientAccount
+          encryptedPassword: self.get('authentication').hash(self.get('encryptedPassword')),
+          passwordMustChanged: true,
+          passwordReset: true
         });
 
-        patient.save().then(function () {
-          Ember.$('.ui.newPatient.modal').modal('hide');
-          if (_this.get('flagAdd') === true) _this.set('flagAdd', false);else _this.set('flagAdd', true);
-          return true;
+        console.log("password b4 sent", passwords.get("encryptedPassword"));
+
+        passwords.save().then(function (passwords) {
+          console.log("Password returned to front end after save", passwords);
+          var patient = _this.get('DS').createRecord('patient', {
+            familyName: self.get('familyName'),
+            givenName: self.get('givenName'),
+            email: self.get('email'),
+            encryptedPassword: passwords,
+            streetName: self.get('streetName'),
+            streetNumber: self.get('streetNumber'),
+            apartment: self.get('apartment'),
+            country: self.get('selectedCountry'),
+            province: self.get('province'),
+            city: self.get('city'),
+            dateOfBirth: new Date(_this.get('selectedDate')),
+            gender: self.get('selectedGender'),
+            phoneNumber: self.get('phoneNumber'),
+            postalCode: self.get('postalCode')
+          });
+
+          patient.save().then(function (res) {
+            console.log('this is the response', res);
+            console.log(res.get("success"));
+            if (!res.get("success")) {
+              console.log("FAILED");
+              patient.destroyRecord().then(function (o) {
+                console.log("destroyed", o);
+              });
+              passwords.destroyRecord().then(function (o) {});
+            } else {
+              Ember.$('.ui.newPatient.modal').modal('hide');
+              if (_this.get('flagAdd') === true) _this.set('flagAdd', false);else _this.set('flagAdd', true);
+              // return true;
+              console.log("SUCCESS", res);
+              passwords.set('client', res);
+              passwords.save();
+            }
+          });
         });
       },
 
@@ -877,6 +899,7 @@ define('self-start-front-end/components/add-physiotherapist', ['exports'], funct
     DS: Ember.inject.service('store'),
     flagAdd: null,
     tagName: '',
+    authentication: Ember.inject.service('auth'),
 
     init: function init() {
       this._super.apply(this, arguments);
@@ -928,33 +951,51 @@ define('self-start-front-end/components/add-physiotherapist', ['exports'], funct
 
         var self = this;
 
-        var physioAccount = {};
-        physioAccount['encryptedPassword'] = self.get('encryptedPassword');
-
-        var physiotherapist = this.get('DS').createRecord('physiotherapest', {
-          familyName: self.get('familyName'),
-          givenName: self.get('givenName'),
+        var passwords = this.get('DS').createRecord('password', {
           email: self.get('email'),
-          dateHired: new Date(this.get('selectedHiredDate')),
-          dateFired: new Date(this.get('selectedFiredDate')),
-          gender: self.get('selectedGender'),
-          phoneNumber: self.get('phoneNumber'),
-          //treatment: self.get('treatment'),
-          account: physioAccount
-
+          encryptedPassword: self.get('authentication').hash(self.get('encryptedPassword')),
+          passwordMustChanged: true,
+          passwordReset: true
         });
-        physiotherapist.save().then(function () {
-          Ember.$('.ui.newPhysio.modal').modal('hide');
-          _this.set('familyName', '');
-          _this.set('givenName', '');
-          _this.set('email', '');
-          _this.set('selectedGender', '');
-          _this.set('dateHired', '');
-          _this.set('dateFired', '');
-          _this.set('phoneNumber', '');
-          _this.set('encryptedPassword', '');
-          if (_this.get('flagAdd') === true) _this.set('flagAdd', false);else _this.set('flagAdd', true);
-          return true;
+
+        passwords.save().then(function (passwords) {
+          var physiotherapist = _this.get('DS').createRecord('physiotherapest', {
+            familyName: self.get('familyName'),
+            givenName: self.get('givenName'),
+            email: self.get('email'),
+            encryptedPassword: passwords,
+            dateHired: new Date(_this.get('selectedHiredDate')),
+            dateFired: new Date(_this.get('selectedFiredDate')),
+            gender: self.get('selectedGender'),
+            phoneNumber: self.get('phoneNumber')
+            //treatment: self.get('treatment'),
+          });
+          physiotherapist.save().then(function (res) {
+            console.log('this is the response', res);
+            console.log(res.get("success"));
+            if (!res.get("success")) {
+              console.log("FAILED");
+              res.destroyRecord().then(function (o) {
+                console.log("destroyed", o);
+              });
+              passwords.destroyRecord().then(function (o) {});
+            } else {
+              console.log("SUCCESS", res);
+              passwords.set('practitioner', res);
+              passwords.save();
+            }
+            Ember.$('.ui.newPhysio.modal').modal('hide');
+            _this.set('familyName', '');
+            _this.set('givenName', '');
+            _this.set('email', '');
+            _this.set('selectedGender', '');
+            _this.set('dateHired', '');
+            _this.set('dateFired', '');
+            _this.set('phoneNumber', '');
+            _this.set('encryptedPassword', '');
+            if (_this.get('flagAdd') === true) _this.set('flagAdd', false);else _this.set('flagAdd', true);
+            return true;
+          });
         });
       },
 
@@ -2145,6 +2186,14 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
       }
     }
   });
+});
+define('self-start-front-end/components/bubble-chart', ['exports', 'ember-charts/components/bubble-chart'], function (exports, _bubbleChart) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _bubbleChart.default;
 });
 define('self-start-front-end/components/client-exercise-menu', ['exports'], function (exports) {
   'use strict';
@@ -5422,6 +5471,14 @@ define('self-start-front-end/components/get-assessment-results', ['exports'], fu
     }
   });
 });
+define('self-start-front-end/components/horizontal-bar-chart', ['exports', 'ember-charts/components/horizontal-bar-chart'], function (exports, _horizontalBarChart) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _horizontalBarChart.default;
+});
 define("self-start-front-end/components/illiquid-model", ["exports", "liquid-fire/components/illiquid-model"], function (exports, _illiquidModel) {
   "use strict";
 
@@ -6398,7 +6455,7 @@ define('self-start-front-end/components/nav-bar', ['exports'], function (exports
   exports.default = Ember.Component.extend({
 
     DS: Ember.inject.service('store'),
-
+    auth: Ember.inject.service('auth'),
     model: null,
     loggedOut: !localStorage.getItem('loggedIn'),
     ajax: Ember.inject.service(),
@@ -6490,9 +6547,12 @@ define('self-start-front-end/components/nav-bar', ['exports'], function (exports
 
 
       logout: function logout() {
-        localStorage.clear();
+        // localStorage.clear();
         // localStorage.setItem('loggedIn', false);
-        this.set('loggedOut', true);
+        this.get('auth').closeNoParams();
+        // this.get('routing').transitionTo('home');
+        // this.set('loggedOut', true);
+        // this.get("auth").set('isAuthenticated', false);
         // console.log(this.loggedOut)
       },
       deny: function deny() {
@@ -6826,6 +6886,14 @@ define("self-start-front-end/components/physio-welcome", ["exports"], function (
       });
     }
   });
+});
+define('self-start-front-end/components/pie-chart', ['exports', 'ember-charts/components/pie-chart'], function (exports, _pieChart) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _pieChart.default;
 });
 define('self-start-front-end/components/power-select-multiple', ['exports', 'ember-power-select/components/power-select-multiple'], function (exports, _powerSelectMultiple) {
   'use strict';
@@ -7482,6 +7550,14 @@ define('self-start-front-end/components/rl-dropdown', ['exports', 'ember-rl-drop
   });
   exports.default = _rlDropdown.default;
 });
+define('self-start-front-end/components/scatter-chart', ['exports', 'ember-charts/components/scatter-chart'], function (exports, _scatterChart) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _scatterChart.default;
+});
 define('self-start-front-end/components/show-form-questions', ['exports'], function (exports) {
   'use strict';
 
@@ -7644,6 +7720,14 @@ define('self-start-front-end/components/sortable-item', ['exports', 'ember-sorta
   });
   exports.default = _sortableItem.default;
 });
+define('self-start-front-end/components/stacked-vertical-bar-chart', ['exports', 'ember-charts/components/stacked-vertical-bar-chart'], function (exports, _stackedVerticalBarChart) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _stackedVerticalBarChart.default;
+});
 define('self-start-front-end/components/stylish-button', ['exports', 'ember-stylish-buttons/components/stylish-button', 'self-start-front-end/config/environment'], function (exports, _stylishButton, _environment) {
   'use strict';
 
@@ -7657,6 +7741,14 @@ define('self-start-front-end/components/stylish-button', ['exports', 'ember-styl
   exports.default = _stylishButton.default.extend({
     type: config.defaultTheme || 'winona'
   });
+});
+define('self-start-front-end/components/time-series-chart', ['exports', 'ember-charts/components/time-series-chart'], function (exports, _timeSeriesChart) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _timeSeriesChart.default;
 });
 define('self-start-front-end/components/ui-accordion', ['exports', 'semantic-ui-ember/components/ui-accordion'], function (exports, _uiAccordion) {
   'use strict';
@@ -8081,7 +8173,7 @@ define('self-start-front-end/components/user-info', ['exports'], function (expor
           email: self.get('email'),
           encryptedPassword: self.get('authentication').hash(self.get('encryptedPassword')),
           passwordMustChanged: true,
-          passwordReset: true
+          passwordReset: false
         });
 
         console.log("password b4 sent", passwords.get("encryptedPassword"));
@@ -8179,7 +8271,25 @@ define('self-start-front-end/components/user-login', ['exports'], function (expo
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.Component.extend({
+
+  var _EmberComponent$exte;
+
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  exports.default = Ember.Component.extend((_EmberComponent$exte = {
     DS: Ember.inject.service('store'),
     router: Ember.inject.service('-routing'),
     model: null,
@@ -8188,110 +8298,115 @@ define('self-start-front-end/components/user-login', ['exports'], function (expo
     authentication: Ember.inject.service('auth'),
     authent: Ember.inject.service('auth'),
     error: null,
-    loggingIn: true,
 
-    errorMessage: Ember.computed('error', function () {
-      return this.get('error');
-    }),
+    loggingIn: true
 
-    actions: {
-      forgotPassword: function forgotPassword() {
-        this.set('loggingIn', false);
-      },
-      login: function login() {
-        this.set('loggingIn', true);
-      },
-      deny: function deny() {
-        Ember.$('.ui.login.modal.tiny').modal('hide');
-      },
-      submit: function submit() {
-        var auth = this.get("authentication");
-        var self = this;
-        if (this.get('Email') === "root") {
-          auth.openRoot(this.get('password')).then(function (name) {
-            auth.set('isLoginRequested', false);
-            auth.set('getName', name);
-            self.get('routing').transitionTo('home');
-          }, function () {
-            //console.log("Root" + error);
-          });
-        } else {
-          auth.open(this.get('Email'), this.get('PWord')).then(function () {
-            auth.set('isLoginRequested', false);
-          }, function (error) {
-            if (error === "passwordReset") {
-              Ember.$('.ui.changePassword.modal').modal({
-                // closable: false,
-                // detachable: false,
-                onDeny: function onDeny() {
-                  self.set('error', null);
-                  return true;
-                },
-                onApprove: function onApprove() {
-                  if (!self.get('firstPassword') || self.get('firstPassword').trim().length === 0) {
-                    self.set('error', 'Your must enter a password value');
+  }, _defineProperty(_EmberComponent$exte, 'router', Ember.inject.service('-routing')), _defineProperty(_EmberComponent$exte, 'errorMessage', Ember.computed('error', function () {
+    return this.get('error');
+  })), _defineProperty(_EmberComponent$exte, 'actions', {
+    forgotPassword: function forgotPassword() {
+      this.set('loggingIn', false);
+    },
+    login: function login() {
+      this.set('loggingIn', true);
+    },
+    deny: function deny() {
+      Ember.$('.ui.login.modal.tiny').modal('hide');
+    },
+    submit: function submit() {
+      var auth = this.get("authentication");
+      var self = this;
+      if (this.get('Email') === "root") {
+        auth.openRoot(this.get('password')).then(function (name) {
+          auth.set('isLoginRequested', false);
+          auth.set('getName', name);
+          self.get('routing').transitionTo('home');
+        }, function () {
+          // console.log("Root" + error);
+        });
+      } else {
+        auth.open(this.get('Email'), this.get('PWord')).then(function () {
+          auth.set('isLoginRequested', false);
+        }, function (error) {
+          if (error === "passwordReset") {
+            Ember.$('.ui.changePassword.modal').modal({
+              // closable: false,
+              // detachable: false,
+              onDeny: function onDeny() {
+                self.set('error', null);
+                return true;
+              },
+              onApprove: function onApprove() {
+                if (!self.get('firstPassword') || self.get('firstPassword').trim().length === 0) {
+                  self.set('error', 'Your must enter a password value');
+                  return false;
+                } else {
+                  if (self.get('firstPassword') !== self.get('secondPassword')) {
+                    self.set('error', 'Your password and confirmation password do not match');
                     return false;
                   } else {
-                    if (self.get('firstPassword') !== self.get('secondPassword')) {
-                      self.set('error', 'Your password and confirmation password do not match');
-                      return false;
-                    } else {
-                      self.set('error', null);
-                      // var ourAuth = self.get('authent')
-                      var myStore = self.get('DS');
-                      var userName = self.get('name');
-                      console.log();
-                      var hashedPassword = auth.hash(self.get('firstPassword'));
-                      console.log("BEfore");
-                      console.log(self.get('Email'));
-                      myStore.queryRecord('password', { filter: { "email": self.get('Email') } }).then(function (userShadow) {
-                        console.log("hashedPassword", hashedPassword);
-                        auth.set('encryptedPassword', hashedPassword);
-                        userShadow.set('encryptedPassword', hashedPassword);
-                        userShadow.set('passwordMustChanged', true);
-                        console.log(userShadow);
-                        userShadow.set('passwordReset', false);
-                        userShadow.save().then(function () {
-                          // auth.close();
-                          auth.set('isLoginRequested', true);
-                          console.log("Success update");
-                          // self.get('routing').transitionTo('login');
-                          //  return true;
-                        });
+                    self.set('error', null);
+                    // var ourAuth = self.get('authent')
+                    var myStore = self.get('DS');
+                    var userName = self.get('name');
+                    var hashedPassword = auth.hash(self.get('firstPassword'));
+                    console.log("BEfore");
+                    console.log(self.get('Email'));
+                    myStore.queryRecord('password', { filter: { "email": self.get('Email') } }).then(function (userShadow) {
+                      console.log("hashedPassword", hashedPassword);
+                      auth.set('encryptedPassword', hashedPassword);
+                      userShadow.set('encryptedPassword', hashedPassword);
+                      userShadow.set('passwordMustChanged', true);
+                      console.log(userShadow);
+                      userShadow.set('passwordReset', false);
+                      userShadow.save().then(function () {
+                        // auth.close();
+                        auth.set('isLoginRequested', true);
+                        console.log("Success update");
+                        // self.get('routing').transitionTo('login');
+                        //  return true;
                       });
-                    }
-                  }
-                }
-              }).modal('show');
-            } else {
-              if (error === "wrongUserName") {
-                self.set('error', 'Please enter a correct user name');
-              } else {
-                if (error === "wrongPassword") {
-                  console.log("Wrong Pass");
-                  self.set('error', 'Please enter a correct password');
-                } else {
-                  if (error === "loginFailed") {
-                    self.set('error', 'Login Failed ...');
+                    });
                   }
                 }
               }
+            }).modal('show');
+          } else {
+            if (error === "wrongUserName") {
+              self.set('error', 'Please enter a correct user name');
+            } else {
+              if (error === "wrongPassword") {
+                console.log("Wrong Pass");
+                self.set('error', 'Please enter a correct password');
+              } else {
+                if (error === "loginFailed") {
+                  self.set('error', 'Login Failed ...');
+                }
+              }
             }
-          });
-        }
-      },
-
-
-      logout: function logout() {
-        localStorage.clear();
-      },
-
-      openModal: function openModal() {
-        Ember.$('.ui.login.modal.tiny').modal({}).modal('show');
+          }
+        });
+        // this.get('router').transitionTo('client.welcome-client');
       }
-    }
+    },
 
+
+    logout: function logout() {
+      localStorage.clear();
+    },
+
+    openModal: function openModal() {
+      Ember.$('.ui.login.modal.tiny').modal({}).modal('show');
+    }
+  }), _EmberComponent$exte));
+});
+define('self-start-front-end/components/vertical-bar-chart', ['exports', 'ember-charts/components/vertical-bar-chart'], function (exports, _verticalBarChart) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
   });
+  exports.default = _verticalBarChart.default;
 });
 define('self-start-front-end/components/view-appointment', ['exports'], function (exports) {
   'use strict';
@@ -9830,6 +9945,14 @@ define("self-start-front-end/instance-initializers/ember-data", ["exports", "emb
     initialize: _initializeStoreService.default
   };
 });
+define('self-start-front-end/mixins/axis-titles', ['exports', 'ember-charts/mixins/axis-titles'], function (exports, _axisTitles) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _axisTitles.default;
+});
 define('self-start-front-end/mixins/base', ['exports', 'semantic-ui-ember/mixins/base'], function (exports, _base) {
   'use strict';
 
@@ -9842,6 +9965,22 @@ define('self-start-front-end/mixins/base', ['exports', 'semantic-ui-ember/mixins
       return _base.default;
     }
   });
+});
+define('self-start-front-end/mixins/label-width', ['exports', 'ember-charts/mixins/label-width'], function (exports, _labelWidth) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _labelWidth.default;
+});
+define('self-start-front-end/mixins/legend', ['exports', 'ember-charts/mixins/legend'], function (exports, _legend) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _legend.default;
 });
 define('self-start-front-end/mixins/promise-resolver', ['exports', 'ember-promise-tools/mixins/promise-resolver'], function (exports, _promiseResolver) {
   'use strict';
@@ -9856,8 +9995,8 @@ define('self-start-front-end/mixins/promise-resolver', ['exports', 'ember-promis
     }
   });
 });
-define("self-start-front-end/models/administrator", ["exports", "ember-data"], function (exports, _emberData) {
-  "use strict";
+define('self-start-front-end/models/administrator', ['exports', 'ember-data'], function (exports, _emberData) {
+  'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
@@ -9866,12 +10005,14 @@ define("self-start-front-end/models/administrator", ["exports", "ember-data"], f
     ID: _emberData.default.attr(),
     familyName: _emberData.default.attr(),
     givenName: _emberData.default.attr(),
+    encryptedPassword: _emberData.default.belongsTo('password'),
     email: _emberData.default.attr(),
     dateHired: _emberData.default.attr("Date"),
     dateFired: _emberData.default.attr("Date"),
     phoneNumber: _emberData.default.attr(),
     message: _emberData.default.attr(),
-    account: _emberData.default.attr()
+    account: _emberData.default.attr(),
+    success: _emberData.default.attr()
   });
 });
 define("self-start-front-end/models/answer", ["exports", "ember-data"], function (exports, _emberData) {
@@ -10120,8 +10261,8 @@ define('self-start-front-end/models/patient', ['exports', 'ember-data'], functio
     success: _emberData.default.attr()
   });
 });
-define("self-start-front-end/models/physiotherapest", ["exports", "ember-data"], function (exports, _emberData) {
-    "use strict";
+define('self-start-front-end/models/physiotherapest', ['exports', 'ember-data'], function (exports, _emberData) {
+    'use strict';
 
     Object.defineProperty(exports, "__esModule", {
         value: true
@@ -10130,6 +10271,7 @@ define("self-start-front-end/models/physiotherapest", ["exports", "ember-data"],
         ID: _emberData.default.attr(),
         familyName: _emberData.default.attr(),
         givenName: _emberData.default.attr(),
+        encryptedPassword: _emberData.default.belongsTo('password'),
         email: _emberData.default.attr(),
         dateHired: _emberData.default.attr("Date"),
         dateFired: _emberData.default.attr("Date"),
@@ -10137,6 +10279,7 @@ define("self-start-front-end/models/physiotherapest", ["exports", "ember-data"],
         gender: _emberData.default.attr(),
         treatment: _emberData.default.attr(),
         account: _emberData.default.attr(),
+        success: _emberData.default.attr(),
         appointments: _emberData.default.hasMany('appointment', { async: true })
     });
 });
@@ -10848,6 +10991,8 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
     store: Ember.inject.service(),
     isLoginRequested: false,
     userCList: null,
+    accountType: null,
+    router: Ember.inject.service('-routing'),
     ajax: Ember.inject.service(),
 
     getName: Ember.computed(function () {
@@ -10859,12 +11004,23 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
       }
     }),
 
+    init: function init() {
+      this._super.apply(this, arguments);
+      if (localStorage.getItem('sas-session-id')) {
+        this.set("isAuthenticated", true);
+      }
+    },
     setName: function setName(name) {
       console.log(name);
       this.set('email', name.toLowerCase());
       var identity = this.encrypt(this.get('email'));
       localStorage.setItem('sas-session-id', identity);
       console.log("In set item", this.get('email'));
+    },
+    setAccountType: function setAccountType(value) {
+      this.set("accountType", value);
+      var accType = this.encrypt(this.get("accountType"));
+      localStorage.setItem("accType", accType);
     },
     setPassword: function setPassword(password) {
       this.set('encryptedPassword', this.hash(password));
@@ -10942,10 +11098,12 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
                     } else {
                       console.log("In else");
                       self.setName(message4.get('email'));
+
                       // var userRole = self.decrypt(message4.get('token'));
                       var userRole = null;
                       self.set('isAuthenticated', true);
                       self.set('userCList', userRole);
+                      // self.get('router').transitionTo('client');
                       resolve(userRole);
                     }
                   }
@@ -11013,6 +11171,23 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
           Login.forEach(function (record) {
             record.destroyRecord();
           });
+        }
+      });
+      window.localStorage.removeItem('sas-session-id');
+      this.set('getName', null);
+      this.set('email', null);
+      this.set('encryptedPassword', null);
+      this.set('isAuthenticated', false);
+      this.set('isLoginRequested', false);
+    },
+    closeNoParams: function closeNoParams() {
+      console.log(localStorage.getItem('sas-session-id'));
+      var email = this.decrypt(localStorage.getItem('sas-session-id'));
+      console.log(email);
+      var myStore = this.get('store');
+      myStore.queryRecord('login', { filter: { "email": email } }).then(function (Login) {
+        if (Login) {
+          Login.destroyRecord();
         }
       });
       window.localStorage.removeItem('sas-session-id');
@@ -12818,6 +12993,14 @@ define("self-start-front-end/templates/components/book-appointment", ["exports"]
   });
   exports.default = Ember.HTMLBars.template({ "id": "dIS499Wc", "block": "{\"symbols\":[\"timeslot\",\"phsio\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Book appointment\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[9,\"href\",\"/assets/css/form-style.css\"],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\\n\\n\"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"padding-right: 10em; padding-left: 10em\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n  \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n  \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n    \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectphysio\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateValue\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n      \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"getphysio\"]]],null,{\"statements\":[[0,\"        \"],[6,\"option\"],[10,\"value\",[19,2,[\"id\"]],null],[7],[0,\"\\n          \"],[1,[19,2,[\"givenName\"]],false],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[1,[25,\"as-calendar\",null,[[\"title\",\"occurrences\",\"defaultTimeZoneQuery\",\"dayStartingTime\",\"dayEndingTime\",\"timeSlotDuration\",\"onAddOccurrence\",\"onUpdateOccurrence\",\"onRemoveOccurrence\"],[\"View Schedule\",[20,[\"occurrences\"]],\"Toronto|New York\",\"8:00\",\"20:00\",\"00:30\",[25,\"action\",[[19,0,[]],\"calendarAddOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarUpdateOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarRemoveOccurrence\"],null]]]],false],[0,\"\\n\\n\"],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],\"bk\"]],{\"statements\":[[0,\"  \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"scrolling content\"],[7],[0,\"\\n\\n      \"],[6,\"fieldset\"],[7],[0,\"\\n        \"],[6,\"legend\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\" Physiotherapist\"],[8],[0,\"\\n        \"],[6,\"p\"],[7],[1,[18,\"familyName\"],false],[0,\" \"],[1,[18,\"givenName\"],false],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[0,\"\\n\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Type\"],[8],[0,\"\\n        \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n          \"],[6,\"select\"],[9,\"class\",\"selectedAppointment\"],[10,\"value\",[18,\"selectAppointmentType\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateTime\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n            \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select type\"],[8],[0,\"\\n            \"],[6,\"option\"],[9,\"value\",\"i\"],[7],[0,\"\\n              Initial Assessment\\n            \"],[8],[0,\"\\n            \"],[6,\"option\"],[9,\"value\",\"t\"],[7],[0,\"\\n              Treatment\\n            \"],[8],[0,\"\\n\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n          \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Reason\"],[8],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"star\",\"text\",[20,[\"Reason\"]]]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n          \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Other\"],[8],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"user\",\"text\",[20,[\"Other\"]]]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Time Slot\"],[8],[0,\"\\n        \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n          \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectedTime\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"setselectedtime\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n            \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select TimeSlot\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"timeSlots\"]]],null,{\"statements\":[[0,\"              \"],[6,\"option\"],[10,\"value\",[19,1,[\"time\"]],null],[7],[0,\"\\n                \"],[1,[19,1,[\"value\"]],false],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"br\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"cancel_appointment\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui fluid positive button\"],[3,\"action\",[[19,0,[]],\"book_appointment\"]],[7],[0,\"Submit\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/book-appointment.hbs" } });
 });
+define("self-start-front-end/templates/components/chart-component", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "0UMO905J", "block": "{\"symbols\":[],\"statements\":[[6,\"svg\"],[10,\"width\",[18,\"outerWidth\"],null],[10,\"height\",[18,\"outerHeight\"],null],[7],[0,\"\\n  \"],[6,\"g\"],[9,\"class\",\"chart-viewport\"],[10,\"transform\",[18,\"transformViewport\"],null],[7],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/chart-component.hbs" } });
+});
 define("self-start-front-end/templates/components/client-exercise-menu", ["exports"], function (exports) {
   "use strict";
 
@@ -13200,7 +13383,7 @@ define("self-start-front-end/templates/components/nav-bar", ["exports"], functio
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "mAUp3ctE", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"div\"],[9,\"id\",\"window\"],[7],[0,\"\\n\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/home-style.css\"]]],[7],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",[26,[\"following bar \",[18,\"stickyValue\"]]]],[9,\"id\",\"header\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[9,\"id\",\"menu\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                  \"],[6,\"a\"],[9,\"class\",\"active ui side\"],[9,\"href\",\"#home\"],[7],[0,\"\\n                    \"],[6,\"img\"],[9,\"class\",\"ui image selfStart\"],[9,\"src\",\"assets/images/home/Header.png\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n\\n            \"],[6,\"div\"],[10,\"class\",[26,[\"right menu \",[18,\"invertedValue\"]]]],[7],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item scroll\"],[9,\"href\",\"#about\"],[7],[0,\"About\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#howItWorks\"],[7],[0,\"How it Works\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#services\"],[7],[0,\"Services\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#FAQs\"],[7],[0,\"FAQs\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#contact\"],[7],[0,\"Contact\"],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"loggedOut\"]]],null,{\"statements\":[[0,\"                \"],[1,[18,\"user-login\"],false],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                \"],[6,\"a\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"logout\"]],[7],[0,\"Logout\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[11,1],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/nav-bar.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "GoSzpLSf", "block": "{\"symbols\":[\"&default\"],\"statements\":[[6,\"div\"],[9,\"id\",\"window\"],[7],[0,\"\\n\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"assets/css/home-style.css\"]]],[7],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",[26,[\"following bar \",[18,\"stickyValue\"]]]],[9,\"id\",\"header\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[9,\"id\",\"menu\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                  \"],[6,\"a\"],[9,\"class\",\"active ui side\"],[9,\"href\",\"#home\"],[7],[0,\"\\n                    \"],[6,\"img\"],[9,\"class\",\"ui image selfStart\"],[9,\"src\",\"assets/images/home/Header.png\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n\\n            \"],[6,\"div\"],[10,\"class\",[26,[\"right menu \",[18,\"invertedValue\"]]]],[7],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item scroll\"],[9,\"href\",\"#about\"],[7],[0,\"About\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#howItWorks\"],[7],[0,\"How it Works\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#services\"],[7],[0,\"Services\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#FAQs\"],[7],[0,\"FAQs\"],[8],[0,\"\\n              \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"href\",\"#contact\"],[7],[0,\"Contact\"],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"auth\",\"isAuthenticated\"]]],null,{\"statements\":[[0,\"                \"],[6,\"a\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"logout\"]],[7],[0,\"Logout\"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"              \"],[1,[18,\"user-login\"],false],[0,\"\\n\"]],\"parameters\":[]}],[0,\"            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[11,1],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"],[8],[0,\"\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/nav-bar.hbs" } });
 });
 define("self-start-front-end/templates/components/parse-question", ["exports"], function (exports) {
   "use strict";
@@ -14316,6 +14499,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+45105cf5"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+b7ee0bbb"});
 }
 //# sourceMappingURL=self-start-front-end.map

@@ -11,19 +11,28 @@ router.route('/')
         var administrator = new Administrators.Model(request.body.administrator);
 
         Administrators.getUserByEmail(administrator.email, (err, administrator) =>{
-            if(administrator) {
-                response.json({success: false, msg: 'User already registered'});
+            if(err) {
+                administrator.success = false;
             }
+            else if(administrator) {
+                console.log("ERROR");
+                administrator.success = false;
+            } 
+            
+            administrator.save().then((administrator) => {
+                if (error) response.send(error);
+                response.json({administrator: administrator});
+            });
         });
 
-        Administrators.addAdmin(administrator, (err, administrator) => {
-            console.log("ASDJKkajsdkjsajkd");
-            if(err) {
-                response.json({success: false, msg: 'Failed to register client'});
-            } else{
-                response.json({administrator: admin});
-            }
-        });
+        // Administrators.addAdmin(administrator, (err, administrator) => {
+        //     console.log("ASDJKkajsdkjsajkd");
+        //     if(err) {
+        //         response.json({success: false, msg: 'Failed to register client'});
+        //     } else{
+        //         response.json({administrator: admin});
+        //     }
+        // });
         // Administrators.save(function (error) {
         //     if (error) response.send(error);
         //     response.json({admin: admin});
