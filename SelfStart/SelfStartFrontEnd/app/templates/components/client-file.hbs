@@ -306,8 +306,8 @@
 
   <div class="actions" style="padding:0">
 
-    <div class="ok" style="padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Print/Save</div>
-    <div class="cancel" style="padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">No</div>
+    <div class="ok" style="padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Save Report</div>
+    <div class="cancel" style="padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">Exit</div>
   </div>
 
 {{/ui-modal}}
@@ -325,7 +325,7 @@
       <label>Name: {{model.givenName}} {{model.familyName}}</label>
       <label>Date of birth: {{model.dateOfBirth}}</label>
       <label>Gender: {{model.gender}}</label>
-      <label>Address: {{model.streetNumber}} {{model.streetName}}, #{{model.apartment}}, {{model.postalCode}}  {{model.city}}, {{model.province}}, {{model.country}} </label>
+      <label>Address: {{model.streetNumber}} {{model.streetName}} #{{model.apartment}}, {{model.postalCode}}  {{model.city}}, {{model.province}}, {{model.country}} </label>
       <label>Email: {{model.email}}</label>
       <label>Phone: {{model.phoneNumber}}</label>
       <br>
@@ -364,8 +364,25 @@
 
   <div class="actions" style="padding:0">
 
-    <div class="ok" style="padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Print/Save</div>
-    <div class="cancel" style="padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">No</div>
+    <div class="ok" style="padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Save Report</div>
+    <div class="cancel" style="padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">Exit</div>
   </div>
 
 {{/ui-modal}}
+
+{{#ui-modal name="data" class="data"}}
+  <i class="close icon"></i>
+  <label>Questions:</label> <br>
+  {{questionModel}}
+  {{#each ratingQuestions as |q|}}
+    <label>{{q.questionText}}</label> 
+    {{display-data-report question = q}}<br> 
+  {{/each}}
+
+  <div class="actions" style="padding:0">
+
+    {{!-- <div class="ok" style="padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Save Report</div> --}}
+    <div class="cancel" style="padding:.6em; float:left; width: 100%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">Exit</div>
+  </div>
+
+  {{/ui-modal}}

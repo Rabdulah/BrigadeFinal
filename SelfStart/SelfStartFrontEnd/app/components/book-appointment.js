@@ -30,6 +30,10 @@ export default Component.extend({
 
 
   physioPicked : false,
+  physioName : computed(function () {
+    return this.get('givenName') + " " + this.get('familyName');
+  }),
+
 
   getphysio: computed(function(){
     return this.get('DS').findAll('physiotherapest');
@@ -44,10 +48,9 @@ export default Component.extend({
     console.log(eemail);
 
 
-    self.get('DS').query('patient', {filter: {'email' : eemail}}).then(function (obj) {
-      obj.forEach(function (temp){
-        self.set('client', temp);
-      });
+    self.get('DS').queryRecord('patient', {filter: {'email' : eemail}}).then(function (obj) {
+
+      self.set('client', obj);
 
     });
   },
@@ -203,7 +206,8 @@ export default Component.extend({
         reason: self.get('Reason'),
         other: self.get('Other'),
         date: self.get('selectedbookedTime').time,
-        endDate: self.get('selectedbookedTime').end
+        endDate: self.get('selectedbookedTime').end,
+        pName: self.get('physioName'),
       });
       let src =self.get('client');
         console.log(src);
@@ -292,8 +296,6 @@ export default Component.extend({
             });
           });
         });
-      
-
-    },
+   },
   }
 });

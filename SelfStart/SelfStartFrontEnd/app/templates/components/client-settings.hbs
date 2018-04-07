@@ -217,9 +217,6 @@
         </div>
       {{/if}}
       {{#if onAppointment}}
-
-
-
       <div class="ui container segment" id="top" >
         <div class="ui grid">
           <div class="left thirteen wide column" style="margin-top: -5px;">
@@ -230,17 +227,14 @@
         </div>
         <br><br><br><br>
 
-
         <div style="display: inline">
           <table class="ui fixed table" style="border: none;border-color: white;">
             <tbody >
             <tr style="font-weight: bold;">
-              <th class="left aligned one wide column "> </th>
-              {{#each modelAttributes as |column|}}
-                <th>Date</th>
-                <th>Practitioner </th>
-                <th>Date</th>
-              {{/each}}
+              <th>Date</th>
+              <th>Practitioner</th>
+              <th>Reason</th>
+              <th>Appointment type</th>
             </tr>
             </tbody>
           </table>
@@ -248,18 +242,16 @@
 
         <div class="ui divider"></div>
 
-
         <div  id="clientWindow" style="height:500px; overflow-y: scroll; overflow-x: hidden;">
 
           <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
             <tbody >
-            {{#each patientsModel as |patient|}}
+            {{#each appointmentHistory as |aHistory|}}
               <tr>
-                {{#each modelAttributes as |column|}}
-                  <td class={{column.class}}>
-                    {{get patient column.key}}
-                  </td>
-                {{/each}}
+                <td>{{aHistory.date}}</td>
+                <td>{{aHistory.pName}}</td>
+                <td>{{aHistory.reason}}</td>
+                <td>{{types-appointment aHistory.date aHistory.endDate}}</td>
               </tr>
             {{/each}}
             </tbody>

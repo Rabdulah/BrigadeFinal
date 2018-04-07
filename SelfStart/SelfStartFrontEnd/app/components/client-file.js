@@ -18,6 +18,7 @@ export default Component.extend({
   plan: null,
   isPlanSelected: false,
   model: null,
+  ratingQuestions: [],
 
   modalName: computed(function () {
     return 'editAssign' + this.get('plan');
@@ -66,6 +67,20 @@ link:[],
         this.get('listModel').pushObject(exe.get('exercise'));
       });
 
+    });
+  }),
+
+  questionModel: computed( function(){
+    this.get('store').findAll('question').then((questions) => {
+      let self = this;
+      console.log(questions);
+      let ratingQs = [];
+      questions.forEach((q) => {
+        if (q.get('type') == "Rating") {
+          ratingQs.pushObject(q);
+        }
+      })
+      self.set('ratingQuestions', ratingQs);
     });
   }),
 
@@ -318,6 +333,21 @@ link:[],
         },
         onApprove: () => {
           window.print();
+        }
+      }).modal('show');
+    },
+
+    openData: function () {
+      $('.ui.' + 'data' + '.modal').modal({
+        closable: false,
+
+        transition: 'fly down',
+
+        onDeny: () => {
+          return true;
+        },
+        onApprove: () => {
+          return true;
         }
       }).modal('show');
     },
