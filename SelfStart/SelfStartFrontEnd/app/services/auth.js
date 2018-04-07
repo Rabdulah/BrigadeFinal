@@ -1,5 +1,6 @@
 import Ember from 'ember';
 import crypto from "npm:crypto-browserify";
+import { inject } from '@ember/service';
 
 export default Ember.Service.extend({
   email: null,
@@ -8,6 +9,8 @@ export default Ember.Service.extend({
   store: Ember.inject.service(),
   isLoginRequested: false,
   userCList: null,
+  accountType: null,
+  router: inject('-routing'),
   ajax: Ember.inject.service(),
 
   getName: Ember.computed(function () {
@@ -19,6 +22,13 @@ export default Ember.Service.extend({
     }
   }),
 
+  init(){
+    this._super(...arguments);
+    if(localStorage.getItem('sas-session-id')){
+      this.set("isAuthenticated", true);
+    }
+  },
+
   setName(name) {
     console.log(name);
     this.set('email', name.toLowerCase());
@@ -27,6 +37,11 @@ export default Ember.Service.extend({
     console.log("In set item", this.get('email'));
   },
 
+  setAccountType(value){
+    this.set("accountType", value);
+    var accType = this.encrypt(this.get("accountType"));
+    localStorage.setItem("accType", accType);
+  },
 
   setPassword(password) {
     this.set('encryptedPassword', this.hash(password));
@@ -107,10 +122,12 @@ export default Ember.Service.extend({
                     } else {
                       console.log("In else");
                       self.setName(message4.get('email'));
+
                       // var userRole = self.decrypt(message4.get('token'));
                       var userRole = null;
                       self.set('isAuthenticated', true);
                       self.set('userCList', userRole);
+                      // self.get('router').transitionTo('client');
                       resolve(userRole);
                     }
                   }
@@ -187,6 +204,25 @@ export default Ember.Service.extend({
         Login.forEach((record) => {
           record.destroyRecord();
         });
+      }
+    });
+    window.localStorage.removeItem('sas-session-id');
+    this.set('getName', null);
+    this.set('email', null);
+    this.set('encryptedPassword', null);
+    this.set('isAuthenticated', false);
+    this.set('isLoginRequested', false);
+  },
+
+  closeNoParams()
+  {
+    console.log(localStorage.getItem('sas-session-id'))
+    var email = this.decrypt(localStorage.getItem('sas-session-id'));
+    console.log(email);
+    var myStore = this.get('store');
+    myStore.queryRecord('login', {filter: {"email": email}}).then(function (Login) {
+      if (Login) {
+        Login.destroyRecord();
       }
     });
     window.localStorage.removeItem('sas-session-id');

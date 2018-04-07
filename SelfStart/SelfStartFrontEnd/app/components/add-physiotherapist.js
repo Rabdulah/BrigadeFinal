@@ -7,6 +7,7 @@ export default Component.extend({
   DS: inject('store'),
   flagAdd: null,
   tagName: '',
+  authentication: inject('auth'),
 
   init(){
     this._super(...arguments);
@@ -65,37 +66,56 @@ export default Component.extend({
 
       let self = this;
 
-      let physioAccount = {};
-        physioAccount['encryptedPassword'] = self.get('encryptedPassword');
-
-      let physiotherapist = this.get('DS').createRecord('physiotherapest', {
-        familyName: self.get('familyName'),
-        givenName: self.get('givenName'),
+      let passwords = this.get('DS').createRecord('password', {
         email: self.get('email'),
-        dateHired: new Date(this.get('selectedHiredDate')),
-        dateFired: new Date(this.get('selectedFiredDate')),
-        gender: self.get('selectedGender'),
-        phoneNumber: self.get('phoneNumber'),
-        //treatment: self.get('treatment'),
-        account: physioAccount,
+        encryptedPassword: self.get('authentication').hash(self.get('encryptedPassword')),
+        passwordMustChanged : true,
+        passwordReset:true,
+      });
 
+      passwords.save().then((passwords) => {
+        let physiotherapist = this.get('DS').createRecord('physiotherapest', {
+          familyName: self.get('familyName'),
+          givenName: self.get('givenName'),
+          email: self.get('email'),
+          encryptedPassword: passwords,
+          dateHired: new Date(this.get('selectedHiredDate')),
+          dateFired: new Date(this.get('selectedFiredDate')),
+          gender: self.get('selectedGender'),
+          phoneNumber: self.get('phoneNumber'),
+          //treatment: self.get('treatment'),
+        });
+        physiotherapist.save().then((res) =>{
+          console.log('this is the response', res);
+          console.log(res.get("success"));
+          if(!res.get("success")) {
+            console.log("FAILED")
+            res.destroyRecord().then(o => {
+              console.log("destroyed", o);
+            });
+            passwords.destroyRecord().then(o => {});
+          } else{
+            console.log("SUCCESS", res);
+            passwords.set('practitioner', res);
+            passwords.save();
+          }
+          $('.ui.newPhysio.modal').modal('hide');
+          this.set('familyName', '');
+          this.set('givenName', '');
+          this.set('email', '');
+          this.set('selectedGender', '');
+          this.set('dateHired', '');
+          this.set('dateFired', '');
+          this.set('phoneNumber', '');
+          this.set('encryptedPassword', '');
+          if (this.get('flagAdd')=== true)
+            this.set('flagAdd', false);
+          else
+            this.set('flagAdd', true);
+          return true;
+        });
       });
-      physiotherapist.save().then(() =>{
-        $('.ui.newPhysio.modal').modal('hide');
-        this.set('familyName', '');
-        this.set('givenName', '');
-        this.set('email', '');
-        this.set('selectedGender', '');
-        this.set('dateHired', '');
-        this.set('dateFired', '');
-        this.set('phoneNumber', '');
-        this.set('encryptedPassword', '');
-        if (this.get('flagAdd')=== true)
-          this.set('flagAdd', false);
-        else
-          this.set('flagAdd', true);
-        return true;
-      });
+      
 
     },
     openModal: function ()  {

@@ -7,15 +7,19 @@ var physiotherapestsSchema = mongoose.Schema({
     familyName: String,
     givenName: String,
     email: String,
+    encryptedPassword: {type: mongoose.Schema.ObjectId, ref: 'Passwords'},
     gender: String,
     phoneNumber: String,
     dateHired: Date,
     dateFired: Date,
+    success: {
+        type: Boolean,
+        default: true
+    },
     treatment: [{type: mongoose.Schema.ObjectId, ref: 'Treatments'}],
     appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],
 
     account: {
-        encryptedPassword: [{type: mongoose.Schema.ObjectId, ref: 'Passwords'}],
         //New----------------------------------------
         nonce: String,
         response: String,

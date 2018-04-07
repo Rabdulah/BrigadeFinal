@@ -13,6 +13,7 @@ var loginsSchema = mongoose.Schema(
         passwordReset: Boolean,
         loginFailed: Boolean,
         sessionIsActive: Boolean
+        // accType: Number
     }
 );
 
