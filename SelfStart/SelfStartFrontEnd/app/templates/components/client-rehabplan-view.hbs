@@ -22,22 +22,47 @@
     <h2 class="ui header">{{currentExercise.description}}</h2>
     <!--image-->
 
+    <div class = "image" style="max-height:500px;min-height:500px;min-width:141.63px;">
+      {{#if currentImages}}
+        {{#slick-slider speed=500 autoplay=false arrows=true id=index pauseOnHover=true}}
+          {{#each currentImages as |Image|}}
+          <div class ="box">
+            <img style="max-height:500px;min-height: 500px;display: block;margin-left: auto;margin-right: auto;" src="{{Image.imageData}}">
+          </div>
+          {{/each}}
+        {{/slick-slider}}
+      {{else}}
+        {{#if isLoading}}
+          <div class="ui segment">
+            <div class="ui active dimmer">
+              <div class="ui text loader">Loading</div>
+            </div>
+            <p></p>
+          </div>
+        {{else}}
+          <div class ="box">
+                <img src="/assets/images/NoImagesSaved.jpg" style="max-height:500px;display: block;margin-left: auto;margin-right: auto;">
+          </div>
+
+        {{/if}}
+      {{/if}}
+    </div>
     <!---->
     <h2 class="ui header">Steps</h2>
     <div class="ui ordered list">
-      {{#each currentExercise.actionSteps as |action|}}
+      {{#each currentExercise.actionSteps as |actionstep|}}
         <p class="item">
-          {{action}}
+          {{actionstep}}
         </p>
       {{/each}}
-      <p class="item">done</p>
     </div>
 
     <h2 class="ui header"> duration </h2>
-    <h4 class="ui header">{{currentExercise.sets}} sets </h4>
-    <h4 class="ui header">{{currentExercise.reps}} repetition</h4>
-    <h4 class="ui header">{{currentExercise.duration}} minuets in total</h4>
+    <h3 class="ui header">{{currentExercise.sets}} sets </h3>
+    <h3 class="ui header">{{currentExercise.reps}} repetition</h3>
+    <h3 class="ui header">{{currentExercise.duration}} minuets in total</h3>
 
+    <br>
     <div class="ui buttons" style="float: left!important;">
       {{#if isNFirst}}
         <button class="ui right labeled icon button" {{action "prevExercise"}}>
