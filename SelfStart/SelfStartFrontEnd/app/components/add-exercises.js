@@ -20,6 +20,8 @@ export default Component.extend({
   modelQueue: [],
   savingInProgress: false,
   id: null,
+  flagAdd: false,
+
 
   modalName: Ember.computed(function () {
     return 'add-exercise' + this.get('id');
@@ -130,16 +132,17 @@ export default Component.extend({
 
     submit: function() {
       let date = moment().format("MMM Do YY");
+      var exerName =  this.get('name');
 
       let exercise = this.get('DS').createRecord('exercise', {
-        name:this.get('Name'),
-        description:this.get('Description'),
-        authorName:this.get('AuthName'),
-        actionSteps:this.get('actionStep'),
+        name: exerName.charAt(0).toUpperCase() + exerName.substring(1),
+        description:this.get('description'),
+        authorName:'',
+        actionSteps:this.get('actionSteps'),
         sets:this.get('sets'),
         reps:this.get('reps'),
-        duration:this.get('Duration'),
-        multimediaURL:this.get('MMURL'),
+        duration:this.get('duration'),
+        multimediaURL:this.get('multimediaURL'),
         images: [],
         dateCreated: date
       });
@@ -202,17 +205,21 @@ export default Component.extend({
         });
       });
 
-      this.get('queue').clear();
-      this.get('queue2').clear();
-      this.set('Name', "");
-      this.set('Description', "");
-      this.set('AuthName', "");
-      this.set('ActionStep', "");
-      this.set('reps', "");
-      this.set('sets', "");
-      this.set('Duration', "");
-      this.set('MMURL', "");
-      this.set("actionStep", []);
+      // this.get('queue').clear();
+      // this.get('queue2').clear();
+      // this.set('name', "");
+      // this.set('description', "");
+      // this.set('authorName', "");
+      // this.set('actionStep', "");
+      // this.set('reps', "");
+      // this.set('sets', "");
+      // this.set('duration', "");
+      // this.set('multimediaURL', "");
+      // this.set("actionSteps", []);
+      if (this.get('flagAdd')=== true)
+        this.set('flagAdd', false);
+      else
+        this.set('flagAdd', true);
       $('.ui.newExercise.modal').modal('hide');
 
 

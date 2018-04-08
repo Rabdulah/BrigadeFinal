@@ -17,8 +17,9 @@ export default Component.extend({
   sort: 'name',
   dir:'',
   query: null,
-  flagDelete: false,
   flagAdd: false,
+  flagEdit: false,
+  flagDelete: false,
 
   modelAttributes:
     [{'key': 'name', 'name': 'Name', 'dir': '', 'class': 'left aligned seven wide column'},
@@ -26,12 +27,16 @@ export default Component.extend({
       {'key': 'reps', 'name': 'Reps', 'dir': '', 'class': 'left aligned two wide column'},
       {'key': 'duration', 'name': 'Duration', 'dir': '', 'class': 'left aligned three wide column'}],
 
+  searchAttributes:
+    [{'key': 'name', 'name': 'Name', 'dir': '', 'class': 'left aligned seven wide column'}],
+
   exercisesModel: [],
   INDEX: null,
   queryPath: 'name',
   scrolledLines: 0,
 
-  activeModel: Ember.observer('offset', 'limit', 'sort', 'dir', function () {
+  activeModel: Ember.observer('offset', 'limit', 'sort', 'dir', 'flagAdd', 'flagEdit', 'flagDelete', function () {
+    console.log("add");
     var self = this;
 
     this.get('store').query('exercise', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {

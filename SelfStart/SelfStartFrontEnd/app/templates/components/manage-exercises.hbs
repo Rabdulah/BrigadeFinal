@@ -19,7 +19,7 @@
             </p>
           </div>
           <div class="right two wide column" style="padding-left: 30px;">
-            {{add-exercises Images=model.image}}
+            {{add-exercises Images=model.image flagAdd=flagAdd}}
           </div>
         </div>
         <br><br><br><br>
@@ -31,10 +31,10 @@
 
               <div class="field">
                 {{#ui-dropdown class="selection" selected=queryPath onChange=(action (mut queryPath))}}
-                  <div class="default text">{{modelAttributes.firstObject.name}}</div>
+                  <div class="default text">{{searchAttributes.firstObject.name}}</div>
                   <i class="dropdown icon"></i>
                   <div class="menu">
-                    {{#each modelAttributes as |attribute|}}
+                    {{#each searchAttributes as |attribute|}}
                       <div class="item" data-value="{{attribute.key}}">
                         {{attribute.name}}
                       </div>
@@ -97,10 +97,10 @@
                 {{/each}}
 
                 <td class="right aligned one wide column ">
-                  {{edit-exercises ID=exercise.id images=exercise.images tableView=tableView}}
+                  {{edit-exercises exercisesData=exercise images=exercise.images tableView=tableView flagEdit=flagEdit}}
                 </td>
                 <td class="left aligned one wide column ">
-                  <p >{{delete-exercises ID=exercise.id tableView=tableView}}</p>
+                  <p >{{delete-exercises ID=exercise.id tableView=tableView flagDelete=flagDelete}}</p>
                 </td>
               </tr>
             {{/each}}
@@ -120,14 +120,14 @@
 
 
           <div class = "field" style="margin-top: 10px;right: 1.5%;position: absolute;">
-            {{add-exercises Images=model.image}}
+            {{add-exercises flagAdd=flagAdd Images=model.image}}
           </div>
 
         </div>
       </div>
 
       <div class ="ui five column doubling grid">
-        {{#each model.exercise as |Exercise index|}}
+        {{#each exercisesModel as |Exercise index|}}
           <div class="column" style="padding-bottom: 50px;padding-top: 50px;">
             <div class="ui fluid card" style="max-height: 226px;min-height: 226px;width: 154px !important;">
               <div class = "image" style="max-height:105px;min-height:105px;min-width:141.63px;" onmouseleave={{action "pause" Exercise}} onmouseover={{action "play" Exercise}}>
@@ -152,9 +152,9 @@
 
               <div class="extra content" style="padding-left:21px;">
                 <div class="mini ui buttons">
-                  {{edit-exercises ID=Exercise.id images=Exercise.images Im=model.image}}
+                  {{edit-exercises exercisesData=Exercise flagEdit=flagEdit images=Exercise.images Im=model.image}}
                   <div class="or" style="margin-top: -8px;"></div>
-                  {{delete-exercises ID=Exercise.id}}
+                  {{delete-exercises ID=Exercise.id flagDelete=flagDelete}}
                 </div>
               </div>
 

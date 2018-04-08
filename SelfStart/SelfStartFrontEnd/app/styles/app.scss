@@ -253,38 +253,22 @@ a img {
   font-size: 0;
 }
 
-#countrySelect{
-  background: url('/assets/images/form/world.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
-  height: 51px;
-  line-height: 1.5em;
-  min-width: 100%;
-  padding-left: 50px;
+.gender{
+  background: url('/assets/images/form/multiple-11.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right !important;
+  height: 51px !important;
+  line-height: 1.5em !important;
+  min-width: 100% !important;
+  padding-left: 50px!important;
 }
 
-#provinceSelect{
-  background: url('/assets/images/form/world.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
-  height: 51px;
-  line-height: 1.5em;
-  min-width: 100%;
-  padding-left: 50px;
+.address{
+  background: url('/assets/images/form/world.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right !important;
+  height: 51px !important;
+  line-height: 1.5em !important;
+  min-width: 100% !important ;
+  padding-left: 50px !important;
 }
 
-#citySelect{
-  background: url('/assets/images/form/world.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
-  height: 51px;
-  line-height: 1.5em;
-  min-width: 100%;
-  padding-left: 50px;
-}
-
-#addSelect{
-  background: url('/assets/images/form/world.svg') no-repeat 12px 12px;
-  height: 51px;
-  line-height: 1.5em;
-  min-width: 100%;
-  padding-left: 50px;
-
-}
 
 .ui.checkbox input:checked ~ .box:after, .ui.checkbox input:checked ~ label:after {
   opacity: 1;

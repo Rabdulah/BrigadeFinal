@@ -9,21 +9,19 @@ export default Component.extend({
 
   modalName: computed(function () {
     return 'Delete-patient' + this.get('ID');
-
   }),
 
   actions: {
     openModal: function () {
       $('.ui.' + this.get('modalName') + '.modal').modal({
         closable: false,
-
         transition: 'fly down',
 
         onDeny: () => {
           return true;
         },
-        onApprove: () => {
 
+        onApprove: () => {
           let patient = this.get('DS').peekRecord('patient', this.get('ID'));
 
               patient.destroyRecord().then(()=>{

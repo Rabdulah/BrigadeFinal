@@ -13,16 +13,22 @@ export default Component.extend({
   dir:'',
   query: null,
   flagDelete: false,
+  flagEdit: false,
+  flagAdd: false,
 
   modelAttributes:
     [{'key': 'givenName', 'name':'First Name', 'dir' : 'asc', 'class' :'left aligned three wide column'},
       {'key': 'familyName', 'name':'Last Name', 'dir' : '','class' :'left aligned three wide column'},
       {'key': 'dateOfBirth', 'name':'Date of Birth', 'dir' : '','class' :'left aligned three wide column'},
-      // {'key': 'address', 'name':'Address'},
       {'key': 'email', 'name':'Email', 'dir' : '','class' :'left aligned four wide column'}],
-    // {'key': 'phoneNumber', 'name':'Phone Number'}],
+
+  searchAttributes:
+    [{'key': 'givenName', 'name':'First Name', 'dir' : 'asc', 'class' :'left aligned three wide column'},
+      {'key': 'familyName', 'name':'Last Name', 'dir' : '','class' :'left aligned three wide column'},
+      {'key': 'email', 'name':'Email', 'dir' : '','class' :'left aligned four wide column'}],
 
   patientsModel: [],
+
   INDEX: null,
   queryPath: 'givenName',
   scrolledLines: 0,
@@ -30,16 +36,18 @@ export default Component.extend({
 
 
 
-  activeModel: Ember.observer('offset', 'limit', 'sort', 'dir','flagDelete', function () {
+  activeModel: Ember.observer('offset', 'limit', 'sort', 'dir','flagDelete','flagAdd','flagEdit', function () {
     var self = this;
 
     this.get('store').query('patient', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
-      self.set('patientsModel', records.toArray());
+        self.set('patientsModel', records.toArray());
 
     });
   }),
 
   filterpateints: Ember.observer('query', 'queryPath', function () {
+    var self = this;
+
     let queryText = this.get('query');
     if (queryText !== null && queryText.length > 0) {
       this.set('regex', "^"+queryText);
@@ -47,8 +55,10 @@ export default Component.extend({
       this.set('regex', '');
     }
 
-    this.get('store').query('patient', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then((records) => {
-      this.set('patientsModel', records.toArray());
+
+    this.get('store').query('patient', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
+      self.set('patientsModel', records.toArray());
+
     });
   }),
 
@@ -58,24 +68,14 @@ export default Component.extend({
     this.set('offset', 0);
     this.set('pageSize', 10);
     let self = this;
-    //  this.set('modelAttributes', Object.keys(this.get('store').createRecord('patient').toJSON()));
-    this.get('store').query('patient', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
-      records.forEach( function (patient){
-        patient.set('dateOfBirth', moment(patient.get('dateOfBirth')).format('DD/MM/YYYY'));
-      });
-      self.set('patientsModel', records.toArray());
 
+
+
+    this.get('store').query('patient', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
+        self.set('patientsModel', records.toArray());
     });
 
   },
-
-
-  // dateFormat: Ember.computed(function(date){
-  //   console.log(date);
-  //   var dateString = moment(date).toISOString();
-  //   return dateString;
-  // }),
-
 
 
   didInsertElement: function() {

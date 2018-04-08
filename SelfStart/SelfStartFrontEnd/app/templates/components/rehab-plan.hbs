@@ -14,84 +14,84 @@
 
   <div class="ui container">
 
-  <div class="ui segment" id="top" style="float:left;max-width: 300px !important;margin: 100px 0 0 0;">
-        <p style="margin-top: 10px;color:  white;font-size: 1.5em;font-weight: bolder; text-align: center">
-          Exercises
-        </p>
+    <div class="ui segment" id="top" style="float:left;max-width: 300px !important;margin: 100px 0 0 0;">
+      <p style="margin-top: 10px;color:  white;font-size: 1.5em;font-weight: bolder; text-align: center">
+        Exercises
+      </p>
 
-    <br><br><br>
+      <br><br><br>
 
 
-    <div class="ui form">
-    <div class="field">
-      <div class="ui icon input">
-        <i class="search icon"></i>
-        {{input type="text" placeholder="Search..."  value=query }}
+      <div class="ui form">
+        <div class="field">
+          <div class="ui icon input">
+            <i class="search icon"></i>
+            {{input type="text" placeholder="Search..."  value=query }}
+          </div>
+        </div>
+      </div>
+
+      <br><br>
+
+      <div style="display: inline">
+        <table class="ui fixed table" style="border: none;border-color: white;">
+          <tbody >
+          <tr style="font-weight: bold;">
+            {{#each exerciseAttributes as |column|}}
+              <th style="padding-left: 1em" class={{column.class}} {{action 'sortColumn' column.key column.dir}}>{{column.name}}
+                {{#if (eq column.dir 'asc')}}
+                  <i class="sort ascending icon"></i>
+                {{/if}}
+                {{#if (eq column.dir 'desc')}}
+                  <i class="sort descending icon"></i>
+                {{/if}}
+                {{#if (eq column.dir '')}}
+                  <i class="sort icon"></i>
+                {{/if}}
+              </th>
+              <th class="left aligned four wide column"></th>
+            {{/each}}
+          </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="ui divider"></div>
+
+      <div  id="exerciseWin" style="height:500px; overflow-y: scroll; overflow-x: hidden;">
+        <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
+          <tbody >
+          {{#if asc}}
+            {{#each sortedNames as |exercise|}}
+              <tr>
+                {{#each exerciseAttributes as |column|}}
+                  <td class={{column.class}}>
+                    {{get exercise column.key}}
+                  </td>
+                  <td class="left aligned four wide column">
+                    {{ui-checkbox checked=(get exercise 'selected') onChange=(action (mut (get exercise 'selected')))}}
+                  </td>
+                {{/each}}
+              </tr>
+            {{/each}}
+          {{else}}
+            {{#each sortedNamesDesc as |exercise|}}
+              <tr>
+                {{#each exerciseAttributes as |column|}}
+                  <td class={{column.class}}>
+                    {{get exercise column.key}}
+                  </td>
+                  <td class="left aligned four wide column">
+                    {{ui-checkbox checked=(get exercise 'selected') onChange=(action (mut (get exercise 'selected')))}}
+                  </td>
+                {{/each}}
+              </tr>
+            {{/each}}
+          {{/if}}
+          </tbody>
+        </table>
       </div>
     </div>
-  </div>
-
-    <br><br>
-
-  <div style="display: inline">
-    <table class="ui fixed table" style="border: none;border-color: white;">
-      <tbody >
-      <tr style="font-weight: bold;">
-        {{#each exerciseAttributes as |column|}}
-          <th style="padding-left: 1em" class={{column.class}} {{action 'sortColumn' column.key column.dir}}>{{column.name}}
-            {{#if (eq column.dir 'asc')}}
-              <i class="sort ascending icon"></i>
-            {{/if}}
-            {{#if (eq column.dir 'desc')}}
-              <i class="sort descending icon"></i>
-            {{/if}}
-            {{#if (eq column.dir '')}}
-              <i class="sort icon"></i>
-            {{/if}}
-          </th>
-          <th class="left aligned four wide column"></th>
-        {{/each}}
-      </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="ui divider"></div>
-
-  <div  id="exerciseWin" style="height:500px; overflow-y: scroll; overflow-x: hidden;">
-    <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
-      <tbody >
-      {{#if asc}}
-        {{#each sortedNames as |exercise|}}
-          <tr>
-            {{#each exerciseAttributes as |column|}}
-              <td class={{column.class}}>
-                {{get exercise column.key}}
-              </td>
-              <td class="left aligned four wide column">
-                {{ui-checkbox checked=(get exercise 'selected') onChange=(action (mut (get exercise 'selected')))}}
-              </td>
-            {{/each}}
-          </tr>
-        {{/each}}
-      {{else}}
-        {{#each sortedNamesDesc as |exercise|}}
-          <tr>
-            {{#each exerciseAttributes as |column|}}
-              <td class={{column.class}}>
-                {{get exercise column.key}}
-              </td>
-              <td class="left aligned four wide column">
-                {{ui-checkbox checked=(get exercise 'selected') onChange=(action (mut (get exercise 'selected')))}}
-              </td>
-            {{/each}}
-          </tr>
-        {{/each}}
-      {{/if}}
-      </tbody>
-    </table>
-  </div>
-  </div>
 
 
 
@@ -107,78 +107,78 @@
 
 
 
-  <div class="ui segment" id="top" style="height:734px;float:left;margin-top: 100px; max-width: 680px !important;">
+    <div class="ui segment" id="top" style="height:734px;float:left;margin-top: 100px; max-width: 680px !important;">
 
-    <div class="ui grid" style="margin-top: 2px;">
-      <div class="left eleven wide column" style="margin-top: -5px;">
-        <p style="margin-top: 10px;color:  white;font-size: 1.5em;font-weight: bolder;">
-          Menu
-        </p>
+      <div class="ui grid" style="margin-top: 2px;">
+        <div class="left eleven wide column" style="margin-top: -5px;">
+          <p style="margin-top: 10px;color:  white;font-size: 1.5em;font-weight: bolder;">
+            Menu
+          </p>
+        </div>
+
       </div>
 
-    </div>
+
+      <br><br><br>
+
+      <link integrity="" rel="stylesheet" href="/assets/css/form-style.css"> <!-- Resource style -->
+      <form id="edit" class="cd-form floating-labels" {{action "submit" on="submit"}}>
+
+        <div class="field" style="margin: 1em 0;">
+          {{input class="bookmark" type="text" value = planName placeholder="Name" required = true}}
+        </div>
+        <div class="field" style="margin: 1em 0;">
+          {{input class="message" type="text" value = description placeholder="Description" required = true}}
+        </div>
+
+        <div class="field" style="margin-left: 495px;margin-top: -212px;position:  absolute;">
+          <button class="ui button" value="submit">
+            save
+          </button>
+        </div>
+      </form>
 
 
-    <br><br><br>
+      <br>
 
-    <link integrity="" rel="stylesheet" href="/assets/css/form-style.css"> <!-- Resource style -->
-    <form id="edit" class="cd-form floating-labels" {{action "submit" on="submit"}}>
+      <div style="display: inline">
+        <table class="ui fixed table" style="border: none;border-color: white;">
+          <tbody >
+          <tr style="font-weight: bold;">
+            {{#each menuAttributes as |column|}}
 
-      <div class="field" style="margin: 1em 0;">
-        {{input class="bookmark" type="text" value = planName placeholder="Name" required = true}}
+              {{#if (eq column.key 'sets' )}}
+                <th style="padding-left: 1em" class={{column.class}}>{{column.name}}</th>
+
+              {{else}}
+                <th class={{column.class}}>
+                  {{column.name}}
+                </th>
+              {{/if}}
+            {{/each}}
+            <th class="left aligned two wide column"></th>
+            <th class="left aligned two wide column"></th>
+          </tr>
+          </tbody>
+        </table>
       </div>
-      <div class="field" style="margin: 1em 0;">
-        {{input class="message" type="text" value = description placeholder="Description" required = true}}
-      </div>
 
-      <div class="field" style="margin-left: 495px;margin-top: -212px;position:  absolute;">
-        <button class="ui button" value="submit">
-          save
-        </button>
-      </div>
-    </form>
+      <div class="ui divider"></div>
+
+      <div  id="listWin" style="height:428px; overflow-y: scroll; overflow-x: hidden;">
+        <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
 
 
-    <br>
+          {{#sortable-group tagName="tbody" onChange="reorderItems" as |group|}}
+            {{#each listModel as |list|}}
 
-    <div style="display: inline">
-      <table class="ui fixed table" style="border: none;border-color: white;">
-        <tbody >
-        <tr style="font-weight: bold;">
-          {{#each menuAttributes as |column|}}
+              {{#sortable-item tagName="tr" model=list group=group spacing=15 handle=".handle"}}
 
-          {{#if (eq column.key 'sets' )}}
-             <th style="padding-left: 1em" class={{column.class}}>{{column.name}}</th>
-
-          {{else}}
-            <th class={{column.class}}>
-              {{column.name}}
-            </th>
-          {{/if}}
-          {{/each}}
-          <th class="left aligned two wide column"></th>
-          <th class="left aligned two wide column"></th>
-        </tr>
-        </tbody>
-      </table>
-    </div>
-
-    <div class="ui divider"></div>
-
-    <div  id="listWin" style="height:428px; overflow-y: scroll; overflow-x: hidden;">
-      <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
-
-
-        {{#sortable-group tagName="tbody" onChange="reorderItems" as |group|}}
-          {{#each listModel as |list|}}
-
-            {{#sortable-item tagName="tr" model=list group=group spacing=15 handle=".handle"}}
-
-              {{#each menuAttributes as |column|}}
-                <td class={{column.class}}>
-                  {{get list column.key}}
-                </td>
-              {{/each}}
+                {{#each menuAttributes as |column|}}
+                  <td class={{column.class}}>
+                    {{get list column.key}}
+                  </td>
+                {{/each}}
                 <td class="left aligned two wide column">
                   {{ui-checkbox checked=(get list 'selectedList') onChange=(action (mut (get list 'selectedList')))}}
                 </td>
@@ -186,14 +186,14 @@
                   <span class="handle" style="cursor: pointer">&varr;</span>
                 </td>
 
-            {{/sortable-item}}
-          {{/each}}
+              {{/sortable-item}}
+            {{/each}}
 
-        {{/sortable-group}}
+          {{/sortable-group}}
 
-      </table>
+        </table>
+      </div>
     </div>
-  </div>
 
   </div>
 </div>

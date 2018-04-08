@@ -1,12 +1,11 @@
 import Component from '@ember/component';
 import Ember from "ember";
-import { inject } from '@ember/service';
+import { inject as service } from '@ember/service';
 import $ from 'jquery';
 
 export default Component.extend({
-  store: Ember.inject.service(),
-  router: inject('-routing'),
-
+  store: service(),
+  router: service(),
 
   sort: 'name',
   dir:'',
@@ -79,7 +78,7 @@ export default Component.extend({
 
 
     this.get('store').query('exercise', this.getProperties(['sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
-        self.set('exercisesModel', records.toArray());
+      self.set('exercisesModel', records.toArray());
     });
   }),
 
@@ -117,7 +116,7 @@ export default Component.extend({
       self.set('exercisesModel', records.toArray());
 
 
-    //console.log(self.get('exercisesModel'));
+      //console.log(self.get('exercisesModel'));
 
       self.get('exercisesModel').forEach((rec)=>{
         rec['selected']  = false;
@@ -165,9 +164,9 @@ export default Component.extend({
       });
       if (count === this.get('exercisesModel').length) {
         temp.forEach((rec)=>{
-            rec.set('selectedList', false);
-            self.get('listModel').pushObject(rec);
-            self.get('exercisesModel').removeObject(rec);
+          rec.set('selectedList', false);
+          self.get('listModel').pushObject(rec);
+          self.get('exercisesModel').removeObject(rec);
         });
       }
 
@@ -208,7 +207,7 @@ export default Component.extend({
         date: new Date()
       });
 
-     rehabilitationplan.save().then((plan) => {
+      rehabilitationplan.save().then((plan) => {
         this.get('listModel').forEach((rec, i)=>{
           let list = this.get('store').createRecord('exercise-list', {
             order: i+1,
@@ -216,11 +215,11 @@ export default Component.extend({
             rehabilitationPlan: plan
           });
           console.log(i);
-         list.save();
+          list.save();
         });
         //route back
-       this.get('router').transitionTo('practitioner.rehabplans');
-     });
+        this.get('router').transitionTo('practitioner.rehabplans');
+      });
     },
   }
 });

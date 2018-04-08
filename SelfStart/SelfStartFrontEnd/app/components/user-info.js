@@ -107,7 +107,7 @@ export default Component.extend({
           streetName: self.get('streetName'),
           streetNumber: self.get('streetNumber'),
           apartment: self.get('apartment'),
-          country: self.get('selectedCountry'),
+          country: self.get('country'),
           province: self.get('province'),
           city: self.get('city'),
           dateOfBirth: new Date(this.get('selectedDate')),

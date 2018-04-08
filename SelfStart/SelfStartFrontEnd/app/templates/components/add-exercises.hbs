@@ -18,11 +18,11 @@
     <form id="edit" class="cd-form floating-labels" {{action "submit" on="submit"}}>
 
       <div class="field" style="margin: 1em 0;">
-        {{input class="run"  type ="text" value = Name placeholder="Exercise Name" required = true}}
+        {{input class="run"  type ="text" value = name placeholder="Exercise Name" required = true}}
       </div>
 
       <div class="field" style="margin: 1em 0;">
-        {{textarea class="message"  type ="text" value = Description placeholder="Description" required = true}}
+        {{textarea class="message"  type ="text" value = description placeholder="Description" required = true}}
       </div>
 
 
@@ -31,7 +31,7 @@
 
         <div class="ui grid" style="margin: 1em 0;">
           <div class="twelve wide column" style="padding: 0">
-            {{input class="list"  type ="text" value = ActionSteps placeholder="Action Steps" required = true}}
+            {{input class="list"  type ="text" value = actionSteps placeholder="Action Steps" required = true}}
           </div>
           <div class="four wide column" style="padding-right: 0">
             <button class="ui white right labeled icon button" style="height: 50px" {{action "addActionStep"}}>
@@ -60,19 +60,19 @@
 
       <div class="ui three column grid">
         <div class="column" style="margin: 1em 0;">
-          {{input class="watch"  type ="text" value = sets placeholder="Sets"}}
+          {{input class="watch"  type ="number" min="0" value = sets placeholder="Sets"}}
 
         </div>
         <div class="column" style="margin: 1em 0;">
-          {{input class="watch"  type ="text" value = reps placeholder="Reps"}}
+          {{input class="watch"  type ="number" min="0" value = reps placeholder="Reps"}}
         </div>
         <div class="column" style="margin: 1em 0;">
-          {{input class="watch"  type ="text" value = Duration placeholder="Duration"}}
+          {{input class="watch"  type ="text" value = duration placeholder="Duration"}}
         </div>
       </div>
 
       <div class="field" style="margin: 1em 0;">
-        {{input class="link"  type ="text" value = MMURL placeholder="Multi Media URL"}}
+        {{input class="link"  type ="text" value = multimediaURL placeholder="Multi Media URL"}}
       </div>
 
 
