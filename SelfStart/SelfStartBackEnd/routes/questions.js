@@ -13,6 +13,7 @@ router.route('/')
         
         .get(function (request, response) {
             let {sort, dir, queryPath, regex} = request.query;
+            
             if (!regex){
                 Questions.Model.find(function (error, questions) {
                     if (error) response.send(error);

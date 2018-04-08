@@ -14,45 +14,33 @@ export default Component.extend({
 
   actions: {
 
-    AddTest(thisForm, thisPlan){
-      let temp = [];
-      let questionList = [];
+    AddTest(thisForm, thisPaitent){
 
-      this.get('DS').query('question-order', {filter: {'form': thisForm.get('id')}}).then((questions) => {
-
-        // this.get('questionList').clear();
-        console.log(questions);
-        console.log("****************");
-        questions.forEach((q)=>{
-          console.log(q.get('question'));
-          temp.push("!!");
-          questionList.pushObject(q.get('question'));
-        });
-        console.log("****************");
-
-      });
-
-      // thisForm.get("questionOrder").forEach(element => {
-      //   temp.push("!!!!");
-      //   questionList.pushObject(element.get("question"));
-      // });
-      console.log(temp);
-      console.log(questionList);
-      console.log("****************");
-      let newTest = this.get('DS').createRecord('assessment-test', {
+       let newTest = this.get('DS').createRecord('assessment-test', {
+        name: thisForm.get("name"),
+        description: thisForm.get("description"),
         form: thisForm,
-        questions: questionList,
-        answers: temp,
-        completed: false,
-        formName: thisForm.get('name')
-      });
-      newTest.save().then(()=> {
-        this.set("assessID", newTest.get('id'));
-        console.log(newTest.get('questions')[0]);
-        return true;
+        patient: thisPaitent,
+
+       });
+       newTest.save().then(()=> {
+         this.set("assessID", newTest.get("id"));
+         this.get('DS').query('question-order', {filter: {'form': thisForm.get("id")}}).then((rec)=>{
+
+          rec.forEach((r)=>{
+
+              let answer = this.get('DS').createRecord('answer', {
+                question: "testnew",
+                answer: "",
+                test: newTest
+              });
+              answer.save();
+          })
+        })
+
       });
     },
-
+  
     openModal: function () {
       Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
         closeable: false,
@@ -62,7 +50,7 @@ export default Component.extend({
         onApprove: () => {
           var rehab = this.get('DS').peekRecord('rehabilitationplan', this.get('rehabPlan'));
           var test = this.get('DS').peekRecord('assessment-test', this.get('assessID'));
-
+          console.log(test);//GOOD
           let link = this.get('DS').createRecord('rehab-client-link', {
             terminated: this.get('rehabPlan.terminated'),
             RehabilitationPlan: rehab,

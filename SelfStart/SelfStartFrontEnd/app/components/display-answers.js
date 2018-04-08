@@ -5,7 +5,7 @@ export default Component.extend({
   init() {
     this._super(...arguments);
     var self =this;
-
+     // console.log(this.get("answers"));
       if(this.get('question').get('type') === "Short answer"){
         this.get("answers").forEach((rec) =>{
           if(rec.get("question") === this.get("question").get("questionText")){

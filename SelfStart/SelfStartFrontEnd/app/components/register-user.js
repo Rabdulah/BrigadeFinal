@@ -13,22 +13,22 @@ export default Component.extend({
   init(){
     this._super(...arguments);
 
-    this.set('familyName', '');
-    this.set('givenName', '');
-    this.set('email', '');
-    this.set('streetName', '');
-    this.set('streetNumber', '');
-    this.set('apartment', '');
-    this.set('selectedCity', '');
-    this.set('province', '');
-    this.set('city', '');
-    this.set('healthCardNumber', '');
-    this.set('selectedGender', '');
-    this.set('dateOfBirth', '');
+    this.set('familyName', 'abcde');
+    this.set('givenName', 'a');
+    this.set('email', 'af@dsa.ax');
+    this.set('streetName', 'a');
+    this.set('streetNumber', 'a');
+    this.set('apartment', 'a');
+    this.set('selectedCity', 'a');
+    this.set('province', 'a');
+    this.set('city', 'a');
+    this.set('healthCardNumber', 'aa');
+    this.set('selectedGender', 'aa');
+    this.set('dateOfBirth', 'a');
     this.set('phoneNumber', '');
-    this.set('postalCode', '');
+    this.set('postalCode', 'a');
     // this.set('userAccountName', '');
-    this.set('encryptedPassword', '');
+    this.set('encryptedPassword', 'aaa');
 
     // this.set('selectedGender', this.get('selectedGender'));
     // this.set('selectedCountry', this.get('selectedCountry'));
@@ -132,37 +132,40 @@ export default Component.extend({
 
         patient.save().then((patient) =>{
           this.get('DS').query('form', {filter: {'name': 'Intake Form'}}).then((intake) => {
-            
+
             var ans = [];
 
-    
 
-
-            console.log(intake.get('firstObject'));
+            //console.log(intake.get('firstObject'));
 
             let newTest = this.get('DS').createRecord('assessment-test', {
               name: "Intake Form",
-              description: "Initial form before ou can book an appointment",
+              description: "Initial form before you can book an appointment",
               form: intake.get('firstObject'),
               patient: patient,
-              
+
             });
             newTest.save().then(()=> {
-            
-
+              console.log("in save");
               this.get('DS').query('question-order', {filter: {'form': intake.get('firstObject').id}}).then((rec)=>{
 
                 rec.forEach((r)=>{
-                  console.log(r.get('question').content.get('questionText'));
+                  var q = r.get('question');
+                  var s = q.get('data');
+                  console.log(q.questionText);
+               //   console.log(r[this.get('question')].get('questionText'));
+               //   console.log(q.get('questionText'));
+
+
                   let answer = this.get('DS').createRecord('answer', {
-                    question: "",
+                    question: "test",
                     answer: "",
                     test: newTest
                   });
                   answer.save();
-                  
+
                 })
-               
+
               });
 
               localStorage.clear();

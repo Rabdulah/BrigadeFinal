@@ -25,8 +25,8 @@ export default Component.extend({
     this.get('DS').query('answer', {filter: {'test': this.get('assessid')}}).then((records) => {
       self.set('ans', records.toArray());
     });
-    console.log(this.get("a"));
     this.set('form', '5ac1ae2773e03d3f78384c92');
+    console.log("this one: " + this.get("ans"));
   },
 
   actions:{

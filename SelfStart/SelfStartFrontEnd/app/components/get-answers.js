@@ -58,7 +58,7 @@ export default Component.extend({
     saSave() {
 
       this.get("answers").forEach((rec) =>{
-        if(rec.get("id") === "5ac6cf0e5c8d7e2cf47f0643"){
+        if(rec.get("question") === this.get("question").get("questionText")){
           console.log("in");
           this.get('DS').findRecord('answer', rec.get("id")).then((ans) => {
             rec.set("answer",this.get("SAanswer"));
