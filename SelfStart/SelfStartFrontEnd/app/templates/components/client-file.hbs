@@ -21,7 +21,7 @@
     <a class="{{reportState}} item"  {{action "reportView"}}>
       Reports
     </a>
-    <a class="item">
+    <a class="{{photoState}} item"  {{action "photoView"}}>
       Photos
     </a>
     <a class="{{menusState}} item" {{action "menusView"}}>
@@ -117,6 +117,32 @@
       </div>
     </div>
     {{/if}}
+
+    {{#if photo}}
+      <table class="ui single line table">
+    <thead>
+    <tr>
+      <th>Image Name</th>
+      <th>Image</th>
+    </tr>
+    </thead>
+
+    <tbody>
+    {{#each imageList as |Image|}}
+      <tr>
+        <td>{{Image.name}}</td>
+        <td>
+          <img class = "ui extra large image" src="{{Image.imageData}}">
+        </td>
+      </tr>
+    {{/each}}
+    </tbody>
+
+  </table>
+    {{/if}}
+
+
+
 
     {{#if reports}}
 

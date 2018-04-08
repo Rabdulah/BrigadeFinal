@@ -18,6 +18,7 @@ export default Component.extend({
   plan: null,
   isPlanSelected: false,
   model: null,
+  imageList:[],
   ratingQuestions: [],
 
   modalName: computed(function () {
@@ -146,11 +147,20 @@ link:[],
     this.set('offset', 0);
     this.set('pageSize', 10);
     let self = this;
-
+    let client = this.get('model').id;
 
 
     // this.set('listModel', this.get('store').findAll('exercise-list', this.get('planId')));
-
+    
+      self.get('store').query('image', {filter: {'patient': client}}).then((records) => {
+        records.forEach(im => {
+          if(im.get("patient").get("id") === client)
+           self.get("imageList").pushObject(im);
+        });
+       
+        console.log(this.get("imageList"));
+       // self.set("imageList", records.toArray());
+      })
   },
 
 
@@ -194,7 +204,9 @@ link:[],
   menusState: "active",
   assessState: "",
   reportState: "",
+  photoState: "",
   assess:false,
+  photo:false,
   menus: true,
   accountingState: "",
   accountingmenus: false,
@@ -229,7 +241,23 @@ link:[],
       this.set('accountingState', "");
       this.set('reportState', "");
       this.set('assessState', "");
+      this.set('photo', false);
+      this.set('photoState', "");
 
+    },
+
+    photoView(){
+      this.set('menus', false);
+      this.set('photo', true);
+      this.set('menusState', "");
+      this.set('photoState', "active");
+
+      this.set('assess', false);
+      this.set('assessState', "");
+      this.set('reports', false);
+      this.set('reportState', "");
+      this.set('accountingmenus', false);
+      this.set('accountingState', "");
     },
 
     accountingView(){
@@ -242,6 +270,8 @@ link:[],
       this.set('assessState', "");
       this.set('reports', false);
       this.set('reportState', "");
+      this.set('photo', false);
+      this.set('photoState', "");
     },
 
     assessView(){
@@ -252,6 +282,8 @@ link:[],
         this.set('reports', false);
         this.set('reportState', "");
       this.set('accountingState', "");
+      this.set('photo', false);
+      this.set('photoState', "");
     },
 
     reportView(){
@@ -262,6 +294,8 @@ link:[],
       this.set('reports', true);
       this.set('reportState', "active");
       this.set('accountingState', "");
+      this.set('photo', false);
+      this.set('photoState', "");
   },
 
     toggleDetail(ID) {

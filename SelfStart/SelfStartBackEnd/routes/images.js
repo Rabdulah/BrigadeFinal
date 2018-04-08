@@ -20,14 +20,23 @@ router.route('/')
 
 router.route('/:image_id')
     .get( function (request, response) {
-        Images.Model.findById(request.params.image_id, function (error, image) {
-            if (error) {
-                response.send({error: error});
-            }
-            else {
+        var pat =  request.query.filter;
+        if(!pat){
+            Images.Model.findById(request.params.image_id, function (error, image) {
+                if (error) {
+                    response.send({error: error});
+                }
+                else {
+                    response.json({image: image});
+                }
+            });
+        }
+        else{
+            Images.Model.find({"patient": pat.patient}, function (error, image) {
+                if (error) response.send(error);
                 response.json({image: image});
-            }
-        });
+            });
+        }
     })
     .put( function (request, response) {
         Images.Model.findById(request.params.image_id, function (error, image) {
