@@ -22,10 +22,9 @@
     <table class="ui fixed table" style="border: none;border-color: white;">
       <tbody >
       <tr style="font-weight: bold;">
-        <th>Date</th>
-        <th>Practitioner</th>
-        <th>Reason</th>
-        <th>Appointment type</th>
+        <th>Rehabilitation Name</th>
+        <th>Description</th>
+
       </tr>
       </tbody>
     </table>
@@ -37,13 +36,13 @@
 
     <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
       <tbody >
-      {{#each appointmentHistory as |aHistory|}}
+      {{#each rehabPlans as |rehabPlan|}}
         <tr>
-          <td>{{aHistory.date}}</td>
-          <td>{{aHistory.pName}}</td>
-          <td>{{aHistory.reason}}</td>
-          <td>{{types-appointment aHistory.date aHistory.endDate}}</td>
+          <td>{{#link-to 'client.view-rehabplan' rehabPlan.id}}{{rehabPlan.planName}}{{/link-to}}</td>
+          <td>{{#link-to 'client.view-rehabplan' rehabPlan.id}}{{rehabPlan.description}}{{/link-to}}</td>
         </tr>
+
+
       {{/each}}
       </tbody>
     </table>

@@ -1,0 +1,75 @@
+<div class="masthead segment bg2">
+  <div class="ui container">
+    <div class="introduction">
+      <h1 class="ui inverted header">
+        <span class="library" style="font-size: 1.25em">{{planName}}</span>
+      </h1>
+    </div>
+  </div>
+</div>
+
+<form class="cd-form floating-labels"  style="padding-right: 10em;padding-left: 10em;">
+  <div class="ui basic segment">
+
+    <div class="ui teal progress" id="example4">
+      <div class="bar">
+        <div class="progress"></div>
+      </div>
+      <div class="label">Progress</div>
+    </div>
+
+    <h1 class="ui header">{{counter}}. {{currentExercise.name}}</h1>
+    <h2 class="ui header">{{currentExercise.description}}</h2>
+    <!--image-->
+
+    <!---->
+    <h2 class="ui header">Steps</h2>
+    <div class="ui ordered list">
+      {{#each currentExercise.actionSteps as |action|}}
+        <p class="item">
+          {{action}}
+        </p>
+      {{/each}}
+      <p class="item">done</p>
+    </div>
+
+    <h2 class="ui header"> duration </h2>
+    <h4 class="ui header">{{currentExercise.sets}} sets </h4>
+    <h4 class="ui header">{{currentExercise.reps}} repetition</h4>
+    <h4 class="ui header">{{currentExercise.duration}} minuets in total</h4>
+
+    <div class="ui buttons" style="float: left!important;">
+      {{#if isNFirst}}
+        <button class="ui right labeled icon button" {{action "prevExercise"}}>
+          <i class="left chevron icon"></i>
+          Previous
+        </button>
+      {{/if}}
+
+    </div>
+
+    <div class="ui buttons" style="float: right!important;">
+      {{#if isEnd}}
+        <button class="green ui right labeled icon button">
+          Done
+          <i class="stop icon"></i>
+        </button>
+      {{else}}
+        <button class="ui right labeled icon button" {{action "nextExercise"}}>
+          Next
+          <i class="right chevron icon"></i>
+        </button>
+      {{/if}}
+
+    </div>
+
+
+    <br>
+    <br>
+
+
+
+  </div>
+
+
+</form>

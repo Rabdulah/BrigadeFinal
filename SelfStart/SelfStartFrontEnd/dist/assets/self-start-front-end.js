@@ -2195,7 +2195,7 @@ define('self-start-front-end/components/bubble-chart', ['exports', 'ember-charts
   });
   exports.default = _bubbleChart.default;
 });
-define('self-start-front-end/components/client-exercise-menu', ['exports', 'moment'], function (exports, _moment) {
+define('self-start-front-end/components/client-exercise-menu', ['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -2207,7 +2207,7 @@ define('self-start-front-end/components/client-exercise-menu', ['exports', 'mome
     routing: Ember.inject.service('-routing'),
 
     clientData: null,
-    exerciseList: Ember.A(),
+    rehabPlans: Ember.A(),
     init: function init() {
       this._super.apply(this, arguments);
       var self = this;
@@ -2215,24 +2215,22 @@ define('self-start-front-end/components/client-exercise-menu', ['exports', 'mome
       eemail = this.get('auth').decrypt(eemail);
       console.log(eemail);
 
-      self.get('DS').queryRecord('patient', { filter: { 'email': eemail } }).then(function (temp) {
-
-        self.set('clientData', temp);
-
-        temp.get('rehablink').forEach(function (rehab) {
-          self.get();
-        });
-        var dateString = (0, _moment.default)(self.get('clientData').get('dateOfBirth'), 'DD-MM-YYYY').toISOString().substring(0, 10);
-        self.set('selectedDate', dateString);
-
-        var client = self.get('clientData');
-        self.get('DS').query('appointment', { filter: { 'id': client.get('id') } }).then(function (obj) {
+      self.get('DS').queryRecord('patient', { filter: { 'email': eemail } }).then(function (cd) {
+        self.set('clientData', cd);
+        //query to rehab link
+        self.get('DS').query('rehab-client-link', { filter: { 'id': cd.get('id') } }).then(function (obj) {
           obj.forEach(function (temp) {
-            temp.set('date', (0, _moment.default)(temp.get('date')).format('YYYY-MM-DD hh:mm A'));
-            self.get('appointmentHistory').pushObject(temp);
+            if (!temp.get('terminated')) {
+              self.get('rehabPlans').pushObject(temp.get('RehabilitationPlan'));
+            }
           });
         });
       });
+    },
+
+
+    actions: {
+      gotoRehabplan: function gotoRehabplan() {}
     }
   });
 });
@@ -2684,6 +2682,94 @@ define('self-start-front-end/components/client-nav', ['exports'], function (expo
 
 
     actions: {}
+  });
+});
+define('self-start-front-end/components/client-rehabplan-view', ['exports', 'moment'], function (exports, _moment) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    auth: Ember.inject.service('auth'),
+    DS: Ember.inject.service('store'),
+    routing: Ember.inject.service('-routing'),
+
+    rehabPlan: null,
+    planName: Ember.computed.oneWay('model.planName'),
+    exerciseList: Ember.A(),
+    counter: 1,
+    currentExercise: null,
+    isEnd: false,
+    isNFirst: false,
+
+    init: function init() {
+      this._super.apply(this, arguments);
+      var self = this;
+      var eemail = localStorage.getItem('sas-session-id');
+      eemail = this.get('auth').decrypt(eemail);
+      this.set('rehabPlan', this.get('model'));
+
+      self.get('DS').query('exercise-list', { filter: { 'rehabilitationPlan': self.get('model.id') } }).then(function (obj) {
+        var tempcontainer = [];
+        obj.forEach(function (temp) {
+          tempcontainer.push(temp);
+        });
+        //sort exercise
+        var i = 1;
+        while (i < tempcontainer.length) {
+          tempcontainer.forEach(function (obj) {
+
+            if (obj.get('order') === i) {
+              self.get('exerciseList').pushObject(obj.get('exercise'));
+              i++;
+            }
+          });
+        }
+
+        self.set('currentExercise', self.get('exerciseList').objectAt(self.get('counter') - 1));
+        console.log(self.get('currentExercise'));
+        if (self.get('counter') >= self.get('exerciseList').length) {
+          self.set('isEnd', true);
+        }
+        var a = 1;
+        var b = self.get('exerciseList').length;
+        Ember.$('#example4').progress({ percent: Math.round(a / b * 100) });
+      });
+    },
+
+
+    actions: {
+      nextExercise: function nextExercise() {
+        var self = this;
+        self.set('isNFirst', true);
+        var c = self.get('counter');
+        self.set('counter', c + 1);
+        console.log(self.get('counter'));
+        if (self.get('counter') >= self.get('exerciseList').length) {
+          self.set('isEnd', true);
+        }
+        self.set('currentExercise', self.get('exerciseList').objectAt(self.get('counter') - 1));
+        var a = c + 1;
+        var b = self.get('exerciseList').length;
+        Ember.$('#example4').progress({ percent: Math.round(a / b * 100) });
+      },
+      prevExercise: function prevExercise() {
+        var self = this;
+        var c = self.get('counter');
+        self.set('counter', c - 1);
+        console.log(self.get('counter'));
+        if (self.get('counter') <= 1) {
+          self.set('isNFirst', false);
+        } else {
+          self.set('isEnd', false);
+        }
+        self.set('currentExercise', self.get('exerciseList').objectAt(self.get('counter') - 1));
+        var a = c - 1;
+        var b = self.get('exerciseList').length;
+        Ember.$('#example4').progress({ percent: Math.round(a / b * 100) });
+      }
+    }
   });
 });
 define('self-start-front-end/components/client-resources', ['exports'], function (exports) {
@@ -10469,6 +10555,7 @@ define('self-start-front-end/router', ['exports', 'self-start-front-end/config/e
       this.route('appointment');
       this.route('edit-menu', { path: 'rehabplans/:rehabilitationplan_id' });
       this.route('exercises');
+      this.route('view-rehabplan', { path: 'rehabplans/:rehabilitationplan_id' });
     });
   });
 
@@ -10630,6 +10717,14 @@ define('self-start-front-end/routes/client/settings', ['exports'], function (exp
   exports.default = Ember.Route.extend({});
 });
 define('self-start-front-end/routes/client/upload-photos', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Route.extend({});
+});
+define('self-start-front-end/routes/client/view-rehabplan', ['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -12794,6 +12889,14 @@ define("self-start-front-end/templates/client/upload-photos", ["exports"], funct
   });
   exports.default = Ember.HTMLBars.template({ "id": "M3xqJSz/", "block": "{\"symbols\":[],\"statements\":[[1,[18,\"client-upload-photos\"],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/client/upload-photos.hbs" } });
 });
+define("self-start-front-end/templates/client/view-rehabplan", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "maAJn+Zk", "block": "{\"symbols\":[],\"statements\":[[1,[25,\"client-rehabplan-view\",null,[[\"model\"],[[20,[\"model\"]]]]],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/client/view-rehabplan.hbs" } });
+});
 define("self-start-front-end/templates/client/welcome-client", ["exports"], function (exports) {
   "use strict";
 
@@ -13040,7 +13143,7 @@ define("self-start-front-end/templates/components/client-exercise-menu", ["expor
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "hpDCZV/8", "block": "{\"symbols\":[\"aHistory\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Exercise Menu\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"left thirteen wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n      \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n        Exercise List\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n    \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n      \"],[6,\"tbody\"],[7],[0,\"\\n      \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n        \"],[6,\"th\"],[7],[0,\"Date\"],[8],[0,\"\\n        \"],[6,\"th\"],[7],[0,\"Practitioner\"],[8],[0,\"\\n        \"],[6,\"th\"],[7],[0,\"Reason\"],[8],[0,\"\\n        \"],[6,\"th\"],[7],[0,\"Appointment type\"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"id\",\"clientWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n\\n    \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n      \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"appointmentHistory\"]]],null,{\"statements\":[[0,\"        \"],[6,\"tr\"],[7],[0,\"\\n          \"],[6,\"td\"],[7],[1,[19,1,[\"date\"]],false],[8],[0,\"\\n          \"],[6,\"td\"],[7],[1,[19,1,[\"pName\"]],false],[8],[0,\"\\n          \"],[6,\"td\"],[7],[1,[19,1,[\"reason\"]],false],[8],[0,\"\\n          \"],[6,\"td\"],[7],[1,[25,\"types-appointment\",[[19,1,[\"date\"]],[19,1,[\"endDate\"]]],null],false],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-exercise-menu.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "DVFryc0F", "block": "{\"symbols\":[\"rehabPlan\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Exercise Menu\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"left thirteen wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n      \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n        Exercise List\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n    \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n      \"],[6,\"tbody\"],[7],[0,\"\\n      \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n        \"],[6,\"th\"],[7],[0,\"Rehabilitation Name\"],[8],[0,\"\\n        \"],[6,\"th\"],[7],[0,\"Description\"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"id\",\"clientWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n\\n    \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n      \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"rehabPlans\"]]],null,{\"statements\":[[0,\"        \"],[6,\"tr\"],[7],[0,\"\\n          \"],[6,\"td\"],[7],[4,\"link-to\",[\"client.view-rehabplan\",[19,1,[\"id\"]]],null,{\"statements\":[[1,[19,1,[\"planName\"]],false]],\"parameters\":[]},null],[8],[0,\"\\n          \"],[6,\"td\"],[7],[4,\"link-to\",[\"client.view-rehabplan\",[19,1,[\"id\"]]],null,{\"statements\":[[1,[19,1,[\"description\"]],false]],\"parameters\":[]},null],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-exercise-menu.hbs" } });
 });
 define("self-start-front-end/templates/components/client-file", ["exports"], function (exports) {
   "use strict";
@@ -13057,6 +13160,14 @@ define("self-start-front-end/templates/components/client-nav", ["exports"], func
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "4uUpoKwJ", "block": "{\"symbols\":[\"&default\"],\"statements\":[[2,\"<style>\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .fixed,\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .pusher {\"],[0,\"\\n\"],[2,\"-ebkit-transform: translate3d(260px, 0, 0); transform: translate3d(260px, 0, 0);\"],[0,\"\\n\"],[2,\"}\"],[0,\"\\n\"],[2,\"</style>\"],[0,\"\\n\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index\"],[7],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"following bar\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n\"],[4,\"link-to\",[\"client\"],null,{\"statements\":[[0,\"                    \"],[6,\"img\"],[9,\"class\",\"ui image selfStart\"],[9,\"src\",\"/assets/images/home/Header.png\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"right menu inverted\"],[7],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/client/exercise-menu\"],[9,\"class\",\"item\"],[7],[0,\"Exercise Menu\"],[8],[0,\"\\n            \"],[2,\"<a  href=\\\"/\\\"class=\\\"item\\\">Initial Intake</a>\"],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/client/upload-photos\"],[9,\"class\",\"item\"],[7],[0,\"Upload Photos\"],[8],[0,\"\\n            \"],[2,\"<a  href=\\\"/\\\"class=\\\"item\\\">Transations</a>\"],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/client/resources\"],[9,\"class\",\"item\"],[7],[0,\"Resources\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/client/appointment\"],[9,\"class\",\"item\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/client/settings\"],[9,\"class\",\"item\"],[7],[0,\"Settings\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"href\",\"../\"],[9,\"class\",\"item\"],[7],[0,\"Log out\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[11,1],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-nav.hbs" } });
+});
+define("self-start-front-end/templates/components/client-rehabplan-view", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "rm27b7Zu", "block": "{\"symbols\":[\"action\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[1,[18,\"planName\"],false],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"padding-right: 10em;padding-left: 10em;\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui basic segment\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui teal progress\"],[9,\"id\",\"example4\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"bar\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"progress\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"label\"],[7],[0,\"Progress\"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"h1\"],[9,\"class\",\"ui header\"],[7],[1,[18,\"counter\"],false],[0,\". \"],[1,[20,[\"currentExercise\",\"name\"]],false],[8],[0,\"\\n    \"],[6,\"h2\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"description\"]],false],[8],[0,\"\\n    \"],[2,\"image\"],[0,\"\\n\\n    \"],[2,\"\"],[0,\"\\n    \"],[6,\"h2\"],[9,\"class\",\"ui header\"],[7],[0,\"Steps\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui ordered list\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"currentExercise\",\"actionSteps\"]]],null,{\"statements\":[[0,\"        \"],[6,\"p\"],[9,\"class\",\"item\"],[7],[0,\"\\n          \"],[1,[25,\"action\",[[19,0,[]]],null],false],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[6,\"p\"],[9,\"class\",\"item\"],[7],[0,\"done\"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"class\",\"ui header\"],[7],[0,\" duration \"],[8],[0,\"\\n    \"],[6,\"h4\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"sets\"]],false],[0,\" sets \"],[8],[0,\"\\n    \"],[6,\"h4\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"reps\"]],false],[0,\" repetition\"],[8],[0,\"\\n    \"],[6,\"h4\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"duration\"]],false],[0,\" minuets in total\"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui buttons\"],[9,\"style\",\"float: left!important;\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"isNFirst\"]]],null,{\"statements\":[[0,\"        \"],[6,\"button\"],[9,\"class\",\"ui right labeled icon button\"],[3,\"action\",[[19,0,[]],\"prevExercise\"]],[7],[0,\"\\n          \"],[6,\"i\"],[9,\"class\",\"left chevron icon\"],[7],[8],[0,\"\\n          Previous\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui buttons\"],[9,\"style\",\"float: right!important;\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"isEnd\"]]],null,{\"statements\":[[0,\"        \"],[6,\"button\"],[9,\"class\",\"green ui right labeled icon button\"],[7],[0,\"\\n          Done\\n          \"],[6,\"i\"],[9,\"class\",\"stop icon\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"        \"],[6,\"button\"],[9,\"class\",\"ui right labeled icon button\"],[3,\"action\",[[19,0,[]],\"nextExercise\"]],[7],[0,\"\\n          Next\\n          \"],[6,\"i\"],[9,\"class\",\"right chevron icon\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n\\n  \"],[8],[0,\"\\n\\n\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-rehabplan-view.hbs" } });
 });
 define("self-start-front-end/templates/components/client-resources", ["exports"], function (exports) {
   "use strict";
@@ -14532,6 +14643,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+721f9390"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+303bfd55"});
 }
 //# sourceMappingURL=self-start-front-end.map

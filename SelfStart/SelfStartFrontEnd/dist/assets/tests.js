@@ -127,7 +127,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/client-exercise-menu.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/client-exercise-menu.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n11:18 - \'Ember\' is not defined. (no-undef)\n17:5 - Unexpected console statement. (no-console)\n23:47 - \'rehab\' is defined but never used. (no-unused-vars)');
+    assert.ok(false, 'components/client-exercise-menu.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n10:15 - \'Ember\' is not defined. (no-undef)\n16:5 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/client-file.js', function (assert) {
@@ -138,6 +138,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('components/client-nav.js', function (assert) {
     assert.expect(1);
     assert.ok(false, 'components/client-nav.js should pass ESLint\n\n16:431 - \'SkypeButton\' is not defined. (no-undef)\n16:472 - \'SkypeButton\' is not defined. (no-undef)');
+  });
+
+  QUnit.test('components/client-rehabplan-view.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/client-rehabplan-view.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n5:8 - \'moment\' is defined but never used. (no-unused-vars)\n13:13 - \'Ember\' is not defined. (no-undef)\n14:17 - \'Ember\' is not defined. (no-undef)\n24:9 - \'eemail\' is assigned a value but never used. (no-unused-vars)\n46:7 - Unexpected console statement. (no-console)\n63:7 - Unexpected console statement. (no-console)\n78:7 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/client-resources.js', function (assert) {
@@ -743,6 +748,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('routes/client/upload-photos.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'routes/client/upload-photos.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('routes/client/view-rehabplan.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/client/view-rehabplan.js should pass ESLint\n\n');
   });
 
   QUnit.test('routes/client/welcome-client.js', function (assert) {
@@ -1710,6 +1720,35 @@ define('self-start-front-end/tests/integration/components/client-nav-test', ['em
     this.render(Ember.HTMLBars.template({
       "id": "U3b0iEyO",
       "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"client-nav\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/client-rehabplan-view-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('client-rehabplan-view', 'Integration | Component | client rehabplan view', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "H6LYL4OP",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"client-rehabplan-view\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "wMiwBCzJ",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"client-rehabplan-view\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
       "meta": {}
     }));
 
@@ -3806,6 +3845,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/client-nav-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('integration/components/client-rehabplan-view-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/client-rehabplan-view-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('integration/components/client-resources-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/client-resources-test.js should pass ESLint\n\n');
@@ -4399,6 +4443,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('unit/routes/client/upload-photos-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/routes/client/upload-photos-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/routes/client/view-rehabplan-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/client/view-rehabplan-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/routes/client/welcome-client-test.js', function (assert) {
@@ -5242,6 +5291,19 @@ define('self-start-front-end/tests/unit/routes/client/upload-photos-test', ['emb
   'use strict';
 
   (0, _emberQunit.moduleFor)('route:client/upload-photos', 'Unit | Route | client/upload photos', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
+define('self-start-front-end/tests/unit/routes/client/view-rehabplan-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:client/view-rehabplan', 'Unit | Route | client/view rehabplan', {
     // Specify the other units that are required for this test.
     // needs: ['controller:foo']
   });
