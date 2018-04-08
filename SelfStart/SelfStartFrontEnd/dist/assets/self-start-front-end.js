@@ -2700,11 +2700,13 @@ define('self-start-front-end/components/client-rehabplan-view', ['exports', 'mom
     exerciseList: Ember.A(),
     counter: 1,
     currentExercise: null,
+    currentImages: Ember.A(),
     isEnd: false,
     isNFirst: false,
 
     init: function init() {
       this._super.apply(this, arguments);
+      this.set('exerciseList', Ember.A());
       var self = this;
       var eemail = localStorage.getItem('sas-session-id');
       eemail = this.get('auth').decrypt(eemail);
@@ -2726,7 +2728,7 @@ define('self-start-front-end/components/client-rehabplan-view', ['exports', 'mom
             }
           });
         }
-
+        console.log('exerciseList');
         self.set('currentExercise', self.get('exerciseList').objectAt(self.get('counter') - 1));
         console.log(self.get('currentExercise'));
         if (self.get('counter') >= self.get('exerciseList').length) {
@@ -2745,11 +2747,22 @@ define('self-start-front-end/components/client-rehabplan-view', ['exports', 'mom
         self.set('isNFirst', true);
         var c = self.get('counter');
         self.set('counter', c + 1);
+
         console.log(self.get('counter'));
         if (self.get('counter') >= self.get('exerciseList').length) {
           self.set('isEnd', true);
         }
         self.set('currentExercise', self.get('exerciseList').objectAt(self.get('counter') - 1));
+
+        //change images
+        self.get('DS').query('image', { filter: { 'exercise': self.get('currentExercise.id') } }).then(function (obj) {
+          obj.forEach(function (temp) {
+            self.get('currentImages').pushObject(temp);
+          });
+          //
+          console.log(self.get('currentImages'));
+        });
+        //END change images
         var a = c + 1;
         var b = self.get('exerciseList').length;
         Ember.$('#example4').progress({ percent: Math.round(a / b * 100) });
@@ -2768,6 +2781,9 @@ define('self-start-front-end/components/client-rehabplan-view', ['exports', 'mom
         var a = c - 1;
         var b = self.get('exerciseList').length;
         Ember.$('#example4').progress({ percent: Math.round(a / b * 100) });
+      },
+      finishRehabPlan: function finishRehabPlan() {
+        console.log('done');
       }
     }
   });
@@ -13167,7 +13183,7 @@ define("self-start-front-end/templates/components/client-rehabplan-view", ["expo
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "rm27b7Zu", "block": "{\"symbols\":[\"action\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[1,[18,\"planName\"],false],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"padding-right: 10em;padding-left: 10em;\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui basic segment\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui teal progress\"],[9,\"id\",\"example4\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"bar\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"progress\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"label\"],[7],[0,\"Progress\"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"h1\"],[9,\"class\",\"ui header\"],[7],[1,[18,\"counter\"],false],[0,\". \"],[1,[20,[\"currentExercise\",\"name\"]],false],[8],[0,\"\\n    \"],[6,\"h2\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"description\"]],false],[8],[0,\"\\n    \"],[2,\"image\"],[0,\"\\n\\n    \"],[2,\"\"],[0,\"\\n    \"],[6,\"h2\"],[9,\"class\",\"ui header\"],[7],[0,\"Steps\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui ordered list\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"currentExercise\",\"actionSteps\"]]],null,{\"statements\":[[0,\"        \"],[6,\"p\"],[9,\"class\",\"item\"],[7],[0,\"\\n          \"],[1,[25,\"action\",[[19,0,[]]],null],false],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[6,\"p\"],[9,\"class\",\"item\"],[7],[0,\"done\"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"class\",\"ui header\"],[7],[0,\" duration \"],[8],[0,\"\\n    \"],[6,\"h4\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"sets\"]],false],[0,\" sets \"],[8],[0,\"\\n    \"],[6,\"h4\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"reps\"]],false],[0,\" repetition\"],[8],[0,\"\\n    \"],[6,\"h4\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"duration\"]],false],[0,\" minuets in total\"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui buttons\"],[9,\"style\",\"float: left!important;\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"isNFirst\"]]],null,{\"statements\":[[0,\"        \"],[6,\"button\"],[9,\"class\",\"ui right labeled icon button\"],[3,\"action\",[[19,0,[]],\"prevExercise\"]],[7],[0,\"\\n          \"],[6,\"i\"],[9,\"class\",\"left chevron icon\"],[7],[8],[0,\"\\n          Previous\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui buttons\"],[9,\"style\",\"float: right!important;\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"isEnd\"]]],null,{\"statements\":[[0,\"        \"],[6,\"button\"],[9,\"class\",\"green ui right labeled icon button\"],[7],[0,\"\\n          Done\\n          \"],[6,\"i\"],[9,\"class\",\"stop icon\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"        \"],[6,\"button\"],[9,\"class\",\"ui right labeled icon button\"],[3,\"action\",[[19,0,[]],\"nextExercise\"]],[7],[0,\"\\n          Next\\n          \"],[6,\"i\"],[9,\"class\",\"right chevron icon\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n\\n  \"],[8],[0,\"\\n\\n\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-rehabplan-view.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "QdGy+49v", "block": "{\"symbols\":[\"action\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[1,[18,\"planName\"],false],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"padding-right: 10em;padding-left: 10em;\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui basic segment\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui teal progress\"],[9,\"id\",\"example4\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"bar\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"progress\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"label\"],[7],[0,\"Progress\"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"h1\"],[9,\"class\",\"ui header\"],[7],[1,[18,\"counter\"],false],[0,\". \"],[1,[20,[\"currentExercise\",\"name\"]],false],[8],[0,\"\\n    \"],[6,\"h2\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"description\"]],false],[8],[0,\"\\n    \"],[2,\"image\"],[0,\"\\n\\n    \"],[2,\"\"],[0,\"\\n    \"],[6,\"h2\"],[9,\"class\",\"ui header\"],[7],[0,\"Steps\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui ordered list\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"currentExercise\",\"actionSteps\"]]],null,{\"statements\":[[0,\"        \"],[6,\"p\"],[9,\"class\",\"item\"],[7],[0,\"\\n          \"],[1,[25,\"action\",[[19,0,[]]],null],false],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[6,\"p\"],[9,\"class\",\"item\"],[7],[0,\"done\"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"class\",\"ui header\"],[7],[0,\" duration \"],[8],[0,\"\\n    \"],[6,\"h4\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"sets\"]],false],[0,\" sets \"],[8],[0,\"\\n    \"],[6,\"h4\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"reps\"]],false],[0,\" repetition\"],[8],[0,\"\\n    \"],[6,\"h4\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"duration\"]],false],[0,\" minuets in total\"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui buttons\"],[9,\"style\",\"float: left!important;\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"isNFirst\"]]],null,{\"statements\":[[0,\"        \"],[6,\"button\"],[9,\"class\",\"ui right labeled icon button\"],[3,\"action\",[[19,0,[]],\"prevExercise\"]],[7],[0,\"\\n          \"],[6,\"i\"],[9,\"class\",\"left chevron icon\"],[7],[8],[0,\"\\n          Previous\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui buttons\"],[9,\"style\",\"float: right!important;\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"isEnd\"]]],null,{\"statements\":[[0,\"        \"],[6,\"button\"],[9,\"class\",\"green ui right labeled icon button\"],[3,\"action\",[[19,0,[]],\"finishRehabPlan\"]],[7],[0,\"\\n          Done\\n          \"],[6,\"i\"],[9,\"class\",\"stop icon\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"        \"],[6,\"button\"],[9,\"class\",\"ui right labeled icon button\"],[3,\"action\",[[19,0,[]],\"nextExercise\"]],[7],[0,\"\\n          Next\\n          \"],[6,\"i\"],[9,\"class\",\"right chevron icon\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n\\n  \"],[8],[0,\"\\n\\n\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-rehabplan-view.hbs" } });
 });
 define("self-start-front-end/templates/components/client-resources", ["exports"], function (exports) {
   "use strict";
@@ -14643,6 +14659,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+303bfd55"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+d92ec0b4"});
 }
 //# sourceMappingURL=self-start-front-end.map

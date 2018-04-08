@@ -14,12 +14,14 @@ export default Component.extend({
   exerciseList: Ember.A(),
   counter : 1,
   currentExercise: null,
+  currentImages: Ember.A(),
   isEnd: false,
   isNFirst: false,
 
 
   init(){
     this._super(...arguments);
+    this.set('exerciseList' , Ember.A());
     let self = this;
     let eemail = localStorage.getItem('sas-session-id');
     eemail = this.get('auth').decrypt(eemail);
@@ -41,7 +43,7 @@ export default Component.extend({
           }
         });
       }
-
+      console.log('exerciseList');
       self.set('currentExercise', (self.get('exerciseList').objectAt(self.get('counter')-1)));
       console.log(self.get('currentExercise'));
       if (self.get('counter') >= self.get('exerciseList').length){
@@ -60,11 +62,26 @@ export default Component.extend({
       self.set('isNFirst', true);
       let c =  self.get('counter');
       self.set('counter', c+1);
+
+
+
       console.log(self.get('counter'));
       if (self.get('counter') >= self.get('exerciseList').length){
         self.set('isEnd', true);
       }
       self.set('currentExercise', (self.get('exerciseList').objectAt(self.get('counter')-1)));
+
+
+
+      //change images
+      self.get('DS').query('image', {filter: {'exercise' : self.get('currentExercise.id')}}).then(function (obj) {
+        obj.forEach(function (temp) {
+          self.get('currentImages').pushObject(temp);
+        });
+        //
+        console.log( self.get('currentImages'));
+      });
+      //END change images
       let a = c+1;
       let b = self.get('exerciseList').length;
       $('#example4').progress({percent:Math.round(a/b*100)});
@@ -86,6 +103,11 @@ export default Component.extend({
       let a = c-1;
       let b = self.get('exerciseList').length;
       $('#example4').progress({percent:Math.round(a/b*100)});
-    }
+    },
+
+    finishRehabPlan(){
+      console.log('done');
+
+    },
   }
 });
