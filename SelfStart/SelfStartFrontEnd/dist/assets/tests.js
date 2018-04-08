@@ -57,7 +57,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/add-image.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/add-image.js should pass ESLint\n\n82:11 - Unexpected console statement. (no-console)\n125:9 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/add-image.js should pass ESLint\n\n17:5 - Unexpected console statement. (no-console)\n98:11 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/add-patient.js', function (assert) {

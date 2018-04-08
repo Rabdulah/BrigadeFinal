@@ -6,5 +6,6 @@ export default DS.Model.extend({
   size: DS.attr(),
   rawSize: DS.attr('number'),
   imageData: DS.attr(),
-  exercise: DS.hasMany('exercise')
+  exercise: DS.hasMany('exercise'),
+  patient: DS.belongsTo('patient')
 });

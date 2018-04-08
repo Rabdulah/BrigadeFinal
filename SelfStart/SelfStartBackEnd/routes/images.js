@@ -41,6 +41,7 @@ router.route('/:image_id')
                 image.rawSize = request.body.image.rawSize;
                 image.imageData = request.body.image.imageData;
                 image.exercise = request.body.image.exercise;
+                image.patient = request.body.image.patient;
 
 
                 image.save(function (error) {

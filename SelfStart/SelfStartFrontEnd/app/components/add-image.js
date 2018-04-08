@@ -5,9 +5,25 @@ import Ember from 'ember';
 import fileObject from "../utils/file-object";
 
 export default Component.extend({
+  patientsData:null,
   DS: inject('store'),
+  auth: inject('auth'),
+
+  init(){
+    this._super(...arguments);
+    let self = this;
+    let eemail = localStorage.getItem('sas-session-id');
+    eemail = this.get('auth').decrypt(eemail);
+    console.log(eemail);
+
+    self.get('DS').queryRecord('patient', {filter: {'email' : eemail}}).then(function (temp) {
+        self.set('patientsData', temp);
+    });
+  },
+
 
   // ImageName: null,
+  
   model: 'image',
   flag: null,
   accept: 'audio/*,video/*,image/*',
@@ -122,14 +138,15 @@ export default Component.extend({
       });
 
       secQueue.forEach(file => {
-        console.log("akjdajsdkasjd");
+        var self = this;
         var newFile = this.get('DS').createRecord(this.get('model'), {
           name: file.name,
           size: file.size,
           type: file.type,
           rawSize: file.rawSize,
           imageData: file.base64Image,
-          exercise: []
+          exercise: [],
+          patient: self.get("patientsData")
         });
 
         newFile.save();
@@ -141,4 +158,5 @@ export default Component.extend({
     },
 
   }
+  
 });

@@ -624,9 +624,25 @@ define('self-start-front-end/components/add-image', ['exports', 'self-start-fron
     value: true
   });
   exports.default = Ember.Component.extend({
+    patientsData: null,
     DS: Ember.inject.service('store'),
+    auth: Ember.inject.service('auth'),
+
+    init: function init() {
+      this._super.apply(this, arguments);
+      var self = this;
+      var eemail = localStorage.getItem('sas-session-id');
+      eemail = this.get('auth').decrypt(eemail);
+      console.log(eemail);
+
+      self.get('DS').queryRecord('patient', { filter: { 'email': eemail } }).then(function (temp) {
+        self.set('patientsData', temp);
+      });
+    },
+
 
     // ImageName: null,
+
     model: 'image',
     flag: null,
     accept: 'audio/*,video/*,image/*',
@@ -717,14 +733,15 @@ define('self-start-front-end/components/add-image', ['exports', 'self-start-fron
         });
 
         secQueue.forEach(function (file) {
-          console.log("akjdajsdkasjd");
+          var self = _this;
           var newFile = _this.get('DS').createRecord(_this.get('model'), {
             name: file.name,
             size: file.size,
             type: file.type,
             rawSize: file.rawSize,
             imageData: file.base64Image,
-            exercise: []
+            exercise: [],
+            patient: self.get("patientsData")
           });
 
           newFile.save();
@@ -736,6 +753,7 @@ define('self-start-front-end/components/add-image', ['exports', 'self-start-fron
       }
 
     }
+
   });
 });
 define('self-start-front-end/components/add-patient', ['exports'], function (exports) {
@@ -10174,7 +10192,8 @@ define('self-start-front-end/models/image', ['exports', 'ember-data'], function 
     size: _emberData.default.attr(),
     rawSize: _emberData.default.attr('number'),
     imageData: _emberData.default.attr(),
-    exercise: _emberData.default.hasMany('exercise')
+    exercise: _emberData.default.hasMany('exercise'),
+    patient: _emberData.default.belongsTo('patient')
   });
 });
 define('self-start-front-end/models/login', ['exports', 'ember-data'], function (exports, _emberData) {
@@ -10258,7 +10277,8 @@ define('self-start-front-end/models/patient', ['exports', 'ember-data'], functio
     account: _emberData.default.attr(),
     transactions: _emberData.default.attr(),
     rehablink: _emberData.default.hasMany('rehab-client-link', { async: true }),
-    success: _emberData.default.attr()
+    success: _emberData.default.attr(),
+    images: _emberData.default.hasMany('image')
   });
 });
 define('self-start-front-end/models/physiotherapest', ['exports', 'ember-data'], function (exports, _emberData) {
@@ -14499,6 +14519,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+b7ee0bbb"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+721f9390"});
 }
 //# sourceMappingURL=self-start-front-end.map

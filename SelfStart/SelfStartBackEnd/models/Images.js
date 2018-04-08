@@ -6,7 +6,8 @@ var imagesSchema = mongoose.Schema(
         size: String,
         rawSize: Number,
         imageData: String,
-        exercise: [{type: mongoose.Schema.ObjectId, ref: 'Exercise'}]
+        exercise: [{type: mongoose.Schema.ObjectId, ref: 'Exercise'}],
+        patient: {type: mongoose.Schema.ObjectId, ref: 'PatientProfiles'}
     }
 );
 
