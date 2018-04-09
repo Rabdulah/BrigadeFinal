@@ -385,6 +385,21 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(true, 'components/parse-question.js should pass ESLint\n\n');
   });
 
+  QUnit.test('components/payment-button-package-2.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/payment-button-package-2.js should pass ESLint\n\n5:5 - \'paypal\' is not defined. (no-undef)');
+  });
+
+  QUnit.test('components/payment-button-package-3.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/payment-button-package-3.js should pass ESLint\n\n5:5 - \'paypal\' is not defined. (no-undef)');
+  });
+
+  QUnit.test('components/payment-button.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/payment-button.js should pass ESLint\n\n5:5 - \'paypal\' is not defined. (no-undef)');
+  });
+
   QUnit.test('components/personal-menu.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/personal-menu.js should pass ESLint\n\n');
@@ -3094,6 +3109,93 @@ define('self-start-front-end/tests/integration/components/parse-question-test', 
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/payment-button-package-2-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('payment-button-package-2', 'Integration | Component | payment button package 2', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "t5CDDApm",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"payment-button-package-2\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "DAJJlPsw",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"payment-button-package-2\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/payment-button-package-3-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('payment-button-package-3', 'Integration | Component | payment button package 3', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "eHZCw/On",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"payment-button-package-3\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "P0BUCUnk",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"payment-button-package-3\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/payment-button-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('payment-button', 'Integration | Component | payment button', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "fuA0Ifyl",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"payment-button\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "OGck4LIP",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"payment-button\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/personal-menu-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -4112,6 +4214,21 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('integration/components/parse-question-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/parse-question-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/payment-button-package-2-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/payment-button-package-2-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/payment-button-package-3-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/payment-button-package-3-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/payment-button-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/payment-button-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/personal-menu-test.js', function (assert) {
