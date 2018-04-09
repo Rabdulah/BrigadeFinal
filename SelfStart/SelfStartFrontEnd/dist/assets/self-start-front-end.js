@@ -14004,7 +14004,7 @@ define("self-start-front-end/templates/components/payment-button", ["exports"], 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "kxpWGgIC", "block": "{\"symbols\":[],\"statements\":[[6,\"style\"],[7],[0,\"\\n  .paypal-button-text {\\n    display: inline-block;\\n    white-space: pre-wrap;\\n    color: transparent !important;\\n  }\\n\\n  .paypal-button .paypal-button-text {\\n    visibility: hidden;\\n    color: black !important;\\n  }\\n\"],[8],[0,\"\\n\"],[6,\"div\"],[9,\"id\",\"paypal-button-container\"],[7],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/payment-button.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "YxkiDN0t", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[9,\"id\",\"paypal-button-container\"],[7],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/payment-button.hbs" } });
 });
 define("self-start-front-end/templates/components/personal-menu", ["exports"], function (exports) {
   "use strict";

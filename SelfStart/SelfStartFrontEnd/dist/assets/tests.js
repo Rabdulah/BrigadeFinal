@@ -397,7 +397,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/payment-button.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/payment-button.js should pass ESLint\n\n5:5 - \'paypal\' is not defined. (no-undef)');
+    assert.ok(false, 'components/payment-button.js should pass ESLint\n\n6:5 - \'paypal\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/personal-menu.js', function (assert) {

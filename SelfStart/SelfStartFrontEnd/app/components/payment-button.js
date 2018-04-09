@@ -1,4 +1,5 @@
 import Component from '@ember/component';
+
 export default Component.extend({
   didRender : function() {
     this._super(...arguments);
