@@ -3994,6 +3994,26 @@ define('self-start-front-end/components/display-answers', ['exports'], function 
     value: true
   });
   exports.default = Ember.Component.extend({
+
+    DS: Ember.inject.service('store'),
+    tf: true,
+    SAanswer: "",
+    Rating: 1,
+    true: "",
+    checkTrue: false,
+    checkFalse: false,
+    checkmcop1: false,
+    checkmcop2: false,
+    checkmcop3: false,
+    checkmcop4: false,
+    checkmcop5: false,
+    checkmcop6: false,
+    mcop1: "",
+    mcop2: "",
+    mcop3: "",
+    mcop4: "",
+    mcop5: "",
+    mcop6: "",
     init: function init() {
       var _this = this;
 
@@ -4017,7 +4037,7 @@ define('self-start-front-end/components/display-answers', ['exports'], function 
       if (this.get('question').get('type') === "True/False") {
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this.get("question").get("questionText")) {
-            if (rec.get("answer") == "No") checkFalse = true;else checkTrue = true;
+            if (rec.get("answer") == "No") _this.set('checkFalse', true);else _this.set('checkTrue', true);
           }
         });
       }
@@ -4051,28 +4071,7 @@ define('self-start-front-end/components/display-answers', ['exports'], function 
           }
         });
       }
-    },
-
-
-    DS: Ember.inject.service('store'),
-    tf: true,
-    SAanswer: "",
-    Rating: 1,
-    true: "",
-    checkTrue: false,
-    checkFalse: false,
-    checkmcop1: false,
-    checkmcop2: false,
-    checkmcop3: false,
-    checkmcop4: false,
-    checkmcop5: false,
-    checkmcop6: false,
-    mcop1: "",
-    mcop2: "",
-    mcop3: "",
-    mcop4: "",
-    mcop5: "",
-    mcop6: ""
+    }
   });
 });
 define('self-start-front-end/components/display-assessment', ['exports'], function (exports) {
@@ -4084,27 +4083,6 @@ define('self-start-front-end/components/display-assessment', ['exports'], functi
   exports.default = Ember.Component.extend({
     DS: Ember.inject.service('store'),
 
-    qNumber: 0,
-    tf: true,
-    SAanswer: "",
-    Rating: 1,
-    true: "",
-    checkTrue: false,
-    checkFalse: false,
-    checkmcop1: false,
-    checkmcop2: false,
-    checkmcop3: false,
-    checkmcop4: false,
-    checkmcop5: false,
-    checkmcop6: false,
-    mcop1: "",
-    mcop2: "",
-    mcop3: "",
-    mcop4: "",
-    mcop5: "",
-    mcop6: "",
-    index: 0,
-    onChange: 1,
     modalName: Ember.computed(function () {
       return 'viewAnswers' + this.get('model').id;
     }),
@@ -5717,7 +5695,7 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
     init: function init() {
       this._super.apply(this, arguments);
       //console.get(this.get("assessment"));
-      //console.log(this.get("answers"));
+      console.log(this.get("answers"));
     },
 
 
@@ -5729,10 +5707,9 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this.get("question").get("questionText")) {
-            var answerModel = _this.get('DS').findRecord('answer', rec.get("id")).then(function (ans) {
-              rec.set("answer", _this.get("rateValue"));
-            });
-            answerModel.save();
+            rec.set("answer", _this.get("rateValue"));
+            rec.set("test", _this.get("assessment"));
+            rec.save();
           }
         });
       },
@@ -5741,10 +5718,9 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this2.get("question").get("questionText")) {
-            var answerModel = _this2.get('DS').findRecord('answer', rec.get("id")).then(function (ans) {
-              rec.set("answer", "Yes");
-            });
-            answerModel.save();
+            rec.set("answer", "YES");
+            rec.set("test", _this2.get("assessment"));
+            rec.save();
           }
         });
       },
@@ -5753,10 +5729,9 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this3.get("question").get("questionText")) {
-            var answerModel = _this3.get('DS').findRecord('answer', rec.get("id")).then(function (ans) {
-              rec.set("answer", "No");
-            });
-            answerModel.save();
+            rec.set("answer", "NO");
+            rec.set("test", _this3.get("assessment"));
+            rec.save();
           }
         });
       },
@@ -5764,12 +5739,10 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
         var _this4 = this;
 
         this.get("answers").forEach(function (rec) {
-          if (rec.get("id") === "5ac6cf0e5c8d7e2cf47f0643") {
-            console.log("in");
-            _this4.get('DS').findRecord('answer', rec.get("id")).then(function (ans) {
-              rec.set("answer", _this4.get("SAanswer"));
-              rec.save();
-            });
+          if (rec.get("question") === _this4.get("question").get("questionText")) {
+            rec.set("answer", _this4.get("SAanswer"));
+            rec.set("test", _this4.get("assessment"));
+            rec.save();
           }
         });
       },
@@ -5778,10 +5751,9 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this5.get("question").get("questionText")) {
-            var answerModel = _this5.get('DS').findRecord('answer', rec.get("id")).then(function (ans) {
-              rec.set("answer", "0");
-            });
-            answerModel.save();
+            rec.set("answer", "0");
+            rec.set("test", _this5.get("assessment"));
+            rec.save();
           }
         });
       },
@@ -5790,10 +5762,9 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this6.get("question").get("questionText")) {
-            var answerModel = _this6.get('DS').findRecord('answer', rec.get("id")).then(function (ans) {
-              rec.set("answer", "1");
-            });
-            answerModel.save();
+            rec.set("answer", "1");
+            rec.set("test", _this6.get("assessment"));
+            rec.save();
           }
         });
       },
@@ -5802,10 +5773,9 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this7.get("question").get("questionText")) {
-            var answerModel = _this7.get('DS').findRecord('answer', rec.get("id")).then(function (ans) {
-              rec.set("answer", "2");
-            });
-            answerModel.save();
+            rec.set("answer", "2");
+            rec.set("test", _this7.get("assessment"));
+            rec.save();
           }
         });
       },
@@ -5814,10 +5784,9 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this8.get("question").get("questionText")) {
-            var answerModel = _this8.get('DS').findRecord('answer', rec.get("id")).then(function (ans) {
-              rec.set("answer", "3");
-            });
-            answerModel.save();
+            rec.set("answer", "3");
+            rec.set("test", _this8.get("assessment"));
+            rec.save();
           }
         });
       },
@@ -5826,10 +5795,9 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this9.get("question").get("questionText")) {
-            var answerModel = _this9.get('DS').findRecord('answer', rec.get("id")).then(function (ans) {
-              rec.set("answer", "4");
-            });
-            answerModel.save();
+            rec.set("answer", "4");
+            rec.set("test", _this9.get("assessment"));
+            rec.save();
           }
         });
       },
@@ -5838,10 +5806,9 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this10.get("question").get("questionText")) {
-            var answerModel = _this10.get('DS').findRecord('answer', rec.get("id")).then(function (ans) {
-              rec.set("answer", "5");
-            });
-            answerModel.save();
+            rec.set("answer", "5");
+            rec.set("test", _this10.get("assessment"));
+            rec.save();
           }
         });
       }
@@ -5858,7 +5825,7 @@ define('self-start-front-end/components/get-assessment-results', ['exports'], fu
   exports.default = Ember.Component.extend({
 
     DS: Ember.inject.service('store'),
-    ID: "5ac6b3c8be4a9233e02c9b23",
+    ID: "5acbb1e984bdf02a643bd758",
     open: false,
     notOpen: true,
     linker: null,
@@ -5866,22 +5833,28 @@ define('self-start-front-end/components/get-assessment-results', ['exports'], fu
     orders: [],
     ans: [],
     assessmentModel: Ember.computed(function () {
-      var id = "5ac6b3c8be4a9233e02c9b23";
+      var id = "5acbb1e984bdf02a643bd758";
       console.log(id);
       return this.get('DS').find('assessment-test', id);
     }),
 
     init: function init() {
+      var _this = this;
+
       this._super.apply(this, arguments);
       var self = this;
-      this.get('DS').query('question-order', { filter: { 'form': "5ac1ae2773e03d3f78384c92" } }).then(function (records) {
+
+      this.get('DS').query('question-order', { filter: { 'form': "5acbb1bb84bdf02a643bd751" } }).then(function (records) {
         self.set('orders', records.toArray());
       });
-      this.get('DS').query('answer', { filter: { 'test': this.get('assessid') } }).then(function (records) {
+      this.get('DS').query('answer', { filter: { 'test': "5acbb1e984bdf02a643bd758" } }).then(function (records) {
         self.set('ans', records.toArray());
+        console.log("********");
+        console.log(_this.get("ans"));
+        console.log("********");
       });
-      console.log(this.get("a"));
-      this.set('form', '5ac1ae2773e03d3f78384c92');
+      console.log(this.get('assessid'));
+      //this.set('form', '5ac1ae2773e03d3f78384c92');
     },
 
 
@@ -7094,7 +7067,18 @@ define('self-start-front-end/components/payment-button-package-2', ['exports'], 
         onAuthorize: function onAuthorize(data, actions) {
           // Make a call to the REST api to execute the payment
           return actions.payment.execute().then(function (transaction) {
-            window.alert(JSON.stringify(transaction));
+            var trans = JSON.stringify(transaction);
+
+            var index = trans.lastIndexOf('create_time":"');
+            var date = trans.substring(index + 14, index + 34);
+
+            index = trans.lastIndexOf('{"total":"');
+            var total = trans.substring(index + 10, index + 16);
+
+            var finalTransaction = ["Package 2", date, total];
+
+            //Still need thisClient
+            thisClient.transactions.pushObject(finalTransaction);
           });
         }
       }, '#paypal-button-container-package-2');
@@ -7133,7 +7117,18 @@ define('self-start-front-end/components/payment-button-package-3', ['exports'], 
         onAuthorize: function onAuthorize(data, actions) {
           // Make a call to the REST api to execute the payment
           return actions.payment.execute().then(function (transaction) {
-            window.alert(JSON.stringify(transaction));
+            var trans = JSON.stringify(transaction);
+
+            var index = trans.lastIndexOf('create_time":"');
+            var date = trans.substring(index + 14, index + 34);
+
+            index = trans.lastIndexOf('{"total":"');
+            var total = trans.substring(index + 10, index + 16);
+
+            var finalTransaction = ["Package 3", date, total];
+
+            //Still need thisClient
+            thisClient.transactions.pushObject(finalTransaction);
           });
         }
       }, '#paypal-button-container-package-3');
@@ -7172,7 +7167,18 @@ define('self-start-front-end/components/payment-button', ['exports'], function (
         onAuthorize: function onAuthorize(data, actions) {
           // Make a call to the REST api to execute the payment
           return actions.payment.execute().then(function (transaction) {
-            window.alert(JSON.stringify(transaction));
+            var trans = JSON.stringify(transaction);
+
+            var index = trans.lastIndexOf('create_time":"');
+            var date = trans.substring(index + 14, index + 34);
+
+            index = trans.lastIndexOf('{"total":"');
+            var total = trans.substring(index + 10, index + 16);
+
+            var finalTransaction = ["Package 1", date, total];
+
+            //Still need thisClient
+            thisClient.transactions.pushObject(finalTransaction);
           });
         }
       }, '#paypal-button-container');
@@ -8762,33 +8768,31 @@ define('self-start-front-end/components/user-info', ['exports'], function (expor
             _this2.get('DS').query('form', { filter: { 'name': 'Intake Form' } }).then(function (intake) {
               var ans = [];
 
-              // let newTest = this.get('DS').createRecord('assessment-test', {
-              //   name: "Intake Form",
-              //   description: "Initial form before ou can book an appointment",
-              //   form: intake.get('firstObject'),
-              //   patient: res,
-              //
-              // });
-              // newTest.save().then(() => {
+              var newTest = _this2.get('DS').createRecord('assessment-test', {
+                name: "Intake Form",
+                description: "Initial form before you can book an appointment",
+                form: intake.get('firstObject'),
+                patient: res
 
-              _this2.get('DS').query('question-order', { filter: { 'form': intake.get('firstObject').id } }).then(function (rec) {
+              });
+              newTest.save().then(function () {
 
-                rec.forEach(function (r) {
+                _this2.get('DS').query('question-order', { filter: { 'form': intake.get('firstObject').id } }).then(function (rec) {
 
-                  //console.log(r.get('order'));
-                  //console.log(q.get('questionText'));
-                  r.get('question').then(function (q) {
-                    console.log(q.get('questionText'));
+                  rec.forEach(function (r) {
+
+                    //console.log(r.get('order'));
+                    //console.log(q.get('questionText'));
+                    r.get('question').then(function (q) {
+                      var answer = _this2.get('DS').createRecord('answer', {
+                        question: q.get('questionText'),
+                        answer: "",
+                        test: newTest
+                      });
+
+                      answer.save();
+                    });
                   });
-
-                  // let answer = this.get('DS').createRecord('answer', {
-                  //   question: "",
-                  //   answer: "",
-                  //   test: newTest
-                  // });
-                  // answer.save();
-
-                  //});
                 });
               });
             });
@@ -15112,6 +15116,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+4afe42f7"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+4a15c591"});
 }
 //# sourceMappingURL=self-start-front-end.map

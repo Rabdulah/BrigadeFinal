@@ -48,11 +48,13 @@ var patientProfilesSchema = mongoose.Schema(
                 default: "0"
             }
         },
-        // payments: [{
-        //             dayTimestamp: Date,
-        //             amount: Number,
-        //             note: String
-        //         }],
+
+        transactions: [{
+            package: String,
+            date: Date, 
+            amount: Number,
+        }],
+        
         appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}],      // askAPhysio: [{type: mongoose.Schema.ObjectId, ref: 'AskAPhysio'}],
         // plan: [{type: mongoose.Schema.ObjectId, ref: 'Treatments'}]
         

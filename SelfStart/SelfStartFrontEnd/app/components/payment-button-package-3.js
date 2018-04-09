@@ -25,7 +25,18 @@ export default Component.extend({
       onAuthorize: function(data, actions) {
 // Make a call to the REST api to execute the payment
         return actions.payment.execute().then(function(transaction) {
-          window.alert(JSON.stringify(transaction));
+          var trans = JSON.stringify(transaction);
+
+          var index = trans.lastIndexOf('create_time":"');
+          var date = trans.substring(index + 14,index + 34);
+
+          index = trans.lastIndexOf('{"total":"');
+          var total = trans.substring(index + 10,index + 16);
+
+          var finalTransaction = ["Package 3", date, total];
+
+          //Still need thisClient
+          thisClient.transactions.pushObject(finalTransaction);
         });
       }
     }, '#paypal-button-container-package-3');
