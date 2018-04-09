@@ -12,10 +12,22 @@ router.route('/')
         });
     })
     .get( function (request, response) {
-        Images.Model.find(function (error, images) {
-            if (error) response.send(error);
-            response.json({image: images});
-        });
+        let exercise = request.query.filter;
+        //exercise query not in it
+        if (!exercise) {
+            Images.Model.find(function (error, images) {
+                if (error) response.send(error);
+                response.json({image: images});
+            });
+        }
+        else if (exercise){
+            console.log('getting exercise image using query');
+            Images.Model.find({"exercise": exercise.exercise}, function (error, images) {
+                console.log(images);
+                if (error) response.send(error);
+                response.json({image: images});
+            });
+        }
     });
 
 router.route('/:image_id')

@@ -35,6 +35,16 @@ router.route('/')
                 }
             });
         }
+        else if (assign.id){
+            RehabClientLink.Model.find({"Patient": assign.id}, function (error, rehabClientLinks) {
+                console.log("right place");
+                if (error) {
+                    response.send(error);
+                } else {
+                    response.json({rehabClientLink: rehabClientLinks});
+                }
+            });
+        }
         else{
             RehabClientLink.Model.find({"RehabilitationPlan": assign.RehabilitationPlan, "Patient": assign.Patient}, function (error, rehabClientLinks) {
                 if (error) {

@@ -151,7 +151,6 @@ export default Component.extend({
       let rec = this.get('pateintsData');
       rec.set('familyName', this.get('pateintsData.familyName'));
       rec.set('givenName', this.get('pateintsData.givenName'));
-      rec.set('email', this.get('pateintsData.email'));
       rec.set('streetName', this.get('pateintsData.streetName'));
       rec.set('streetNumber', this.get('pateintsData.streetNumber'));
       rec.set('apartment', this.get('pateintsData.apartment'));

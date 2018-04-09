@@ -172,7 +172,8 @@ define('self-start-front-end/components/add-exercises', ['exports', 'self-start-
     modelQueue: [],
     savingInProgress: false,
     id: null,
-
+    actionSteps: [],
+    numberOfActionSteps: -1,
     modalName: Ember.computed(function () {
       return 'add-exercise' + this.get('id');
     }),
@@ -207,6 +208,26 @@ define('self-start-front-end/components/add-exercises', ['exports', 'self-start-
     actionStep: [],
 
     actions: {
+      addOption: function addOption() {
+        this.set('numberOfActionSteps', this.numberOfActionSteps + 1);
+        console.log(this.numberOfActionSteps);
+        var newObj = Ember.Object.create({
+          name: "New Action Step",
+          id: this.numberOfActionSteps,
+          value: null
+        });
+        this.actionSteps.pushObject(newObj);
+      },
+
+      removeOption: function removeOption(index) {
+        var _this = this;
+
+        var remove = this.actionSteps.filterBy('id', index);
+        remove.forEach(function (o) {
+          _this.actionSteps.removeObject(o);
+        });
+      },
+
       selectFile: function selectFile(data) {
         if (!Ember.isEmpty(data.target.files)) {
           for (var i = data.target.files.length - 1; i >= 0; i--) {
@@ -256,15 +277,21 @@ define('self-start-front-end/components/add-exercises', ['exports', 'self-start-
 
 
       submit: function submit() {
-        var _this = this;
+        var _this2 = this;
 
         var date = (0, _moment.default)().format("MMM Do YY");
+
+        var actS = [];
+        actS.push(this.get('ActionStep1'));
+        this.actionSteps.forEach(function (o) {
+          actS.push(o.value);
+        });
 
         var exercise = this.get('DS').createRecord('exercise', {
           name: this.get('Name'),
           description: this.get('Description'),
           authorName: this.get('AuthName'),
-          actionSteps: this.get('actionStep'),
+          actionSteps: actS,
           sets: this.get('sets'),
           reps: this.get('reps'),
           duration: this.get('Duration'),
@@ -299,11 +326,11 @@ define('self-start-front-end/components/add-exercises', ['exports', 'self-start-
         exercise.save().then(function (exer) {
           var saveImage = [];
           console.log(exer.id);
-          console.log(_this.queue);
+          console.log(_this2.queue);
           console.log(secQueue);
           secQueue.forEach(function (file) {
             console.log("akjdajsdkasjd");
-            var newFile = _this.get('DS').createRecord(_this.get('model'), {
+            var newFile = _this2.get('DS').createRecord(_this2.get('model'), {
               name: file.name,
               size: file.size,
               type: file.type,
@@ -316,13 +343,13 @@ define('self-start-front-end/components/add-exercises', ['exports', 'self-start-
             newFile.save();
 
             exercise.get('images').pushObject(newFile);
-            _this.get('DS').findRecord('exercise', exer.id).then(function (rec) {
+            _this2.get('DS').findRecord('exercise', exer.id).then(function (rec) {
               rec.save();
             });
           });
 
           secQueue2.forEach(function (file) {
-            _this.get('DS').findRecord(_this.get('model'), file.get('id')).then(function (obj) {
+            _this2.get('DS').findRecord(_this2.get('model'), file.get('id')).then(function (obj) {
               obj.get('exercise').pushObject(exercise);
               obj.save();
               exercise.get('images').pushObject(obj);
@@ -330,6 +357,9 @@ define('self-start-front-end/components/add-exercises', ['exports', 'self-start-
           });
         });
 
+        this.set('ActionStep1', "");
+        this.get('actionSteps').clear();
+        this.set('numberOfActionSteps', -1);
         this.get('queue').clear();
         this.get('queue2').clear();
         this.set('Name', "");
@@ -2219,7 +2249,38 @@ define('self-start-front-end/components/client-exercise-menu', ['exports'], func
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.Component.extend({});
+  exports.default = Ember.Component.extend({
+    auth: Ember.inject.service('auth'),
+    DS: Ember.inject.service('store'),
+    routing: Ember.inject.service('-routing'),
+
+    clientData: null,
+    rehabPlans: Ember.A(),
+    init: function init() {
+      this._super.apply(this, arguments);
+      var self = this;
+      var eemail = localStorage.getItem('sas-session-id');
+      eemail = this.get('auth').decrypt(eemail);
+      console.log(eemail);
+
+      self.get('DS').queryRecord('patient', { filter: { 'email': eemail } }).then(function (cd) {
+        self.set('clientData', cd);
+        //query to rehab link
+        self.get('DS').query('rehab-client-link', { filter: { 'id': cd.get('id') } }).then(function (obj) {
+          obj.forEach(function (temp) {
+            if (!temp.get('terminated')) {
+              self.get('rehabPlans').pushObject(temp.get('RehabilitationPlan'));
+            }
+          });
+        });
+      });
+    },
+
+
+    actions: {
+      gotoRehabplan: function gotoRehabplan() {}
+    }
+  });
 });
 define('self-start-front-end/components/client-file', ['exports'], function (exports) {
   'use strict';
@@ -2707,6 +2768,132 @@ define('self-start-front-end/components/client-nav', ['exports'], function (expo
     actions: {}
   });
 });
+define('self-start-front-end/components/client-rehabplan-view', ['exports', 'self-start-front-end/utils/file-object', 'moment'], function (exports, _fileObject, _moment) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Component.extend({
+    auth: Ember.inject.service('auth'),
+    DS: Ember.inject.service('store'),
+    routing: Ember.inject.service('-routing'),
+
+    rehabPlan: null,
+    planName: Ember.computed.oneWay('model.planName'),
+    exerciseList: Ember.A(),
+    counter: 1,
+    currentExercise: null,
+    currentImages: Ember.A(),
+    isEnd: false,
+    isNFirst: false,
+    isLoading: false,
+
+    init: function init() {
+      this._super.apply(this, arguments);
+      this.set('exerciseList', Ember.A());
+      var self = this;
+      var eemail = localStorage.getItem('sas-session-id');
+      eemail = this.get('auth').decrypt(eemail);
+      this.set('rehabPlan', this.get('model'));
+
+      self.get('DS').query('exercise-list', { filter: { 'rehabilitationPlan': self.get('model.id') } }).then(function (obj) {
+        var tempcontainer = [];
+        obj.forEach(function (temp) {
+          tempcontainer.push(temp);
+        });
+        //sort exercise
+        var i = 1;
+        while (i < tempcontainer.length) {
+          tempcontainer.forEach(function (obj) {
+            if (obj.get('order') === i) {
+              self.get('exerciseList').pushObject(obj.get('exercise'));
+              i++;
+            }
+          });
+        }
+        //set first exercise
+        self.set('currentExercise', self.get('exerciseList').objectAt(self.get('counter') - 1));
+        //check if its last one of the exercise
+        if (self.get('counter') >= self.get('exerciseList').length) {
+          self.set('isEnd', true);
+        }
+        //get current exercise images
+        self.set('isLoading', true);
+        self.get('DS').query('image', { filter: { 'exercise': self.get('currentExercise.id') } }).then(function (obj) {
+          obj.forEach(function (temp) {
+            self.get('currentImages').pushObject(temp);
+          });
+        });
+        self.set('isLoading', false);
+
+        var a = 1;
+        var b = self.get('exerciseList').length;
+        Ember.$('#example4').progress({ percent: Math.round(a / b * 100) });
+      });
+    },
+
+
+    actions: {
+      nextExercise: function nextExercise() {
+        this.set('currentImages', Ember.A());
+        var self = this;
+        self.set('isNFirst', true);
+        var c = self.get('counter');
+        self.set('counter', c + 1);
+
+        if (self.get('counter') >= self.get('exerciseList').length) {
+          self.set('isEnd', true);
+        }
+        self.set('currentExercise', self.get('exerciseList').objectAt(self.get('counter') - 1));
+
+        self.set('isLoading', true);
+        self.get('DS').query('image', { filter: { 'exercise': self.get('currentExercise.id') } }).then(function (obj) {
+          obj.forEach(function (temp) {
+            self.get('currentImages').pushObject(temp);
+          });
+        });
+        self.set('isLoading', false);
+        //END change images
+        var a = c + 1;
+        var b = self.get('exerciseList').length;
+        Ember.$('#example4').progress({ percent: Math.round(a / b * 100) });
+      },
+      prevExercise: function prevExercise() {
+        this.set('currentImages', Ember.A());
+        var self = this;
+        var c = self.get('counter');
+        self.set('counter', c - 1);
+
+        if (self.get('counter') <= 1) {
+          //reached first exercise
+          self.set('isNFirst', false);
+        } else {
+          //did not end
+          self.set('isEnd', false);
+        }
+        //set current exercise
+        self.set('currentExercise', self.get('exerciseList').objectAt(self.get('counter') - 1));
+
+        //get current exercise images
+        self.set('isLoading', true);
+        self.get('DS').query('image', { filter: { 'exercise': self.get('currentExercise.id') } }).then(function (obj) {
+          obj.forEach(function (temp) {
+            self.get('currentImages').pushObject(temp);
+          });
+        });
+        self.set('isLoading', false);
+
+        var a = c - 1;
+        var b = self.get('exerciseList').length;
+        Ember.$('#example4').progress({ percent: Math.round(a / b * 100) });
+      },
+      finishRehabPlan: function finishRehabPlan() {
+        console.log('done');
+      }
+    }
+  });
+});
 define('self-start-front-end/components/client-resources', ['exports'], function (exports) {
   'use strict';
 
@@ -2864,7 +3051,6 @@ define('self-start-front-end/components/client-settings', ['exports', 'moment'],
         var rec = this.get('pateintsData');
         rec.set('familyName', this.get('pateintsData.familyName'));
         rec.set('givenName', this.get('pateintsData.givenName'));
-        rec.set('email', this.get('pateintsData.email'));
         rec.set('streetName', this.get('pateintsData.streetName'));
         rec.set('streetNumber', this.get('pateintsData.streetNumber'));
         rec.set('apartment', this.get('pateintsData.apartment'));
@@ -4246,6 +4432,8 @@ define('self-start-front-end/components/edit-exercises', ['exports', 'self-start
   exports.default = Ember.Component.extend({
     DS: Ember.inject.service('store'),
     cbState: false,
+    newActionSteps: [],
+    oldActionSteps: [],
     temp: [],
     // ImageName: null,
     images: null,
@@ -4261,14 +4449,10 @@ define('self-start-front-end/components/edit-exercises', ['exports', 'self-start
     exerID: null,
     secQueue: [],
     removeImages: [],
+    numberOfActionSteps: -1,
+
     init: function init() {
       this._super();
-
-      // console.log(this.images)
-      // // var secQ = []
-      // this.images.forEach(file => {
-      //   this.secQueue.pushObject(file);
-      // });
     },
 
     labelArray: ['height: 6.25em', 'line-height: 5.25em', 'text-align: center'],
@@ -4312,6 +4496,30 @@ define('self-start-front-end/components/edit-exercises', ['exports', 'self-start
     }),
 
     actions: {
+      addOption: function addOption() {
+        this.set('numberOfActionSteps', this.numberOfActionSteps + 1);
+        console.log(this.numberOfActionSteps);
+        var newObj = Ember.Object.create({
+          name: "New Action Step",
+          id: this.numberOfActionSteps,
+          value: null
+        });
+        this.newActionSteps.pushObject(newObj);
+      },
+
+      removeOption: function removeOption(index) {
+        var _this = this;
+
+        var removeOld = this.oldActionSteps.filterBy('id', index);
+        var removeNew = this.newActionSteps.filterBy('id', index);
+        removeOld.forEach(function (o) {
+          _this.oldActionSteps.removeObject(o);
+        });
+        removeNew.forEach(function (o) {
+          _this.newActionSteps.removeObject(o);
+        });
+      },
+
       selectFile: function selectFile(data) {
         if (!Ember.isEmpty(data.target.files)) {
           for (var i = data.target.files.length - 1; i >= 0; i--) {
@@ -4348,13 +4556,23 @@ define('self-start-front-end/components/edit-exercises', ['exports', 'self-start
       },
 
       openModal: function openModal() {
-        var _this = this;
+        var _this2 = this;
 
         // window.location.reload();
         this.secQueue.clear();
         console.log(this.images);
         this.images.forEach(function (file) {
-          _this.secQueue.pushObject(file);
+          _this2.secQueue.pushObject(file);
+        });
+        this.actionStep.forEach(function (o) {
+          _this2.set('numberOfActionSteps', _this2.numberOfActionSteps + 1);
+          console.log(_this2.numberOfActionSteps);
+          var newObj = Ember.Object.create({
+            name: "New Action Step",
+            id: _this2.numberOfActionSteps,
+            value: o
+          });
+          _this2.oldActionSteps.pushObject(newObj);
         });
 
         this.set('exerciseData', this.get('DS').peekRecord('exercise', this.get('ID')));
@@ -4365,37 +4583,39 @@ define('self-start-front-end/components/edit-exercises', ['exports', 'self-start
           centered: false,
           // dimmerSettings: { opacity: 0.25 },
           onDeny: function onDeny() {
-            _this.secQueue.clear();
-            _this.removeImages.clear();
-            _this.queue.clear();
+            _this2.newActionSteps.clear();
+            _this2.oldActionSteps.clear();
+            _this2.secQueue.clear();
+            _this2.removeImages.clear();
+            _this2.queue.clear();
             return true;
           },
 
           onApprove: function onApprove() {
 
-            _this.removeImages.forEach(function (file) {
+            _this2.removeImages.forEach(function (file) {
               console.log(file);
-              _this.get('DS').findRecord('image', file.id).then(function (rec) {
+              _this2.get('DS').findRecord('image', file.id).then(function (rec) {
                 rec.destroyRecord();
                 rec.save();
               });
             });
             var secQueue2 = [];
-            var self = _this;
-            _this.get('temp').forEach(function (obj) {
+            var self = _this2;
+            _this2.get('temp').forEach(function (obj) {
               secQueue2.push(obj);
             });
 
-            _this.get('temp').clear();
+            _this2.get('temp').clear();
 
-            _this.queue.forEach(function (file) {
+            _this2.queue.forEach(function (file) {
 
               console.log(file);
 
-              _this.get('DS').findRecord('exercise', _this.get('ID')).then(function (rec) {
+              _this2.get('DS').findRecord('exercise', _this2.get('ID')).then(function (rec) {
 
                 // console.log("sasdasd", exe);
-                var newFile = _this.get('DS').createRecord('image', {
+                var newFile = _this2.get('DS').createRecord('image', {
                   name: file.name,
                   size: file.size,
                   type: file.type,
@@ -4411,15 +4631,15 @@ define('self-start-front-end/components/edit-exercises', ['exports', 'self-start
                 newFile.save();
 
                 rec.get('images').pushObject(newFile);
-                _this.get('DS').findRecord('exercise', _this.get('ID')).then(function (rec) {
+                _this2.get('DS').findRecord('exercise', _this2.get('ID')).then(function (rec) {
                   rec.save();
                 });
               });
             });
 
-            _this.get('DS').findRecord('exercise', _this.get('ID')).then(function (rec) {
+            _this2.get('DS').findRecord('exercise', _this2.get('ID')).then(function (rec) {
               secQueue2.forEach(function (file) {
-                _this.get('DS').findRecord(_this.get('model'), file.get('id')).then(function (obj) {
+                _this2.get('DS').findRecord(_this2.get('model'), file.get('id')).then(function (obj) {
                   obj.get('exercise').pushObject(rec);
                   obj.save();
                   rec.get('images').pushObject(obj);
@@ -4427,15 +4647,23 @@ define('self-start-front-end/components/edit-exercises', ['exports', 'self-start
               });
             });
 
-            _this.get('DS').findRecord('exercise', _this.get('ID')).then(function (rec) {
-              rec.set('name', _this.get('Name'));
-              rec.set('description', _this.get('Description'));
-              rec.set('authorName', _this.get('AuthName'));
-              rec.set('sets', _this.get('sets'));
-              rec.set('reps', _this.get('reps'));
-              rec.set('actionStep', _this.get('ActionSteps'));
-              rec.set('duration', _this.get('Duration'));
-              rec.set('MMURL', _this.get('MMURL'));
+            var actionS = [];
+            _this2.get(_this2.oldActionSteps).forEach(function (o) {
+              actionS.push(o.value);
+            });
+            _this2.get(_this2.newActionSteps).forEach(function (o) {
+              actionS.push(o.value);
+            });
+
+            _this2.get('DS').findRecord('exercise', _this2.get('ID')).then(function (rec) {
+              rec.set('name', _this2.get('Name'));
+              rec.set('description', _this2.get('Description'));
+              rec.set('authorName', _this2.get('AuthName'));
+              rec.set('sets', _this2.get('sets'));
+              rec.set('reps', _this2.get('reps'));
+              rec.set('actionStep', _this2.get('ActionSteps'));
+              rec.set('duration', _this2.get('Duration'));
+              rec.set('MMURL', _this2.get('MMURL'));
               // rec.set('exercises', this.get('exercises'));
               // rec.set('assessmentTests', this.get('assessmentTests'));
               rec.save().then(function () {
@@ -4444,10 +4672,11 @@ define('self-start-front-end/components/edit-exercises', ['exports', 'self-start
             });
 
             //window.location.reload();
-
-            _this.secQueue.clear();
-            _this.removeImages.clear();
-            _this.queue.clear();
+            _this2.newActionSteps.clear();
+            _this2.oldActionSteps.clear();
+            _this2.secQueue.clear();
+            _this2.removeImages.clear();
+            _this2.queue.clear();
           }
         }).modal('show');
       },
@@ -10515,6 +10744,7 @@ define('self-start-front-end/router', ['exports', 'self-start-front-end/config/e
       this.route('appointment');
       this.route('edit-menu', { path: 'rehabplans/:rehabilitationplan_id' });
       this.route('exercises');
+      this.route('view-rehabplan', { path: 'rehabplans/:rehabilitationplan_id' });
     });
   });
 
@@ -10676,6 +10906,14 @@ define('self-start-front-end/routes/client/settings', ['exports'], function (exp
   exports.default = Ember.Route.extend({});
 });
 define('self-start-front-end/routes/client/upload-photos', ['exports'], function (exports) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.Route.extend({});
+});
+define('self-start-front-end/routes/client/view-rehabplan', ['exports'], function (exports) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
@@ -12840,6 +13078,14 @@ define("self-start-front-end/templates/client/upload-photos", ["exports"], funct
   });
   exports.default = Ember.HTMLBars.template({ "id": "M3xqJSz/", "block": "{\"symbols\":[],\"statements\":[[1,[18,\"client-upload-photos\"],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/client/upload-photos.hbs" } });
 });
+define("self-start-front-end/templates/client/view-rehabplan", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "maAJn+Zk", "block": "{\"symbols\":[],\"statements\":[[1,[25,\"client-rehabplan-view\",null,[[\"model\"],[[20,[\"model\"]]]]],false]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/client/view-rehabplan.hbs" } });
+});
 define("self-start-front-end/templates/client/welcome-client", ["exports"], function (exports) {
   "use strict";
 
@@ -12878,7 +13124,7 @@ define("self-start-front-end/templates/components/add-exercises", ["exports"], f
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "jarSaZM5", "block": "{\"symbols\":[\"Image\",\"Image\",\"file\",\"aS\"],\"statements\":[[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  Add Exercise\\n\"],[8],[0,\"\\n\\n\\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"newExercise\",\"newExercise\"]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"\\n    Adding new Exercise\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"scrolling content\"],[7],[0,\"\\n\\n    \"],[6,\"form\"],[9,\"id\",\"edit\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"run\",\"text\",[20,[\"Name\"]],\"Exercise Name\",true]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[1,[25,\"textarea\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"message\",\"text\",[20,[\"Description\"]],\"Description\",true]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"twelve wide column\"],[9,\"style\",\"padding: 0\"],[7],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"list\",\"text\",[20,[\"ActionSteps\"]],\"Action Steps\",true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"four wide column\"],[9,\"style\",\"padding-right: 0\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui white right labeled icon button\"],[9,\"style\",\"height: 50px\"],[3,\"action\",[[19,0,[]],\"addActionStep\"]],[7],[0,\"\\n              Add Action Step\\n              \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui inverted segment\"],[7],[0,\"\\n          \"],[6,\"label\"],[9,\"style\",\"color: white\"],[7],[0,\"Current Action Steps\"],[8],[0,\"\\n          \"],[6,\"ol\"],[9,\"align\",\"left\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"actionStep\"]]],null,{\"statements\":[[0,\"              \"],[6,\"li\"],[7],[0,\"\\n                \"],[6,\"p\"],[7],[0,\"\\n                  \"],[1,[19,4,[]],false],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Edit\"],[9,\"class\",\"gray write icon\"],[3,\"action\",[[19,0,[]],\"edit\"]],[7],[8],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Delete\"],[9,\"class\",\"red remove icon\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[4]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui three column grid\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\"],[\"watch\",\"text\",[20,[\"sets\"]],\"Sets\"]]],false],[0,\"\\n\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\"],[\"watch\",\"text\",[20,[\"reps\"]],\"Reps\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\"],[\"watch\",\"text\",[20,[\"Duration\"]],\"Duration\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\"],[\"link\",\"text\",[20,[\"MMURL\"]],\"Multi Media URL\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"queue\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui divided demo items\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"image\"],[7],[0,\"\\n\"],[4,\"if\",[[19,3,[\"isUploading\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"div\"],[9,\"class\",\"ui active inverted dimmer\"],[7],[0,\"\\n                    \"],[6,\"div\"],[9,\"class\",\"ui loader\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                  \"],[6,\"img\"],[10,\"src\",[26,[[19,3,[\"base64Image\"]]]]],[7],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n\"],[4,\"if\",[[19,3,[\"isDisplayableImage\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"label\"],[7],[0,\"Image Name\"],[8],[0,\"\\n                    \"],[1,[25,\"input\",null,[[\"type\",\"value\"],[\"text\",[19,3,[\"name\"]]]]],false],[0,\"\\n                    \"],[6,\"button\"],[9,\"class\",\"ui red basic button\"],[3,\"action\",[[19,0,[]],\"deleteFile\",[19,3,[]]]],[7],[0,\"\\n                      Delete\\n                    \"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                    \"],[6,\"p\"],[7],[0,\"Unsupported image\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[4,\"each\",[[20,[\"queue2\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui divided demo items\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"image\"],[7],[0,\"\\n                \"],[6,\"img\"],[10,\"src\",[26,[[19,2,[\"imageData\"]]]]],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n                  \"],[6,\"label\"],[7],[0,\"Image Name\"],[8],[0,\"\\n                  \"],[1,[25,\"input\",null,[[\"type\",\"value\"],[\"text\",[19,2,[\"name\"]]]]],false],[0,\"\\n                  \"],[6,\"button\"],[9,\"class\",\"ui red basic button\"],[3,\"action\",[[19,0,[]],\"deleteFile\",[20,[\"file\"]]]],[7],[0,\"\\n                    Delete\\n                  \"],[8],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui fluid labeled input\"],[7],[0,\"\\n          \"],[6,\"label\"],[9,\"class\",\"ui fluid huge label\"],[10,\"style\",[18,\"labelStyle\"],null],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"big cloud upload icon\"],[7],[8],[0,\"\\n            Click or Drop images into this area to upload images\\n          \"],[8],[0,\"\\n          \"],[6,\"input\"],[9,\"type\",\"file\"],[9,\"value\",\"target.value\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectFile\"],null],null],[10,\"style\",[18,\"inputStyle\"],null],[10,\"accept\",[26,[[18,\"accept\"]]]],[10,\"multiple\",[18,\"multiple\"],null],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui center alligned three column grid\"],[9,\"style\",\"border:0.5px solid black;overflow-y:scroll;max-height:300px;\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"Images\"]]],null,{\"statements\":[[0,\"            \"],[6,\"div\"],[9,\"class\",\"column\"],[9,\"style\",\"padding: 1em\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui fluid card\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"max-height: 80px;min-height: 80px;text-align:  center;display: table;\"],[7],[0,\"\\n                  \"],[6,\"p\"],[9,\"style\",\"display: table-cell;vertical-align: middle;\"],[7],[1,[19,1,[\"name\"]],false],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"image\"],[7],[0,\"\\n                    \"],[6,\"img\"],[9,\"style\",\"max-height:105px;width: auto;display: block;margin-left: auto;margin-right: auto;\"],[9,\"class\",\"ui small image\"],[10,\"src\",[26,[[19,1,[\"imageData\"]]]]],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"extra content\"],[7],[0,\"\\n                  \"],[1,[25,\"ui-checkbox\",null,[[\"class\",\"label\",\"checked\",\"change\"],[\"toggle\",\"Add\",[20,[\"cbState\"]],[25,\"action\",[[19,0,[]],\"addTempImage\",[19,1,[]]],null]]]],false],[0,\"\\n\"],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"        \"],[8],[0,\"\\n\\n\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin-top: 3em;\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"max-width: 100%; height: 50px;\"],[7],[0,\"\\n          Submit\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/add-exercises.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "02z5cmax", "block": "{\"symbols\":[\"Image\",\"Image\",\"file\",\"aS\",\"index\"],\"statements\":[[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n  Add Exercise\\n\"],[8],[0,\"\\n\\n\\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"newExercise\",\"newExercise\"]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"\\n    Adding new Exercise\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"scrolling content\"],[7],[0,\"\\n\\n    \"],[6,\"form\"],[9,\"id\",\"edit\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"run\",\"text\",[20,[\"Name\"]],\"Exercise Name\",true]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[1,[25,\"textarea\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"message\",\"text\",[20,[\"Description\"]],\"Description\",true]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui segment\"],[7],[0,\"\\n          \"],[6,\"label\"],[7],[0,\"Action Steps\"],[8],[0,\"\\n        \\n        \"],[6,\"div\"],[9,\"class\",\"fourteen wide field\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0; background-color: white;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"circle\",\"text\",[20,[\"ActionStep1\"]],\"Action Step\",false]]],false],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"actionSteps\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"fifteen wide column\"],[9,\"style\",\"margin: 1em 0; background-color: white;\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"style\",\"background-color: white;\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"id\",\"type\",\"value\",\"required\",\"placeholder\"],[\"circle\",[19,4,[\"id\"]],\"text\",[19,4,[\"value\"]],true,\"New Action Step\"]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"one wide column\"],[9,\"style\",\"position: relative;margin-top: 30px;left: -1%;color: rgba(230, 60, 60, 0.71);cursor: pointer;\"],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"large times icon\"],[3,\"action\",[[19,0,[]],\"removeOption\",[19,4,[\"id\"]]]],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[4,5]},null],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"fourteen wide field\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"fifteen wide column\"],[9,\"style\",\"margin: 1em 0;\"],[3,\"action\",[[19,0,[]],\"addOption\"]],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"id\",\"class\",\"type\",\"placeholder\"],[\"disabled\",\"circle\",\"text\",\"Add Step\"]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n  \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui three column grid\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\"],[\"watch\",\"text\",[20,[\"sets\"]],\"Sets\"]]],false],[0,\"\\n\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\"],[\"watch\",\"text\",[20,[\"reps\"]],\"Reps\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\"],[\"watch\",\"text\",[20,[\"Duration\"]],\"Duration\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\"],[\"link\",\"text\",[20,[\"MMURL\"]],\"Multi Media URL\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"queue\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui divided demo items\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"image\"],[7],[0,\"\\n\"],[4,\"if\",[[19,3,[\"isUploading\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"div\"],[9,\"class\",\"ui active inverted dimmer\"],[7],[0,\"\\n                    \"],[6,\"div\"],[9,\"class\",\"ui loader\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                  \"],[6,\"img\"],[10,\"src\",[26,[[19,3,[\"base64Image\"]]]]],[7],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n\"],[4,\"if\",[[19,3,[\"isDisplayableImage\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"label\"],[7],[0,\"Image Name\"],[8],[0,\"\\n                    \"],[1,[25,\"input\",null,[[\"type\",\"value\"],[\"text\",[19,3,[\"name\"]]]]],false],[0,\"\\n                    \"],[6,\"button\"],[9,\"class\",\"ui red basic button\"],[3,\"action\",[[19,0,[]],\"deleteFile\",[19,3,[]]]],[7],[0,\"\\n                      Delete\\n                    \"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                    \"],[6,\"p\"],[7],[0,\"Unsupported image\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[4,\"each\",[[20,[\"queue2\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui divided demo items\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"image\"],[7],[0,\"\\n                \"],[6,\"img\"],[10,\"src\",[26,[[19,2,[\"imageData\"]]]]],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n                  \"],[6,\"label\"],[7],[0,\"Image Name\"],[8],[0,\"\\n                  \"],[1,[25,\"input\",null,[[\"type\",\"value\"],[\"text\",[19,2,[\"name\"]]]]],false],[0,\"\\n                  \"],[6,\"button\"],[9,\"class\",\"ui red basic button\"],[3,\"action\",[[19,0,[]],\"deleteFile\",[20,[\"file\"]]]],[7],[0,\"\\n                    Delete\\n                  \"],[8],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui fluid labeled input\"],[7],[0,\"\\n          \"],[6,\"label\"],[9,\"class\",\"ui fluid huge label\"],[10,\"style\",[18,\"labelStyle\"],null],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"big cloud upload icon\"],[7],[8],[0,\"\\n            Click or Drop images into this area to upload images\\n          \"],[8],[0,\"\\n          \"],[6,\"input\"],[9,\"type\",\"file\"],[9,\"value\",\"target.value\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectFile\"],null],null],[10,\"style\",[18,\"inputStyle\"],null],[10,\"accept\",[26,[[18,\"accept\"]]]],[10,\"multiple\",[18,\"multiple\"],null],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui center alligned three column grid\"],[9,\"style\",\"border:0.5px solid black;overflow-y:scroll;max-height:300px;\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"Images\"]]],null,{\"statements\":[[0,\"            \"],[6,\"div\"],[9,\"class\",\"column\"],[9,\"style\",\"padding: 1em\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui fluid card\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"max-height: 80px;min-height: 80px;text-align:  center;display: table;\"],[7],[0,\"\\n                  \"],[6,\"p\"],[9,\"style\",\"display: table-cell;vertical-align: middle;\"],[7],[1,[19,1,[\"name\"]],false],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"image\"],[7],[0,\"\\n                    \"],[6,\"img\"],[9,\"style\",\"max-height:105px;width: auto;display: block;margin-left: auto;margin-right: auto;\"],[9,\"class\",\"ui small image\"],[10,\"src\",[26,[[19,1,[\"imageData\"]]]]],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"extra content\"],[7],[0,\"\\n                  \"],[1,[25,\"ui-checkbox\",null,[[\"class\",\"label\",\"checked\",\"change\"],[\"toggle\",\"Add\",[20,[\"cbState\"]],[25,\"action\",[[19,0,[]],\"addTempImage\",[19,1,[]]],null]]]],false],[0,\"\\n\"],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"        \"],[8],[0,\"\\n\\n\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin-top: 3em;\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"max-width: 100%; height: 50px;\"],[7],[0,\"\\n          Submit\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/add-exercises.hbs" } });
 });
 define("self-start-front-end/templates/components/add-form", ["exports"], function (exports) {
   "use strict";
@@ -13086,7 +13332,7 @@ define("self-start-front-end/templates/components/client-exercise-menu", ["expor
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "rtiJhLCI", "block": "{\"symbols\":[],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Exercise Menu\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-exercise-menu.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "DVFryc0F", "block": "{\"symbols\":[\"rehabPlan\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Exercise Menu\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"left thirteen wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n      \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n        Exercise List\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n    \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n      \"],[6,\"tbody\"],[7],[0,\"\\n      \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n        \"],[6,\"th\"],[7],[0,\"Rehabilitation Name\"],[8],[0,\"\\n        \"],[6,\"th\"],[7],[0,\"Description\"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"id\",\"clientWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n\\n    \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n      \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"rehabPlans\"]]],null,{\"statements\":[[0,\"        \"],[6,\"tr\"],[7],[0,\"\\n          \"],[6,\"td\"],[7],[4,\"link-to\",[\"client.view-rehabplan\",[19,1,[\"id\"]]],null,{\"statements\":[[1,[19,1,[\"planName\"]],false]],\"parameters\":[]},null],[8],[0,\"\\n          \"],[6,\"td\"],[7],[4,\"link-to\",[\"client.view-rehabplan\",[19,1,[\"id\"]]],null,{\"statements\":[[1,[19,1,[\"description\"]],false]],\"parameters\":[]},null],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n\\n\"]],\"parameters\":[1]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-exercise-menu.hbs" } });
 });
 define("self-start-front-end/templates/components/client-file", ["exports"], function (exports) {
   "use strict";
@@ -13104,6 +13350,14 @@ define("self-start-front-end/templates/components/client-nav", ["exports"], func
   });
   exports.default = Ember.HTMLBars.template({ "id": "4uUpoKwJ", "block": "{\"symbols\":[\"&default\"],\"statements\":[[2,\"<style>\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .fixed,\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .pusher {\"],[0,\"\\n\"],[2,\"-ebkit-transform: translate3d(260px, 0, 0); transform: translate3d(260px, 0, 0);\"],[0,\"\\n\"],[2,\"}\"],[0,\"\\n\"],[2,\"</style>\"],[0,\"\\n\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index\"],[7],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"following bar\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n\"],[4,\"link-to\",[\"client\"],null,{\"statements\":[[0,\"                    \"],[6,\"img\"],[9,\"class\",\"ui image selfStart\"],[9,\"src\",\"/assets/images/home/Header.png\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"right menu inverted\"],[7],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/client/exercise-menu\"],[9,\"class\",\"item\"],[7],[0,\"Exercise Menu\"],[8],[0,\"\\n            \"],[2,\"<a  href=\\\"/\\\"class=\\\"item\\\">Initial Intake</a>\"],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/client/upload-photos\"],[9,\"class\",\"item\"],[7],[0,\"Upload Photos\"],[8],[0,\"\\n            \"],[2,\"<a  href=\\\"/\\\"class=\\\"item\\\">Transations</a>\"],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/client/resources\"],[9,\"class\",\"item\"],[7],[0,\"Resources\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/client/appointment\"],[9,\"class\",\"item\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/client/settings\"],[9,\"class\",\"item\"],[7],[0,\"Settings\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"href\",\"../\"],[9,\"class\",\"item\"],[7],[0,\"Log out\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[11,1],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-nav.hbs" } });
 });
+define("self-start-front-end/templates/components/client-rehabplan-view", ["exports"], function (exports) {
+  "use strict";
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = Ember.HTMLBars.template({ "id": "6PPehiNu", "block": "{\"symbols\":[\"actionstep\",\"Image\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[1,[18,\"planName\"],false],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"padding-right: 10em;padding-left: 10em;\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui basic segment\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui teal progress\"],[9,\"id\",\"example4\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"bar\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"progress\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"label\"],[7],[0,\"Progress\"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"h1\"],[9,\"class\",\"ui header\"],[7],[1,[18,\"counter\"],false],[0,\". \"],[1,[20,[\"currentExercise\",\"name\"]],false],[8],[0,\"\\n    \"],[6,\"h2\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"description\"]],false],[8],[0,\"\\n    \"],[2,\"image\"],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"image\"],[9,\"style\",\"max-height:500px;min-height:500px;min-width:141.63px;\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"currentImages\"]]],null,{\"statements\":[[4,\"slick-slider\",null,[[\"speed\",\"autoplay\",\"arrows\",\"id\",\"pauseOnHover\"],[500,false,true,[20,[\"index\"]],true]],{\"statements\":[[4,\"each\",[[20,[\"currentImages\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"box\"],[7],[0,\"\\n            \"],[6,\"img\"],[9,\"style\",\"max-height:500px;min-height: 500px;display: block;margin-left: auto;margin-right: auto;\"],[10,\"src\",[26,[[19,2,[\"imageData\"]]]]],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null]],\"parameters\":[]},null]],\"parameters\":[]},{\"statements\":[[4,\"if\",[[20,[\"isLoading\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui segment\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui active dimmer\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui text loader\"],[7],[0,\"Loading\"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"p\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"box\"],[7],[0,\"\\n                \"],[6,\"img\"],[9,\"src\",\"/assets/images/NoImagesSaved.jpg\"],[9,\"style\",\"max-height:500px;display: block;margin-left: auto;margin-right: auto;\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]}]],\"parameters\":[]}],[0,\"    \"],[8],[0,\"\\n    \"],[2,\"\"],[0,\"\\n    \"],[6,\"h2\"],[9,\"class\",\"ui header\"],[7],[0,\"Steps\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui ordered list\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"currentExercise\",\"actionSteps\"]]],null,{\"statements\":[[0,\"        \"],[6,\"p\"],[9,\"class\",\"item\"],[7],[0,\"\\n          \"],[1,[19,1,[]],false],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"    \"],[8],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"class\",\"ui header\"],[7],[0,\" duration \"],[8],[0,\"\\n    \"],[6,\"h3\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"sets\"]],false],[0,\" sets \"],[8],[0,\"\\n    \"],[6,\"h3\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"reps\"]],false],[0,\" repetition\"],[8],[0,\"\\n    \"],[6,\"h3\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"duration\"]],false],[0,\" minuets in total\"],[8],[0,\"\\n\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui buttons\"],[9,\"style\",\"float: left!important;\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"isNFirst\"]]],null,{\"statements\":[[0,\"        \"],[6,\"button\"],[9,\"class\",\"ui right labeled icon button\"],[3,\"action\",[[19,0,[]],\"prevExercise\"]],[7],[0,\"\\n          \"],[6,\"i\"],[9,\"class\",\"left chevron icon\"],[7],[8],[0,\"\\n          Previous\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui buttons\"],[9,\"style\",\"float: right!important;\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"isEnd\"]]],null,{\"statements\":[[0,\"        \"],[6,\"button\"],[9,\"class\",\"green ui right labeled icon button\"],[3,\"action\",[[19,0,[]],\"finishRehabPlan\"]],[7],[0,\"\\n          Done\\n          \"],[6,\"i\"],[9,\"class\",\"stop icon\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"        \"],[6,\"button\"],[9,\"class\",\"ui right labeled icon button\"],[3,\"action\",[[19,0,[]],\"nextExercise\"]],[7],[0,\"\\n          Next\\n          \"],[6,\"i\"],[9,\"class\",\"right chevron icon\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n\\n  \"],[8],[0,\"\\n\\n\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-rehabplan-view.hbs" } });
+});
 define("self-start-front-end/templates/components/client-resources", ["exports"], function (exports) {
   "use strict";
 
@@ -13118,7 +13372,7 @@ define("self-start-front-end/templates/components/client-settings", ["exports"],
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "r1mn2eld", "block": "{\"symbols\":[\"aHistory\",\"oneCountry\",\"oneGender\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Settings\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui bottom attached segment pushable\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui visible inverted left vertical sidebar menu\"],[7],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[10,\"style\",[18,\"OPC\"],null],[3,\"action\",[[19,0,[]],\"ProfileClick\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"address card icon\"],[7],[8],[0,\"\\n      Profile\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[10,\"style\",[18,\"OAC\"],null],[3,\"action\",[[19,0,[]],\"settingsClick\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"block icon settings\"],[7],[8],[0,\"\\n      Account\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[10,\"style\",[18,\"OHC\"],null],[3,\"action\",[[19,0,[]],\"historyClick\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"calendar icon\"],[7],[8],[0,\"\\n      Transaction History\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[10,\"style\",[18,\"OAPC\"],null],[3,\"action\",[[19,0,[]],\"appointmentClick\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"calendar icon\"],[7],[8],[0,\"\\n      Appointment History\\n    \"],[8],[0,\"\\n    \"],[2,\"<a class=\\\"item\\\">\"],[0,\"\\n      \"],[2,\"<i class=\\\"calendar icon\\\"></i>\"],[0,\"\\n      \"],[2,\"History\"],[0,\"\\n    \"],[2,\"</a>\"],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"pusher\"],[9,\"style\",\"min-height: 700px;\"],[7],[0,\"\\n    \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"padding-right: 10em;\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"onProfile\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui basic segment\"],[7],[0,\"\\n          \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n          \"],[6,\"legend\"],[7],[0,\"Personal Info\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"First Name\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"text\",[20,[\"pateintsData\",\"givenName\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Last Name\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"text\",[20,[\"pateintsData\",\"familyName\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Date of Birth\"],[8],[0,\"\\n              \"],[6,\"input\"],[9,\"class\",\"date\"],[9,\"type\",\"date\"],[10,\"value\",[18,\"selectedDate\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"assignDate\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"h4\"],[7],[0,\"Gender\"],[8],[0,\"\\n              \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n                \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectGender\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"genderModel\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"option\"],[10,\"value\",[19,3,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"pateintsData\",\"gender\"]],[19,3,[\"name\"]]],null],null],[7],[0,\"\\n                      \"],[1,[19,3,[\"name\"]],false],[0,\"\\n                    \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"legend\"],[7],[0,\"Address\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Number\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"home\",\"text\",[20,[\"pateintsData\",\"streetNumber\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Street Name\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"home\",\"text\",[20,[\"pateintsData\",\"streetName\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Unit\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"bookmark\",\"text\",[20,[\"pateintsData\",\"apartment\"]]]]],false],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Postal/ZIP Code\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"flag\",\"text\",[20,[\"pateintsData\",\"postalCode\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui three column grid\"],[9,\"id\",\"grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"h4\"],[7],[0,\"Country\"],[8],[0,\"\\n              \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n                \"],[6,\"select\"],[9,\"class\",\"world\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectCountry\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"conutryModel\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"option\"],[10,\"value\",[19,2,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"pateintsData\",\"country\"]],[19,2,[\"name\"]]],null],null],[7],[0,\"\\n                      \"],[1,[19,2,[\"name\"]],false],[0,\"\\n                    \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"h4\"],[7],[0,\"Province\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"world\",\"text\",[20,[\"pateintsData\",\"province\"]],\"Province/State\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"h4\"],[7],[0,\"City\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"world\",\"text\",[20,[\"pateintsData\",\"city\"]],\"City\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"legend\"],[7],[0,\"Contact Info\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Phone Number\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"phone\",\"text\",[20,[\"pateintsData\",\"phoneNumber\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-email\"],[7],[0,\"Email\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"email\",\"email\",[20,[\"pateintsData\",\"email\"]],true]]],false],[0,\"\\n\\n            \"],[8],[0,\"\\n\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"three wide field\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"saveChange\"]],[7],[0,\"\\n              Save Changes\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"onAccount\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui basic segment\"],[7],[0,\"\\n          \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n          \"],[6,\"legend\"],[7],[0,\"Change Password\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Old Password\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"oldPassword\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"New Password\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"newPassword\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Confirm Password\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"confirmPassword\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"three wide field\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"savePassword\"]],[7],[0,\"\\n              Save Changes\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"onHistory\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui basic segment\"],[7],[0,\"\\n          \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n          \"],[6,\"legend\"],[7],[0,\"Transaction History\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Old Password\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"oldPassword\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"New Password\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"newPassword\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Confirm Password\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"confirmPassword\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"three wide field\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"savePassword\"]],[7],[0,\"\\n              Save Changes\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"onAppointment\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"ui container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"left thirteen wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n              Appointment History\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n          \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n            \"],[6,\"tbody\"],[7],[0,\"\\n            \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n              \"],[6,\"th\"],[7],[0,\"Date\"],[8],[0,\"\\n              \"],[6,\"th\"],[7],[0,\"Practitioner\"],[8],[0,\"\\n              \"],[6,\"th\"],[7],[0,\"Reason\"],[8],[0,\"\\n              \"],[6,\"th\"],[7],[0,\"Appointment type\"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"id\",\"clientWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n\\n          \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n            \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"appointmentHistory\"]]],null,{\"statements\":[[0,\"              \"],[6,\"tr\"],[7],[0,\"\\n                \"],[6,\"td\"],[7],[1,[19,1,[\"date\"]],false],[8],[0,\"\\n                \"],[6,\"td\"],[7],[1,[19,1,[\"pName\"]],false],[8],[0,\"\\n                \"],[6,\"td\"],[7],[1,[19,1,[\"reason\"]],false],[8],[0,\"\\n                \"],[6,\"td\"],[7],[1,[25,\"types-appointment\",[[19,1,[\"date\"]],[19,1,[\"endDate\"]]],null],false],[8],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null],[0,\"\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-settings.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "4sWE6ens", "block": "{\"symbols\":[\"aHistory\",\"aHistory\",\"oneCountry\",\"oneGender\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Settings\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui bottom attached segment pushable\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui visible inverted left vertical sidebar menu\"],[7],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[10,\"style\",[18,\"OPC\"],null],[3,\"action\",[[19,0,[]],\"ProfileClick\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"address card icon\"],[7],[8],[0,\"\\n      Profile\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[10,\"style\",[18,\"OAC\"],null],[3,\"action\",[[19,0,[]],\"settingsClick\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"cog icon\"],[7],[8],[0,\"\\n      Account\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[10,\"style\",[18,\"OHC\"],null],[3,\"action\",[[19,0,[]],\"historyClick\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"calendar icon\"],[7],[8],[0,\"\\n      Transaction History\\n    \"],[8],[0,\"\\n    \"],[6,\"a\"],[9,\"class\",\"item\"],[10,\"style\",[18,\"OAPC\"],null],[3,\"action\",[[19,0,[]],\"appointmentClick\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"book icon\"],[7],[8],[0,\"\\n      Appointment History\\n    \"],[8],[0,\"\\n    \"],[2,\"<a class=\\\"item\\\">\"],[0,\"\\n      \"],[2,\"<i class=\\\"calendar icon\\\"></i>\"],[0,\"\\n      \"],[2,\"History\"],[0,\"\\n    \"],[2,\"</a>\"],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"pusher\"],[9,\"style\",\"height: 100%;\"],[7],[0,\"\\n    \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"padding-right: 10em;\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"onProfile\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui basic segment\"],[7],[0,\"\\n          \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n          \"],[6,\"legend\"],[7],[0,\"Personal Info\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"First Name\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"text\",[20,[\"pateintsData\",\"givenName\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Last Name\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"text\",[20,[\"pateintsData\",\"familyName\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Date of Birth\"],[8],[0,\"\\n              \"],[6,\"input\"],[9,\"class\",\"date\"],[9,\"type\",\"date\"],[10,\"value\",[18,\"selectedDate\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"assignDate\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"h4\"],[7],[0,\"Gender\"],[8],[0,\"\\n              \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n                \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectGender\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"genderModel\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"option\"],[10,\"value\",[19,4,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"pateintsData\",\"gender\"]],[19,4,[\"name\"]]],null],null],[7],[0,\"\\n                      \"],[1,[19,4,[\"name\"]],false],[0,\"\\n                    \"],[8],[0,\"\\n\"]],\"parameters\":[4]},null],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"legend\"],[7],[0,\"Address\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Number\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"home\",\"text\",[20,[\"pateintsData\",\"streetNumber\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Street Name\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"home\",\"text\",[20,[\"pateintsData\",\"streetName\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Unit\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"bookmark\",\"text\",[20,[\"pateintsData\",\"apartment\"]]]]],false],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Postal/ZIP Code\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"flag\",\"text\",[20,[\"pateintsData\",\"postalCode\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui three column grid\"],[9,\"id\",\"grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"h4\"],[7],[0,\"Country\"],[8],[0,\"\\n              \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n                \"],[6,\"select\"],[9,\"class\",\"world\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectCountry\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"conutryModel\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"option\"],[10,\"value\",[19,3,[\"name\"]],null],[10,\"selected\",[25,\"eq\",[[20,[\"pateintsData\",\"country\"]],[19,3,[\"name\"]]],null],null],[7],[0,\"\\n                      \"],[1,[19,3,[\"name\"]],false],[0,\"\\n                    \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"h4\"],[7],[0,\"Province\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"world\",\"text\",[20,[\"pateintsData\",\"province\"]],\"Province/State\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"four wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"h4\"],[7],[0,\"City\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"world\",\"text\",[20,[\"pateintsData\",\"city\"]],\"City\",true]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"legend\"],[7],[0,\"Contact Info\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"five wide column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n              \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[9,\"for\",\"cd-name\"],[7],[0,\"Phone Number\"],[8],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"phone\",\"text\",[20,[\"pateintsData\",\"phoneNumber\"]],true]]],false],[0,\"\\n            \"],[8],[0,\"\\n\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"three wide field\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"saveChange\"]],[7],[0,\"\\n              Save Changes\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"onAccount\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui basic segment\"],[7],[0,\"\\n          \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n          \"],[6,\"legend\"],[7],[0,\"Change Password\"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Old Password\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"oldPassword\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"New Password\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"newPassword\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui one column grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"five wide column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n            \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Confirm Password\"],[8],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"required\"],[\"user\",\"password\",[20,[\"confirmPassword\"]],true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"three wide field\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"savePassword\"]],[7],[0,\"\\n              Save Changes\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"onHistory\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui container segment\"],[9,\"id\",\"top\"],[9,\"style\",\"margin-left: 0% !important;\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"left thirteen wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n              \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n                Transaction History\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n            \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n              \"],[6,\"tbody\"],[7],[0,\"\\n              \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n                \"],[6,\"th\"],[7],[0,\"Date\"],[8],[0,\"\\n                \"],[6,\"th\"],[7],[0,\"Price\"],[8],[0,\"\\n                \"],[6,\"th\"],[7],[0,\"type\"],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"id\",\"clientWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n\\n            \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n              \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"appointmentHistory\"]]],null,{\"statements\":[[0,\"                \"],[6,\"tr\"],[7],[0,\"\\n                  \"],[6,\"td\"],[7],[1,[19,2,[\"date\"]],false],[8],[0,\"\\n                  \"],[6,\"td\"],[7],[1,[19,2,[\"pName\"]],false],[8],[0,\"\\n                  \"],[6,\"td\"],[7],[1,[19,2,[\"reason\"]],false],[8],[0,\"\\n                \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"onAppointment\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"ui container segment\"],[9,\"id\",\"top\"],[9,\"style\",\"margin-left: 0% !important;\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"left thirteen wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n            \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n              Appointment History\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n          \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n            \"],[6,\"tbody\"],[7],[0,\"\\n            \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n              \"],[6,\"th\"],[7],[0,\"Date\"],[8],[0,\"\\n              \"],[6,\"th\"],[7],[0,\"Practitioner\"],[8],[0,\"\\n              \"],[6,\"th\"],[7],[0,\"Reason\"],[8],[0,\"\\n              \"],[6,\"th\"],[7],[0,\"Appointment type\"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"id\",\"clientWindow\"],[9,\"style\",\"height:500px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n\\n          \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n            \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"appointmentHistory\"]]],null,{\"statements\":[[0,\"              \"],[6,\"tr\"],[7],[0,\"\\n                \"],[6,\"td\"],[7],[1,[19,1,[\"date\"]],false],[8],[0,\"\\n                \"],[6,\"td\"],[7],[1,[19,1,[\"pName\"]],false],[8],[0,\"\\n                \"],[6,\"td\"],[7],[1,[19,1,[\"reason\"]],false],[8],[0,\"\\n                \"],[6,\"td\"],[7],[1,[25,\"types-appointment\",[[19,1,[\"date\"]],[19,1,[\"endDate\"]]],null],false],[8],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null],[0,\"\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-settings.hbs" } });
 });
 define("self-start-front-end/templates/components/client-upload-photos", ["exports"], function (exports) {
   "use strict";
@@ -13326,7 +13580,7 @@ define("self-start-front-end/templates/components/edit-exercises", ["exports"], 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "4zj+Kx6u", "block": "{\"symbols\":[\"Image\",\"Image\",\"file\",\"aS\"],\"statements\":[[4,\"if\",[[20,[\"tableView\"]]],null,{\"statements\":[[0,\"  \"],[6,\"p\"],[9,\"style\",\"cursor: pointer; \"],[9,\"title\",\"Edit\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n    \"],[6,\"img\"],[9,\"src\",\"/assets/images/pencil.svg\"],[7],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[6,\"button\"],[9,\"style\",\"min-width: 75px;min-height: 40px;margin-top: -12px;margin-left: -21px;font-size: 14px;border-top-left-radius: 0;border-bottom-left-radius: 0.28571429rem;\"],[9,\"class\",\"ui positive button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"Edit\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"\\n    Edit Exercise\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"scrolling content\"],[7],[0,\"\\n\\n    \"],[6,\"form\"],[9,\"id\",\"edit\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"run\",\"text\",[20,[\"Name\"]],\"Exercise Name\",true]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[1,[25,\"textarea\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"message\",\"text\",[20,[\"Description\"]],\"Description\",true]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"twelve wide column\"],[9,\"style\",\"padding: 0\"],[7],[0,\"\\n            \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"list\",\"text\",[20,[\"ActionSteps\"]],\"Action Steps\",true]]],false],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"four wide column\"],[9,\"style\",\"padding-right: 0\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui white right labeled icon button\"],[9,\"style\",\"height: 50px\"],[3,\"action\",[[19,0,[]],\"addActionStep\"]],[7],[0,\"\\n              Add Action Step\\n              \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui inverted segment\"],[7],[0,\"\\n          \"],[6,\"label\"],[9,\"style\",\"color: white\"],[7],[0,\"Current Action Steps\"],[8],[0,\"\\n          \"],[6,\"ol\"],[9,\"align\",\"left\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"actionStep\"]]],null,{\"statements\":[[0,\"              \"],[6,\"li\"],[7],[0,\"\\n                \"],[6,\"p\"],[7],[0,\"\\n                  \"],[1,[19,4,[]],false],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Edit\"],[9,\"class\",\"gray write icon\"],[3,\"action\",[[19,0,[]],\"edit\"]],[7],[8],[0,\"\\n                  \"],[6,\"i\"],[9,\"style\",\" cursor: pointer;\"],[9,\"title\",\"Delete\"],[9,\"class\",\"red remove icon\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[4]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui three column grid\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\"],[\"watch\",\"text\",[20,[\"sets\"]],\"Sets\"]]],false],[0,\"\\n\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\"],[\"watch\",\"text\",[20,[\"reps\"]],\"Reps\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\"],[\"watch\",\"text\",[20,[\"Duration\"]],\"Duration\"]]],false],[0,\"\\n\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\"],[\"link\",\"text\",[20,[\"MMURL\"]],\"Multi Media URL\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"queue\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui divided demo items\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"image\"],[7],[0,\"\\n\"],[4,\"if\",[[19,3,[\"isUploading\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"div\"],[9,\"class\",\"ui active inverted dimmer\"],[7],[0,\"\\n                    \"],[6,\"div\"],[9,\"class\",\"ui loader\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                  \"],[6,\"img\"],[10,\"src\",[26,[[19,3,[\"base64Image\"]]]]],[7],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n\"],[4,\"if\",[[19,3,[\"isDisplayableImage\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"label\"],[7],[0,\"Image Name\"],[8],[0,\"\\n                    \"],[1,[25,\"input\",null,[[\"type\",\"value\"],[\"text\",[19,3,[\"name\"]]]]],false],[0,\"\\n                    \"],[6,\"button\"],[9,\"class\",\"ui red basic button\"],[3,\"action\",[[19,0,[]],\"deleteFile\",[19,3,[]]]],[7],[0,\"\\n                      Delete\\n                    \"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                    \"],[6,\"p\"],[7],[0,\"Unsupported image\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[4,\"each\",[[20,[\"queue2\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui divided demo items\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"image\"],[7],[0,\"\\n                \"],[6,\"img\"],[10,\"src\",[26,[[19,2,[\"imageData\"]]]]],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n                  \"],[6,\"label\"],[7],[0,\"Image Name\"],[8],[0,\"\\n                  \"],[1,[25,\"input\",null,[[\"type\",\"value\"],[\"text\",[19,2,[\"name\"]]]]],false],[0,\"\\n                  \"],[6,\"button\"],[9,\"class\",\"ui red basic button\"],[3,\"action\",[[19,0,[]],\"deleteFile\",[20,[\"file\"]]]],[7],[0,\"\\n                    Delete\\n                  \"],[8],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui fluid labeled input\"],[7],[0,\"\\n          \"],[6,\"label\"],[9,\"class\",\"ui fluid huge label\"],[10,\"style\",[18,\"labelStyle\"],null],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"big cloud upload icon\"],[7],[8],[0,\"\\n            Click or Drop images into this area to upload images\\n          \"],[8],[0,\"\\n          \"],[6,\"input\"],[9,\"type\",\"file\"],[9,\"value\",\"target.value\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectFile\"],null],null],[10,\"style\",[18,\"inputStyle\"],null],[10,\"accept\",[26,[[18,\"accept\"]]]],[10,\"multiple\",[18,\"multiple\"],null],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui center alligned three column grid\"],[9,\"style\",\"border:0.5px solid black;overflow-y:scroll;max-height:300px;\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"Images\"]]],null,{\"statements\":[[0,\"            \"],[6,\"div\"],[9,\"class\",\"column\"],[9,\"style\",\"padding: 1em\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui fluid card\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"max-height: 80px;min-height: 80px;text-align:  center;display: table;\"],[7],[0,\"\\n                  \"],[6,\"p\"],[9,\"style\",\"display: table-cell;vertical-align: middle;\"],[7],[1,[19,1,[\"name\"]],false],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"image\"],[7],[0,\"\\n                    \"],[6,\"img\"],[9,\"style\",\"max-height:105px;width: auto;display: block;margin-left: auto;margin-right: auto;\"],[9,\"class\",\"ui small image\"],[10,\"src\",[26,[[19,1,[\"imageData\"]]]]],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"extra content\"],[7],[0,\"\\n                  \"],[1,[25,\"ui-checkbox\",null,[[\"class\",\"label\",\"checked\",\"change\"],[\"toggle\",\"Add\",[20,[\"cbState\"]],[25,\"action\",[[19,0,[]],\"addTempImage\",[19,1,[]]],null]]]],false],[0,\"\\n\"],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"        \"],[8],[0,\"\\n\\n\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin-top: 3em;\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"max-width: 100%; height: 50px;\"],[7],[0,\"\\n          Submit\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/edit-exercises.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "o9QHWFtA", "block": "{\"symbols\":[\"Image\",\"Image\",\"file\",\"aS\",\"index\",\"aS\"],\"statements\":[[4,\"if\",[[20,[\"tableView\"]]],null,{\"statements\":[[0,\"  \"],[6,\"p\"],[9,\"style\",\"cursor: pointer; \"],[9,\"title\",\"Edit\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"\\n    \"],[6,\"img\"],[9,\"src\",\"/assets/images/pencil.svg\"],[7],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"  \"],[6,\"button\"],[9,\"style\",\"min-width: 75px;min-height: 40px;margin-top: -12px;margin-left: -21px;font-size: 14px;border-top-left-radius: 0;border-bottom-left-radius: 0.28571429rem;\"],[9,\"class\",\"ui positive button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"Edit\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],[20,[\"modalName\"]]]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"\\n    Edit Exercise\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"scrolling content\"],[7],[0,\"\\n\\n    \"],[6,\"form\"],[9,\"id\",\"edit\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"run\",\"text\",[20,[\"Name\"]],\"Exercise Name\",true]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[1,[25,\"textarea\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"message\",\"text\",[20,[\"Description\"]],\"Description\",true]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui segment\"],[7],[0,\"\\n          \"],[6,\"label\"],[7],[0,\"Action Steps\"],[8],[0,\"\\n        \\n\"],[4,\"each\",[[20,[\"oldActionSteps\"]]],null,{\"statements\":[[0,\"            \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"fifteen wide column\"],[9,\"style\",\"margin: 1em 0; background-color: white;\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"style\",\"background-color: white;\"],[7],[0,\"\\n                  \"],[1,[25,\"input\",null,[[\"class\",\"id\",\"type\",\"value\",\"required\",\"placeholder\"],[\"circle\",[19,6,[\"id\"]],\"text\",[19,6,[\"value\"]],true,\"New Action Step\"]]],false],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"one wide column\"],[9,\"style\",\"position: relative;margin-top: 30px;left: -1%;color: rgba(230, 60, 60, 0.71);cursor: pointer;\"],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"large times icon\"],[3,\"action\",[[19,0,[]],\"removeOption\",[19,6,[\"id\"]]]],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[6]},null],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"newActionSteps\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"fifteen wide column\"],[9,\"style\",\"margin: 1em 0; background-color: white;\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"style\",\"background-color: white;\"],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"class\",\"id\",\"type\",\"value\",\"required\",\"placeholder\"],[\"circle\",[19,4,[\"id\"]],\"text\",[19,4,[\"value\"]],true,\"New Action Step\"]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"one wide column\"],[9,\"style\",\"position: relative;margin-top: 30px;left: -1%;color: rgba(230, 60, 60, 0.71);cursor: pointer;\"],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"large times icon\"],[3,\"action\",[[19,0,[]],\"removeOption\",[19,4,[\"id\"]]]],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[4,5]},null],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"fourteen wide field\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"fifteen wide column\"],[9,\"style\",\"margin: 1em 0;\"],[3,\"action\",[[19,0,[]],\"addOption\"]],[7],[0,\"\\n              \"],[1,[25,\"input\",null,[[\"id\",\"class\",\"type\",\"placeholder\"],[\"disabled\",\"circle\",\"text\",\"Add Step\"]]],false],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n  \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\"],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui three column grid\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\"],[\"watch\",\"text\",[20,[\"sets\"]],\"Sets\"]]],false],[0,\"\\n\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\"],[\"watch\",\"text\",[20,[\"reps\"]],\"Reps\"]]],false],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\"],[\"watch\",\"text\",[20,[\"Duration\"]],\"Duration\"]]],false],[0,\"\\n\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\"],[\"link\",\"text\",[20,[\"MMURL\"]],\"Multi Media URL\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[7],[0,\"\\n\\n\"],[4,\"each\",[[20,[\"queue\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui divided demo items\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"image\"],[7],[0,\"\\n\"],[4,\"if\",[[19,3,[\"isUploading\"]]],null,{\"statements\":[[0,\"                  \"],[6,\"div\"],[9,\"class\",\"ui active inverted dimmer\"],[7],[0,\"\\n                    \"],[6,\"div\"],[9,\"class\",\"ui loader\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                  \"],[6,\"img\"],[10,\"src\",[26,[[19,3,[\"base64Image\"]]]]],[7],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n\"],[4,\"if\",[[19,3,[\"isDisplayableImage\"]]],null,{\"statements\":[[0,\"                    \"],[6,\"label\"],[7],[0,\"Image Name\"],[8],[0,\"\\n                    \"],[1,[25,\"input\",null,[[\"type\",\"value\"],[\"text\",[19,3,[\"name\"]]]]],false],[0,\"\\n                    \"],[6,\"button\"],[9,\"class\",\"ui red basic button\"],[3,\"action\",[[19,0,[]],\"deleteFile\",[19,3,[]]]],[7],[0,\"\\n                      Delete\\n                    \"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"                    \"],[6,\"p\"],[7],[0,\"Unsupported image\"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[4,\"each\",[[20,[\"queue2\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui divided demo items\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"image\"],[7],[0,\"\\n                \"],[6,\"img\"],[10,\"src\",[26,[[19,2,[\"imageData\"]]]]],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"middle aligned content\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"description\"],[7],[0,\"\\n                  \"],[6,\"label\"],[7],[0,\"Image Name\"],[8],[0,\"\\n                  \"],[1,[25,\"input\",null,[[\"type\",\"value\"],[\"text\",[19,2,[\"name\"]]]]],false],[0,\"\\n                  \"],[6,\"button\"],[9,\"class\",\"ui red basic button\"],[3,\"action\",[[19,0,[]],\"deleteFile\",[20,[\"file\"]]]],[7],[0,\"\\n                    Delete\\n                  \"],[8],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui fluid labeled input\"],[7],[0,\"\\n          \"],[6,\"label\"],[9,\"class\",\"ui fluid huge label\"],[10,\"style\",[18,\"labelStyle\"],null],[7],[0,\"\\n            \"],[6,\"i\"],[9,\"class\",\"big cloud upload icon\"],[7],[8],[0,\"\\n            Click or Drop images into this area to upload images\\n          \"],[8],[0,\"\\n          \"],[6,\"input\"],[9,\"type\",\"file\"],[9,\"value\",\"target.value\"],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"selectFile\"],null],null],[10,\"style\",[18,\"inputStyle\"],null],[10,\"accept\",[26,[[18,\"accept\"]]]],[10,\"multiple\",[18,\"multiple\"],null],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui center alligned three column grid\"],[9,\"style\",\"border:0.5px solid black;overflow-y:scroll;max-height:300px;\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"Images\"]]],null,{\"statements\":[[0,\"            \"],[6,\"div\"],[9,\"class\",\"column\"],[9,\"style\",\"padding: 1em\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui fluid card\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"max-height: 80px;min-height: 80px;text-align:  center;display: table;\"],[7],[0,\"\\n                  \"],[6,\"p\"],[9,\"style\",\"display: table-cell;vertical-align: middle;\"],[7],[1,[19,1,[\"name\"]],false],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"image\"],[7],[0,\"\\n                    \"],[6,\"img\"],[9,\"style\",\"max-height:105px;width: auto;display: block;margin-left: auto;margin-right: auto;\"],[9,\"class\",\"ui small image\"],[10,\"src\",[26,[[19,1,[\"imageData\"]]]]],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"extra content\"],[7],[0,\"\\n                  \"],[1,[25,\"ui-checkbox\",null,[[\"class\",\"label\",\"checked\",\"change\"],[\"toggle\",\"Add\",[20,[\"cbState\"]],[25,\"action\",[[19,0,[]],\"addTempImage\",[19,1,[]]],null]]]],false],[0,\"\\n\"],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"        \"],[8],[0,\"\\n\\n\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin-top: 3em;\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"max-width: 100%; height: 50px;\"],[7],[0,\"\\n          Submit\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/edit-exercises.hbs" } });
 });
 define("self-start-front-end/templates/components/edit-form", ["exports"], function (exports) {
   "use strict";
@@ -14578,6 +14832,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+a7652157"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+855fe318"});
 }
 //# sourceMappingURL=self-start-front-end.map
