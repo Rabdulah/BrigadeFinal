@@ -6,6 +6,7 @@ router.route('/')
     .post( function (request, response) {
         var exercise = new Exercise.Model(request.body.exercise);
         exercise.save(function (error) {
+            console.log(error);
             if (error) response.send(error);
             response.json({exercise: exercise});
         });
@@ -69,18 +70,16 @@ router.route('/:exercise_id')
                 response.send({error: error});
             }
             else {
-
+               
                 // update each attribute
                 exercise.name = request.body.exercise.name;
                 exercise.description = request.body.exercise.description;
-                exercise.objectives = request.body.exercise.objectives;
                 exercise.actionSteps = request.body.exercise.actionSteps;
                 exercise.authorName = request.body.exercise.authorName;
-                exercise.location = request.body.exercise.location;
-                exercise.frequency = request.body.exercise.frequency;
+                exercise.sets = request.body.exercise.sets;
+                exercise.reps = request.body.exercise.reps;
                 exercise.duration = request.body.exercise.duration;
                 exercise.multimediaURL = request.body.exercise.multimediaURL;
-                exercise.targetDate = request.body.exercise.targetDate;
                 exercise.image = request.body.exercise.image;
                 exercise.exerciseList = request.body.exercise.exerciseList;
 
