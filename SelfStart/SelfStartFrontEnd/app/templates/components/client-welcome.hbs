@@ -3,12 +3,89 @@
     <div class="introduction">
       <h1 class="ui inverted header">
         <span class="library">Client Page</span>
-        <span class="library">{{message}}</span>
+        {{#each model as |admin|}}
+          <span class="tagline">
+            {{admin.message}}
+          </span>
+        {{/each}}
+
       </h1>
       <div class="ui hidden divider"></div>
       <div class="ui hidden divider"></div>
       <div class="ui center aligned grid">
       </div>
+    </div>
+  </div>
+</div>
+<div class="ui vertical stripe intro segment" id="about" style="border-bottom: 10px dotted whitesmoke; padding-top: 10em">
+  <div class = "ui very padded segment container" style="border: none; box-shadow: none; background-color: white;position: relative;z-index:  2;">
+    <div class="ui four steps">
+      <div class="{{introValue}} step">
+        <i class="sticky note icon"></i>
+        <div class="content">
+          <div class="title">Intake Form</div>
+        </div>
+      </div>
+      <div class="{{photoValue}}  step">
+        <i class="photo icon"></i>
+        <div class="content">
+          <div class="title">Upload Photos</div>
+        </div>
+      </div>
+      <div class="{{appointmentValue}}  step">
+        <i class="bookmark icon"></i>
+        <div class="content">
+          <div class="title">Book Appointment</div>
+        </div>
+      </div>
+      <div class="{{confirmValue}}  step">
+        <i class="check circle icon"></i>
+        <div class="content">
+          <div class="title">Confirmation</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ui attached segment">
+      {{#if intro}}
+        <div class="field" style="margin: 1em 0">
+
+          {{!--{{display-assessment id=paitent.intakeForm.id}}--}}
+
+
+          <div class="ui centered grid">
+            <button class="ui blue button" style="height: 50px;" {{action "goToPhoto"}}>Next</button>
+          </div>
+        </div>
+      {{/if}}
+      {{#if photo}}
+        <p>Photos go here!!</p>
+        <div class="field" style="margin: 1em 0">
+          <div class="ui centered grid">
+            <button class="ui blue button" style="height: 50px;" {{action "backToIntro"}}>Back</button>
+            <button class="ui blue button" style="height: 50px;" {{action "goToAppointment"}}>Next</button>
+          </div>
+        </div>
+      {{/if}}
+      {{#if appointment}}
+        <p>Appointment go here!!</p>
+        <div class="field" style="margin: 1em 0">
+          <div class="ui centered grid">
+            <button class="ui blue button" style="height: 50px;" {{action "backToPhoto"}}>Back</button>
+            <button class="ui blue button" style="height: 50px;" {{action "goToConfirm"}}>Next</button>
+          </div>
+        </div>
+      {{/if}}
+      {{#if confirm}}
+        <p>Confirmation Page Goes Here!!</p>
+        <div class="field" style="margin: 1em 0">
+          <div class="ui centered grid">
+            <button class="ui blue button" style="height: 50px;" {{action "backToAppointment"}}>Back</button>
+            <button class="ui blue button" style="height: 50px;" {{action "goToPaypal"}}>Next</button>
+          </div>
+        </div>
+      {{/if}}
+
     </div>
   </div>
 </div>
