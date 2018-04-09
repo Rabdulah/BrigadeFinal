@@ -10,7 +10,6 @@ export default Component.extend({
   appointment: false,
   photo: false,
   confirm: false,
-
   actions: {
     goToPhoto() {
       this.set('introValue', "completed");
@@ -53,5 +52,4 @@ export default Component.extend({
 
     },
   },
-
 });

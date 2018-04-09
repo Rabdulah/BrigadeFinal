@@ -80,6 +80,7 @@ router.route('/:rehabClientLink_id')
                 rehabClientLink.Patient = request.body.rehabClientLink.Patient;
                 rehabClientLink.terminated = request.body.rehabClientLink.terminated;
                 rehabClientLink.assigned = request.body.rehabClientLink.assigned;
+                rehabClientLink.assessmentTest = request.body.rehabClientLink.assessmentTest;
 
                 rehabClientLink.save(function (error) {
                     if (error) {

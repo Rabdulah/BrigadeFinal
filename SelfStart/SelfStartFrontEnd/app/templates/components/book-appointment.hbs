@@ -105,8 +105,10 @@
       </div>
     {{/if}}
     {{#if photo}}
-      <p>Photos go here!!</p>
       <div class="field" style="margin: 1em 0">
+
+        {{client-upload-photos}}
+
         <div class="ui centered grid">
           <button class="ui blue button" style="height: 50px;" {{action "backToIntro"}}>Back</button>
           <button class="ui blue button" style="height: 50px;" {{action "goToAppointment"}}>Next</button>

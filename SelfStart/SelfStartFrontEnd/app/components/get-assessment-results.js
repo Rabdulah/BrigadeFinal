@@ -3,7 +3,8 @@ import Component from '@ember/component';
 export default Component.extend({
 
   DS: Ember.inject.service('store'),
-  ID: "5acbb1e984bdf02a643bd758",
+
+
   open:false,
   notOpen:true,
   linker: null,
@@ -11,7 +12,7 @@ export default Component.extend({
   orders:[],
   ans:[],
   assessmentModel: Ember.computed(function(){
-    var id = "5acbb1e984bdf02a643bd758";
+
     return this.get('DS').find('assessment-test', id);
   }),
 

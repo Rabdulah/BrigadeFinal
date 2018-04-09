@@ -29,6 +29,7 @@ export default Component.extend({
   PostalCode: null,
   Appartment: null,
 
+
     actions: {
       deny (){
         $('.ui.register.modal').modal('hide');
