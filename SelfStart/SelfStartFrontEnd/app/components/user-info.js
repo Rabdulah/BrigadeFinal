@@ -138,14 +138,14 @@ export default Component.extend({
           this.get('DS').query('form', {filter: {'name': 'Intake Form'}}).then((intake) => {
             var ans = [];
 
-            // let newTest = this.get('DS').createRecord('assessment-test', {
-            //   name: "Intake Form",
-            //   description: "Initial form before ou can book an appointment",
-            //   form: intake.get('firstObject'),
-            //   patient: res,
-            //
-            // });
-            // newTest.save().then(() => {
+            let newTest = this.get('DS').createRecord('assessment-test', {
+              name: "Intake Form",
+              description: "Initial form before you can book an appointment",
+              form: intake.get('firstObject'),
+              patient: res,
+            
+            });
+            newTest.save().then(() => {
 
               this.get('DS').query('question-order', {filter: {'form': intake.get('firstObject').id}}).then((rec) => {
 
@@ -156,17 +156,17 @@ export default Component.extend({
                  //console.log(r.get('order'));
                   //console.log(q.get('questionText'));
                     r.get('question').then((q)=>{
-                      console.log(q.get('questionText'));
-                    })
+                      let answer = this.get('DS').createRecord('answer', {
+                        question: q.get('questionText'),
+                        answer: "",
+                        test: newTest
+                      });
 
-                  // let answer = this.get('DS').createRecord('answer', {
-                  //   question: "",
-                  //   answer: "",
-                  //   test: newTest
-                  // });
-                  // answer.save();
+                    answer.save();
+                      })
 
-                //});
+
+                });
 
               });
             });

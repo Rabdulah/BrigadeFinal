@@ -2,6 +2,26 @@ import Component from '@ember/component';
 import { inject } from '@ember/service';
 
 export default Component.extend({
+
+  DS: inject('store'),
+  tf: true,
+  SAanswer: "",
+  Rating: 1,
+  true:"",
+  checkTrue:false,
+  checkFalse:false,
+  checkmcop1: false,
+  checkmcop2: false,
+  checkmcop3: false,
+  checkmcop4: false,
+  checkmcop5: false,
+  checkmcop6: false,
+  mcop1: "",
+  mcop2: "",
+  mcop3: "",
+  mcop4: "",
+  mcop5: "",
+  mcop6: "",
   init() {
     this._super(...arguments);
     var self =this;
@@ -24,9 +44,9 @@ export default Component.extend({
       this.get("answers").forEach((rec) =>{
         if(rec.get("question") === this.get("question").get("questionText")){
           if(rec.get("answer") == "No")
-            checkFalse = true;
+            this.set('checkFalse', true);
           else
-            checkTrue = true;
+            this.set('checkTrue', true);
         }
       });
     }
@@ -68,24 +88,4 @@ export default Component.extend({
 
     }
   },
-
-  DS: inject('store'),
-  tf: true,
-  SAanswer: "",
-  Rating: 1,
-  true:"",
-  checkTrue:false,
-  checkFalse:false,
-  checkmcop1: false,
-  checkmcop2: false,
-  checkmcop3: false,
-  checkmcop4: false,
-  checkmcop5: false,
-  checkmcop6: false,
-  mcop1: "",
-  mcop2: "",
-  mcop3: "",
-  mcop4: "",
-  mcop5: "",
-  mcop6: "",
 });
