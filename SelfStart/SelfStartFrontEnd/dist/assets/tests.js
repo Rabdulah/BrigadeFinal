@@ -152,7 +152,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/client-settings.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/client-settings.js should pass ESLint\n\n21:23 - \'Ember\' is not defined. (no-undef)\n23:7 - \'Ember\' is not defined. (no-undef)\n25:16 - \'Ember\' is not defined. (no-undef)\n27:7 - \'Ember\' is not defined. (no-undef)\n29:16 - \'Ember\' is not defined. (no-undef)\n31:7 - \'Ember\' is not defined. (no-undef)\n33:16 - \'Ember\' is not defined. (no-undef)\n35:8 - \'Ember\' is not defined. (no-undef)\n37:16 - \'Ember\' is not defined. (no-undef)\n74:5 - Unexpected console statement. (no-console)\n184:7 - Unexpected console statement. (no-console)\n192:11 - Unexpected console statement. (no-console)\n199:13 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/client-settings.js should pass ESLint\n\n21:23 - \'Ember\' is not defined. (no-undef)\n23:7 - \'Ember\' is not defined. (no-undef)\n25:16 - \'Ember\' is not defined. (no-undef)\n27:7 - \'Ember\' is not defined. (no-undef)\n29:16 - \'Ember\' is not defined. (no-undef)\n31:7 - \'Ember\' is not defined. (no-undef)\n33:16 - \'Ember\' is not defined. (no-undef)\n35:8 - \'Ember\' is not defined. (no-undef)\n37:16 - \'Ember\' is not defined. (no-undef)\n74:5 - Unexpected console statement. (no-console)\n183:7 - Unexpected console statement. (no-console)\n191:11 - Unexpected console statement. (no-console)\n198:13 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/client-upload-photos.js', function (assert) {
