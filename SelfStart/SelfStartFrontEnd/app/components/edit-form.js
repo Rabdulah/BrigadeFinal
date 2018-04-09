@@ -1,11 +1,11 @@
 import Component from '@ember/component';
 import Ember from "ember";
-import { inject } from '@ember/service';
+import { inject as service } from '@ember/service';
 import $ from 'jquery';
 
 export default Component.extend({
-  store: Ember.inject.service(),
-  router: inject('-routing'),
+  store: service(),
+  router: service(),
 
   pageSize: 200,
   sort: 'questionText',
@@ -17,8 +17,7 @@ export default Component.extend({
 
   formAttributes:
 
-    [
-      {'key': 'questionText', 'name':'Question', 'dir' : '','class' :'left aligned six wide column'},
+    [{'key': 'questionText', 'name':'Question', 'dir' : '','class' :'left aligned six wide column'},
       {'key': 'type', 'name':'Type', 'dir' : '','class' :'left aligned six wide column'}],
 
   questionsModel: [],

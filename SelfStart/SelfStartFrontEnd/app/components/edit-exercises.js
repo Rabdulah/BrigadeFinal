@@ -4,6 +4,8 @@ import fileObject from "../utils/file-object";
 
 export default Component.extend({
   DS: Ember.inject.service('store'),
+
+  //tagName: '',
   cbState: false,
   newActionSteps: [],
   oldActionSteps: [],
@@ -18,15 +20,12 @@ export default Component.extend({
   modelQueue: [],
   savingInProgress: false,
   isEditing: false,
-  ID: null,
+  //ID: null,
   exerID: null,
   secQueue: [],
   removeImages: [],
   numberOfActionSteps: -1,
 
-  init: function() {
-    this._super();
-  },
 
   labelArray: [
     'height: 6.25em',
@@ -76,20 +75,21 @@ export default Component.extend({
       'text-align: center',
     ]);
   },
-  exerciseData: null,
-
-  Description: Ember.computed.oneWay('exerciseData.description'),
-  Name: Ember.computed.oneWay('exerciseData.name'),
-  AuthName: Ember.computed.oneWay('exerciseData.authorName'),
-  actionStep: Ember.computed.oneWay('exerciseData.actionSteps'),
-  sets: Ember.computed.oneWay('exerciseData.sets'),
-  reps: Ember.computed.oneWay('exerciseData.reps'),
-  Duration: Ember.computed.oneWay('exerciseData.duration'),
-  MMURL: Ember.computed.oneWay('exerciseData.multimediaURL'),
-  Imgs: Ember.computed.oneWay('exerciseData.images'),
+  exercisesData: null,
+  flagEdit: false,
+  //
+  // Description: Ember.computed.oneWay('exercisesData.description'),
+  // Name: Ember.computed.oneWay('exercisesData.name'),
+  // AuthName: Ember.computed.oneWay('exercisesData.authorName'),
+  // actionStep: Ember.computed.oneWay('exercisesData.actionSteps'),
+  // sets: Ember.computed.oneWay('exercisesData.sets'),
+  // reps: Ember.computed.oneWay('exercisesData.reps'),
+  // Duration: Ember.computed.oneWay('exercisesData.duration'),
+  // MMURL: Ember.computed.oneWay('exercisesData.multimediaURL'),
+  // Imgs: Ember.computed.oneWay('exercisesData.images'),
 
   modalName: Ember.computed(function () {
-    return 'editExercise' + this.get('ID');
+    return 'editExercise' + this.get('exercisesData').id;
   }),
 
   actions: {
@@ -169,7 +169,7 @@ export default Component.extend({
         this.oldActionSteps.pushObject(newObj);
       });
 
-      this.set('exerciseData', this.get('DS').peekRecord('exercise', this.get('ID')));
+      //this.set('exerciseData', this.get('DS').peekRecord('exercise', this.get('ID')));
 
       Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
         closable: false,
@@ -184,99 +184,91 @@ export default Component.extend({
           this.queue.clear();
           return true;
         },
-
-        onApprove: () => {
-
-          this.removeImages.forEach(file => {
-            console.log(file);
-            this.get('DS').findRecord('image', file.id).then((rec) => {
-              rec.destroyRecord();
-              rec.save();
-            });
-          });
-          let secQueue2 = [];
-          let self = this;
-          this.get('temp').forEach(function(obj) {
-            secQueue2.push(obj);
-          })
-
-          this.get('temp').clear();
-
-          this.queue.forEach(file => {
-
-            console.log(file);
-
-            this.get('DS').findRecord('exercise', this.get('ID')).then((rec)=>{
-
-              // console.log("sasdasd", exe);
-              var newFile = this.get('DS').createRecord('image', {
-                name: file.name,
-                size: file.size,
-                type: file.type,
-                rawSize: file.rawSize,
-                imageData: file.base64Image,
-                exercise: []
-              });
-
-              // var exe = this.get('DS').findRecord('exercise', this.get('ID'));
-              // newFile.save();
-
-              newFile.get('exercise').pushObject(rec);
-              newFile.save();
-
-              rec.get('images').pushObject(newFile);
-              this.get('DS').findRecord('exercise', this.get('ID')).then((rec)=>{
-                rec.save();
-              });
-            });
-          });
-
-          this.get('DS').findRecord('exercise', this.get('ID')).then((rec)=>{
-            secQueue2.forEach(file => {
-              this.get('DS').findRecord(this.get('model'), file.get('id')).then((obj) =>{
-                obj.get('exercise').pushObject(rec);
-                obj.save();
-                rec.get('images').pushObject(obj);
-              })
-            });
-          });
-
-          let actionS = [];
-          this.get(this.oldActionSteps).forEach(o => {
-            actionS.push(o.value);
-          })
-          this.get(this.newActionSteps).forEach(o => {
-            actionS.push(o.value);
-          })
-
-          this.get('DS').findRecord('exercise' , this.get('ID')).then((rec)=>{
-            rec.set('name', this.get('Name'));
-            rec.set('description', this.get('Description'));
-            rec.set('authorName', this.get('AuthName'));
-            rec.set('sets', this.get('sets'));
-            rec.set('reps', this.get('reps'));
-            rec.set('actionStep', this.get('ActionSteps'));
-            rec.set('duration', this.get('Duration'));
-            rec.set('MMURL', this.get('MMURL'));
-            // rec.set('exercises', this.get('exercises'));
-            // rec.set('assessmentTests', this.get('assessmentTests'));
-            rec.save().then(()=>{
-              return true;
-            });
-          });
-
-          //window.location.reload();
-          this.newActionSteps.clear();
-          this.oldActionSteps.clear();
-          this.secQueue.clear();
-          this.removeImages.clear();
-          this.queue.clear();
-
-        }
       })
         .modal('show');
     },
 
+    submit(){
+      this.removeImages.forEach(file => {
+        console.log(file);
+        this.get('DS').findRecord('image', file.id).then((rec) => {
+          rec.destroyRecord();
+          rec.save();
+        });
+      });
+      let secQueue2 = [];
+      let self = this;
+      this.get('temp').forEach(function(obj) {
+        secQueue2.push(obj);
+      })
+
+      this.get('temp').clear();
+
+      this.queue.forEach(file => {
+
+        console.log(file);
+
+        this.get('DS').findRecord('exercise',  this.get('exercisesData').id).then((rec)=>{
+
+          // console.log("sasdasd", exe);
+          var newFile = this.get('DS').createRecord('image', {
+            name: file.name,
+            size: file.size,
+            type: file.type,
+            rawSize: file.rawSize,
+            imageData: file.base64Image,
+            exercise: []
+          });
+
+          // var exe = this.get('DS').findRecord('exercise', this.get('ID'));
+          // newFile.save();
+
+          newFile.get('exercise').pushObject(rec);
+          newFile.save();
+
+
+          rec.get('images').pushObject(newFile);
+          this.get('DS').findRecord('exercise',  this.get('exercisesData').id).then((rec)=>{
+            rec.save();
+
+          });
+        });
+      });
+
+      this.get('DS').findRecord('exercise',  this.get('exercisesData').id).then((rec)=>{
+        secQueue2.forEach(file => {
+          this.get('DS').findRecord(this.get('model'), file.get('id')).then((obj) =>{
+            obj.get('exercise').pushObject(rec);
+            obj.save();
+            rec.get('images').pushObject(obj);
+          })
+        });
+      });
+
+      this.get('DS').findRecord('exercise' , this.get('exercisesData').id).then((rec)=>{
+        rec.set('name', this.get('exercisesData.name'));
+        rec.set('description', this.get('exercisesData.description'));
+        rec.set('authorName', '');
+        rec.set('sets', this.get('exercisesData.sets'));
+        rec.set('reps', this.get('exercisesData.reps'));
+        rec.set('actionSteps', this.get('exercisesData.actionSteps'));
+        rec.set('duration', this.get('exercisesData.duration'));
+        rec.set('multimediaURL', this.get('exercisesData.multimediaURL'));
+        // rec.set('exercises', this.get('exercises'));
+        // rec.set('assessmentTests', this.get('assessmentTests'));
+        rec.save().then(()=>{
+
+          this.secQueue.clear();
+          this.removeImages.clear();
+          this.queue.clear();
+          if (this.get('flagEdit')=== true)
+            this.set('flagEdit', false);
+          else
+            this.set('flagEdit', true);
+          $('.ui.' + this.get('modalName') + '.modal').modal('hide');
+        });
+      });
+    },
 
     addObjective: function(){
       let newObj = this.get('Objective');

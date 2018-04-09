@@ -4,6 +4,7 @@ import $ from 'jquery';
 
 export default Component.extend({
   DS: inject('store'),
+  countryAdd: null,
 
   actions: {
 
@@ -22,6 +23,10 @@ export default Component.extend({
             name: this.get('name'),
           });
           newCountry.save().then(()=> {
+            if (this.get('countryAdd')=== true)
+              this.set('countryAdd', false);
+            else
+              this.set('countryAdd', true);
             return true;
           });
         }

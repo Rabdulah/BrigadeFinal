@@ -66,6 +66,7 @@ export default Component.extend({
 
       let self = this;
 
+
       let passwords = this.get('DS').createRecord('password', {
         email: self.get('email'),
         encryptedPassword: self.get('authentication').hash(self.get('encryptedPassword')),
@@ -74,14 +75,22 @@ export default Component.extend({
       });
 
       passwords.save().then((passwords) => {
+
+
+        var lastName =  self.get('familyName');
+        var firstName =  self.get('givenName');
+        var mail = self.get('email');
+
+
+
+
         let physiotherapist = this.get('DS').createRecord('physiotherapest', {
-          familyName: self.get('familyName'),
-          givenName: self.get('givenName'),
-          email: self.get('email'),
+          familyName: lastName.charAt(0).toUpperCase() + lastName.substring(1),
+          givenName: firstName.charAt(0).toUpperCase() + firstName.substring(1),
+          email: mail.substring(0).toLowerCase(),
           encryptedPassword: passwords,
           dateHired: new Date(this.get('selectedHiredDate')),
-          dateFired: new Date(this.get('selectedFiredDate')),
-          gender: self.get('selectedGender'),
+          gender: self.get('gender'),
           phoneNumber: self.get('phoneNumber'),
           //treatment: self.get('treatment'),
         });
@@ -99,7 +108,13 @@ export default Component.extend({
             passwords.set('practitioner', res);
             passwords.save();
           }
+
+          if (this.get('flagAdd')=== true)
+            this.set('flagAdd', false);
+          else
+            this.set('flagAdd', true);
           $('.ui.newPhysio.modal').modal('hide');
+
           this.set('familyName', '');
           this.set('givenName', '');
           this.set('email', '');
@@ -108,14 +123,12 @@ export default Component.extend({
           this.set('dateFired', '');
           this.set('phoneNumber', '');
           this.set('encryptedPassword', '');
-          if (this.get('flagAdd')=== true)
-            this.set('flagAdd', false);
-          else
-            this.set('flagAdd', true);
+
           return true;
         });
+
       });
-      
+
 
     },
     openModal: function ()  {

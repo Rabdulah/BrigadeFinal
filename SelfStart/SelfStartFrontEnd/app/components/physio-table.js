@@ -19,6 +19,11 @@ export default Component.extend({
       {'key': 'dateHired', 'name':'Date Hired', 'dir' : '','class' :'left aligned three wide column'},
       {'key': 'email', 'name':'Email', 'dir' : '','class' :'left aligned four wide column'}],
 
+  searchAttributes:
+    [{'key': 'givenName', 'name':'First Name', 'dir' : 'asc', 'class' :'left aligned three wide column'},
+      {'key': 'familyName', 'name':'Last Name', 'dir' : '','class' :'left aligned three wide column'},
+      {'key': 'email', 'name':'Email', 'dir' : '','class' :'left aligned four wide column'}],
+
   practsModel: [],
   INDEX: null,
   queryPath: 'givenName',
@@ -59,9 +64,6 @@ export default Component.extend({
     let self = this;
 
     this.get('store').query('physiotherapest', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
-      records.forEach( function (physio){
-        physio.set('dateHired', moment(physio.get('dateOfBirth')).format('DD/MM/YYYY'));
-      });
       self.set('practsModel', records.toArray());
     });
 

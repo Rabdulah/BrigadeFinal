@@ -69,7 +69,9 @@
                     {{get question column.key}}
                   </td>
                   <td class="left aligned four wide column">
+                    <div class="cd-form">
                     {{ui-checkbox checked=(get question 'selected') onChange=(action (mut (get question 'selected')))}}
+                    </div>
                   </td>
                 {{/each}}
               </tr>
@@ -82,7 +84,9 @@
                     {{get question column.key}}
                   </td>
                   <td class="left aligned four wide column">
+                    <div class="cd-form">
                     {{ui-checkbox checked=(get question 'selected') onChange=(action (mut (get question 'selected')))}}
+                    </div>
                   </td>
                 {{/each}}
               </tr>
@@ -180,7 +184,9 @@
                   </td>
                 {{/each}}
                 <td class="left aligned two wide column">
+                  <div class="cd-form">
                   {{ui-checkbox checked=(get form 'selectedList') onChange=(action (mut (get form 'selectedList')))}}
+                  </div>
                 </td>
                 <td class="left aligned two wide column">
                   <span class="handle" style="cursor: pointer">&varr;</span>

@@ -19,11 +19,13 @@
     <form id="edit" class="cd-form floating-labels" {{action "submit" on="submit"}}>
 
       <div class="field" style="margin: 1em 0;">
-        {{input class="run"  type ="text" value = Name placeholder="Exercise Name" required = true}}
+        <label class="cd-label">Exercise Name</label>
+        {{input class="run"  type ="text" value = exercisesData.name required = true}}
       </div>
 
       <div class="field" style="margin: 1em 0;">
-        {{textarea class="message"  type ="text" value = Description placeholder="Description" required = true}}
+        <label class="cd-label">Description</label>
+        {{textarea class="message"  type ="text" value = exercisesData.description required = true}}
       </div>
 
       <div class="field" style="margin: 1em 0;">
@@ -72,7 +74,8 @@
 
         <div class="ui grid" style="margin: 1em 0;">
           <div class="twelve wide column" style="padding: 0">
-            {{input class="list"  type ="text" value = ActionSteps placeholder="Action Steps" required = true}}
+            <label class="cd-label">Action Steps</label>
+            {{input class="list"  type ="text" value = exercisesData.actionSteps required = true}}
           </div>
           <div class="four wide column" style="padding-right: 0">
             <button class="ui white right labeled icon button" style="height: 50px" {{action "addActionStep"}}>
@@ -100,20 +103,24 @@
 
       <div class="ui three column grid">
         <div class="column" style="margin: 1em 0;">
-          {{input class="watch"  type ="text" value = sets placeholder="Sets"}}
+          <label class="cd-label">Sets</label>
+          {{input class="watch"  type ="text" value = exercisesData.sets}}
 
         </div>
         <div class="column" style="margin: 1em 0;">
-          {{input class="watch"  type ="text" value = reps placeholder="Reps"}}
+          <label class="cd-label">Reps</label>
+          {{input class="watch"  type ="text" value = exercisesData.reps}}
         </div>
         <div class="column" style="margin: 1em 0;">
-          {{input class="watch"  type ="text" value = Duration placeholder="Duration"}}
+          <label class="cd-label">Duration</label>
+          {{input class="watch"  type ="text" value = exercisesData.duration}}
 
         </div>
       </div>
 
       <div class="field" style="margin: 1em 0;">
-        {{input class="link"  type ="text" value = MMURL placeholder="Multi Media URL"}}
+        <label class="cd-label">Multi Media URL</label>
+        {{input class="link"  type ="text" value = exercisesData.multimediaURL}}
       </div>
 
       <div class = "field">

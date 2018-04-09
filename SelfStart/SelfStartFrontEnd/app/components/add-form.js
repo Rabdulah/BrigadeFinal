@@ -1,11 +1,11 @@
 import Component from '@ember/component';
 import Ember from "ember";
-import { inject } from '@ember/service';
+import { inject as service } from '@ember/service';
 import $ from 'jquery';
 
 export default Component.extend({
-  store: Ember.inject.service(),
-  router: inject('-routing'),
+  store: service(),
+  router: service(),
 
 
   sort: 'questionText',

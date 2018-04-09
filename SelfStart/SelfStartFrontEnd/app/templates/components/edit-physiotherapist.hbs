@@ -35,17 +35,20 @@
 
         <div class="column " style="margin: 1em 0;">
           <h4>Gender</h4>
-          <p class="cd-select icon">
-            <select class="people" onchange={{action 'selectGender' value="target.value"}}>
-              {{#each genderModel as |oneGender|}}
-                <option value={{oneGender.name}} selected={{eq physiosData.gender oneGender.name}}>
-                  {{oneGender.name}}
-                </option>
-              {{/each}}
-            </select>
-          </p>
-        </div>
 
+          {{#ui-dropdown class="gender selection" onChange=(action (mut gender))}}
+            <div class="default text" style="color: black;">{{gender}}</div>
+            <i class="dropdown icon" id="selectIcon"></i>
+            <div class="menu">
+              {{#each genderModel as |oneGender|}}
+                <div data-value="{{oneGender.name}}" class="item">
+                  {{oneGender.name}}
+                </div>
+              {{/each}}
+            </div>
+          {{/ui-dropdown}}
+
+        </div>
       </div>
 
 

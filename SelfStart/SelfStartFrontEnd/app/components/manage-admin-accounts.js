@@ -19,10 +19,16 @@ export default Component.extend({
   modelAttributes:
     [{'key': 'givenName', 'name':'First Name', 'dir' : 'asc', 'class' :'left aligned three wide column'},
       {'key': 'familyName', 'name':'Last Name', 'dir' : '','class' :'left aligned three wide column'},
-      {'key': 'dateOfBirth', 'name':'Date of Birth', 'dir' : '','class' :'left aligned threees wide column'},
+      {'key': 'dateOfBirth', 'name':'Date of Birth', 'dir' : '','class' :'left aligned three wide column'},
       // {'key': 'address', 'name':'Address'},
       {'key': 'email', 'name':'Email', 'dir' : '','class' :'left aligned four wide column'}],
   // {'key': 'phoneNumber', 'name':'Phone Number'}],
+
+  searchAttributes:
+    [{'key': 'givenName', 'name':'First Name', 'dir' : 'asc', 'class' :'left aligned three wide column'},
+      {'key': 'familyName', 'name':'Last Name', 'dir' : '','class' :'left aligned three wide column'},
+      {'key': 'email', 'name':'Email', 'dir' : '','class' :'left aligned four wide column'}],
+
 
   patientsModel: [],
   INDEX: null,
@@ -66,9 +72,6 @@ export default Component.extend({
     //  this.set('modelAttributes', Object.keys(this.get('store').createRecord('patient').toJSON()));
 
     this.get('store').query('patient', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
-      records.forEach( function (patient){
-        patient.set('dateOfBirth', moment(patient.get('dateOfBirth')).format('DD/MM/YYYY'));
-      });
       self.set('patientsModel', records.toArray());
     });
 

@@ -97,6 +97,9 @@ export default Component.extend({
     },
 
     submit(){
+
+      var text = this.get('questionData.questionText');
+
       if(this.get('questionData.type') === "Multiple choice"){
         this.set('optString', "");
         for(let i =0; i < this.get('questionData.optionNumber'); i++){
@@ -106,7 +109,7 @@ export default Component.extend({
 
       }
       this.get('DS').findRecord('question', this.get('questionData').id).then((rec) => {
-        rec.set('questionText', this.get('questionData.questionText'));
+        rec.set('questionText', text.charAt(0).toUpperCase() + text.substring(1),);
         rec.set('optionString', this.get('questionData.optString'));
         rec.set('helpDescription', this.get('questionData.helpDescription'));
         rec.save().then(()=>{

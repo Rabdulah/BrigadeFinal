@@ -5,7 +5,7 @@ import $ from 'jquery';
 
 export default Component.extend({
   DS: inject('store'),
-  flagDelete: null,
+  countryDelete: null,
 
   modalName: computed(function () {
     return 'Delete-Country' + this.get('ID');
@@ -23,10 +23,10 @@ export default Component.extend({
           let country = this.get('DS').peekRecord('country', this.get('ID'));
 
           country.destroyRecord().then(()=>{
-            if (this.get('flagDelete')=== true)
-              this.set('flagDelete', false);
+            if (this.get('countryDelete')=== true)
+              this.set('countryDelete', false);
             else
-              this.set('flagDelete', true);
+              this.set('countryDelete', true);
             return true;
           });
         }
