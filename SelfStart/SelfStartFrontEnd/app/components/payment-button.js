@@ -42,4 +42,5 @@ export default Component.extend({
       }
     }, '#paypal-button-container');
   }
+
 });

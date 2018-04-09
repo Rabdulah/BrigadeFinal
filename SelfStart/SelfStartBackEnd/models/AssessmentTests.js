@@ -8,7 +8,6 @@ var assessmentTestSchema = mongoose.Schema({
     rehabPlan: {type: mongoose.Schema.ObjectId, ref: 'RehabilitationPlans'},
     patient: {type: mongoose.Schema.ObjectId, ref: 'PatientProfiles'},
     answer:[{type: mongoose.Schema.ObjectId, ref: 'Answers'}],
-
 });
 var AssessmentTestSchema = mongoose.model('assessmentTest', assessmentTestSchema);
 exports.Model = AssessmentTestSchema;

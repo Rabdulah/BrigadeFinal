@@ -2,7 +2,6 @@ import Component from '@ember/component';
 import { inject } from '@ember/service';
 
 export default Component.extend({
-
   DS: inject('store'),
   tf: true,
   SAanswer: "",
@@ -24,7 +23,7 @@ export default Component.extend({
   mcop5: "",
   mcop6: "",
   init() {
-    this._super(...arguments);  
+    this._super(...arguments);
     var self = this;
     this.set('realAnswers', this.get('answers').toArray());
     console.log(this.get('answers'));
