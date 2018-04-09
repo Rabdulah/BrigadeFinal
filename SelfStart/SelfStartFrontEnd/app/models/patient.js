@@ -23,6 +23,7 @@ export default DS.Model.extend({
   transactions: DS.attr(),
   rehablink: DS.hasMany('rehab-client-link', { async: true }),
   success: DS.attr(),
+  note: DS.attr(),
   images:DS.hasMany('image')
 });
 

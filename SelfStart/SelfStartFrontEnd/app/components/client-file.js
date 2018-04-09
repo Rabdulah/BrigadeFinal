@@ -20,6 +20,7 @@ export default Component.extend({
   model: null,
   imageList:[],
   ratingQuestions: [],
+  notesData:"",
 
   modalName: computed(function () {
     return 'editAssign' + this.get('plan');
@@ -151,13 +152,13 @@ link:[],
 
 
     // this.set('listModel', this.get('store').findAll('exercise-list', this.get('planId')));
-    
+
       self.get('store').query('image', {filter: {'patient': client}}).then((records) => {
         records.forEach(im => {
           if(im.get("patient").get("id") === client)
            self.get("imageList").pushObject(im);
         });
-       
+
         console.log(this.get("imageList"));
        // self.set("imageList", records.toArray());
       })
@@ -205,8 +206,10 @@ link:[],
   assessState: "",
   reportState: "",
   photoState: "",
+  noteState:"",
   assess:false,
   photo:false,
+  note: false,
   menus: true,
   accountingState: "",
   accountingmenus: false,
@@ -236,14 +239,14 @@ link:[],
       this.set('accountingmenus', false);
       this.set('reports', false);
       this.set('assess', false);
-
       this.set('menusState', "active");
       this.set('accountingState', "");
       this.set('reportState', "");
       this.set('assessState', "");
       this.set('photo', false);
       this.set('photoState', "");
-
+      this.set('note', false);
+      this.set('noteState', "");
     },
 
     photoView(){
@@ -258,6 +261,8 @@ link:[],
       this.set('reportState', "");
       this.set('accountingmenus', false);
       this.set('accountingState', "");
+      this.set('note', false);
+      this.set('noteState', "");
     },
 
     accountingView(){
@@ -272,6 +277,8 @@ link:[],
       this.set('reportState', "");
       this.set('photo', false);
       this.set('photoState', "");
+      this.set('note', false);
+      this.set('noteState', "");
     },
 
     assessView(){
@@ -284,6 +291,28 @@ link:[],
       this.set('accountingState', "");
       this.set('photo', false);
       this.set('photoState', "");
+      this.set('note', false);
+      this.set('noteState', "");
+    },
+    noteView(){
+      this.set('assess', false);
+      this.set('assessState', "");
+      this.set('menus', false);
+      this.set('menusState', "");
+      this.set('reports', false);
+      this.set('reportState', "");
+      this.set('accountingState', "");
+      this.set('photo', false);
+      this.set('photoState', "");
+      this.set('note', true);
+      this.set('noteState', "active");
+      let self = this;
+      let client = this.get('model').id;
+      this.get('store').findRecord('patient', client).then(function (c) {
+        console.log(c.get('note'));
+        c.set('notesData', c.get('note'));
+      });
+
     },
 
     reportView(){
@@ -296,6 +325,8 @@ link:[],
       this.set('accountingState', "");
       this.set('photo', false);
       this.set('photoState', "");
+      this.set('note', false);
+      this.set('noteState', "");
   },
 
     toggleDetail(ID) {
@@ -339,11 +370,18 @@ link:[],
 
       }
     },
+    saveNotes(){
+      let client = this.get('model').id;
+      let self = this;
+      this.get('store').findRecord('patient', client).then(function (c) {
+        c.set('note', document.getElementById('userNote').value);
+        c.save();
+      })
+    },
 
     openFeedback: function() {
       $('.ui.' + 'feedback' + '.modal').modal({
         closable: false,
-
         transition: 'fly down',
 
         onDeny: () => {
@@ -370,6 +408,7 @@ link:[],
         }
       }).modal('show');
     },
+
 
     openData: function () {
       $('.ui.' + 'data' + '.modal').modal({

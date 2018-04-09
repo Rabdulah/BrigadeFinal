@@ -16,6 +16,7 @@ var patientProfilesSchema = mongoose.Schema(
         encryptedPassword: {type: mongoose.Schema.ObjectId, ref: 'Passwords'},
         images: [{type: mongoose.Schema.ObjectId, ref: 'Images'}],
         dateOfBirth: Date,
+        note: String,
         phoneNumber: String,
         gender: String,
         country: String,

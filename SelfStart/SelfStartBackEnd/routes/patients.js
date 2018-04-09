@@ -168,6 +168,7 @@ router.route('/:patient_id')
                 // patient.account = request.body.patient.account;
                 patient.transactions = request.body.patient.transactions;
                 patient.account = request.body.patient.account;
+                patient.note = request.body.patient.note
 
                 // patient.payments = request.body.patient.payments;
                 // patient.appointments = request.body.patient.appointments;

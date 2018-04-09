@@ -19,6 +19,7 @@ export default Component.extend({
   init() {
     this._super(...arguments);
     var self = this;
+    
     this.get('DS').query('question-order', {filter: {'form': "5ac1ae2773e03d3f78384c92"}}).then((records) => {
       self.set('orders', records.toArray());
     });

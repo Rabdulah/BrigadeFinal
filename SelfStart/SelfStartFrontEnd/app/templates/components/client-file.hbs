@@ -15,7 +15,7 @@
     <a class="{{assessState}} item" {{action "assessView"}}>
       Assessment
     </a>
-    <a class="item">
+    <a class="{{noteState}} item" {{action "noteView"}}>
       Notes
     </a>
     <a class="{{reportState}} item"  {{action "reportView"}}>
@@ -117,7 +117,6 @@
       </div>
     </div>
     {{/if}}
-
     {{#if photo}}
       <table class="ui single line table">
     <thead>
@@ -140,10 +139,6 @@
 
   </table>
     {{/if}}
-
-
-
-
     {{#if reports}}
 
 <div class="ui very padded container segment" id="top">
@@ -287,6 +282,24 @@
       </div>
     {{/if}}
 
+    {{#if note}}
+
+
+    <div class="ui form"style="margin-top: -5px;">
+      <div class="field">
+        <label>Notes</label>
+        <p> {{notesData}}</p>
+        <textarea id="userNote"><p> {{notesData}}</p></textarea>
+      </div>
+    </div>
+    <br>
+    <button class="green ui right button"{{action "saveNotes"}}>
+      Save
+    </button>
+
+
+
+    {{/if}}
     {{#if assess}}
       {{assessment-table model=model}}
     {{/if}}
@@ -401,8 +414,8 @@
   <label>Questions:</label> <br>
   {{questionModel}}
   {{#each ratingQuestions as |q|}}
-    <label>{{q.questionText}}</label> 
-    {{display-data-report question = q}}<br> 
+    <label>{{q.questionText}}</label>
+    {{display-data-report question = q}}<br>
   {{/each}}
 
   <div class="actions" style="padding:0">
