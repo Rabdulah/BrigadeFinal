@@ -55,10 +55,10 @@ export default Component.extend({
     this.set('pageSize', 10);
     let self = this;
     let client = this.get('model').id;
-    console.log(client);
+    // console.log(client);
 
     this.get('store').query('assessment-test', {filter: {'patient': client}}, this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then((records) => {
-      console.log(this.get('testModel'));
+    //  console.log(this.get('testModel'));
       self.set('testModel', records.toArray());
     });
   },
