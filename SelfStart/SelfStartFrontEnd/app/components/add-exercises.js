@@ -20,7 +20,8 @@ export default Component.extend({
   modelQueue: [],
   savingInProgress: false,
   id: null,
-
+  actionSteps: [],
+  numberOfActionSteps: -1,
   modalName: Ember.computed(function () {
     return 'add-exercise' + this.get('id');
   }),
@@ -79,6 +80,24 @@ export default Component.extend({
   actionStep: [],
 
   actions: {
+    addOption: function(){
+      this.set('numberOfActionSteps', this.numberOfActionSteps + 1);
+      console.log(this.numberOfActionSteps);
+      let newObj = Ember.Object.create({
+        name: "New Action Step",
+        id: this.numberOfActionSteps,
+        value: null,
+      })
+      this.actionSteps.pushObject(newObj);
+    },
+
+    removeOption: function(index){
+      var remove = this.actionSteps.filterBy('id', index);
+      remove.forEach(o => {
+        this.actionSteps.removeObject(o);
+      })
+    },
+
     selectFile: function (data) {
       if (!Ember.isEmpty(data.target.files)) {
         for (let i = data.target.files.length - 1; i >= 0; i--) {
@@ -131,11 +150,17 @@ export default Component.extend({
     submit: function() {
       let date = moment().format("MMM Do YY");
 
+      let actS = [];
+      actS.push(this.get('ActionStep1'));
+      this.actionSteps.forEach(o => {
+        actS.push(o.value);
+      })
+
       let exercise = this.get('DS').createRecord('exercise', {
         name:this.get('Name'),
         description:this.get('Description'),
         authorName:this.get('AuthName'),
-        actionSteps:this.get('actionStep'),
+        actionSteps:actS,
         sets:this.get('sets'),
         reps:this.get('reps'),
         duration:this.get('Duration'),
@@ -202,6 +227,9 @@ export default Component.extend({
         });
       });
 
+      this.set('ActionStep1', "");
+      this.get('actionSteps').clear();
+      this.set('numberOfActionSteps', -1);
       this.get('queue').clear();
       this.get('queue2').clear();
       this.set('Name', "");
