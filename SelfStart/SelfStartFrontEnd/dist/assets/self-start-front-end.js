@@ -8302,7 +8302,7 @@ define('self-start-front-end/components/user-info', ['exports'], function (expor
 
                 rec.forEach(function (r) {
 
-                  console.log(r.get('order'));
+                  //console.log(r.get('order'));
                   //console.log(q.get('questionText'));
                   r.get('question').then(function (q) {
                     console.log(q.get('questionText'));

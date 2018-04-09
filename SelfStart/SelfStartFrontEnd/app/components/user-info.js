@@ -153,7 +153,7 @@ export default Component.extend({
 
 
 
-                  console.log(r.get('order'));
+                 //console.log(r.get('order'));
                   //console.log(q.get('questionText'));
                     r.get('question').then((q)=>{
                       console.log(q.get('questionText'));
