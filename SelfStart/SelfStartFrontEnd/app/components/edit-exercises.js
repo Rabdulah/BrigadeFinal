@@ -5,6 +5,8 @@ import fileObject from "../utils/file-object";
 export default Component.extend({
   DS: Ember.inject.service('store'),
   cbState: false,
+  newActionSteps: [],
+  oldActionSteps: [],
   temp: [],
   // ImageName: null,
   images: null,
@@ -20,14 +22,10 @@ export default Component.extend({
   exerID: null,
   secQueue: [],
   removeImages: [],
+  numberOfActionSteps: -1,
+
   init: function() {
     this._super();
-
-    // console.log(this.images)
-    // // var secQ = []
-    // this.images.forEach(file => {
-    //   this.secQueue.pushObject(file);
-    // });
   },
 
   labelArray: [
@@ -95,6 +93,29 @@ export default Component.extend({
   }),
 
   actions: {
+    addOption: function(){
+      this.set('numberOfActionSteps', this.numberOfActionSteps + 1);
+      console.log(this.numberOfActionSteps);
+      let newObj = Ember.Object.create({
+        name: "New Action Step",
+        id: this.numberOfActionSteps,
+        value: null,
+      })
+      this.newActionSteps.pushObject(newObj);
+    },
+
+    removeOption: function(index){
+      var removeOld = this.oldActionSteps.filterBy('id', index);
+      var removeNew = this.newActionSteps.filterBy('id', index);
+      removeOld.forEach(o => {
+        this.oldActionSteps.removeObject(o);
+      });
+      removeNew.forEach(o => {
+        this.newActionSteps.removeObject(o);
+      });
+
+    },
+
     selectFile: function (data) {
       if (!Ember.isEmpty(data.target.files)) {
         for (let i = data.target.files.length - 1; i >= 0; i--) {
@@ -137,6 +158,16 @@ export default Component.extend({
       this.images.forEach(file => {
         this.secQueue.pushObject(file);
       });
+      this.actionStep.forEach(o => {
+        this.set('numberOfActionSteps', this.numberOfActionSteps + 1);
+        console.log(this.numberOfActionSteps);
+        let newObj = Ember.Object.create({
+          name: "New Action Step",
+          id: this.numberOfActionSteps,
+          value: o,
+        })
+        this.oldActionSteps.pushObject(newObj);
+      });
 
       this.set('exerciseData', this.get('DS').peekRecord('exercise', this.get('ID')));
 
@@ -146,6 +177,8 @@ export default Component.extend({
         centered: false,
         // dimmerSettings: { opacity: 0.25 },
         onDeny: () => {
+          this.newActionSteps.clear();
+          this.oldActionSteps.clear();
           this.secQueue.clear();
           this.removeImages.clear();
           this.queue.clear();
@@ -208,6 +241,14 @@ export default Component.extend({
             });
           });
 
+          let actionS = [];
+          this.get(this.oldActionSteps).forEach(o => {
+            actionS.push(o.value);
+          })
+          this.get(this.newActionSteps).forEach(o => {
+            actionS.push(o.value);
+          })
+
           this.get('DS').findRecord('exercise' , this.get('ID')).then((rec)=>{
             rec.set('name', this.get('Name'));
             rec.set('description', this.get('Description'));
@@ -225,7 +266,8 @@ export default Component.extend({
           });
 
           //window.location.reload();
-
+          this.newActionSteps.clear();
+          this.oldActionSteps.clear();
           this.secQueue.clear();
           this.removeImages.clear();
           this.queue.clear();
