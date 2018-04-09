@@ -12,7 +12,6 @@ export default Component.extend({
   ans:[],
   assessmentModel: Ember.computed(function(){
     var id = "5acbb1e984bdf02a643bd758";
-    console.log(id);
     return this.get('DS').find('assessment-test', id);
   }),
 
@@ -26,11 +25,7 @@ export default Component.extend({
     });
     this.get('DS').query('answer', {filter: {'test':"5acbb1e984bdf02a643bd758"}}).then((records) => {
       self.set('ans', records.toArray());
-      console.log("********");
-      console.log(this.get("ans"));
-      console.log("********");
     });
-    console.log(this.get('assessid'));
     //this.set('form', '5ac1ae2773e03d3f78384c92');
   },
 

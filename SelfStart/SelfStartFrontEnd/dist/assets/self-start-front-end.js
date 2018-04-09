@@ -1761,18 +1761,16 @@ define('self-start-front-end/components/assessment-table', ['exports'], function
     }),
 
     init: function init() {
-      var _this = this;
-
       this._super.apply(this, arguments);
       this.set('limit', 10);
       this.set('offset', 0);
       this.set('pageSize', 10);
       var self = this;
       var client = this.get('model').id;
-      console.log(client);
+      // console.log(client);
 
       this.get('store').query('assessment-test', { filter: { 'patient': client } }, this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
-        console.log(_this.get('testModel'));
+        //  console.log(this.get('testModel'));
         self.set('testModel', records.toArray());
       });
     },
@@ -1809,19 +1807,19 @@ define('self-start-front-end/components/assessment-table', ['exports'], function
 
     actions: {
       sortColumn: function sortColumn(columnName, direction) {
-        var _this2 = this;
+        var _this = this;
 
         this.get('modelAttributes').forEach(function (element) {
           if (element.key === columnName) {
             if (direction === 'asc') {
               Ember.set(element, 'dir', 'desc');
-              _this2.set('dir', 'desc');
+              _this.set('dir', 'desc');
             } else if (direction === 'desc') {
               Ember.set(element, 'dir', 'asc');
-              _this2.set('dir', 'asc');
+              _this.set('dir', 'asc');
             } else {
               Ember.set(element, 'dir', 'asc');
-              _this2.set('dir', 'asc');
+              _this.set('dir', 'asc');
             }
           } else Ember.set(element, 'dir', '');
         });
@@ -2470,7 +2468,7 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
 
       this.get('store').findAll('question').then(function (questions) {
         var self = _this4;
-        console.log(questions);
+        // console.log(questions);
         var ratingQs = [];
         questions.forEach(function (q) {
           if (q.get('type') == "Rating") {
@@ -2491,7 +2489,7 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
 
     activeModel: Ember.observer('offset', 'limit', 'sort', 'dir', 'flagDelete', 'flagAdd', function () {
       var self = this;
-      console.log(this.plansModel);
+      // console.log(this.plansModel);
       this.get('store').query('rehabilitationplan', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
         self.set('plansModel', records.toArray());
       });
@@ -2506,8 +2504,8 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
       var plan = this.get('plan');
 
       this.get('store').query('rehab-client-link', { filter: { 'RehabilitationPlan': plan, 'Patient': client } }).then(function (update) {
-        console.log(plan);
-        console.log(update.content.length);
+        // console.log(plan);
+        // console.log(update.content.length);
         if (update.content.length !== 0) {
           _this5.set('disabled', "disabled");
         } else {
@@ -2530,8 +2528,6 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
     }),
 
     init: function init() {
-      var _this6 = this;
-
       this._super.apply(this, arguments);
       this.set('limit', 10);
       this.set('offset', 0);
@@ -2546,14 +2542,14 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
           if (im.get("patient").get("id") === client) self.get("imageList").pushObject(im);
         });
 
-        console.log(_this6.get("imageList"));
+        // console.log(this.get("imageList"));
         // self.set("imageList", records.toArray());
       });
     },
 
 
     dateFormat: Ember.computed(function (date) {
-      console.log(date);
+      // console.log(date);
       var dateString = date.toISOString().substring(0, 10);
       return dateString;
     }),
@@ -2679,19 +2675,19 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
         if (this.get('isShowing') === ID) this.set('isShowing', null);else this.set('isShowing', ID);
       },
       sortColumn: function sortColumn(columnName, direction) {
-        var _this7 = this;
+        var _this6 = this;
 
         this.get('modelAttributes').forEach(function (element) {
           if (element.key === columnName) {
             if (direction === 'asc') {
               Ember.set(element, 'dir', 'desc');
-              _this7.set('dir', 'desc');
+              _this6.set('dir', 'desc');
             } else if (direction === 'desc') {
               Ember.set(element, 'dir', 'asc');
-              _this7.set('dir', 'asc');
+              _this6.set('dir', 'asc');
             } else {
               Ember.set(element, 'dir', 'asc');
-              _this7.set('dir', 'asc');
+              _this6.set('dir', 'asc');
             }
           } else Ember.set(element, 'dir', '');
         });
@@ -2756,7 +2752,7 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
       },
 
       openModal: function openModal() {
-        var _this8 = this;
+        var _this7 = this;
 
         $('.ui.' + this.get('modalName') + '.modal').modal({
           closable: false,
@@ -2767,33 +2763,33 @@ define('self-start-front-end/components/client-file', ['exports'], function (exp
             return true;
           },
           onApprove: function onApprove() {
-            var plan = _this8.get('plan');
+            var plan = _this7.get('plan');
 
-            var planRecord = _this8.get('store').peekRecord('rehabilitationplan', plan);
+            var planRecord = _this7.get('store').peekRecord('rehabilitationplan', plan);
 
-            var self = _this8;
+            var self = _this7;
 
             // var assess = this.get('store').peekRecord('assessment-test', '5ab92c228a4acc04487b157a');
-            var test = _this8.get('store').createRecord('assessment-test', {});
+            var test = _this7.get('store').createRecord('assessment-test', {});
             test.save().then(function (rec) {
 
-              var link = _this8.get('store').createRecord('rehab-client-link', {
-                terminated: _this8.get('plan.terminated'),
+              var link = _this7.get('store').createRecord('rehab-client-link', {
+                terminated: _this7.get('plan.terminated'),
                 RehabilitationPlan: planRecord,
-                Patient: _this8.get('model'),
+                Patient: _this7.get('model'),
                 assigned: true,
                 assessmentTest: rec
                 //In memory of Ouda
               });
 
-              var peekTest = _this8.get('store').peekRecord('assessment-test', test.get("id"));
-              console.log(peekTest);
+              var peekTest = _this7.get('store').peekRecord('assessment-test', test.get("id"));
+              //  console.log(peekTest);
               peekTest.set('rehabLink', link);
               link.save().then(function () {
                 peekTest.save();
-                _this8.set('assessmentTest', test);
-                $('.ui.' + _this8.get('modalName') + '.modal').modal('hide');
-                _this8.set('disabled', "disabled");
+                _this7.set('assessmentTest', test);
+                $('.ui.' + _this7.get('modalName') + '.modal').modal('hide');
+                _this7.set('disabled', "disabled");
               });
             });
           }
@@ -4061,6 +4057,7 @@ define('self-start-front-end/components/display-answers', ['exports'], function 
     SAanswer: "",
     Rating: 1,
     true: "",
+    realAnswers: [],
     checkTrue: false,
     checkFalse: false,
     checkmcop1: false,
@@ -4080,25 +4077,28 @@ define('self-start-front-end/components/display-answers', ['exports'], function 
 
       this._super.apply(this, arguments);
       var self = this;
+      this.set('realAnswers', this.get('answers').toArray());
+      console.log(this.get('answers'));
 
       if (this.get('question').get('type') === "Short answer") {
-        this.get("answers").forEach(function (rec) {
-          if (rec.get("question") === _this.get("question").get("questionText")) {
-            _this.set("SAanswer", rec.get("answer"));
+        self.get('answers').forEach(function (ans) {
+          if (ans.question === _this.get("question").get("questionText")) {
+            _this.set("SAanswer", ans.answer);
           }
         });
       }
+
       if (this.get('question').get('type') === "Rating") {
         this.get("answers").forEach(function (rec) {
-          if (rec.get("question") === _this.get("question").get("questionText")) {
-            _this.set("Rating", rec.get("answer"));
+          if (rec.question === _this.get("question").get("questionText")) {
+            _this.set("Rating", rec.answer);
           }
         });
       }
       if (this.get('question').get('type') === "True/False") {
         this.get("answers").forEach(function (rec) {
-          if (rec.get("question") === _this.get("question").get("questionText")) {
-            if (rec.get("answer") == "No") _this.set('checkFalse', true);else _this.set('checkTrue', true);
+          if (rec.question === _this.get("question").get("questionText")) {
+            if (rec.answer == "NO") _this.set('checkFalse', true);else _this.set('checkTrue', true);
           }
         });
       }
@@ -4122,13 +4122,13 @@ define('self-start-front-end/components/display-answers', ['exports'], function 
         }
 
         this.get("answers").forEach(function (rec) {
-          if (rec.get("question") === _this.get("question").get("questionText")) {
-            if (rec.get("answer") == "0") _this.set("checkmcop1", true);
-            if (rec.get("answer") == "1") _this.set("checkmcop2", true);
-            if (rec.get("answer") == "2") _this.set("checkmcop3", true);
-            if (rec.get("answer") == "3") _this.set("checkmcop4", true);
-            if (rec.get("answer") == "4") _this.set("checkmcop5", true);
-            if (rec.get("answer") == "5") _this.set("checkmcop6", true);
+          if (rec.question === _this.get("question").get("questionText")) {
+            if (rec.answer == "1") _this.set("checkmcop1", true);
+            if (rec.answer == "2") _this.set("checkmcop2", true);
+            if (rec.answer == "3") _this.set("checkmcop3", true);
+            if (rec.answer == "4") _this.set("checkmcop4", true);
+            if (rec.answer == "5") _this.set("checkmcop5", true);
+            if (rec.answer == "6") _this.set("checkmcop6", true);
           }
         });
       }
@@ -4154,20 +4154,26 @@ define('self-start-front-end/components/display-assessment', ['exports'], functi
     questionModel: Ember.computed(function () {}),
 
     init: function init() {
+      var _this = this;
+
       this._super.apply(this, arguments);
-      this.get('DS').findAll('form');
-      this.get('DS').findAll('question-order');
-      this.get('DS').findAll('question');
+      // this.get('DS').findAll('form');
+      // this.get('DS').findAll('question-order');
+      // this.get('DS').findAll('question');
       var self = this;
 
-      this.get('DS').query('question-order', { filter: { 'form': this.get('model').id } }).then(function (records) {
-        self.set('orders', records.toArray());
+      this.get('DS').query('answer', { filter: { 'test': this.get('assessment').get("id") } }).then(function (records) {
+        _this.get('DS').query('question-order', { filter: { 'form': _this.get('model').id } }).then(function (records) {
+          self.set('orders', records.toArray());
+        });
+        records.forEach(function (rec) {
+          _this.get("ans").push(rec.data);
+        });
       });
 
-      this.get('DS').query('answer', { filter: { 'test': this.get('assessid') } }).then(function (records) {
-        self.set('ans', records.toArray());
-      });
+      //  console.log(this.get('assessment').get("id"));
 
+      //console.log(this.get('ans'));
       this.set('onChange', 0);
     },
 
@@ -5792,9 +5798,10 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
         this.set('rateValue', rv);
 
         this.get("answers").forEach(function (rec) {
-          if (rec.get("question") === _this.get("question").get("questionText")) {
-            rec.set("answer", _this.get("rateValue"));
-            rec.set("test", _this.get("assessment"));
+          if (rec.get('question') === _this.get("question").get("questionText")) {
+            console.log("inside rating");
+            rec.set('answer', _this.get("rateValue"));
+            rec.set('test', _this.get("assessment"));
             rec.save();
           }
         });
@@ -5837,7 +5844,7 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this5.get("question").get("questionText")) {
-            rec.set("answer", "0");
+            rec.set("answer", "1");
             rec.set("test", _this5.get("assessment"));
             rec.save();
           }
@@ -5848,7 +5855,7 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this6.get("question").get("questionText")) {
-            rec.set("answer", "1");
+            rec.set("answer", "2");
             rec.set("test", _this6.get("assessment"));
             rec.save();
           }
@@ -5859,7 +5866,7 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this7.get("question").get("questionText")) {
-            rec.set("answer", "2");
+            rec.set("answer", "3");
             rec.set("test", _this7.get("assessment"));
             rec.save();
           }
@@ -5870,7 +5877,7 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this8.get("question").get("questionText")) {
-            rec.set("answer", "3");
+            rec.set("answer", "4");
             rec.set("test", _this8.get("assessment"));
             rec.save();
           }
@@ -5881,7 +5888,7 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this9.get("question").get("questionText")) {
-            rec.set("answer", "4");
+            rec.set("answer", "5");
             rec.set("test", _this9.get("assessment"));
             rec.save();
           }
@@ -5892,7 +5899,7 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this10.get("question").get("questionText")) {
-            rec.set("answer", "5");
+            rec.set("answer", "6");
             rec.set("test", _this10.get("assessment"));
             rec.save();
           }
@@ -5920,13 +5927,10 @@ define('self-start-front-end/components/get-assessment-results', ['exports'], fu
     ans: [],
     assessmentModel: Ember.computed(function () {
       var id = "5acbb1e984bdf02a643bd758";
-      console.log(id);
       return this.get('DS').find('assessment-test', id);
     }),
 
     init: function init() {
-      var _this = this;
-
       this._super.apply(this, arguments);
       var self = this;
 
@@ -5935,11 +5939,7 @@ define('self-start-front-end/components/get-assessment-results', ['exports'], fu
       });
       this.get('DS').query('answer', { filter: { 'test': "5acbb1e984bdf02a643bd758" } }).then(function (records) {
         self.set('ans', records.toArray());
-        console.log("********");
-        console.log(_this.get("ans"));
-        console.log("********");
       });
-      console.log(this.get('assessid'));
       //this.set('form', '5ac1ae2773e03d3f78384c92');
     },
 
@@ -15189,6 +15189,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+4afe42f7"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+4a15c591"});
 }
 //# sourceMappingURL=self-start-front-end.map
