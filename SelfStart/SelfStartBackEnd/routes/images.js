@@ -21,12 +21,22 @@ router.route('/')
             });
         }
         else if (exercise){
-            console.log('getting exercise image using query');
-            Images.Model.find({"exercise": exercise.exercise}, function (error, images) {
-                console.log(images);
-                if (error) response.send(error);
-                response.json({image: images});
-            });
+            console
+            if (exercise.exercise) {
+                console.log('getting exercise image using query');
+                Images.Model.find({"exercise": exercise.exercise}, function (error, images) {
+                    console.log(images);
+                    if (error) response.send(error);
+                    response.json({image: images});
+                });
+            }
+            else if (exercise.patient){
+                console.log('getting image using query');
+                Images.Model.find({"patient": exercise.patient}, function (error, images) {
+                    if (error) response.send(error);
+                    response.json({image: images});
+                });
+            }
         }
     });
 
