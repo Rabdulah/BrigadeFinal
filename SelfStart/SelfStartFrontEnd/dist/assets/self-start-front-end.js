@@ -1602,6 +1602,19 @@ define('self-start-front-end/components/admin-welcome', ['exports'], function (e
   });
   exports.default = Ember.Component.extend({});
 });
+define('self-start-front-end/components/area-chart', ['exports', 'ember-google-charts/components/area-chart'], function (exports, _areaChart) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _areaChart.default;
+    }
+  });
+});
 define('self-start-front-end/components/as-calendar', ['exports', 'ember-calendar/components/as-calendar'], function (exports, _asCalendar) {
   'use strict';
 
@@ -1941,6 +1954,19 @@ define('self-start-front-end/components/back-to-top', ['exports'], function (exp
           scrollTop: 0 // Scroll to top of body
         }, 500);
       });
+    }
+  });
+});
+define('self-start-front-end/components/bar-chart', ['exports', 'ember-google-charts/components/bar-chart'], function (exports, _barChart) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _barChart.default;
     }
   });
 });
@@ -2335,14 +2361,6 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
       }
     }
   });
-});
-define('self-start-front-end/components/bubble-chart', ['exports', 'ember-charts/components/bubble-chart'], function (exports, _bubbleChart) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = _bubbleChart.default;
 });
 define('self-start-front-end/components/client-exercise-menu', ['exports'], function (exports) {
   'use strict';
@@ -4209,56 +4227,98 @@ define('self-start-front-end/components/display-data-report', ['exports'], funct
         value: true
     });
     exports.default = Ember.Component.extend({
-        store: Ember.inject.service(),
+        DS: Ember.inject.service('store'),
         allAnswers: [],
         matchedAnswers: [],
-        averageRating: 0,
-        ratingGroupCount: [],
+        averageRating: 1,
+        ratingGroupCount: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        graphData: [],
+
+        options: {
+            title: 'User Rating Statistics',
+            height: 300,
+            width: 400,
+
+            animation: {
+                startup: true,
+                easing: 'inAndOut'
+            }
+        },
 
         init: function init() {
-            var _this = this;
-
             this._super.apply(this, arguments);
             var self = this;
 
-            this.get('store').findAll('answer').then(function (ans) {
+            this.get('DS').findAll('answer').then(function (ans) {
                 self.set('allAnswers', ans.toArray());
-            });
 
-            this.get('allAnswers').forEach(function (element) {
-                if (element.get('question') === self.get('question').get('questionText') && self.get('question').get('type') == "Rating") {
-                    self.get('matchedAnswers').pushObject(element);
+                self.get('allAnswers').forEach(function (element) {
+
+                    if (element.get('question') === self.get('question').get('questionText') && self.get('question').get('type') === "Rating") {
+                        self.get('matchedAnswers').pushObject(element);
+                    }
+                });
+
+                console.log(self.get('matchedAnswers'));
+
+                var sum = 0;
+                var length = 0;
+
+                for (var i = 0; i < self.get('matchedAnswers').length; i++) {
+                    sum += parseInt(self.get('matchedAnswers')[i].get('answer'));
+                    length += 1;
+
+                    if (self.get('matchedAnswers')[i].get('answer') == 1) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[0] += 1;
+                        self.set('ratingGroupCount', temp);
+                    } else if (self.get('matchedAnswers')[i].get('answer') == 2) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[1] += 1;
+                        self.set('ratingGroupCount', temp);
+                    } else if (self.get('matchedAnswers')[i].get('answer') == 3) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[2] += 1;
+                        self.set('ratingGroupCount', temp);
+                    } else if (self.get('matchedAnswers')[i].get('answer') == 4) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[3] += 1;
+                        self.set('ratingGroupCount', temp);
+                    } else if (self.get('matchedAnswers')[i].get('answer') == 5) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[4] += 1;
+                        self.set('ratingGroupCount', temp);
+                    } else if (self.get('matchedAnswers')[i].get('answer') == 6) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[5] += 1;
+                        self.set('ratingGroupCount', temp);
+                    } else if (self.get('matchedAnswers')[i].get('answer') == 7) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[6] += 1;
+                        self.set('ratingGroupCount', temp);
+                    } else if (self.get('matchedAnswers')[i].get('answer') == 8) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[7] += 1;
+                        self.set('ratingGroupCount', temp);
+                    } else if (self.get('matchedAnswers')[i].get('answer') == 9) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[8] += 1;
+                        self.set('ratingGroupCount', temp);
+                    } else if (self.get('matchedAnswers')[i].get('answer') == 10) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[9] += 1;
+                        self.set('ratingGroupCount', temp);
+                    }
                 }
+
+                self.set('averageRating', sum / length);
+
+                var data = [['Rating', '# of Clients'], ['1', self.get('ratingGroupCount')[0]], ['2', self.get('ratingGroupCount')[1]], ['3', self.get('ratingGroupCount')[2]], ['4', self.get('ratingGroupCount')[3]], ['5', self.get('ratingGroupCount')[4]], ['6', self.get('ratingGroupCount')[5]], ['7', self.get('ratingGroupCount')[6]], ['8', self.get('ratingGroupCount')[7]], ['9', self.get('ratingGroupCount')[8]], ['10', self.get('ratingGroupCount')[9]]];
+
+                self.set('graphData', data);
             });
-
-            this.get('matchedAnswers').forEach(function (ans) {
-                self.set('averageRating', self.get('averageRating') + ans.get('answer'));
-
-                if (ans.get('answer') == 1) {
-                    _this.set('ratingGroupCount'[0], _this.get('ratingGroupCount'[0]) + 1);
-                } else if (ans.get('answer') == 2) {
-                    _this.set('ratingGroupCount'[1], _this.get('ratingGroupCount'[1]) + 1);
-                } else if (ans.get('answer') == 3) {
-                    _this.set('ratingGroupCount'[2], _this.get('ratingGroupCount'[2]) + 1);
-                } else if (ans.get('answer') == 4) {
-                    _this.set('ratingGroupCount'[3], _this.get('ratingGroupCount'[3]) + 1);
-                } else if (ans.get('answer') == 5) {
-                    _this.set('ratingGroupCount'[4], _this.get('ratingGroupCount'[4]) + 1);
-                } else if (ans.get('answer') == 6) {
-                    _this.set('ratingGroupCount'[5], _this.get('ratingGroupCount'[5]) + 1);
-                } else if (ans.get('answer') == 7) {
-                    _this.set('ratingGroupCount'[6], _this.get('ratingGroupCount'[6]) + 1);
-                } else if (ans.get('answer') == 8) {
-                    _this.set('ratingGroupCount'[7], _this.get('ratingGroupCount'[7]) + 1);
-                } else if (ans.get('answer') == 9) {
-                    _this.set('ratingGroupCount'[8], _this.get('ratingGroupCount'[8]) + 1);
-                } else if (ans.get('answer') == 10) {
-                    _this.set('ratingGroupCount'[9], _this.get('ratingGroupCount'[9]) + 1);
-                }
-            });
-
-            self.set('averageRating', self.get('averageRating') / self.get('matchedAnswers').length);
         },
+
 
         actions: {
             openModal: function openModal() {
@@ -5766,6 +5826,19 @@ define('self-start-front-end/components/generate-reports', ['exports'], function
         }
     });
 });
+define('self-start-front-end/components/geo-chart', ['exports', 'ember-google-charts/components/geo-chart'], function (exports, _geoChart) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _geoChart.default;
+    }
+  });
+});
 define('self-start-front-end/components/get-answers', ['exports'], function (exports) {
   'use strict';
 
@@ -5952,13 +6025,18 @@ define('self-start-front-end/components/get-assessment-results', ['exports'], fu
     }
   });
 });
-define('self-start-front-end/components/horizontal-bar-chart', ['exports', 'ember-charts/components/horizontal-bar-chart'], function (exports, _horizontalBarChart) {
+define('self-start-front-end/components/google-chart', ['exports', 'ember-google-charts/components/google-chart'], function (exports, _googleChart) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = _horizontalBarChart.default;
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _googleChart.default;
+    }
+  });
 });
 define("self-start-front-end/components/illiquid-model", ["exports", "liquid-fire/components/illiquid-model"], function (exports, _illiquidModel) {
   "use strict";
@@ -5983,6 +6061,19 @@ define('self-start-front-end/components/labeled-radio-button', ['exports', 'embe
     enumerable: true,
     get: function () {
       return _labeledRadioButton.default;
+    }
+  });
+});
+define('self-start-front-end/components/line-chart', ['exports', 'ember-google-charts/components/line-chart'], function (exports, _lineChart) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _lineChart.default;
     }
   });
 });
@@ -7525,13 +7616,18 @@ define("self-start-front-end/components/physio-welcome", ["exports"], function (
     }
   });
 });
-define('self-start-front-end/components/pie-chart', ['exports', 'ember-charts/components/pie-chart'], function (exports, _pieChart) {
+define('self-start-front-end/components/pie-chart', ['exports', 'ember-google-charts/components/pie-chart'], function (exports, _pieChart) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = _pieChart.default;
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _pieChart.default;
+    }
+  });
 });
 define('self-start-front-end/components/power-select-multiple', ['exports', 'ember-power-select/components/power-select-multiple'], function (exports, _powerSelectMultiple) {
   'use strict';
@@ -8189,13 +8285,18 @@ define('self-start-front-end/components/rl-dropdown', ['exports', 'ember-rl-drop
   });
   exports.default = _rlDropdown.default;
 });
-define('self-start-front-end/components/scatter-chart', ['exports', 'ember-charts/components/scatter-chart'], function (exports, _scatterChart) {
+define('self-start-front-end/components/scatter-chart', ['exports', 'ember-google-charts/components/scatter-chart'], function (exports, _scatterChart) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = _scatterChart.default;
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _scatterChart.default;
+    }
+  });
 });
 define('self-start-front-end/components/show-form-questions', ['exports'], function (exports) {
   'use strict';
@@ -8359,14 +8460,6 @@ define('self-start-front-end/components/sortable-item', ['exports', 'ember-sorta
   });
   exports.default = _sortableItem.default;
 });
-define('self-start-front-end/components/stacked-vertical-bar-chart', ['exports', 'ember-charts/components/stacked-vertical-bar-chart'], function (exports, _stackedVerticalBarChart) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = _stackedVerticalBarChart.default;
-});
 define('self-start-front-end/components/stylish-button', ['exports', 'ember-stylish-buttons/components/stylish-button', 'self-start-front-end/config/environment'], function (exports, _stylishButton, _environment) {
   'use strict';
 
@@ -8380,14 +8473,6 @@ define('self-start-front-end/components/stylish-button', ['exports', 'ember-styl
   exports.default = _stylishButton.default.extend({
     type: config.defaultTheme || 'winona'
   });
-});
-define('self-start-front-end/components/time-series-chart', ['exports', 'ember-charts/components/time-series-chart'], function (exports, _timeSeriesChart) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = _timeSeriesChart.default;
 });
 define('self-start-front-end/components/ui-accordion', ['exports', 'semantic-ui-ember/components/ui-accordion'], function (exports, _uiAccordion) {
   'use strict';
@@ -9025,14 +9110,6 @@ define('self-start-front-end/components/user-login', ['exports'], function (expo
     }
 
   });
-});
-define('self-start-front-end/components/vertical-bar-chart', ['exports', 'ember-charts/components/vertical-bar-chart'], function (exports, _verticalBarChart) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = _verticalBarChart.default;
 });
 define('self-start-front-end/components/view-appointment', ['exports'], function (exports) {
   'use strict';
@@ -10571,14 +10648,6 @@ define("self-start-front-end/instance-initializers/ember-data", ["exports", "emb
     initialize: _initializeStoreService.default
   };
 });
-define('self-start-front-end/mixins/axis-titles', ['exports', 'ember-charts/mixins/axis-titles'], function (exports, _axisTitles) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = _axisTitles.default;
-});
 define('self-start-front-end/mixins/base', ['exports', 'semantic-ui-ember/mixins/base'], function (exports, _base) {
   'use strict';
 
@@ -10591,22 +10660,6 @@ define('self-start-front-end/mixins/base', ['exports', 'semantic-ui-ember/mixins
       return _base.default;
     }
   });
-});
-define('self-start-front-end/mixins/label-width', ['exports', 'ember-charts/mixins/label-width'], function (exports, _labelWidth) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = _labelWidth.default;
-});
-define('self-start-front-end/mixins/legend', ['exports', 'ember-charts/mixins/legend'], function (exports, _legend) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = _legend.default;
 });
 define('self-start-front-end/mixins/promise-resolver', ['exports', 'ember-promise-tools/mixins/promise-resolver'], function (exports, _promiseResolver) {
   'use strict';
@@ -12981,6 +13034,19 @@ define('self-start-front-end/services/doc', ['exports'], function (exports) {
     }
   });
 });
+define('self-start-front-end/services/google-charts', ['exports', 'ember-google-charts/services/google-charts'], function (exports, _googleCharts) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _googleCharts.default;
+    }
+  });
+});
 define('self-start-front-end/services/home', ['exports'], function (exports) {
   'use strict';
 
@@ -13643,14 +13709,6 @@ define("self-start-front-end/templates/components/book-appointment", ["exports"]
   });
   exports.default = Ember.HTMLBars.template({ "id": "90xPMEoC", "block": "{\"symbols\":[\"timeslot\",\"phsio\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Book appointment\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui centered cards\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:250px\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"First Appointment\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[3,\"action\",[[19,0,[]],\"firstSelect\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"Show\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:250px\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Follow-ups\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[3,\"action\",[[19,0,[]],\"followupSelect\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n      Show\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[9,\"href\",\"/assets/css/form-style.css\"],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"followupSelected\"]]],null,{\"statements\":[[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"padding-right: 10em; padding-left: 10em\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n  \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n  \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n    \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectphysio\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateValue\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n      \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"getphysio\"]]],null,{\"statements\":[[0,\"        \"],[6,\"option\"],[10,\"value\",[19,2,[\"id\"]],null],[7],[0,\"\\n          \"],[1,[19,2,[\"givenName\"]],false],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[1,[25,\"as-calendar\",null,[[\"title\",\"occurrences\",\"defaultTimeZoneQuery\",\"dayStartingTime\",\"dayEndingTime\",\"timeSlotDuration\",\"onAddOccurrence\",\"onUpdateOccurrence\",\"onRemoveOccurrence\"],[\"View Schedule\",[20,[\"occurrences\"]],\"Toronto|New York\",\"8:00\",\"20:00\",\"00:30\",[25,\"action\",[[19,0,[]],\"calendarAddOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarUpdateOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarRemoveOccurrence\"],null]]]],false],[0,\"\\n\\n\"],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"firstSelected\"]]],null,{\"statements\":[[6,\"div\"],[9,\"class\",\"ui very padded segment container\"],[9,\"style\",\"border: none; box-shadow: none; background-color: white;position: relative;z-index:  2;\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui four steps\"],[7],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"introValue\"],\" step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"sticky note icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Intake Form\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"photoValue\"],\"  step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"photo icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Upload Photos\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"appointmentValue\"],\"  step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"bookmark icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"confirmValue\"],\"  step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"check circle icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Confirmation\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui attached segment\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"intro\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n\\n\"],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToPhoto\"]],[7],[0,\"Next\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"photo\"]]],null,{\"statements\":[[0,\"      \"],[6,\"p\"],[7],[0,\"Photos go here!!\"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToIntro\"]],[7],[0,\"Back\"],[8],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToAppointment\"]],[7],[0,\"Next\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"appointment\"]]],null,{\"statements\":[[0,\"      \"],[6,\"p\"],[7],[0,\"Appointment go here!!\"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToPhoto\"]],[7],[0,\"Back\"],[8],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToConfirm\"]],[7],[0,\"Next\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"confirm\"]]],null,{\"statements\":[[0,\"      \"],[6,\"p\"],[7],[0,\"Confirmation Page Goes Here!!\"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToAppointment\"]],[7],[0,\"Back\"],[8],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToPaypal\"]],[7],[0,\"Next\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],\"bk\"]],{\"statements\":[[0,\"  \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"scrolling content\"],[7],[0,\"\\n\\n      \"],[6,\"fieldset\"],[7],[0,\"\\n        \"],[6,\"legend\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\" Physiotherapist\"],[8],[0,\"\\n        \"],[6,\"p\"],[7],[1,[18,\"familyName\"],false],[0,\" \"],[1,[18,\"givenName\"],false],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[0,\"\\n\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Type\"],[8],[0,\"\\n        \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n          \"],[6,\"select\"],[9,\"class\",\"selectedAppointment\"],[10,\"value\",[18,\"selectAppointmentType\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateTime\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n            \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select type\"],[8],[0,\"\\n            \"],[6,\"option\"],[9,\"value\",\"i\"],[7],[0,\"\\n              Initial Assessment\\n            \"],[8],[0,\"\\n            \"],[6,\"option\"],[9,\"value\",\"t\"],[7],[0,\"\\n              Treatment\\n            \"],[8],[0,\"\\n\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n          \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Reason\"],[8],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"star\",\"text\",[20,[\"Reason\"]]]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"icon\"],[7],[0,\"\\n          \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Other\"],[8],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\"],[\"user\",\"text\",[20,[\"Other\"]]]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Time Slot\"],[8],[0,\"\\n        \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n          \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectedTime\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"setselectedtime\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n            \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select TimeSlot\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"timeSlots\"]]],null,{\"statements\":[[0,\"              \"],[6,\"option\"],[10,\"value\",[19,1,[\"time\"]],null],[7],[0,\"\\n                \"],[1,[19,1,[\"value\"]],false],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"br\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui fluid negative button\"],[3,\"action\",[[19,0,[]],\"cancel_appointment\"]],[7],[0,\"Cancel\"],[8],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui fluid positive button\"],[3,\"action\",[[19,0,[]],\"book_appointment\"]],[7],[0,\"Submit\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/book-appointment.hbs" } });
 });
-define("self-start-front-end/templates/components/chart-component", ["exports"], function (exports) {
-  "use strict";
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = Ember.HTMLBars.template({ "id": "0UMO905J", "block": "{\"symbols\":[],\"statements\":[[6,\"svg\"],[10,\"width\",[18,\"outerWidth\"],null],[10,\"height\",[18,\"outerHeight\"],null],[7],[0,\"\\n  \"],[6,\"g\"],[9,\"class\",\"chart-viewport\"],[10,\"transform\",[18,\"transformViewport\"],null],[7],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/chart-component.hbs" } });
-});
 define("self-start-front-end/templates/components/client-exercise-menu", ["exports"], function (exports) {
   "use strict";
 
@@ -13865,7 +13923,7 @@ define("self-start-front-end/templates/components/display-data-report", ["export
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "ww3ADiDv", "block": "{\"symbols\":[\"ans\"],\"statements\":[[6,\"button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"Display data\"],[8],[0,\" \\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"dataModal\",\"dataModal\"]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"Answers to \\\"\"],[8],[1,[20,[\"question\",\"questionText\"]],false],[6,\"label\"],[7],[0,\"\\\":\"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n    \\n\"],[4,\"each\",[[20,[\"matchedAnswers\"]]],null,{\"statements\":[[0,\"      \"],[6,\"label\"],[7],[1,[19,1,[\"answer\"]],false],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 1 ratings: \"],[1,[20,[\"ratingGroupCount\",\"0\"]],false],[0,\" \"],[8],[0,\"  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 2 ratings: \"],[1,[20,[\"ratingGroupCount\",\"1\"]],false],[0,\"  \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 3 ratings: \"],[1,[20,[\"ratingGroupCount\",\"2\"]],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 4 ratings: \"],[1,[20,[\"ratingGroupCount\",\"3\"]],false],[0,\"  \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 5 ratings: \"],[1,[20,[\"ratingGroupCount\",\"4\"]],false],[0,\" \"],[8],[0,\"  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 6 ratings: \"],[1,[20,[\"ratingGroupCount\",\"5\"]],false],[0,\" \"],[8],[0,\"  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 7 ratings: \"],[1,[20,[\"ratingGroupCount\",\"6\"]],false],[0,\" \"],[8],[0,\"  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 8 ratings: \"],[1,[20,[\"ratingGroupCount\",\"7\"]],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 9 ratings: \"],[1,[20,[\"ratingGroupCount\",\"8\"]],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 10 ratings: \"],[1,[20,[\"ratingGroupCount\",\"9\"]],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"Average rating: \"],[1,[18,\"averageRating\"],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \\n  \\n\"],[0,\"  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok\"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Save Report\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel\"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"Exit\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/display-data-report.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "gti3wWZH", "block": "{\"symbols\":[\"ans\"],\"statements\":[[6,\"button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"Display data\"],[8],[0,\" \\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"dataModal\",\"dataModal\"]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"Answers to \\\"\"],[8],[1,[20,[\"question\",\"questionText\"]],false],[6,\"label\"],[7],[0,\"\\\":\"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n    \\n\"],[4,\"each\",[[20,[\"matchedAnswers\"]]],null,{\"statements\":[[0,\"      \"],[6,\"label\"],[7],[1,[19,1,[\"answer\"]],false],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"label\"],[7],[0,\"# of 1 ratings: \"],[1,[20,[\"ratingGroupCount\",\"0\"]],false],[0,\" \"],[8],[0,\"  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 2 ratings: \"],[1,[20,[\"ratingGroupCount\",\"1\"]],false],[0,\"  \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 3 ratings: \"],[1,[20,[\"ratingGroupCount\",\"2\"]],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 4 ratings: \"],[1,[20,[\"ratingGroupCount\",\"3\"]],false],[0,\"  \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 5 ratings: \"],[1,[20,[\"ratingGroupCount\",\"4\"]],false],[0,\" \"],[8],[0,\"  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 6 ratings: \"],[1,[20,[\"ratingGroupCount\",\"5\"]],false],[0,\" \"],[8],[0,\"  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 7 ratings: \"],[1,[20,[\"ratingGroupCount\",\"6\"]],false],[0,\" \"],[8],[0,\"  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 8 ratings: \"],[1,[20,[\"ratingGroupCount\",\"7\"]],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 9 ratings: \"],[1,[20,[\"ratingGroupCount\",\"8\"]],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 10 ratings: \"],[1,[20,[\"ratingGroupCount\",\"9\"]],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"Average rating: \"],[1,[18,\"averageRating\"],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"chart-container\"],[9,\"style\",\"min-width: 400px\"],[9,\"style\",\"min-height: 300px\"],[7],[0,\"\\n  \"],[1,[25,\"bar-chart\",null,[[\"data\",\"options\"],[[20,[\"graphData\"]],[20,[\"options\"]]]]],false],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok\"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Save Report\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel\"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"Exit\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/display-data-report.hbs" } });
 });
 define("self-start-front-end/templates/components/display-forms", ["exports"], function (exports) {
   "use strict";
@@ -14959,6 +15017,32 @@ define('self-start-front-end/utils/is-promise', ['exports', 'ember-promise-tools
     }
   });
 });
+define('self-start-front-end/utils/render-classic-chart', ['exports', 'ember-google-charts/utils/render-classic-chart'], function (exports, _renderClassicChart) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _renderClassicChart.default;
+    }
+  });
+});
+define('self-start-front-end/utils/render-material-chart', ['exports', 'ember-google-charts/utils/render-material-chart'], function (exports, _renderMaterialChart) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _renderMaterialChart.default;
+    }
+  });
+});
 define('self-start-front-end/utils/smart-resolve', ['exports', 'ember-promise-tools/utils/smart-resolve'], function (exports, _smartResolve) {
   'use strict';
 
@@ -15189,6 +15273,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+4a15c591"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+7b1bb173"});
 }
 //# sourceMappingURL=self-start-front-end.map

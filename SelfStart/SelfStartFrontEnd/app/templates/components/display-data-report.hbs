@@ -7,8 +7,10 @@
   <br>
     
   {{#each matchedAnswers as |ans|}}
-      <label>{{ans.answer}}</label>
+      <label>{{ans.answer}}</label> <br>
   {{/each}}
+
+  <br>
 
   <label># of 1 ratings: {{ratingGroupCount.[0]}} </label>  <br>
   <label># of 2 ratings: {{ratingGroupCount.[1]}}  </label> <br>
@@ -22,8 +24,12 @@
   <label># of 10 ratings: {{ratingGroupCount.[9]}} </label> <br> <br>
   <label>Average rating: {{averageRating}} </label> <br>
   
-  
-    {{!-- {{chart-component data=matchedAnswers}} --}}
+  <br><br>
+  <div class="chart-container" style="min-width: 400px" style="min-height: 300px">
+  {{bar-chart data=graphData options=options}}
+  </div>
+  <br>
+
   <div class="actions" style="padding:0">
 
     <div class="ok" style="padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Save Report</div>
