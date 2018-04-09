@@ -155,7 +155,6 @@ export default Component.extend({
           r.set('message', this.get('message') );
           r.save()
         })
-
       });
     },
     sortColumn(columnName, direction) {
