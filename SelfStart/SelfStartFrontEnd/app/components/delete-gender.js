@@ -5,6 +5,7 @@ import $ from 'jquery';
 
 export default Component.extend({
   DS: inject('store'),
+  genderDelete: null,
 
   modalName: computed(function () {
     return 'Delete-gender' + this.get('ID');
@@ -20,12 +21,15 @@ export default Component.extend({
         },
         onApprove: () => {
 
-          this.get('DS').find('gender', this.get('ID')).then((gender) => {
-            gender.set('name', '');
-            gender.save().then(function () {
-              gender.destroyRecord();
+            let gender = this.get('DS').peekRecord('gender', this.get('ID'));
+            gender.destroyRecord().then(()=>{
+              if (this.get('genderDelete')=== true)
+                this.set('genderDelete', false);
+              else
+                this.set('genderDelete', true);
+              return true;
             });
-          });
+
 
         }
       })

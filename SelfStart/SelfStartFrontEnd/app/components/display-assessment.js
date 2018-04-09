@@ -7,27 +7,7 @@ import $ from 'jquery';
 export default Component.extend({
   DS: inject('store'),
 
-  qNumber: 0,
-  tf: true,
-  SAanswer: "",
-  Rating: 1,
-  true:"",
-  checkTrue:false,
-  checkFalse:false,
-  checkmcop1: false,
-  checkmcop2: false,
-  checkmcop3: false,
-  checkmcop4: false,
-  checkmcop5: false,
-  checkmcop6: false,
-  mcop1: "",
-  mcop2: "",
-  mcop3: "",
-  mcop4: "",
-  mcop5: "",
-  mcop6: "",
-  index: 0,
-  onChange: 1,
+
   modalName: computed(function () {
     return 'viewAnswers' + this.get('model').id;
   }),
@@ -40,23 +20,25 @@ export default Component.extend({
 
   }),
 
-  init(){
+  init() {
     this._super(...arguments);
-    this.get('DS').findAll('form');
-    this.get('DS').findAll('question-order');
-    this.get('DS').findAll('question');
+    // this.get('DS').findAll('form');
+    // this.get('DS').findAll('question-order');
+    // this.get('DS').findAll('question');
     var self = this;
 
-
-    this.get('DS').query('question-order', {filter: {'form': this.get('model').id}}).then((records) => {
-      self.set('orders', records.toArray());
-
+    this.get('DS').query('answer', {filter: {'test': this.get('assessment').get("id")}}).then((records) => {
+      this.get('DS').query('question-order', {filter: {'form': this.get('model').id}}).then((records) => {
+        self.set('orders', records.toArray());
+      });
+      records.forEach((rec) => {
+          this.get("ans").push(rec.data);
+      });
     });
 
-    this.get('DS').query('answer', {filter: {'test': this.get('assessid')}}).then((records) => {
-      self.set('ans', records.toArray());
-    });
-
+  //  console.log(this.get('assessment').get("id"));
+   
+    //console.log(this.get('ans'));
     this.set('onChange', 0);
   },
 

@@ -18,23 +18,24 @@
     <form id="edit" class="cd-form floating-labels" {{action "submit" on="submit"}}>
 
       <div class="field" style="margin: 1em 0;">
-        {{input class="run"  type ="text" value = Name placeholder="Exercise Name" required = true}}
+        {{input class="run"  type ="text" value = name placeholder="Exercise Name" required = true}}
       </div>
 
       <div class="field" style="margin: 1em 0;">
-        {{textarea class="message"  type ="text" value = Description placeholder="Description" required = true}}
+        {{textarea class="message"  type ="text" value = description placeholder="Description" required = true}}
       </div>
 
 
       <div class="field" style="margin: 1em 0;">
         <div class = "ui segment">
           <label>Action Steps</label>
-        
+
         <div class="fourteen wide field">
           <div class="column " style="margin: 1em 0; background-color: white;">
           {{input class="circle" type="text" value=ActionStep1 placeholder = "Action Step" required=false}}
           </div>
         </div>
+
 
         {{#each actionSteps as |aS index|}}
         <div class="ui grid">
@@ -42,6 +43,7 @@
             <div style="background-color: white;">
               {{input class="circle" id=aS.id type="text" value=aS.value required=true placeholder = "New Action Step"}}
             </div>
+
           </div>
           <div class="one wide column" style="position: relative;margin-top: 30px;left: -1%;color: rgba(230, 60, 60, 0.71);cursor: pointer;">
             <i class="large times icon" {{action "removeOption" aS.id}}></i>
@@ -52,7 +54,7 @@
         <div class="fourteen wide field">
           <div class="ui grid">
             <div class="fifteen wide column" {{action "addOption"}} style="margin: 1em 0;">
-              {{input id="disabled" class="circle" type="text" placeholder="Add Step"}}
+              {{input class="disabled circle" type="text" placeholder="Add Step"}}
             </div>
           </div>
         </div>
@@ -62,19 +64,19 @@
 
       <div class="ui three column grid">
         <div class="column" style="margin: 1em 0;">
-          {{input class="watch"  type ="text" value = sets placeholder="Sets"}}
+          {{input class="watch"  type ="number" min="0" value = sets placeholder="Sets"}}
 
         </div>
         <div class="column" style="margin: 1em 0;">
-          {{input class="watch"  type ="text" value = reps placeholder="Reps"}}
+          {{input class="watch"  type ="number" min="0" value = reps placeholder="Reps"}}
         </div>
         <div class="column" style="margin: 1em 0;">
-          {{input class="watch"  type ="text" value = Duration placeholder="Duration"}}
+          {{input class="watch"  type ="text" value = duration placeholder="Duration"}}
         </div>
       </div>
 
       <div class="field" style="margin: 1em 0;">
-        {{input class="link"  type ="text" value = MMURL placeholder="Multi Media URL"}}
+        {{input class="link"  type ="text" value = multimediaURL placeholder="Multi Media URL"}}
       </div>
 
 

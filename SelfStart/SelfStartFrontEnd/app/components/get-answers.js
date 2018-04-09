@@ -16,7 +16,7 @@ export default Component.extend({
   init(){
     this._super(...arguments);
     //console.get(this.get("assessment"));
-    //console.log(this.get("answers"));
+    console.log(this.get("answers"));
   },
 
   actions: {
@@ -24,11 +24,11 @@ export default Component.extend({
       this.set('rateValue', rv);
 
       this.get("answers").forEach((rec) =>{
-        if(rec.get("question") === this.get("question").get("questionText")){
-          let answerModel = this.get('DS').findRecord('answer', rec.get("id")).then((ans) => {
-            rec.set("answer",this.get("rateValue"));
-          });
-          answerModel.save();
+        if(rec.get('question') === this.get("question").get("questionText")){
+          console.log("inside rating");
+            rec.set('answer', this.get("rateValue"));
+            rec.set('test', this.get("assessment"));  
+            rec.save();
         }
       });
     },
@@ -36,10 +36,9 @@ export default Component.extend({
     TFtrue() {
       this.get("answers").forEach((rec) =>{
         if(rec.get("question") === this.get("question").get("questionText")){
-          let answerModel = this.get('DS').findRecord('answer', rec.get("id")).then((ans) => {
-            rec.set("answer","Yes");
-          });
-          answerModel.save();
+            rec.set("answer","YES");
+            rec.set("test",this.get("assessment"));
+            rec.save();
         }
       });
     },
@@ -47,36 +46,29 @@ export default Component.extend({
     TFfalse() {
       this.get("answers").forEach((rec) =>{
         if(rec.get("question") === this.get("question").get("questionText")){
-          let answerModel = this.get('DS').findRecord('answer', rec.get("id")).then((ans) => {
-            rec.set("answer","No");
-          });
-          answerModel.save();
+            rec.set("answer","NO");
+            rec.set("test",this.get("assessment"));
+            rec.save();
         }
-      });
-    },
+      });    },
 
     saSave() {
 
       this.get("answers").forEach((rec) =>{
-        if(rec.get("id") === "5ac6cf0e5c8d7e2cf47f0643"){
-          console.log("in");
-          this.get('DS').findRecord('answer', rec.get("id")).then((ans) => {
+        if(rec.get("question") === this.get("question").get("questionText")){
             rec.set("answer",this.get("SAanswer"));
+            rec.set("test",this.get("assessment"));
             rec.save();
-          });
-
         }
       });
-
     },
 
     mcop1Save() {
       this.get("answers").forEach((rec) =>{
         if(rec.get("question") === this.get("question").get("questionText")){
-          let answerModel = this.get('DS').findRecord('answer', rec.get("id")).then((ans) => {
-            rec.set("answer","0");
-          });
-          answerModel.save();
+            rec.set("answer","1");
+            rec.set("test",this.get("assessment"));
+            rec.save();
         }
       });
     },
@@ -84,10 +76,9 @@ export default Component.extend({
     mcop2Save() {
       this.get("answers").forEach((rec) =>{
         if(rec.get("question") === this.get("question").get("questionText")){
-          let answerModel = this.get('DS').findRecord('answer', rec.get("id")).then((ans) => {
-            rec.set("answer","1");
-          });
-          answerModel.save();
+            rec.set("answer","2");
+            rec.set("test",this.get("assessment"));
+            rec.save();
         }
       });
     },
@@ -95,10 +86,9 @@ export default Component.extend({
     mcop3Save() {
       this.get("answers").forEach((rec) =>{
         if(rec.get("question") === this.get("question").get("questionText")){
-          let answerModel = this.get('DS').findRecord('answer', rec.get("id")).then((ans) => {
-            rec.set("answer","2");
-          });
-          answerModel.save();
+            rec.set("answer","3");
+            rec.set("test",this.get("assessment"));
+            rec.save();
         }
       });
     },
@@ -106,10 +96,9 @@ export default Component.extend({
     mcop4Save() {
       this.get("answers").forEach((rec) =>{
         if(rec.get("question") === this.get("question").get("questionText")){
-          let answerModel = this.get('DS').findRecord('answer', rec.get("id")).then((ans) => {
-            rec.set("answer","3");
-          });
-          answerModel.save();
+            rec.set("answer","4");
+            rec.set("test",this.get("assessment"));
+            rec.save();
         }
       });
     },
@@ -117,10 +106,9 @@ export default Component.extend({
     mcop5Save() {
       this.get("answers").forEach((rec) =>{
         if(rec.get("question") === this.get("question").get("questionText")){
-          let answerModel = this.get('DS').findRecord('answer', rec.get("id")).then((ans) => {
-            rec.set("answer","4");
-          });
-          answerModel.save();
+            rec.set("answer","5");
+            rec.set("test",this.get("assessment"));
+            rec.save();
         }
       });
     },
@@ -128,10 +116,9 @@ export default Component.extend({
     mcop6Save() {
       this.get("answers").forEach((rec) =>{
         if(rec.get("question") === this.get("question").get("questionText")){
-          let answerModel = this.get('DS').findRecord('answer', rec.get("id")).then((ans) => {
-            rec.set("answer","5");
-          });
-          answerModel.save();
+            rec.set("answer","6");
+            rec.set("test",this.get("assessment"));
+            rec.save();
         }
       });
     },

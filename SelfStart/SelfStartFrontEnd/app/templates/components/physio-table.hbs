@@ -17,10 +17,10 @@
 
         <div class="field">
           {{#ui-dropdown class="selection" selected=queryPath onChange=(action (mut queryPath))}}
-            <div class="default text">{{modelAttributes.firstObject.name}}</div>
+            <div class="default text">{{searchAttributes.firstObject.name}}</div>
             <i class="dropdown icon"></i>
             <div class="menu">
-              {{#each modelAttributes as |attribute|}}
+              {{#each searchAttributes as |attribute|}}
                 <div class="item" data-value="{{attribute.key}}">
                   {{attribute.name}}
                 </div>
@@ -80,17 +80,19 @@
 
           {{#each modelAttributes as |column|}}
 
-          {{!--{{#if (eq column.key 'dateOfBirth' )}}
-            <td class={{column.class}}>  {{dateFormat dateOfBirth}}  </td>
-          {{/if}}--}}
 
-            <td class={{column.class}}>
-              {{get physio column.key}}
-            </td>
+            {{#if (eq column.key 'dateHired' )}}
+              <td class={{column.class}}> {{date-to-string date=(get physio column.key)}} </td>
+
+            {{else}}
+              <td class={{column.class}}>
+                {{get physio column.key}}
+              </td>
+            {{/if}}
           {{/each}}
 
           <td class="right aligned one wide column ">
-            {{edit-physiotherapist  physiosData=physio }}
+            {{edit-physiotherapist  physiosData=physio flagEdit=flagEdit}}
           </td>
           <td class="left aligned one wide column ">
             <p >{{delete-physiotherapist ID=physio.id flagDelete=flagDelete}}</p>

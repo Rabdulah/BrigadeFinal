@@ -76,12 +76,12 @@ router.route('/:exercise_id')
                 exercise.description = request.body.exercise.description;
                 exercise.actionSteps = request.body.exercise.actionSteps;
                 exercise.authorName = request.body.exercise.authorName;
-                exercise.sets = request.body.exercise.sets;
-                exercise.reps = request.body.exercise.reps;
                 exercise.duration = request.body.exercise.duration;
                 exercise.multimediaURL = request.body.exercise.multimediaURL;
-                exercise.image = request.body.exercise.image;
+                exercise.images = request.body.exercise.images;
                 exercise.exerciseList = request.body.exercise.exerciseList;
+                exercise.sets = request.body.exercise.sets;
+                exercise.reps = request.body.exercise.reps;
 
                 exercise.save(function (error) {
                     if (error) {

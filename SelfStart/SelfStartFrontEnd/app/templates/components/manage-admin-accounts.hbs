@@ -31,7 +31,7 @@
         </p>
       </div>
       <div class="right two wide column" style="padding-left: 30px;">
-        {{add-patient flagAdd=flagAdd}}
+        {{add-patient model=model  flagAdd=flagAdd}}
       </div>
     </div>
     <br><br><br><br>
@@ -43,10 +43,10 @@
 
           <div class="field">
             {{#ui-dropdown class="selection" selected=queryPath onChange=(action (mut queryPath))}}
-              <div class="default text">{{modelAttributes.firstObject.name}}</div>
+              <div class="default text">{{searchAttributes.firstObject.name}}</div>
               <i class="dropdown icon"></i>
               <div class="menu">
-                {{#each modelAttributes as |attribute|}}
+                {{#each searchAttributes as |attribute|}}
                   <div class="item" data-value="{{attribute.key}}">
                     {{attribute.name}}
                   </div>
@@ -105,18 +105,18 @@
               </td>
 
               {{#each modelAttributes as |column|}}
+                {{#if (eq column.key 'dateOfBirth' )}}
+                  <td class={{column.class}}> {{date-to-string date=(get patient column.key)}} </td>
 
-              {{!--{{#if (eq column.key 'dateOfBirth' )}}
-                <td class={{column.class}}>  {{dateFormat dateOfBirth}}  </td>
-              {{/if}}--}}
-
-                <td class={{column.class}}>
-                  {{get patient column.key}}
-                </td>
+                {{else}}
+                  <td class={{column.class}} {{action 'toggleDetail' patient.id}}>
+                    {{get patient column.key}}
+                  </td>
+                {{/if}}
               {{/each}}
 
               <td class="right aligned one wide column ">
-                {{edit-patient  pateintsData=patient }}
+                {{edit-patient  model=model pateintsData=patient flagEdit=flagEdit}}
               </td>
               <td class="left aligned one wide column ">
                 <p >{{delete-patient ID=patient.id flagDelete=flagDelete}}</p>

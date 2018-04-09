@@ -18,7 +18,7 @@ Router.map(function() {
     this.route('forms');
     this.route('new-form');
     // this.route('view-form');
-    this.route('edit-form', { path: 'forms/:form_id'});
+    this.route('edit-form', { path: '/forms/:form_id'});
   });
   //this.route('questions');
   this.route('forms');
@@ -42,13 +42,13 @@ Router.map(function() {
   this.route('practitioner', function() {
     this.route('physio-welcome', {path: '/'});
     this.route('clients');
-    this.route('client-file', { path: 'clients/:patient_id'});
+    this.route('client-file', { path: '/clients/:patient_id'});
     this.route('rehabplans');
     this.route('new-rehabplans');
     this.route('assessment-display');
     this.route('appointment');
     this.route('display-reports');
-    this.route('edit-menu', { path: 'rehabplans/:rehabilitationplan_id'});
+    this.route('edit-menu', { path: '/rehabplans/:rehabilitationplan_id'});
     this.route('exercises');
   });
 
@@ -60,7 +60,6 @@ Router.map(function() {
     this.route('settings');
     this.route('upload-photos');
     this.route('appointment');
-    this.route('edit-menu', { path: 'rehabplans/:rehabilitationplan_id'});
     this.route('exercises');
     this.route('view-rehabplan', { path: 'rehabplans/:rehabilitationplan_id'});
   });

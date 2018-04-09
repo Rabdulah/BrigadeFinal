@@ -11,13 +11,18 @@ export default Component.extend({
   dir:'',
   query: null,
   flagDelete: false,
-  flagAdd: false,
 
   modelAttributes:
 
     [{'key': 'planName', 'name':'Plan Name', 'dir' : 'asc', 'class' :'left aligned five wide column'},
-      {'key': 'physioID.givenName', 'name':'Author Name', 'dir' : '','class' :'left aligned four wide column'},
-      {'key': 'date', 'name':'Date Created', 'dir' : '','class' :'left aligned five wide column'}],
+      {'key': 'physioID.givenName', 'name':'Author Name', 'dir' : '','class' :'left aligned five wide column'},
+      {'key': 'date', 'name':'Date Created', 'dir' : '','class' :'left aligned four wide column'}],
+
+  searchAttributes:
+
+    [{'key': 'planName', 'name':'Plan Name', 'dir' : 'asc', 'class' :'left aligned five wide column'},
+      {'key': 'physioID.givenName', 'name':'Author Name', 'dir' : '','class' :'left aligned five wide column'}],
+
 
   plansModel: [],
   INDEX: null,
@@ -26,7 +31,7 @@ export default Component.extend({
 
 
 
-  activeModel: Ember.observer('offset', 'limit', 'sort', 'dir','flagDelete','flagAdd', function () {
+  activeModel: Ember.observer('offset', 'limit', 'sort', 'dir','flagDelete', function () {
     var self = this;
     console.log(this.plansModel);
     this.get('store').query('rehabilitationplan', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {

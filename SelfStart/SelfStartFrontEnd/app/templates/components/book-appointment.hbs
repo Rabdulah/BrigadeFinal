@@ -8,11 +8,33 @@
   </div>
 </div>
 
-<br><br>
+<br><br><br>
+<div class="ui centered cards" >
+  <div class="card" style="width:250px">
+    <div class="content" style="text-align: center">
+      <div class="header">First Appointment</div>
+    </div>
+    <div class="ui bottom attached button" {{action "firstSelect"}}>
+      <i class="add icon"></i>Show
+    </div>
+  </div>
+
+  <div class="card" style="width:250px">
+    <div class="content"  style="text-align: center">
+      <div class="header">Follow-ups</div>
+    </div>
+    <div class="ui bottom attached button" {{action "followupSelect"}}>
+      <i class="add icon"></i>
+      Show
+    </div>
+  </div>
+</div>
+
+
+
 <link integrity="" rel="stylesheet" href="/assets/css/form-style.css"> <!-- Resource style -->
 
-
-
+{{#if followupSelected}}
 <form class="cd-form floating-labels" {{action "save" on="submit"}} style="padding-right: 10em; padding-left: 10em">
   <label class="cd-label">Select Physiotherapist</label>
   <p class="cd-select icon">
@@ -25,8 +47,7 @@
       {{/each}}
     </select>
   </p>
-  <br>
-  <br>
+  <br><br>
   {{as-calendar
     title="View Schedule"
     occurrences=occurrences
@@ -40,6 +61,83 @@
 
 </form>
 <br><br>
+{{/if}}
+
+{{#if firstSelected}}
+<div class = "ui very padded segment container" style="border: none; box-shadow: none; background-color: white;position: relative;z-index:  2;">
+  <div class="ui four steps">
+    <div class="{{introValue}} step">
+      <i class="sticky note icon"></i>
+      <div class="content">
+        <div class="title">Intake Form</div>
+      </div>
+    </div>
+    <div class="{{photoValue}}  step">
+      <i class="photo icon"></i>
+      <div class="content">
+        <div class="title">Upload Photos</div>
+      </div>
+    </div>
+    <div class="{{appointmentValue}}  step">
+      <i class="bookmark icon"></i>
+      <div class="content">
+        <div class="title">Book Appointment</div>
+      </div>
+    </div>
+    <div class="{{confirmValue}}  step">
+      <i class="check circle icon"></i>
+      <div class="content">
+        <div class="title">Confirmation</div>
+      </div>
+    </div>
+  </div>
+
+  <div class="ui attached segment">
+    {{#if intro}}
+      <div class="field" style="margin: 1em 0">
+
+        {{!--{{display-assessment id=paitent.intakeForm.id}}--}}
+
+
+        <div class="ui centered grid">
+          <button class="ui blue button" style="height: 50px;" {{action "goToPhoto"}}>Next</button>
+        </div>
+      </div>
+    {{/if}}
+    {{#if photo}}
+      <div class="field" style="margin: 1em 0">
+
+        {{client-upload-photos}}
+
+        <div class="ui centered grid">
+          <button class="ui blue button" style="height: 50px;" {{action "backToIntro"}}>Back</button>
+          <button class="ui blue button" style="height: 50px;" {{action "goToAppointment"}}>Next</button>
+        </div>
+      </div>
+    {{/if}}
+    {{#if appointment}}
+      <p>Appointment go here!!</p>
+      <div class="field" style="margin: 1em 0">
+        <div class="ui centered grid">
+          <button class="ui blue button" style="height: 50px;" {{action "backToPhoto"}}>Back</button>
+          <button class="ui blue button" style="height: 50px;" {{action "goToConfirm"}}>Next</button>
+        </div>
+      </div>
+    {{/if}}
+    {{#if confirm}}
+      <p>Confirmation Page Goes Here!!</p>
+      <div class="field" style="margin: 1em 0">
+        <div class="ui centered grid">
+          <button class="ui blue button" style="height: 50px;" {{action "backToAppointment"}}>Back</button>
+          <button class="ui blue button" style="height: 50px;" {{action "goToPaypal"}}>Next</button>
+        </div>
+      </div>
+    {{/if}}
+
+
+  </div>
+</div>
+{{/if}}
 
 
 {{#ui-modal name= modalName class= 'bk'}}

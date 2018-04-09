@@ -74,7 +74,7 @@ router.route('/')
     .get(parseUrlencoded, parseJSON, function (request, response) {
         let patient = request.query.filter;
         let {limit, offset, sort, dir, queryPath, regex} = request.query;
-        console.log(patient);
+        //console.log(patient);
         if (!patient){
 
             if(!limit && !regex) {
@@ -109,6 +109,9 @@ router.route('/')
                     offset: offset,
                     limit: limit
                 };
+
+                console.log("query" + query[queryPath] + regex);
+                console.log("options" + JSON.stringify(options));
 
                 Patients.Model.paginate(query, options, function (error, patients) {
                     if (error) response.send(error);
@@ -159,6 +162,7 @@ router.route('/:patient_id')
                 patient.city = request.body.patient.city;
                 patient.apartment = request.body.patient.apartment;
                 patient.streetNumber = request.body.patient.streetNumber;
+                patient.streetName = request.body.patient.streetName;
                 patient.postalCode = request.body.patient.postalCode;
                 patient.appointments = request.body.patient.appointments;
                 patient.rehablink = request.body.patient.rehablink;

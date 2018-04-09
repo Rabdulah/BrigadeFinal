@@ -13,13 +13,20 @@ export default Component.extend({
   quoteSelected: false,
   model: null,
 
+  provinceDelete: false,
+  provinceAdd: false,
+  countryDelete: false,
+  countryAdd: false,
+  genderDelete: false,
+  genderAdd: false,
+
+
   limit: 10,
   offset: 0,
   pageSize: 10,
   sort: 'name',
   dir:'',
   query: null,
-  flagDelete: false,
   modelAttributes:
 
     [{'key': 'name', 'name':'Name', 'dir' : 'asc', 'class' :'left aligned thirteen wide column'}],
@@ -29,7 +36,7 @@ export default Component.extend({
   queryPath: 'name',
   scrolledLines: 0,
 
-  activeModel: Ember.observer('offset', 'limit', 'sort', 'dir', 'flagDelete', function () {
+  activeModel: Ember.observer('offset', 'limit', 'sort', 'dir', 'provinceDelete', 'provinceAdd', 'countryDelete', 'countryAdd', 'genderDelete', 'genderAdd', function () {
     var self = this;
 
     this.get('store').query('country', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
@@ -148,7 +155,6 @@ export default Component.extend({
           r.set('message', this.get('message') );
           r.save()
         })
-
       });
     },
     sortColumn(columnName, direction) {

@@ -107,7 +107,7 @@ export default Component.extend({
           streetName: self.get('streetName'),
           streetNumber: self.get('streetNumber'),
           apartment: self.get('apartment'),
-          country: self.get('selectedCountry'),
+          country: self.get('country'),
           province: self.get('province'),
           city: self.get('city'),
           dateOfBirth: new Date(this.get('selectedDate')),
@@ -131,33 +131,40 @@ export default Component.extend({
             passwords.save();
           }
 
+
+
+
+
           this.get('DS').query('form', {filter: {'name': 'Intake Form'}}).then((intake) => {
             var ans = [];
 
             let newTest = this.get('DS').createRecord('assessment-test', {
               name: "Intake Form",
-              description: "Initial form before ou can book an appointment",
+              description: "Initial form before you can book an appointment",
               form: intake.get('firstObject'),
               patient: res,
-
+            
             });
             newTest.save().then(() => {
 
               this.get('DS').query('question-order', {filter: {'form': intake.get('firstObject').id}}).then((rec) => {
 
                 rec.forEach((r) => {
-                  var q = r.get('question');
-                  var s = q.get('data');
-                  //console.log(q.get('data.questionText'));
+
+
+
+                 //console.log(r.get('order'));
                   //console.log(q.get('questionText'));
+                    r.get('question').then((q)=>{
+                      let answer = this.get('DS').createRecord('answer', {
+                        question: q.get('questionText'),
+                        answer: "",
+                        test: newTest
+                      });
 
+                    answer.save();
+                      })
 
-                  let answer = this.get('DS').createRecord('answer', {
-                    question: "",
-                    answer: "",
-                    test: newTest
-                  });
-                  answer.save();
 
                 });
 

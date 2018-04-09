@@ -1,6 +1,6 @@
 var express = require('express');
 var router = express.Router();
-var Physiotherapest = require('../models/Physiotherapests.js');
+var Physiotherapest = require('../models/Physiotherapests');
 
 router.route('/')
     .post(function (request, response) {

@@ -3,7 +3,12 @@
     <div class="introduction">
       <h1 class="ui inverted header">
         <span class="library">Client Page</span>
-        <span class="library">{{message}}</span>
+        {{#each model as |admin|}}
+          <span class="tagline">
+            {{admin.message}}
+          </span>
+        {{/each}}
+
       </h1>
       <div class="ui hidden divider"></div>
       <div class="ui hidden divider"></div>

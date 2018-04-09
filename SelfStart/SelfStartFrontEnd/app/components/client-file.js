@@ -75,7 +75,7 @@ link:[],
   questionModel: computed( function(){
     this.get('store').findAll('question').then((questions) => {
       let self = this;
-      console.log(questions);
+      // console.log(questions);
       let ratingQs = [];
       questions.forEach((q) => {
         if (q.get('type') == "Rating") {
@@ -102,7 +102,7 @@ link:[],
 
   activeModel: Ember.observer('offset', 'limit', 'sort', 'dir','flagDelete','flagAdd', function () {
     var self = this;
-    console.log(this.plansModel);
+    // console.log(this.plansModel);
     this.get('store').query('rehabilitationplan', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
       self.set('plansModel', records.toArray());
 
@@ -118,8 +118,8 @@ link:[],
     let plan = this.get('plan');
 
     this.get('store').query('rehab-client-link', {filter: {'RehabilitationPlan': plan, 'Patient': client}}).then((update) => {
-      console.log(plan);
-      console.log(update.content.length);
+      // console.log(plan);
+      // console.log(update.content.length);
       if (update.content.length !== 0) {
         this.set('disabled', "disabled");
       } else {
@@ -158,15 +158,12 @@ link:[],
           if(im.get("patient").get("id") === client)
            self.get("imageList").pushObject(im);
         });
-
-        console.log(this.get("imageList"));
-       // self.set("imageList", records.toArray());
       })
   },
 
 
   dateFormat: Ember.computed(function(date){
-    console.log(date);
+    // console.log(date);
     var dateString = date.toISOString().substring(0, 10);
     return dateString;
   }),
@@ -457,7 +454,7 @@ link:[],
         });
 
          var peekTest = this.get('store').peekRecord('assessment-test', test.get("id"));
-         console.log(peekTest);
+        //  console.log(peekTest);
          peekTest.set('rehabLink', link)
            link.save().then(()=> {
             peekTest.save();

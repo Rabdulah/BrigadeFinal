@@ -13,40 +13,49 @@ router.route('/')
 
     .get( function (request, response) {
         let {limit, offset, sort, dir, queryPath, regex} = request.query;
-        if(!limit) {
-            Countries.Model.find(function (error, countries) {
+        let countryName = request.query.filter;
+        if (!countryName) {
+            if (!limit) {
+                Countries.Model.find(function (error, countries) {
+                    if (error) response.send(error);
+                    response.json({country: countries});
+                });
+            }
+            else {
+
+                offset = Number(offset || 0);
+                limit = Number(limit || 10);
+                dir = dir || 'asc';
+                sort = sort || 'id';
+
+                let query = {};
+                if (regex !== '')
+                    query[queryPath] = new RegExp(regex, "i");
+
+                var sortOrder = sort;
+                if (sortOrder) {
+                    if (dir !== 'asc') {
+                        sortOrder = '-' + sort;
+                    }
+                }
+
+                let options = {
+                    sort: sortOrder,
+                    lean: true,
+                    offset: offset,
+                    limit: limit
+                };
+
+                Countries.Model.paginate(query, options, function (error, countries) {
+                    if (error) response.send(error);
+                    response.json({country: countries.docs});
+                });
+            }
+        }
+        else{
+            Countries.Model.find({"name": countryName.name}, function (error, countries) {
                 if (error) response.send(error);
                 response.json({country: countries});
-            });
-        }
-        else {
-
-            offset = Number(offset || 0);
-            limit = Number(limit || 10);
-            dir = dir || 'asc';
-            sort = sort || 'id';
-
-            let query = {};
-            if (regex !== '')
-                query[queryPath] = new RegExp(regex, "i");
-
-            var sortOrder = sort;
-            if (sortOrder) {
-                if (dir !== 'asc') {
-                    sortOrder = '-' + sort;
-                }
-            }
-
-            let options = {
-                sort: sortOrder,
-                lean: true,
-                offset: offset,
-                limit: limit
-            };
-
-            Countries.Model.paginate(query, options, function (error, countries) {
-                if (error) response.send(error);
-                response.json({country: countries.docs});
             });
         }
     });

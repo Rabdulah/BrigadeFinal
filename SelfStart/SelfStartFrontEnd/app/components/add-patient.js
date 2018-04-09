@@ -1,15 +1,18 @@
 import Component from '@ember/component';
 import { inject } from '@ember/service';
 import { computed } from '@ember/object';
+import Ember from "ember";
 import $ from 'jquery';
 
 export default Component.extend({
   DS: inject('store'),
-  routing: inject('-routing'),
+
   authentication: inject('auth'),
 
+
+
   tagName: '',
-  flagAdd: null,
+  flagAdd: false,
 
   init(){
     this._super(...arguments);
@@ -23,15 +26,13 @@ export default Component.extend({
     this.set('selectedCountry', '');
     this.set('province', '');
     this.set('city', '');
-    this.set('healthCardNumber', '');
+    this.set('selectedDate', '');
     this.set('selectedGender', '');
     this.set('dateOfBirth', '');
     this.set('phoneNumber', '');
     this.set('postalCode', '');
     this.set('userAccountName', '');
     this.set('encryptedPassword', '');
-    // this.set('selectedGender', this.get('selectedGender'));
-    // this.set('selectedCountry', this.get('selectedCountry'));
   },
 
   didRender() {
@@ -59,19 +60,22 @@ export default Component.extend({
     });
   },
 
-  introModel: computed( function() {
-    return this.get('DS').findRecord('form', '5aac10411eac5942040e581f');
-  }),
-
-  conutryModel: computed(function(){
-    return this.get('DS').findAll('country');
-  }),
-
   genderModel: computed(function(){
     return this.get('DS').findAll('gender');
   }),
 
+  provModel: [],
 
+  provinces: Ember.observer('country', function(){
+    this.get('DS').query('province', {filter: {'country': this.get('country')}}).then((provinces) => {
+
+      this.get('provModel').clear();
+
+      provinces.forEach((prov)=>{
+        this.get('provModel').pushObject(prov);
+      });
+    });
+  }),
 
   actions: {
 
@@ -79,16 +83,10 @@ export default Component.extend({
       this.set('selectedDate', date);
     },
 
-    selectCountry (country) {
-      this.set('selectedCountry', country);
-    },
-
-    selectGender (gender){
-      this.set('selectedGender', gender);
-    },
 
     submit(){
       let self = this;
+
 
       let passwords = this.get('DS').createRecord('password', {
         email: self.get('email'),
@@ -99,21 +97,27 @@ export default Component.extend({
 
       console.log("password b4 sent", passwords.get("encryptedPassword"));
 
+
       passwords.save().then((passwords) => {
-        console.log("Password returned to front end after save", passwords); 
+        console.log("Password returned to front end after save", passwords);
+
+          var lastName =  self.get('familyName');
+          var firstName =  self.get('givenName');
+          var mail = self.get('email');
+
         let patient = this.get('DS').createRecord('patient', {
-          familyName: self.get('familyName'),
-          givenName: self.get('givenName'),
-          email: self.get('email'),
+          familyName: lastName.charAt(0).toUpperCase() + lastName.substring(1),
+          givenName: firstName.charAt(0).toUpperCase() + firstName.substring(1),
+          email: mail.substring(0).toLowerCase(),
           encryptedPassword: passwords,
           streetName: self.get('streetName'),
           streetNumber: self.get('streetNumber'),
           apartment: self.get('apartment'),
-          country: self.get('selectedCountry'),
-          province: self.get('province'),
+          country: self.get('DS').peekRecord('country', self.get('country')).get('name'),
+          province: self.get('DS').peekRecord('province', self.get('province')).get('name'),
           city: self.get('city'),
           dateOfBirth: new Date(this.get('selectedDate')),
-          gender: self.get('selectedGender'),
+          gender: self.get('gender'),
           phoneNumber: self.get('phoneNumber'),
           postalCode: self.get('postalCode'),
         });
@@ -128,11 +132,30 @@ export default Component.extend({
             });
             passwords.destroyRecord().then(o => {});
           } else{
-            $('.ui.newPatient.modal').modal('hide');
+
             if (this.get('flagAdd')=== true)
               this.set('flagAdd', false);
             else
               this.set('flagAdd', true);
+            $('.ui.newPatient.modal').modal('hide');
+
+
+            this.set('familyName', '');
+            this.set('givenName', '');
+            this.set('email', '');
+            this.set('streetName', '');
+            this.set('streetNumber', '');
+            this.set('apartment', '');
+            this.set('selectedCountry', '');
+            this.set('province', '');
+            this.set('city', '');
+            this.set('selectedDate', '');
+            this.set('selectedGender', '');
+            this.set('dateOfBirth', '');
+            this.set('phoneNumber', '');
+            this.set('postalCode', '');
+            this.set('userAccountName', '');
+            this.set('encryptedPassword', '');
             // return true;
             console.log("SUCCESS", res);
             passwords.set('client', res);
@@ -141,6 +164,7 @@ export default Component.extend({
         });
 
       })
+
     },
 
     openModal: function ()  {

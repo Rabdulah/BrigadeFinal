@@ -43,15 +43,18 @@
         </div>
 
         <div class="column " style="margin: 1em 0;">
-          <p class="cd-select icon">
-            <select class="people" onchange={{action 'selectGender' value="target.value"}}>
+
+          {{#ui-dropdown class="gender selection" onChange=(action (mut gender))}}
+            <div class="default text">Select a gender</div>
+            <i class="dropdown icon" id="selectIcon"></i>
+            <div class="menu">
               {{#each genderModel as |oneGender|}}
-                <option value={{oneGender.name}} selected={{eq gender oneGender.name}}>
+                <div data-value="{{oneGender.name}}" class="item">
                   {{oneGender.name}}
-                </option>
+                </div>
               {{/each}}
-            </select>
-          </p>
+            </div>
+          {{/ui-dropdown}}
         </div>
       </div>
 
@@ -72,7 +75,7 @@
 
       <div class="ui two column grid">
         <div class="column " style="margin: 1em 0;">
-          {{input class="home" type="text" value = streetNumber placeholder="Street Number" required = true}}
+          {{input class="home" type="number" min="1" value = streetNumber placeholder="Street Number" required = true}}
         </div>
         <div class="column " style="margin: 1em 0;">
           {{input class="home" type="text" value = streetName placeholder="Street Name" required = true}}
@@ -82,7 +85,7 @@
 
       <div class="ui two column grid">
         <div class="column " style="margin: 1em 0;">
-          {{input class="bookmark" type="text" placeholder="Unit Number" value = apartment}}
+          {{input class="bookmark" type="number" min="1" placeholder="Unit Number" value = apartment}}
         </div>
 
         <div class="column " style="margin: 1em 0;">
@@ -93,18 +96,32 @@
 
       <div class="ui three column grid" id="grid">
         <div class="column " style="margin: 1em 0;">
-          <p class="cd-select icon">
-            <select class="world" onchange={{action 'selectCountry' value="target.value"}}>
-              {{#each conutryModel as |oneCountry|}}
-                <option value={{oneCountry.name}} selected={{eq country oneCountry.name}}>
-                  {{oneCountry.name}}
-                </option>
+
+          {{#ui-dropdown class="address selection" onChange=(action (mut country))}}
+            <div class="default text">Select a country</div>
+            <i class="dropdown icon" id="selectIcon"></i>
+            <div class="menu">
+              {{#each model as |country|}}
+                <div data-value="{{country.id}}" class="item">
+                  {{country.name}}
+                </div>
               {{/each}}
-            </select>
-          </p>
+            </div>
+          {{/ui-dropdown}}
+
         </div>
         <div class="column " style="margin: 1em 0;">
-          {{input class="world" type="text" value = province placeholder="Province/State" required = true}}
+          {{#ui-dropdown class="address selection " onChange=(action (mut province))}}
+            <div class="default text">Select a province</div>
+            <i class="dropdown icon" id="selectIcon"></i>
+            <div class="menu">
+              {{#each provModel as |province|}}
+                <div data-value="{{province.id}}" class="item">
+                  {{province.name}}
+                </div>
+              {{/each}}
+            </div>
+          {{/ui-dropdown}}
         </div>
         <div class="column " style="margin: 1em 0;">
           {{input class="world" type="text" value = city placeholder="City" required = true}}
