@@ -22,8 +22,8 @@ export default Component.extend({
   flagDelete: false,
 
   modelAttributes:
-    [{'key': 'name', 'name': 'Name', 'dir': '', 'class': 'left aligned seven wide column'},
-      {'key': 'sets', 'name': 'Sets', 'dir': 'asc', 'class': 'left aligned two wide column'},
+    [{'key': 'name', 'name': 'Name', 'dir': 'asc', 'class': 'left aligned seven wide column'},
+      {'key': 'sets', 'name': 'Sets', 'dir': '', 'class': 'left aligned two wide column'},
       {'key': 'reps', 'name': 'Reps', 'dir': '', 'class': 'left aligned two wide column'},
       {'key': 'duration', 'name': 'Duration', 'dir': '', 'class': 'left aligned three wide column'}],
 
@@ -36,9 +36,10 @@ export default Component.extend({
   scrolledLines: 0,
 
   activeModel: Ember.observer('offset', 'limit', 'sort', 'dir', 'flagAdd', 'flagEdit', 'flagDelete', function () {
-    console.log("add");
+    console.log(this.get('flagAdd'));
     var self = this;
 
+    this.get('store').findAll('image');
     this.get('store').query('exercise', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
       self.set('exercisesModel', records.toArray());
     });
@@ -56,6 +57,7 @@ export default Component.extend({
       this.set('regex', '');
     }
 
+    this.get('store').findAll('image');
     this.get('store').query('exercise', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then((records) => {
       self.set('exercisesModel', records.toArray());
     });
@@ -69,38 +71,46 @@ export default Component.extend({
     this.set('pageSize', 10);
     let self = this;
 
+    this.get('store').findAll('image');
+
     this.get('store').query('exercise', this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
+
       self.set('exercisesModel', records.toArray());
     });
   },
 
   didInsertElement: function() {
+
     this._super(...arguments);
     this.bindScrolling();
   },
   willRemoveElement: function() {
+    console.log("sds");
     this._super(...arguments);
     this.unbindScrolling();
   },
   scrolled: function() {
-    if (this.get('scrolledLines') < Ember.$("#myWindow").scrollTop()) {
-      this.set('scrolledLines', Ember.$("#myWindow").scrollTop());
+
+    if (this.get('scrolledLines') < Ember.$("#cards").scrollTop()) {
+      this.set('scrolledLines', Ember.$("#cards").scrollTop());
       this.set('limit', this.get('limit') + 10);
     }
   },
 
   bindScrolling: function() {
+
     var self = this;
     var onScroll = function() {
       Ember.run.debounce(self, self.scrolled, 500);
     };
-    Ember.$("#myWindow").bind('touchmove', onScroll);
-    Ember.$("#myWindow").bind('scroll', onScroll);
+    Ember.$("#cards").bind('touchmove', onScroll);
+    Ember.$("#cards").bind('scroll', onScroll);
   },
 
   unbindScrolling: function() {
-    Ember.$("#myWindow").unbind('scroll');
-    Ember.$("#myWindow").unbind('touchmove');
+    console.log("sds");
+    Ember.$("#cards").unbind('scroll');
+    Ember.$("#cards").unbind('touchmove');
   },
 
 

@@ -20,7 +20,7 @@ export default Component.extend({
   modelQueue: [],
   savingInProgress: false,
   id: null,
-  flagAdd: false,
+  flagAdd: null,
 
 
   modalName: Ember.computed(function () {
@@ -171,6 +171,11 @@ export default Component.extend({
       this.get('temp').clear();
 
       exercise.save().then((exer)=>{
+        if (this.get('flagAdd')=== true)
+          this.set('flagAdd', false);
+        else
+          this.set('flagAdd', true);
+
         var saveImage = [];
         console.log(exer.id);
         console.log(this.queue);
@@ -216,10 +221,7 @@ export default Component.extend({
       // this.set('duration', "");
       // this.set('multimediaURL', "");
       // this.set("actionSteps", []);
-      if (this.get('flagAdd')=== true)
-        this.set('flagAdd', false);
-      else
-        this.set('flagAdd', true);
+
       $('.ui.newExercise.modal').modal('hide');
 
 

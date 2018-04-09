@@ -4,6 +4,7 @@ import $ from 'jquery';
 
 export default Component.extend({
   DS: inject('store'),
+  genderAdd: null,
 
   actions: {
     openModal: function ()  {
@@ -22,6 +23,10 @@ export default Component.extend({
             name: this.get('name'),
           });
           newGender.save().then(()=> {
+            if (this.get('genderAdd')=== true)
+              this.set('genderAdd', false);
+            else
+              this.set('genderAdd', true);
             return true;
           });
         }

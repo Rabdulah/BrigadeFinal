@@ -5,7 +5,7 @@ import $ from 'jquery';
 
 export default Component.extend({
   DS: inject('store'),
-  //selectedCountry: null,
+  provinceAdd: null,
 
 
   actions: {
@@ -26,6 +26,10 @@ export default Component.extend({
         newProvince.set('country', src);
 
         newProvince.save().then(function ()  {
+          if (self.get('provinceAdd')=== true)
+            self.set('provinceAdd', false);
+          else
+            self.set('provinceAdd', true);
           $('.ui.small.newProvince.modal').modal('hide');
         });
       });

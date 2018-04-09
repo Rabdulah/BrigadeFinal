@@ -82,7 +82,7 @@
 
         <div class="ui divider"></div>
 
-        <div  id="myWindow" style="height:500px; overflow-y: scroll; overflow-x: hidden;">
+        <div  id="cards" style="height:500px; overflow-y: scroll; overflow-x: hidden;">
           <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
             <tbody >
             {{#each exercisesModel as |exercise|}}
@@ -126,6 +126,7 @@
         </div>
       </div>
 
+    <div  id="cards" style="height: 650px;padding: 25px;overflow-y: scroll;overflow-x: hidden;">
       <div class ="ui five column doubling grid">
         {{#each exercisesModel as |Exercise index|}}
           <div class="column" style="padding-bottom: 50px;padding-top: 50px;">
@@ -166,6 +167,7 @@
         {{/each}}
 
       </div>
+    </div>
 
 
     {{/if}}

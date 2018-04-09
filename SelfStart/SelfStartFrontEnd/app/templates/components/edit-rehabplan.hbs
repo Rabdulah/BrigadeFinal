@@ -71,7 +71,9 @@
                     {{get exercise column.key}}
                   </td>
                   <td class="left aligned four wide column">
+                    <div class="cd-form">
                     {{ui-checkbox checked=(get exercise 'selected') onChange=(action (mut (get exercise 'selected')))}}
+                    </div>
                   </td>
                 {{/each}}
               </tr>
@@ -84,7 +86,9 @@
                     {{get exercise column.key}}
                   </td>
                   <td class="left aligned four wide column">
+                    <div class="cd-form">
                     {{ui-checkbox checked=(get exercise 'selected') onChange=(action (mut (get exercise 'selected')))}}
+                    </div>
                   </td>
                 {{/each}}
               </tr>
@@ -131,7 +135,7 @@
           {{input class="bookmark" type="text" value = model.planName placeholder="Name" required = true}}
         </div>
         <div class="field" style="margin: 1em 0;">
-          {{input class="message" type="text" value = model.description placeholder="Description" required = true}}
+          {{input class="message" type="text" value = model.description placeholder="Description"}}
         </div>
 
         <div class="field" style="margin-left: 495px;margin-top: -212px;position:  absolute;">
@@ -183,7 +187,9 @@
                   </td>
                 {{/each}}
                 <td class="left aligned two wide column">
+                  <div class="cd-form">
                   {{ui-checkbox checked=(get list 'selectedList') onChange=(action (mut (get list 'selectedList')))}}
+                  </div>
                 </td>
                 <td class="left aligned two wide column">
                   <span class="handle" style="cursor: pointer">&varr;</span>

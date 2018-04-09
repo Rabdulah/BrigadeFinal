@@ -10,6 +10,7 @@ export default Component.extend({
   pageSize: 10,
   sort: 'questionText',
   dir:'',
+
   query: null,
   questionsModel: [],
   INDEX: null,

@@ -152,10 +152,11 @@ export default Component.extend({
         qtype = "Rating";
       }
 
+
       let newQuestion = this.get('DS').createRecord('question', {
 
         helpDescription: help,
-        questionText: question,
+        questionText: question.charAt(0).toUpperCase() + question.substring(1),
         type: qtype,
         optionNumber: this.oNumber,
         optionString: optStr,
@@ -166,12 +167,11 @@ export default Component.extend({
       });
 
       newQuestion.save().then(function() {
-        $('.ui.newQuestion.modal').modal('hide');
         if (self.get('flagAdd')=== true)
           self.set('flagAdd', false);
         else
           self.set('flagAdd', true);
-        return true;
+        $('.ui.newQuestion.modal').modal('hide');
       });
     }
   },

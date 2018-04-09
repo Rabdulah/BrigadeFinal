@@ -5,6 +5,7 @@ import $ from 'jquery';
 
 export default Component.extend({
   DS: inject('store'),
+  provinceDelete: null,
 
   modalName: computed(function () {
     return 'Delete-Province' + this.get('ID');
@@ -20,12 +21,13 @@ export default Component.extend({
         },
         onApprove: () => {
 
-          this.get('DS').find('province', this.get('ID')).then((province) => {
-            province.set('name', '');
-            province.set('country', null);
-            province.save().then(function () {
-              province.destroyRecord();
-            });
+          let province = this.get('DS').peekRecord('province', this.get('ID'));
+          province.destroyRecord().then(()=>{
+            if (this.get('provinceDelete')=== true)
+              this.set('provinceDelete', false);
+            else
+              this.set('provinceDelete', true);
+            return true;
           });
 
         }

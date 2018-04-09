@@ -1,11 +1,11 @@
 import Component from '@ember/component';
 import Ember from "ember";
-import {inject} from '@ember/service';
+import { inject as service } from '@ember/service';
 import $ from 'jquery';
 
 export default Component.extend({
-  store: Ember.inject.service(),
-  router: inject('-routing'),
+  store: service(),
+  router: service(),
 
   pageSize: 200,
   sort: 'name',
@@ -121,6 +121,19 @@ export default Component.extend({
     this._super(...arguments);
     let self = this;
 
+    self.get('store').query('exercise-list', {filter: {'rehabilitationPlan': this.get('model').id}}).then((exercises) => {
+
+      this.get('listModel').clear();
+      //console.log(this.get('listModel'));
+      exercises.forEach((exe)=>{
+        // console.log(exe.get('exercise'));
+        this.get('listModel').pushObject(exe.get('exercise'));
+      });
+      self.get('listModel').forEach((rec)=>{
+        rec['selectedList'] = false;
+      })
+    });
+
     this.get('store').query('exercise', this.getProperties(['sort', 'dir', 'queryPath', 'regex'])).then(function (records) {
       self.set('exercisesModel', records.toArray());
 
@@ -137,15 +150,6 @@ export default Component.extend({
     //   console.log(rec.id);
 
 
-    self.get('store').query('exercise-list', {filter: {'rehabilitationPlan': this.get('model').id}}).then((exercises) => {
-
-      this.get('listModel').clear();
-      console.log(this.get('listModel'));
-      exercises.forEach((exe)=>{
-        // console.log(exe.get('exercise'));
-        this.get('listModel').pushObject(exe.get('exercise'));
-      });
-    });
     // });
 
     //   this.get('store').findAll('exercise-list');

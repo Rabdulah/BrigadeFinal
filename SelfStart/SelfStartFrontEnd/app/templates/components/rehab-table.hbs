@@ -35,10 +35,10 @@
 
             <div class="field">
               {{#ui-dropdown class="selection" selected=queryPath onChange=(action (mut queryPath))}}
-                <div class="default text">{{modelAttributes.firstObject.name}}</div>
+                <div class="default text">{{searchAttributes.firstObject.name}}</div>
                 <i class="dropdown icon"></i>
                 <div class="menu">
-                  {{#each modelAttributes as |attribute|}}
+                  {{#each searchAttributes as |attribute|}}
                     <div class="item" data-value="{{attribute.key}}">
                       {{attribute.name}}
                     </div>
@@ -92,9 +92,14 @@
               {{#each modelAttributes as |column|}}
 
 
-                <td class={{column.class}}>
-                  {{get plan column.key}}
-                </td>
+                {{#if (eq column.key 'date' )}}
+                  <td class={{column.class}}> {{date-to-string date=(get plan column.key)}} </td>
+
+                {{else}}
+                  <td class={{column.class}}>
+                    {{get plan column.key}}
+                  </td>
+                {{/if}}
               {{/each}}
 
               <td class="right aligned one wide column ">

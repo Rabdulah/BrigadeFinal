@@ -71,7 +71,7 @@
         <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">Genders</p>
       </div>
       <div class="right two wide column" style="padding-left: 50px;">
-        {{add-gender}}
+        {{add-gender genderAdd=genderAdd}}
       </div>
     </div>
     <br><br><br><br>
@@ -100,7 +100,7 @@
             <p>{{edit-gender ID=gender.id}}</p>
           </td>
           <td class="left aligned one wide column">
-            <p>{{delete-gender ID=gender.id}}</p>
+            <p>{{delete-gender ID=gender.id genderDelete=genderDelete}}</p>
           </td>
         </tr>
       {{/each}}
@@ -116,7 +116,7 @@
         <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">Countries</p>
       </div>
       <div class="right two wide column" style="padding-left: 50px;">
-        {{add-country}}
+        {{add-country countryAdd=countryAdd}}
       </div>
     </div>
     <br><br><br><br>
@@ -189,7 +189,7 @@
               <p>{{edit-country ID=country.id}}</p>
             </td>
             <td class="left aligned one wide column">
-              <p>{{delete-country ID=country.id flagDelete=flagDelete}}</p>
+              <p>{{delete-country ID=country.id countryDelete=countryDelete}}</p>
             </td>
           </tr>
         {{/each}}
@@ -208,7 +208,7 @@
       </div>
       <div class="right two wide column" style="padding-left: 50px;">
 
-        {{add-province countries=model.country}}
+        {{add-province countries=model.country proivinceAdd=proivinceAdd}}
       </div>
     </div>
     <br><br><br><br>
@@ -239,51 +239,7 @@
             <p>{{edit-province provinceData=province countries=model.country}}</p>
           </td>
           <td class="left aligned one wide column">
-            <p>{{delete-province ID=province.id}}</p>
-          </td>
-        </tr>
-      {{/each}}
-      </tbody>
-    </table>
-  </div>
-
-{{/if}}
-
-{{#if citySelected}}
-  <div class="ui very padded container segment" id="top" style="padding-bottom: 1em;">
-    <div class="ui grid" style="margin-top: -30px;">
-      <div class="left thirteen wide column" style="margin-top: -5px;">
-        <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">Cities</p>
-      </div>
-      <div class="right two wide column" style="padding-left: 50px;">
-        {{add-city provinces=model.province countries=model.country}}
-      </div>
-    </div>
-    <br><br><br><br>
-
-    <table class="ui fixed table" id="tb" style="border: none;border-color: white;">
-      <tbody>
-      <tr style="font-weight: bold;">
-        <td class="left aligned fourteen wide column">Name</td>
-        <td class="center aligned two wide column">Actions</td>
-      </tr>
-      </tbody>
-    </table>
-
-    <div class="ui divider"></div>
-
-    <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
-      <tbody >
-      {{#each model.city as |city|}}
-        <tr>
-          <td class="left aligned fourteen wide column">
-            {{city.name}}
-          </td>
-          <td class="right aligned one wide column">
-            <p>{{edit-city cityData=city provinces=model.province}}</p>
-          </td>
-          <td class="left aligned one wide column">
-            <p>{{delete-city ID=city.id}}</p>
+            <p>{{delete-province ID=province.id provinceDelete=provinceDelete}}</p>
           </td>
         </tr>
       {{/each}}

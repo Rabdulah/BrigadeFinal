@@ -70,7 +70,6 @@ export default Component.extend({
       provinces.forEach((prov)=>{
         this.get('provModel').pushObject(prov);
       });
-
     });
   }),
 
@@ -90,7 +89,7 @@ export default Component.extend({
       patientAccount['encryptedPassword'] = self.get('encryptedPassword');
 
       var lastName =  self.get('familyName');
-      var firstName =  self.get('familyName');
+      var firstName =  self.get('givenName');
       var mail = self.get('email');
 
       let patient = this.get('DS').createRecord('patient', {

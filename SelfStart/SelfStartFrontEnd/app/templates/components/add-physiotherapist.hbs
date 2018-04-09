@@ -43,15 +43,19 @@
         </div>
 
         <div class="column " style="margin: 1em 0;">
-          <p class="cd-select icon">
-            <select class="people" onchange={{action 'selectGender' value="target.value"}}>
+
+          {{#ui-dropdown class="gender selection" onChange=(action (mut gender))}}
+            <div class="default text">Select a gender</div>
+            <i class="dropdown icon" id="selectIcon"></i>
+            <div class="menu">
               {{#each genderModel as |oneGender|}}
-                <option value={{oneGender.name}} selected={{eq gender oneGender.name}}>
+                <div data-value="{{oneGender.name}}" class="item">
                   {{oneGender.name}}
-                </option>
+                </div>
               {{/each}}
-            </select>
-          </p>
+            </div>
+          {{/ui-dropdown}}
+
         </div>
       </div>
 

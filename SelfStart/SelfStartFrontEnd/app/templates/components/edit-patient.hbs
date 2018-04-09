@@ -35,18 +35,15 @@
       <div class="column " style="margin: 1em 0;">
         <h4 >Gender</h4>
 
-
-          {{#ui-dropdown class="gender selection" onChange=(action (mut gender))}}
-            <div class="default text" style="color: black;">{{gender}}</div>
-            <i class="dropdown icon" id="selectIcon"></i>
-            <div class="menu">
-              {{#each genderModel as |oneGender|}}
-                <div data-value="{{oneGender.name}}" class="item">
-                  {{oneGender.name}}
-                </div>
-              {{/each}}
-            </div>
-          {{/ui-dropdown}}
+        <p class="cd-select icon">
+          <select class="people" onchange={{action 'selectGender' value="target.value"}}>
+            {{#each genderModel as |oneGender|}}
+              <option value={{oneGender.name}} selected={{eq pateintsData.gender oneGender.name}}>
+                {{oneGender.name}}
+              </option>
+            {{/each}}
+          </select>
+        </p>
 
       </div>
     </div>
@@ -86,14 +83,15 @@
       <div class="column " style="margin: 1em 0;">
         <h4 >Country</h4>
 
-        {{#ui-dropdown class="address selection" onChange=(action (mut country))}}
-          <div class="default text" style="color: black;">{{country}}</div>
+        {{#ui-dropdown class="address selection" selected = countryName onChange=(action (mut country))}}
+          <div class="default text"></div>
           <i class="dropdown icon" id="selectIcon"></i>
           <div class="menu">
             {{#each model as |country|}}
-              <div data-value="{{country.id}}" class="item">
+              <div data-value="{{country.id}}" class="item" >
                 {{country.name}}
               </div>
+
             {{/each}}
           </div>
         {{/ui-dropdown}}
@@ -101,8 +99,8 @@
       </div>
       <div class="column " style="margin: 1em 0;">
         <h4>Province</h4>
-        {{#ui-dropdown class="address selection" onChange=(action (mut province))}}
-          <div class="default text" style="color: black;">{{province}}</div>
+        {{#ui-dropdown class="address selection" selected = provinceName onChange=(action (mut province))}}
+          <div class="default text" >select a province</div>
           <i class="dropdown icon" id="selectIcon"></i>
           <div class="menu">
             {{#each provModel as |province|}}

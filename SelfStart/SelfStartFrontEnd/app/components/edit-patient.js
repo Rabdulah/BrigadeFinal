@@ -10,6 +10,10 @@ export default Component.extend({
   flagEdit:false,
   pateintsData: null,
   tagName: '',
+  countryName: null,
+  provinceName: null,
+  genderName: null,
+  selectedGender: null,
 
 init(){
   this._super(...arguments);
@@ -18,15 +22,22 @@ init(){
   var dateString = date.toISOString().substring(0, 10);
   this.set('selectedDate', dateString);
 
-  this.set('gender', this.get('pateintsData').get('gender'));
-  this.set('country', this.get('pateintsData').get('country'));
-  this.set('province', this.get('pateintsData').get('province'));
+  this.set('selectedGender', this.get('pateintsData').get('gender'));
+  this.set('countryName', this.get('pateintsData').get('country'));
 
+  this.set('provinceName', this.get('pateintsData').get('province'));
+  this.get('DS').query('province', {filter: {'country': this.get('country')}}).then((provinces) => {
+    this.get('provModel').clear();
+    provinces.forEach((prov)=>{
+      this.get('provModel').pushObject(prov);
+    });
+
+  });
 },
 
 
   genderModel: computed(function(){
-    return this.get('DS').findAll('gender');
+    return  this.get('DS').findAll('gender');
   }),
 
 
@@ -37,6 +48,7 @@ init(){
   provModel: [],
 
   provinces: Ember.observer('country', function(){
+
     this.get('DS').query('province', {filter: {'country': this.get('country')}}).then((provinces) => {
 
       this.get('provModel').clear();
@@ -53,6 +65,11 @@ init(){
       this.set('selectedDate', date);
     },
 
+    selectGender (gender){
+      this.set('selectedGender', gender);
+    },
+
+
     submit(){
 
       var self= this;
@@ -61,6 +78,9 @@ init(){
       var firstName =  self.get('pateintsData.givenName');
       var mail = self.get('pateintsData.email');
 
+      if (self.get('country')) self.set('countryName',self.get('DS').peekRecord('country', self.get('country')).get('name'));
+      if (self.get('province')) self.set('provinceName',self.get('DS').peekRecord('province', self.get('province')).get('name'));
+
       this.get('DS').findRecord('patient', this.get('pateintsData').id).then((rec) =>{
         rec.set('familyName', lastName.charAt(0).toUpperCase() + lastName.substring(1));
         rec.set('givenName', firstName.charAt(0).toUpperCase() + firstName.substring(1));
@@ -68,11 +88,11 @@ init(){
         rec.set('streetName', this.get('pateintsData.streetName'));
         rec.set('streetNumber', this.get('pateintsData.streetNumber'));
         rec.set('apartment', this.get('pateintsData.apartment'));
-        rec.set('country', self.get('DS').peekRecord('country', self.get('country')).get('name'));
-        rec.set('province', self.get('DS').peekRecord('province', self.get('province')).get('name'));
+        rec.set('country', self.get('countryName'));
+        rec.set('province',  self.get('provinceName'));
         rec.set('city', this.get('pateintsData.city'));
         rec.set('healthCardNumber', this.get('pateintsData.healthCardNumber'));
-        rec.set('gender', this.get('gender'));
+        rec.set('gender', this.get('selectedGender'));
         rec.set('dateOfBirth', new Date(this.get('selectedDate')));
         rec.set('phoneNumber', this.get('pateintsData.phoneNumber'));
         rec.set('postalCode', this.get('pateintsData.postalCode'));
