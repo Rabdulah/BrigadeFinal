@@ -26,8 +26,48 @@
         {{textarea class="message"  type ="text" value = Description placeholder="Description" required = true}}
       </div>
 
-
       <div class="field" style="margin: 1em 0;">
+        <div class = "ui segment">
+          <label>Action Steps</label>
+        
+          {{#each oldActionSteps as |aS|}}
+            <div class="ui grid">
+                <div class="fifteen wide column" style="margin: 1em 0; background-color: white;">
+                <div style="background-color: white;">
+                  {{input class="circle" id=aS.id type="text" value=aS.value required=true placeholder = "New Action Step"}}
+                </div>
+              </div>
+          <div class="one wide column" style="position: relative;margin-top: 30px;left: -1%;color: rgba(230, 60, 60, 0.71);cursor: pointer;">
+            <i class="large times icon" {{action "removeOption" aS.id}}></i>
+          </div>
+      </div>
+        {{/each}}
+
+
+        {{#each newActionSteps as |aS index|}}
+        <div class="ui grid">
+          <div class="fifteen wide column" style="margin: 1em 0; background-color: white;">
+            <div style="background-color: white;">
+              {{input class="circle" id=aS.id type="text" value=aS.value required=true placeholder = "New Action Step"}}
+            </div>
+          </div>
+          <div class="one wide column" style="position: relative;margin-top: 30px;left: -1%;color: rgba(230, 60, 60, 0.71);cursor: pointer;">
+            <i class="large times icon" {{action "removeOption" aS.id}}></i>
+          </div>
+      </div>
+        {{/each}}
+
+        <div class="fourteen wide field">
+          <div class="ui grid">
+            <div class="fifteen wide column" {{action "addOption"}} style="margin: 1em 0;">
+              {{input id="disabled" class="circle" type="text" placeholder="Add Step"}}
+            </div>
+          </div>
+        </div>
+  </div>
+      </div>
+
+      {{!-- <div class="field" style="margin: 1em 0;">
 
 
         <div class="ui grid" style="margin: 1em 0;">
@@ -56,7 +96,7 @@
             {{/each}}
           </ol>
         </div>
-      </div>
+      </div> --}}
 
       <div class="ui three column grid">
         <div class="column" style="margin: 1em 0;">
