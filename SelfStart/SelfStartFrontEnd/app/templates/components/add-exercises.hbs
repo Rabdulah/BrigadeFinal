@@ -27,34 +27,36 @@
 
 
       <div class="field" style="margin: 1em 0;">
-
-
-        <div class="ui grid" style="margin: 1em 0;">
-          <div class="twelve wide column" style="padding: 0">
-            {{input class="list"  type ="text" value = ActionSteps placeholder="Action Steps" required = true}}
-          </div>
-          <div class="four wide column" style="padding-right: 0">
-            <button class="ui white right labeled icon button" style="height: 50px" {{action "addActionStep"}}>
-              Add Action Step
-              <i class="add icon"></i>
-            </button>
+        <div class = "ui segment">
+          <label>Action Steps</label>
+        
+        <div class="fourteen wide field">
+          <div class="column " style="margin: 1em 0; background-color: white;">
+          {{input class="circle" type="text" value=ActionStep1 placeholder = "Action Step" required=false}}
           </div>
         </div>
 
-        <div class="ui inverted segment">
-          <label style="color: white">Current Action Steps</label>
-          <ol align = "left">
-            {{#each actionStep as |aS|}}
-              <li>
-                <p>
-                  {{aS}}
-                  <i style=" cursor: pointer;" title="Edit" {{action 'edit' }} class="gray write icon" ></i>
-                  <i style=" cursor: pointer;" title="Delete" {{action "openModal"}} class="red remove icon" ></i>
-                </p>
-              </li>
-            {{/each}}
-          </ol>
+        {{#each actionSteps as |aS index|}}
+        <div class="ui grid">
+          <div class="fifteen wide column" style="margin: 1em 0; background-color: white;">
+            <div style="background-color: white;">
+              {{input class="circle" id=aS.id type="text" value=aS.value required=true placeholder = "New Action Step"}}
+            </div>
+          </div>
+          <div class="one wide column" style="position: relative;margin-top: 30px;left: -1%;color: rgba(230, 60, 60, 0.71);cursor: pointer;">
+            <i class="large times icon" {{action "removeOption" aS.id}}></i>
+          </div>
+      </div>
+        {{/each}}
+
+        <div class="fourteen wide field">
+          <div class="ui grid">
+            <div class="fifteen wide column" {{action "addOption"}} style="margin: 1em 0;">
+              {{input id="disabled" class="circle" type="text" placeholder="Add Step"}}
+            </div>
+          </div>
         </div>
+  </div>
       </div>
 
 
