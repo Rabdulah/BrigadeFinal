@@ -81,7 +81,7 @@ export default Component.extend({
   // Description: Ember.computed.oneWay('exercisesData.description'),
   // Name: Ember.computed.oneWay('exercisesData.name'),
   // AuthName: Ember.computed.oneWay('exercisesData.authorName'),
-  // actionStep: Ember.computed.oneWay('exercisesData.actionSteps'),
+  actionStep: Ember.computed.oneWay('exercisesData.actionSteps'),
   // sets: Ember.computed.oneWay('exercisesData.sets'),
   // reps: Ember.computed.oneWay('exercisesData.reps'),
   // Duration: Ember.computed.oneWay('exercisesData.duration'),
@@ -154,18 +154,22 @@ export default Component.extend({
     openModal: function () {
       // window.location.reload();
       this.secQueue.clear();
-      console.log(this.images);
-      this.images.forEach(file => {
-        this.secQueue.pushObject(file);
-      });
-      this.actionStep.forEach(o => {
-        this.set('numberOfActionSteps', this.numberOfActionSteps + 1);
-        console.log(this.numberOfActionSteps);
-        let newObj = Ember.Object.create({
-          name: "New Action Step",
-          id: this.numberOfActionSteps,
-          value: o,
-        })
+          console.log(this.images);
+          this.images.forEach(file => {
+            this.secQueue.pushObject(file);
+          });
+
+          console.log(this.get("actionStep"));
+          // console.log(this.exercisesData);
+
+          this.get('actionStep').forEach(o => {
+            this.set('numberOfActionSteps', this.numberOfActionSteps + 1);
+            console.log(this.numberOfActionSteps);
+            let newObj = Ember.Object.create({
+              name: "New Action Step",
+              id: this.numberOfActionSteps,
+              value: o,
+            })
         this.oldActionSteps.pushObject(newObj);
       });
 
@@ -176,16 +180,27 @@ export default Component.extend({
         transition: 'horizontal flip',
         centered: false,
         // dimmerSettings: { opacity: 0.25 },
+        onHide: function(){
+          console.log('hidden');
+
+        },
         onDeny: () => {
-          this.newActionSteps.clear();
-          this.oldActionSteps.clear();
-          this.secQueue.clear();
-          this.removeImages.clear();
-          this.queue.clear();
-          return true;
+
+       return true;
         },
       })
         .modal('show');
+    },
+
+
+    onClose(){
+      this.set('newActionSteps', []);
+      this.set('oldActionSteps', []);
+      this.set('secQueue', []);
+      this.set('removeImages', []);
+      this.set('queue', []);
+      console.log(this.get('newActionSteps'));
+      console.log(this.get('oldActionSteps'));
     },
 
     submit(){
@@ -226,7 +241,6 @@ export default Component.extend({
           newFile.get('exercise').pushObject(rec);
           newFile.save();
 
-
           rec.get('images').pushObject(newFile);
           this.get('DS').findRecord('exercise',  this.get('exercisesData').id).then((rec)=>{
             rec.save();
@@ -245,19 +259,32 @@ export default Component.extend({
         });
       });
 
+      let actionS = [];
+      this.get('oldActionSteps').forEach(o => {
+        console.log(o.value);
+        actionS.push(o.value);
+      });
+
+      this.get('newActionSteps').forEach(o => {
+        console.log(o.value);
+        actionS.push(o.value);
+      })
+
       this.get('DS').findRecord('exercise' , this.get('exercisesData').id).then((rec)=>{
         rec.set('name', this.get('exercisesData.name'));
         rec.set('description', this.get('exercisesData.description'));
         rec.set('authorName', '');
         rec.set('sets', this.get('exercisesData.sets'));
         rec.set('reps', this.get('exercisesData.reps'));
-        rec.set('actionSteps', this.get('exercisesData.actionSteps'));
+        rec.set('actionSteps', actionS);
         rec.set('duration', this.get('exercisesData.duration'));
         rec.set('multimediaURL', this.get('exercisesData.multimediaURL'));
         // rec.set('exercises', this.get('exercises'));
         // rec.set('assessmentTests', this.get('assessmentTests'));
         rec.save().then(()=>{
 
+          this.get('newActionSteps').clear();
+          this.get('oldActionSteps').clear();
           this.secQueue.clear();
           this.removeImages.clear();
           this.queue.clear();

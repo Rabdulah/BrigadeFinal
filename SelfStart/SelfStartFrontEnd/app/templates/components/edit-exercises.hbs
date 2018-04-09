@@ -8,7 +8,9 @@
 
 
 {{#ui-modal name=modalName class=modalName}}
-  <i class="close icon"></i>
+
+  <i class="close icon" {{action "onClose"}}></i>
+
   <link integrity="" rel="stylesheet" href="{{rootURL}}../assets/css/form-style.css"> <!-- Resource style -->
 
   <div class="header">
@@ -31,12 +33,12 @@
       <div class="field" style="margin: 1em 0;">
         <div class = "ui segment">
           <label>Action Steps</label>
-        
+
           {{#each oldActionSteps as |aS|}}
             <div class="ui grid">
                 <div class="fifteen wide column" style="margin: 1em 0; background-color: white;">
                 <div style="background-color: white;">
-                  {{input class="circle" id=aS.id type="text" value=aS.value required=true placeholder = "New Action Step"}}
+                  {{input class="circle" type="text" value=aS.value required=true placeholder = "New Action Step"}}
                 </div>
               </div>
           <div class="one wide column" style="position: relative;margin-top: 30px;left: -1%;color: rgba(230, 60, 60, 0.71);cursor: pointer;">
@@ -50,7 +52,7 @@
         <div class="ui grid">
           <div class="fifteen wide column" style="margin: 1em 0; background-color: white;">
             <div style="background-color: white;">
-              {{input class="circle" id=aS.id type="text" value=aS.value required=true placeholder = "New Action Step"}}
+              {{input class="circle" type="text" value=aS.value required=true placeholder = "New Action Step"}}
             </div>
           </div>
           <div class="one wide column" style="position: relative;margin-top: 30px;left: -1%;color: rgba(230, 60, 60, 0.71);cursor: pointer;">
@@ -62,7 +64,7 @@
         <div class="fourteen wide field">
           <div class="ui grid">
             <div class="fifteen wide column" {{action "addOption"}} style="margin: 1em 0;">
-              {{input id="disabled" class="circle" type="text" placeholder="Add Step"}}
+              {{input class="disabled circle" type="text" placeholder="Add Step"}}
             </div>
           </div>
         </div>
