@@ -1,12 +1,27 @@
 import Component from '@ember/component';
 import $ from 'jquery';
+import { inject } from '@ember/service';
+import { computed } from '@ember/object';
 
 export default Component.extend({
   tagName:'',
+  auth: inject('auth'),
+  show: false,
+  DS: inject('store'),
 
   init() {
     this._super(...arguments);
-
+    if(localStorage.getItem('sas-session-id')) {
+      var email = this.get('auth').decrypt(localStorage.getItem('sas-session-id'));
+      console.log(email);
+      var myStore = this.get('store');
+      var self = this;
+      this.get('DS').queryRecord('adminstrator', {filter: {"email": email}}).then(function (admin) {
+        if (admin) {
+          self.set('show', true);
+        }
+      });
+    }
   },
 
   didInsertElement() {

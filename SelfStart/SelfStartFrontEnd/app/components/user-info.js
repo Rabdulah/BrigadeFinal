@@ -30,7 +30,7 @@ export default Component.extend({
     this.set('postalCode', '');
     // this.set('userAccountName', '');
     this.set('encryptedPassword', '');
-
+    this.set('skype', '');
     // this.set('selectedGender', this.get('selectedGender'));
     // this.set('selectedCountry', this.get('selectedCountry'));
   },
@@ -114,6 +114,7 @@ export default Component.extend({
           gender: self.get('selectedGender'),
           phoneNumber: self.get('phoneNumber'),
           postalCode: self.get('postalCode'),
+          skype: self.get('skype')
         });
 
         patient.save().then((res) => {

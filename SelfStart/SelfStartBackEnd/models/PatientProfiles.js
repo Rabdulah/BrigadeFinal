@@ -24,6 +24,7 @@ var patientProfilesSchema = mongoose.Schema(
         apartment: Number,
         streetNumber: Number,
         streetName: String,
+        skype: String,
         answer: [{type: mongoose.Schema.ObjectId, ref: 'Answers'}],
         postalCode: String,
         success: {

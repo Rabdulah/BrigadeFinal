@@ -80,8 +80,10 @@ router.route('/:physiotherapest_id')
         Physiotherapest.Model.findById(request.params.physiotherapest_id, function (error, physiotherapest) {
             if (error) {
                 response.send({error: error});
-            }
-            else {
+            } else if(request.params.updatingValue){
+                Physiotherapest.sendEmail();
+                response.json({physiotherapest: physiotherapest});
+            } else {
                 physiotherapest.ID = request.body.physiotherapest.ID;
                 physiotherapest.familyName = request.body.physiotherapest.familyName;
                 physiotherapest.givenName = request.body.physiotherapest.givenName;

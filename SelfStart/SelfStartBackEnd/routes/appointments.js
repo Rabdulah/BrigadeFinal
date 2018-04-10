@@ -9,6 +9,7 @@ router.route('/')
             if (error) response.send(error);
             response.json({appointment: appointment});
         });
+        
     })
     .get( function (request, response) {
         let patient = request.query.filter;
