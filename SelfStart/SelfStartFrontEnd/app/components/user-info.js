@@ -9,6 +9,7 @@ export default Component.extend({
   loggedOut: false,
   tagName: '',
   authentication: inject('auth'),
+  errorMessage: null,
 
   init(){
     this._super(...arguments);
@@ -85,9 +86,30 @@ export default Component.extend({
       this.set('selectedGender', gender);
     },
 
+    close(){
+      let self = this;
+      self.set('familyName', "");
+      self.set('givenName', "");
+      self.set('email', "");
+      self.set('confirmPassword', "");
+      self.set('encryptedPassword', "");
+      self.set('streetName', "");
+      self.set('streetNumber', "");
+      self.set('apartment', "");
+      self.set('country', null);
+      self.set('city', "");
+      self.set('dateOfBirth', "");
+      self.set('gender', null);
+      self.set('phoneNumber', "");
+      self.set('skype', "");
+      self.set('postalCode', "");
+      self.set("errorMessage", null)
+    },
     submit() {
       let self = this;
 
+      if(this.get("encryptedPassword") === this.get("confirmPassword")) {
+        
       let passwords = this.get('DS').createRecord('password', {
         email: self.get('email'),
         encryptedPassword: self.get('authentication').hash(self.get('encryptedPassword')),
@@ -132,10 +154,6 @@ export default Component.extend({
             passwords.save();
           }
 
-
-
-
-
           this.get('DS').query('form', {filter: {'name': 'Intake Form'}}).then((intake) => {
             var ans = [];
 
@@ -177,6 +195,25 @@ export default Component.extend({
         });
 
       })
+      self.set('familyName', "");
+      self.set('givenName', "");
+      self.set('email', "");
+      self.set('encryptedPassword', "");
+      self.set('confirmPassword', "");
+      self.set('streetName', "");
+      self.set('streetNumber', "");
+      self.set('apartment', "");
+      self.set('country', null);
+      self.set('city', "");
+      self.set('dateOfBirth', "");
+      self.set('gender', null);
+      self.set('phoneNumber', "");
+      self.set('skype', "");
+      self.set('postalCode', "");
+      self.set("errorMessage", null)
+    } else {
+      this.set("errorMessage", "Password and confirm password don't match!")
+    }
     },
 
     openModal: function () {
