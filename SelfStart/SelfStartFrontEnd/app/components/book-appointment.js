@@ -16,6 +16,16 @@ export default Component.extend({
   routing: inject('-routing'),
   isEditing: false,
 
+  appState: "active",
+  bookState:"",
+  followState:"",
+  isApp:true,
+  isBook:false,
+  isfollow:false,
+
+
+
+
   modalName: Ember.computed(function(){
     return 'Book Appointment';
   }),
@@ -27,6 +37,7 @@ export default Component.extend({
 
   phyidget: null,
   client: null,
+  appointmentHistory: Ember.A(),
 
 
   physioPicked : false,
@@ -49,10 +60,17 @@ export default Component.extend({
 
 
     self.get('DS').queryRecord('patient', {filter: {'email' : eemail}}).then(function (obj) {
-
       self.set('client', obj);
-
+      console.log(self.get('client.id'));
+      self.get('DS').query('appointment', {filter: {'id' : self.get('client.id')}}).then(function (obj) {
+        obj.forEach(function (a) {
+          if(moment(a.get('date')) > moment()){
+            self.get('appointmentHistory').pushObject(a);
+          }
+        });
+      });
     });
+
   },
 
   didRender() {
@@ -146,6 +164,32 @@ export default Component.extend({
       this.set('firstSelected', false);
       this.set('followupSelected', true);
 
+    },
+    appView(){
+      this.set('appState', "active");
+      this.set('bookState', "");
+      this.set('followState', "");
+      this.set('isApp', true);
+      this.set('isBook', false);
+      this.set('isfollow', false);
+
+    },
+    bookView(){
+      this.set('appState', "");
+      this.set('bookState', "active");
+      this.set('followState', "");
+      this.set('isApp', false);
+      this.set('isBook', true);
+      this.set('isfollow', false);
+
+    },
+    followView(){
+      this.set('appState', "");
+      this.set('bookState', "");
+      this.set('followState', "active");
+      this.set('isApp', false);
+      this.set('isBook', false);
+      this.set('isfollow', true);
     },
 
 
