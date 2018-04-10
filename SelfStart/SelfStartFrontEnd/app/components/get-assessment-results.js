@@ -64,8 +64,6 @@ export default Component.extend({
       this.set("open", true);
       this.set("notOpen",false);
     },
-    Sendtests(){
-      this.get('router').transitionTo('client.exercise-menu');
-    }
+
   }
 });
