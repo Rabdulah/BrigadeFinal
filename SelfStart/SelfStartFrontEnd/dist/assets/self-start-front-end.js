@@ -2888,6 +2888,7 @@ define('self-start-front-end/components/client-rehabplan-view', ['exports', 'sel
     isEnd: false,
     isNFirst: false,
     isLoading: false,
+    inExercise: true,
 
     init: function init() {
       this._super.apply(this, arguments);
@@ -2990,6 +2991,7 @@ define('self-start-front-end/components/client-rehabplan-view', ['exports', 'sel
       },
       finishRehabPlan: function finishRehabPlan() {
         console.log('done');
+        this.set('inExercise', false);
       }
     }
   });
@@ -5832,122 +5834,126 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
     mcop6: 0,
     a: [],
     init: function init() {
+      var _this = this;
+
       this._super.apply(this, arguments);
       //console.get(this.get("assessment"));
-      console.log(this.get("answers"));
+      this.get('DS').findRecord('question', this.get("qID")).then(function (temp) {
+        _this.set('question', temp);
+      });
     },
 
 
     actions: {
       ratingSave: function ratingSave(rv) {
-        var _this = this;
+        var _this2 = this;
 
         this.set('rateValue', rv);
 
         this.get("answers").forEach(function (rec) {
-          if (rec.get('question') === _this.get("question").get("questionText")) {
+          if (rec.get('question') === _this2.get("question").get("questionText")) {
             console.log("inside rating");
-            rec.set('answer', _this.get("rateValue"));
-            rec.set('test', _this.get("assessment"));
+            rec.set('answer', _this2.get("rateValue"));
+            rec.set('test', _this2.get("assessment"));
             rec.save();
           }
         });
       },
       TFtrue: function TFtrue() {
-        var _this2 = this;
-
-        this.get("answers").forEach(function (rec) {
-          if (rec.get("question") === _this2.get("question").get("questionText")) {
-            rec.set("answer", "YES");
-            rec.set("test", _this2.get("assessment"));
-            rec.save();
-          }
-        });
-      },
-      TFfalse: function TFfalse() {
         var _this3 = this;
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this3.get("question").get("questionText")) {
-            rec.set("answer", "NO");
+            rec.set("answer", "YES");
             rec.set("test", _this3.get("assessment"));
             rec.save();
           }
         });
       },
-      saSave: function saSave() {
+      TFfalse: function TFfalse() {
         var _this4 = this;
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this4.get("question").get("questionText")) {
-            rec.set("answer", _this4.get("SAanswer"));
+            rec.set("answer", "NO");
             rec.set("test", _this4.get("assessment"));
             rec.save();
           }
         });
       },
-      mcop1Save: function mcop1Save() {
+      saSave: function saSave() {
         var _this5 = this;
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this5.get("question").get("questionText")) {
-            rec.set("answer", "1");
+            rec.set("answer", _this5.get("SAanswer"));
             rec.set("test", _this5.get("assessment"));
             rec.save();
           }
         });
       },
-      mcop2Save: function mcop2Save() {
+      mcop1Save: function mcop1Save() {
         var _this6 = this;
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this6.get("question").get("questionText")) {
-            rec.set("answer", "2");
+            rec.set("answer", "1");
             rec.set("test", _this6.get("assessment"));
             rec.save();
           }
         });
       },
-      mcop3Save: function mcop3Save() {
+      mcop2Save: function mcop2Save() {
         var _this7 = this;
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this7.get("question").get("questionText")) {
-            rec.set("answer", "3");
+            rec.set("answer", "2");
             rec.set("test", _this7.get("assessment"));
             rec.save();
           }
         });
       },
-      mcop4Save: function mcop4Save() {
+      mcop3Save: function mcop3Save() {
         var _this8 = this;
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this8.get("question").get("questionText")) {
-            rec.set("answer", "4");
+            rec.set("answer", "3");
             rec.set("test", _this8.get("assessment"));
             rec.save();
           }
         });
       },
-      mcop5Save: function mcop5Save() {
+      mcop4Save: function mcop4Save() {
         var _this9 = this;
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this9.get("question").get("questionText")) {
-            rec.set("answer", "5");
+            rec.set("answer", "4");
             rec.set("test", _this9.get("assessment"));
             rec.save();
           }
         });
       },
-      mcop6Save: function mcop6Save() {
+      mcop5Save: function mcop5Save() {
         var _this10 = this;
 
         this.get("answers").forEach(function (rec) {
           if (rec.get("question") === _this10.get("question").get("questionText")) {
-            rec.set("answer", "6");
+            rec.set("answer", "5");
             rec.set("test", _this10.get("assessment"));
+            rec.save();
+          }
+        });
+      },
+      mcop6Save: function mcop6Save() {
+        var _this11 = this;
+
+        this.get("answers").forEach(function (rec) {
+          if (rec.get("question") === _this11.get("question").get("questionText")) {
+            rec.set("answer", "6");
+            rec.set("test", _this11.get("assessment"));
             rec.save();
           }
         });
@@ -5956,16 +5962,16 @@ define('self-start-front-end/components/get-answers', ['exports'], function (exp
 
   });
 });
-define('self-start-front-end/components/get-assessment-results', ['exports'], function (exports) {
+define('self-start-front-end/components/get-assessment-results', ['exports', 'moment'], function (exports, _moment) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
   exports.default = Ember.Component.extend({
-
+    router: Ember.inject.service(),
     DS: Ember.inject.service('store'),
-
+    auth: Ember.inject.service('auth'),
     open: false,
     notOpen: true,
     linker: null,
@@ -5974,19 +5980,43 @@ define('self-start-front-end/components/get-assessment-results', ['exports'], fu
     ans: [],
     assessmentModel: Ember.computed(function () {
 
-      return this.get('DS').find('assessment-test', id);
+      console.log(this.get('assessmentTest.id'));
+      return this.get('DS').find('assessment-test', this.get('assessmentTest.id'));
     }),
+    assessmentTest: null,
 
     init: function init() {
       this._super.apply(this, arguments);
       var self = this;
+      var eemail = localStorage.getItem('sas-session-id');
+      eemail = this.get('auth').decrypt(eemail);
+      console.log(eemail);
 
-      this.get('DS').query('question-order', { filter: { 'form': "5acbb1bb84bdf02a643bd751" } }).then(function (records) {
-        self.set('orders', records.toArray());
+      self.get('DS').queryRecord('patient', { filter: { 'email': eemail } }).then(function (temp) {
+        self.get('DS').query('rehab-client-link', { filter: {
+            'RehabilitationPlan': self.get('planID'),
+            'Patient': temp.get('id')
+          } }).then(function (obj) {
+
+          obj.forEach(function (AT) {
+            self.set('assessmentTest', AT.get('assessmentTest'));
+          });
+          self.get('DS').findRecord('assessmentTest', self.get('assessmentTest').get('id')).then(function (at) {
+            self.set('assessmentTest', at);
+            console.log(self.get('assessmentTest').get('form.id'));
+
+            self.get('DS').query('question-order', { filter: { 'form': self.get('assessmentTest').get('form.id') } }).then(function (records) {
+              console.log(records);
+              self.set('orders', records.toArray());
+            });
+            self.get('DS').query('answer', { filter: { 'test': self.get('assessmentTest').get('id') } }).then(function (records) {
+              console.log(records);
+              self.set('ans', records.toArray());
+            });
+          });
+        });
       });
-      this.get('DS').query('answer', { filter: { 'test': "5acbb1e984bdf02a643bd758" } }).then(function (records) {
-        self.set('ans', records.toArray());
-      });
+
       //this.set('form', '5ac1ae2773e03d3f78384c92');
     },
 
@@ -5995,6 +6025,9 @@ define('self-start-front-end/components/get-assessment-results', ['exports'], fu
       Open: function Open() {
         this.set("open", true);
         this.set("notOpen", false);
+      },
+      Sendtests: function Sendtests() {
+        this.get('router').transitionTo('client.exercise-menu');
       }
     }
   });
@@ -6221,6 +6254,24 @@ define('self-start-front-end/components/list-forms', ['exports'], function (expo
           formName: thisForm.get('name')
         });
         newTest.save().then(function () {
+          _this.get('DS').query('question-order', { filter: { 'form': thisForm.get('id') } }).then(function (rec) {
+
+            rec.forEach(function (r) {
+
+              //console.log(r.get('order'));
+              //console.log(q.get('questionText'));
+              r.get('question').then(function (q) {
+                var answer = _this.get('DS').createRecord('answer', {
+                  question: q.get('questionText'),
+                  answer: "",
+                  test: newTest
+                });
+
+                answer.save();
+              });
+            });
+          });
+
           _this.set("assessID", newTest.get('id'));
           console.log(newTest.get('questions')[0]);
           return true;
@@ -13728,7 +13779,7 @@ define("self-start-front-end/templates/components/client-rehabplan-view", ["expo
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "6PPehiNu", "block": "{\"symbols\":[\"actionstep\",\"Image\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[1,[18,\"planName\"],false],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"padding-right: 10em;padding-left: 10em;\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui basic segment\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui teal progress\"],[9,\"id\",\"example4\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"bar\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"progress\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"label\"],[7],[0,\"Progress\"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"h1\"],[9,\"class\",\"ui header\"],[7],[1,[18,\"counter\"],false],[0,\". \"],[1,[20,[\"currentExercise\",\"name\"]],false],[8],[0,\"\\n    \"],[6,\"h2\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"description\"]],false],[8],[0,\"\\n    \"],[2,\"image\"],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"image\"],[9,\"style\",\"max-height:500px;min-height:500px;min-width:141.63px;\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"currentImages\"]]],null,{\"statements\":[[4,\"slick-slider\",null,[[\"speed\",\"autoplay\",\"arrows\",\"id\",\"pauseOnHover\"],[500,false,true,[20,[\"index\"]],true]],{\"statements\":[[4,\"each\",[[20,[\"currentImages\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"box\"],[7],[0,\"\\n            \"],[6,\"img\"],[9,\"style\",\"max-height:500px;min-height: 500px;display: block;margin-left: auto;margin-right: auto;\"],[10,\"src\",[26,[[19,2,[\"imageData\"]]]]],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null]],\"parameters\":[]},null]],\"parameters\":[]},{\"statements\":[[4,\"if\",[[20,[\"isLoading\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"ui segment\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui active dimmer\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui text loader\"],[7],[0,\"Loading\"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"p\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"box\"],[7],[0,\"\\n                \"],[6,\"img\"],[9,\"src\",\"/assets/images/NoImagesSaved.jpg\"],[9,\"style\",\"max-height:500px;display: block;margin-left: auto;margin-right: auto;\"],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]}]],\"parameters\":[]}],[0,\"    \"],[8],[0,\"\\n    \"],[2,\"\"],[0,\"\\n    \"],[6,\"h2\"],[9,\"class\",\"ui header\"],[7],[0,\"Steps\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui ordered list\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"currentExercise\",\"actionSteps\"]]],null,{\"statements\":[[0,\"        \"],[6,\"p\"],[9,\"class\",\"item\"],[7],[0,\"\\n          \"],[1,[19,1,[]],false],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"    \"],[8],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"class\",\"ui header\"],[7],[0,\" duration \"],[8],[0,\"\\n    \"],[6,\"h3\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"sets\"]],false],[0,\" sets \"],[8],[0,\"\\n    \"],[6,\"h3\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"reps\"]],false],[0,\" repetition\"],[8],[0,\"\\n    \"],[6,\"h3\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"duration\"]],false],[0,\" minuets in total\"],[8],[0,\"\\n\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui buttons\"],[9,\"style\",\"float: left!important;\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"isNFirst\"]]],null,{\"statements\":[[0,\"        \"],[6,\"button\"],[9,\"class\",\"ui right labeled icon button\"],[3,\"action\",[[19,0,[]],\"prevExercise\"]],[7],[0,\"\\n          \"],[6,\"i\"],[9,\"class\",\"left chevron icon\"],[7],[8],[0,\"\\n          Previous\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui buttons\"],[9,\"style\",\"float: right!important;\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"isEnd\"]]],null,{\"statements\":[[0,\"        \"],[6,\"button\"],[9,\"class\",\"green ui right labeled icon button\"],[3,\"action\",[[19,0,[]],\"finishRehabPlan\"]],[7],[0,\"\\n          Done\\n          \"],[6,\"i\"],[9,\"class\",\"stop icon\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"        \"],[6,\"button\"],[9,\"class\",\"ui right labeled icon button\"],[3,\"action\",[[19,0,[]],\"nextExercise\"]],[7],[0,\"\\n          Next\\n          \"],[6,\"i\"],[9,\"class\",\"right chevron icon\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n    \"],[6,\"br\"],[7],[8],[0,\"\\n\\n\\n\\n  \"],[8],[0,\"\\n\\n\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-rehabplan-view.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "XrGdJb8g", "block": "{\"symbols\":[\"actionstep\",\"Image\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[1,[18,\"planName\"],false],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"padding-right: 10em;padding-left: 10em;\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui basic segment\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui teal progress\"],[9,\"id\",\"example4\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"bar\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"progress\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"label\"],[7],[0,\"Progress\"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"],[4,\"if\",[[20,[\"inExercise\"]]],null,{\"statements\":[[0,\"  \"],[6,\"h1\"],[9,\"class\",\"ui header\"],[7],[1,[18,\"counter\"],false],[0,\". \"],[1,[20,[\"currentExercise\",\"name\"]],false],[8],[0,\"\\n  \"],[6,\"h2\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"description\"]],false],[8],[0,\"\\n  \"],[2,\"image\"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"image\"],[9,\"style\",\"max-height:500px;min-height:500px;min-width:141.63px;\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"currentImages\"]]],null,{\"statements\":[[4,\"slick-slider\",null,[[\"speed\",\"autoplay\",\"arrows\",\"id\",\"pauseOnHover\"],[500,false,true,[20,[\"index\"]],true]],{\"statements\":[[4,\"each\",[[20,[\"currentImages\"]]],null,{\"statements\":[[0,\"          \"],[6,\"div\"],[9,\"class\",\"box\"],[7],[0,\"\\n            \"],[6,\"img\"],[9,\"style\",\"max-height:500px;min-height: 500px;display: block;margin-left: auto;margin-right: auto;\"],[10,\"src\",[26,[[19,2,[\"imageData\"]]]]],[7],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null]],\"parameters\":[]},null]],\"parameters\":[]},{\"statements\":[[4,\"if\",[[20,[\"isLoading\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"ui segment\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui active dimmer\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui text loader\"],[7],[0,\"Loading\"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"p\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"box\"],[7],[0,\"\\n          \"],[6,\"img\"],[9,\"src\",\"/assets/images/NoImagesSaved.jpg\"],[9,\"style\",\"max-height:500px;display: block;margin-left: auto;margin-right: auto;\"],[7],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]}]],\"parameters\":[]}],[0,\"  \"],[8],[0,\"\\n  \"],[6,\"h2\"],[9,\"class\",\"ui header\"],[7],[0,\"Steps\"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui ordered list\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"currentExercise\",\"actionSteps\"]]],null,{\"statements\":[[0,\"      \"],[6,\"p\"],[9,\"class\",\"item\"],[7],[0,\"\\n        \"],[1,[19,1,[]],false],[0,\"\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"  \"],[8],[0,\"\\n\\n  \"],[6,\"h2\"],[9,\"class\",\"ui header\"],[7],[0,\" duration \"],[8],[0,\"\\n  \"],[6,\"h3\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"sets\"]],false],[0,\" sets \"],[8],[0,\"\\n  \"],[6,\"h3\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"reps\"]],false],[0,\" repetition\"],[8],[0,\"\\n  \"],[6,\"h3\"],[9,\"class\",\"ui header\"],[7],[1,[20,[\"currentExercise\",\"duration\"]],false],[0,\" minuets in total\"],[8],[0,\"\\n\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui buttons\"],[9,\"style\",\"float: left!important;\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"isNFirst\"]]],null,{\"statements\":[[0,\"      \"],[6,\"button\"],[9,\"class\",\"ui right labeled icon button\"],[3,\"action\",[[19,0,[]],\"prevExercise\"]],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"class\",\"left chevron icon\"],[7],[8],[0,\"\\n        Previous\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui buttons\"],[9,\"style\",\"float: right!important;\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"isEnd\"]]],null,{\"statements\":[[0,\"      \"],[6,\"button\"],[9,\"class\",\"green ui right labeled icon button\"],[3,\"action\",[[19,0,[]],\"finishRehabPlan\"]],[7],[0,\"\\n        Done\\n        \"],[6,\"i\"],[9,\"class\",\"stop icon\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"      \"],[6,\"button\"],[9,\"class\",\"ui right labeled icon button\"],[3,\"action\",[[19,0,[]],\"nextExercise\"]],[7],[0,\"\\n        Next\\n        \"],[6,\"i\"],[9,\"class\",\"right chevron icon\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n  \"],[8],[0,\"\\n\\n\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"\\n  \"],[1,[25,\"get-assessment-results\",null,[[\"planID\"],[[20,[\"rehabPlan\",\"id\"]]]]],false],[0,\"\\n\\n\"]],\"parameters\":[]}],[0,\"\\n\\n\\n\\n\\n  \"],[8],[0,\"\\n\\n\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-rehabplan-view.hbs" } });
 });
 define("self-start-front-end/templates/components/client-resources", ["exports"], function (exports) {
   "use strict";
@@ -14032,7 +14083,7 @@ define("self-start-front-end/templates/components/get-assessment-results", ["exp
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "rdR8AzpJ", "block": "{\"symbols\":[\"assess\",\"index\"],\"statements\":[[4,\"if\",[[20,[\"notOpen\"]]],null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui positive button\"],[3,\"action\",[[19,0,[]],\"Open\"]],[7],[0,\"\\n    \"],[1,[18,\"fName\"],false],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"open\"]]],null,{\"statements\":[[4,\"each\",[[20,[\"orders\"]]],null,{\"statements\":[[0,\"    \"],[1,[25,\"get-answers\",null,[[\"answers\",\"form\",\"question\",\"qID\",\"assessment\",\"qNumber\",\"assessid\"],[[20,[\"ans\"]],[20,[\"form\"]],[19,1,[\"question\"]],[19,1,[\"question\",\"id\"]],[20,[\"assessmentModel\"]],[19,2,[]],[20,[\"assessmentModel\",\"id\"]]]]],false],[0,\"\\n\"]],\"parameters\":[1,2]},null]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/get-assessment-results.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "IRSNKyrC", "block": "{\"symbols\":[\"assess\",\"index\"],\"statements\":[[0,\"\\n\"],[4,\"each\",[[20,[\"orders\"]]],null,{\"statements\":[[0,\"    \"],[1,[25,\"get-answers\",null,[[\"answers\",\"form\",\"question\",\"qID\",\"assessment\",\"qNumber\",\"assessid\"],[[20,[\"ans\"]],[20,[\"form\"]],[19,1,[\"question\"]],[19,1,[\"question\",\"id\"]],[20,[\"assessmentModel\"]],[19,2,[]],[20,[\"assessmentModel\",\"id\"]]]]],false],[0,\"\\n\"]],\"parameters\":[1,2]},null],[0,\"\\n  \"],[6,\"button\"],[9,\"class\",\"green ui button\"],[3,\"action\",[[19,0,[]],\"Sendtests\"]],[7],[0,\"\\n    SUBMIT\\n  \"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/get-assessment-results.hbs" } });
 });
 define("self-start-front-end/templates/components/list-forms", ["exports"], function (exports) {
   "use strict";

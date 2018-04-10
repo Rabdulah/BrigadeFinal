@@ -16,7 +16,9 @@ export default Component.extend({
   init(){
     this._super(...arguments);
     //console.get(this.get("assessment"));
-    console.log(this.get("answers"));
+    this.get('DS').findRecord('question',this.get("qID")).then((temp)=>{
+      this.set('question', temp);
+    });
   },
 
   actions: {
