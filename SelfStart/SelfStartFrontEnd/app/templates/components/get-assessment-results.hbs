@@ -1,12 +1,8 @@
-{{#if notOpen}}
-  <div class="ui positive button" {{action 'Open'}}>
-    {{fName}}
-  </div>
-{{/if}}
 
-
-{{#if open}}
   {{#each orders as |assess index|}}
     {{get-answers answers = ans form=form question=assess.question qID = assess.question.id assessment=assessmentModel qNumber = index assessid = assessmentModel.id}}
   {{/each}}
-{{/if}}
+
+  <button class="green ui button"{{action "Sendtests"}}>
+    SUBMIT
+  </button>

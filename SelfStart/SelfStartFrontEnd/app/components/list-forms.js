@@ -47,6 +47,29 @@ export default Component.extend({
         formName: thisForm.get('name')
       });
       newTest.save().then(()=> {
+        this.get('DS').query('question-order', {filter: {'form': thisForm.get('id')}}).then((rec) => {
+
+          rec.forEach((r) => {
+
+
+
+            //console.log(r.get('order'));
+            //console.log(q.get('questionText'));
+            r.get('question').then((q)=>{
+              let answer = this.get('DS').createRecord('answer', {
+                question: q.get('questionText'),
+                answer: "",
+                test: newTest
+              });
+
+              answer.save();
+            })
+
+
+          });
+
+        });
+
         this.set("assessID", newTest.get('id'));
         console.log(newTest.get('questions')[0]);
         return true;
