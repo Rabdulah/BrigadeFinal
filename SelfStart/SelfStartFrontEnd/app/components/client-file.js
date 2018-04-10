@@ -56,6 +56,7 @@ link:[],
         }
       })
     });
+
   }),
 
   exerciseModel: Ember.observer('plan', function(){
@@ -151,13 +152,13 @@ link:[],
 
 
     // this.set('listModel', this.get('store').findAll('exercise-list', this.get('planId')));
-    
+
       self.get('store').query('image', {filter: {'patient': client}}).then((records) => {
         records.forEach(im => {
           if(im.get("patient").get("id") === client)
            self.get("imageList").pushObject(im);
         });
-       
+
         // console.log(this.get("imageList"));
        // self.set("imageList", records.toArray());
       })
@@ -238,6 +239,7 @@ link:[],
       this.set('assess', false);
 
       this.set('menusState', "active");
+
       this.set('accountingState', "");
       this.set('reportState', "");
       this.set('assessState', "");

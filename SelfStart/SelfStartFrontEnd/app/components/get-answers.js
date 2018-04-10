@@ -27,8 +27,9 @@ export default Component.extend({
         if(rec.get('question') === this.get("question").get("questionText")){
           console.log("inside rating");
             rec.set('answer', this.get("rateValue"));
-            rec.set('test', this.get("assessment"));  
+            rec.set('test', this.get("assessment"));
             rec.save();
+
         }
       });
     },
@@ -39,6 +40,7 @@ export default Component.extend({
             rec.set("answer","YES");
             rec.set("test",this.get("assessment"));
             rec.save();
+
         }
       });
     },
@@ -50,7 +52,8 @@ export default Component.extend({
             rec.set("test",this.get("assessment"));
             rec.save();
         }
-      });    },
+      });
+      },
 
     saSave() {
 

@@ -52,7 +52,6 @@ export default Component.extend({
         return true;
       });
     },
-      
     openModal: function () {
       Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
         closeable: false,
@@ -62,7 +61,6 @@ export default Component.extend({
         onApprove: () => {
           var rehab = this.get('DS').peekRecord('rehabilitationplan', this.get('rehabPlan'));
           var test = this.get('DS').peekRecord('assessment-test', this.get('assessID'));
-
           let link = this.get('DS').createRecord('rehab-client-link', {
             terminated: this.get('rehabPlan.terminated'),
             RehabilitationPlan: rehab,
@@ -73,7 +71,7 @@ export default Component.extend({
           });
 
             link.save().then(()=> {
-            
+
           });
           return true;
         }

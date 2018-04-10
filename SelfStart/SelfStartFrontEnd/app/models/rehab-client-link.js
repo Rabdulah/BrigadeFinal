@@ -7,4 +7,5 @@ export default DS.Model.extend({
   Patient: DS.belongsTo('patient'),
   assigned: DS.attr('boolean'),
   assessmentTest: DS.belongsTo('assessment-test'),
+
 });
