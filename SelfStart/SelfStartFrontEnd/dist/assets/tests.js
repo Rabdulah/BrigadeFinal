@@ -257,7 +257,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/display-data-report.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/display-data-report.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n76:13 - \'$\' is not defined. (no-undef)');
+    assert.ok(false, 'components/display-data-report.js should pass ESLint\n\n2:8 - \'Ember\' is defined but never used. (no-unused-vars)\n4:10 - \'computed\' is defined but never used. (no-unused-vars)\n40:13 - Unexpected console statement. (no-console)\n56:25 - \'temp\' is already defined. (no-redeclare)\n62:25 - \'temp\' is already defined. (no-redeclare)\n68:25 - \'temp\' is already defined. (no-redeclare)\n74:25 - \'temp\' is already defined. (no-redeclare)\n80:25 - \'temp\' is already defined. (no-redeclare)\n86:25 - \'temp\' is already defined. (no-redeclare)\n92:25 - \'temp\' is already defined. (no-redeclare)\n98:25 - \'temp\' is already defined. (no-redeclare)\n104:25 - \'temp\' is already defined. (no-redeclare)\n132:13 - \'$\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/display-forms.js', function (assert) {

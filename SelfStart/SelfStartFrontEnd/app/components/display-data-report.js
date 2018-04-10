@@ -1,76 +1,132 @@
 import Component from '@ember/component';
 import Ember from "ember";
+import { inject } from '@ember/service';
 import { computed } from '@ember/object';
 
 export default Component.extend({
-    store: Ember.inject.service(),
+    DS: inject('store'),
     allAnswers: [],
     matchedAnswers: [],
-    averageRating: 0,
-    ratingGroupCount: [],
+    averageRating: 1,
+    ratingGroupCount: [0,0,0,0,0,0,0,0,0,0],
+    graphData: [],
+
+    options: {
+        title: 'User Rating Statistics',
+        height: 300,
+        width: 400,
+    
+        animation: {
+          startup: true,
+          easing: 'inAndOut',
+        },
+      },
 
     init() {
         this._super(...arguments);
         let self = this;
-        
 
-        this.get('store').findAll('answer').then((ans) => {
+        this.get('DS').findAll('answer').then((ans) => {
             self.set('allAnswers', ans.toArray());
+
+            self.get('allAnswers').forEach(element => {
+            
+                if (element.get('question') === self.get('question').get('questionText')
+                && self.get('question').get('type') === "Rating") {
+                    self.get('matchedAnswers').pushObject(element);
+                }
+            })
+
+            console.log(self.get('matchedAnswers'));
+            
+            var sum = 0;
+            var length = 0;
+
+            for (var i = 0; i < self.get('matchedAnswers').length; i++) {
+                sum += parseInt(self.get('matchedAnswers')[i].get('answer'));
+                length += 1
+          
+                if (self.get('matchedAnswers')[i].get('answer') == 1) {
+                    var temp = self.get('ratingGroupCount').toArray();
+                    temp[0] += 1;
+                    self.set(('ratingGroupCount'), temp);
+                }
+    
+                else if (self.get('matchedAnswers')[i].get('answer') == 2) {
+                    var temp = self.get('ratingGroupCount').toArray();
+                    temp[1] += 1;
+                    self.set(('ratingGroupCount'), temp);
+                }
+    
+                else if (self.get('matchedAnswers')[i].get('answer') == 3) {
+                    var temp = self.get('ratingGroupCount').toArray();
+                    temp[2] += 1;
+                    self.set(('ratingGroupCount'), temp);
+                }
+    
+                else if (self.get('matchedAnswers')[i].get('answer') == 4) {
+                    var temp = self.get('ratingGroupCount').toArray();
+                    temp[3] += 1;
+                    self.set(('ratingGroupCount'), temp);
+                }
+    
+                else if (self.get('matchedAnswers')[i].get('answer') == 5) {
+                    var temp = self.get('ratingGroupCount').toArray();
+                    temp[4] += 1;
+                    self.set(('ratingGroupCount'), temp);
+                }
+    
+                else if (self.get('matchedAnswers')[i].get('answer') == 6) {
+                    var temp = self.get('ratingGroupCount').toArray();
+                    temp[5] += 1;
+                    self.set(('ratingGroupCount'), temp);
+                }
+    
+                else if (self.get('matchedAnswers')[i].get('answer') == 7) {
+                    var temp = self.get('ratingGroupCount').toArray();
+                    temp[6] += 1;
+                    self.set(('ratingGroupCount'), temp);
+                }
+    
+                else if (self.get('matchedAnswers')[i].get('answer') == 8) {
+                    var temp = self.get('ratingGroupCount').toArray();
+                    temp[7] += 1;
+                    self.set(('ratingGroupCount'), temp);
+                }
+    
+                else if (self.get('matchedAnswers')[i].get('answer') == 9) {
+                    var temp = self.get('ratingGroupCount').toArray();
+                    temp[8] += 1;
+                    self.set(('ratingGroupCount'), temp);
+                }
+    
+                else if (self.get('matchedAnswers')[i].get('answer') == 10) {
+                    var temp = self.get('ratingGroupCount').toArray();
+                    temp[9] += 1;
+                    self.set(('ratingGroupCount'), temp);
+                }
+            }
+
+            self.set('averageRating', sum / length);
+
+            var data = [
+                ['Rating', '# of Clients'],
+                ['1', self.get('ratingGroupCount')[0]],
+                ['2', self.get('ratingGroupCount')[1]],
+                ['3', self.get('ratingGroupCount')[2]],
+                ['4', self.get('ratingGroupCount')[3]],
+                ['5', self.get('ratingGroupCount')[4]],
+                ['6', self.get('ratingGroupCount')[5]],
+                ['7', self.get('ratingGroupCount')[6]],
+                ['8', self.get('ratingGroupCount')[7]],
+                ['9', self.get('ratingGroupCount')[8]],
+                ['10', self.get('ratingGroupCount')[9]],
+              ];
+
+            self.set('graphData', data);
         })
-
-        this.get('allAnswers').forEach(element => {
-            if (element.get('question') === self.get('question').get('questionText')
-            && self.get('question').get('type') == "Rating") {
-                self.get('matchedAnswers').pushObject(element);
-            }
-        });
-
-        this.get('matchedAnswers').forEach(ans => {
-            self.set('averageRating', self.get('averageRating') + ans.get('answer'));
-
-            if (ans.get('answer') == 1) {
-                this.set('ratingGroupCount'[0], this.get('ratingGroupCount'[0]) + 1);
-            }
-
-            else if (ans.get('answer') == 2) {
-                this.set('ratingGroupCount'[1], this.get('ratingGroupCount'[1]) + 1);
-            }
-
-            else if (ans.get('answer') == 3) {
-                this.set('ratingGroupCount'[2], this.get('ratingGroupCount'[2]) + 1);
-            }
-
-            else if (ans.get('answer') == 4) {
-                this.set('ratingGroupCount'[3], this.get('ratingGroupCount'[3]) + 1);
-            }
-
-            else if (ans.get('answer') == 5) {
-                this.set('ratingGroupCount'[4], this.get('ratingGroupCount'[4]) + 1);
-            }
-
-            else if (ans.get('answer') == 6) {
-                this.set('ratingGroupCount'[5], this.get('ratingGroupCount'[5]) + 1);
-            }
-
-            else if (ans.get('answer') == 7) {
-                this.set('ratingGroupCount'[6], this.get('ratingGroupCount'[6]) + 1);
-            }
-
-            else if (ans.get('answer') == 8) {
-                this.set('ratingGroupCount'[7], this.get('ratingGroupCount'[7]) + 1);
-            }
-
-            else if (ans.get('answer') == 9) {
-                this.set('ratingGroupCount'[8], this.get('ratingGroupCount'[8]) + 1);
-            }
-
-            else if (ans.get('answer') == 10) {
-                this.set('ratingGroupCount'[9], this.get('ratingGroupCount'[9]) + 1);
-            }
-        })
-
-        self.set('averageRating', self.get('averageRating') / self.get('matchedAnswers').length);
     },
+
     actions: {
         openModal: function () {
             $('.ui.' + 'dataModal' + '.modal').modal({

@@ -4258,56 +4258,98 @@ define('self-start-front-end/components/display-data-report', ['exports'], funct
         value: true
     });
     exports.default = Ember.Component.extend({
-        store: Ember.inject.service(),
+        DS: Ember.inject.service('store'),
         allAnswers: [],
         matchedAnswers: [],
-        averageRating: 0,
-        ratingGroupCount: [],
+        averageRating: 1,
+        ratingGroupCount: [0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        graphData: [],
+
+        options: {
+            title: 'User Rating Statistics',
+            height: 300,
+            width: 400,
+
+            animation: {
+                startup: true,
+                easing: 'inAndOut'
+            }
+        },
 
         init: function init() {
-            var _this = this;
-
             this._super.apply(this, arguments);
             var self = this;
 
-            this.get('store').findAll('answer').then(function (ans) {
+            this.get('DS').findAll('answer').then(function (ans) {
                 self.set('allAnswers', ans.toArray());
-            });
 
-            this.get('allAnswers').forEach(function (element) {
-                if (element.get('question') === self.get('question').get('questionText') && self.get('question').get('type') == "Rating") {
-                    self.get('matchedAnswers').pushObject(element);
+                self.get('allAnswers').forEach(function (element) {
+
+                    if (element.get('question') === self.get('question').get('questionText') && self.get('question').get('type') === "Rating") {
+                        self.get('matchedAnswers').pushObject(element);
+                    }
+                });
+
+                console.log(self.get('matchedAnswers'));
+
+                var sum = 0;
+                var length = 0;
+
+                for (var i = 0; i < self.get('matchedAnswers').length; i++) {
+                    sum += parseInt(self.get('matchedAnswers')[i].get('answer'));
+                    length += 1;
+
+                    if (self.get('matchedAnswers')[i].get('answer') == 1) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[0] += 1;
+                        self.set('ratingGroupCount', temp);
+                    } else if (self.get('matchedAnswers')[i].get('answer') == 2) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[1] += 1;
+                        self.set('ratingGroupCount', temp);
+                    } else if (self.get('matchedAnswers')[i].get('answer') == 3) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[2] += 1;
+                        self.set('ratingGroupCount', temp);
+                    } else if (self.get('matchedAnswers')[i].get('answer') == 4) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[3] += 1;
+                        self.set('ratingGroupCount', temp);
+                    } else if (self.get('matchedAnswers')[i].get('answer') == 5) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[4] += 1;
+                        self.set('ratingGroupCount', temp);
+                    } else if (self.get('matchedAnswers')[i].get('answer') == 6) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[5] += 1;
+                        self.set('ratingGroupCount', temp);
+                    } else if (self.get('matchedAnswers')[i].get('answer') == 7) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[6] += 1;
+                        self.set('ratingGroupCount', temp);
+                    } else if (self.get('matchedAnswers')[i].get('answer') == 8) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[7] += 1;
+                        self.set('ratingGroupCount', temp);
+                    } else if (self.get('matchedAnswers')[i].get('answer') == 9) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[8] += 1;
+                        self.set('ratingGroupCount', temp);
+                    } else if (self.get('matchedAnswers')[i].get('answer') == 10) {
+                        var temp = self.get('ratingGroupCount').toArray();
+                        temp[9] += 1;
+                        self.set('ratingGroupCount', temp);
+                    }
                 }
+
+                self.set('averageRating', sum / length);
+
+                var data = [['Rating', '# of Clients'], ['1', self.get('ratingGroupCount')[0]], ['2', self.get('ratingGroupCount')[1]], ['3', self.get('ratingGroupCount')[2]], ['4', self.get('ratingGroupCount')[3]], ['5', self.get('ratingGroupCount')[4]], ['6', self.get('ratingGroupCount')[5]], ['7', self.get('ratingGroupCount')[6]], ['8', self.get('ratingGroupCount')[7]], ['9', self.get('ratingGroupCount')[8]], ['10', self.get('ratingGroupCount')[9]]];
+
+                self.set('graphData', data);
             });
-
-            this.get('matchedAnswers').forEach(function (ans) {
-                self.set('averageRating', self.get('averageRating') + ans.get('answer'));
-
-                if (ans.get('answer') == 1) {
-                    _this.set('ratingGroupCount'[0], _this.get('ratingGroupCount'[0]) + 1);
-                } else if (ans.get('answer') == 2) {
-                    _this.set('ratingGroupCount'[1], _this.get('ratingGroupCount'[1]) + 1);
-                } else if (ans.get('answer') == 3) {
-                    _this.set('ratingGroupCount'[2], _this.get('ratingGroupCount'[2]) + 1);
-                } else if (ans.get('answer') == 4) {
-                    _this.set('ratingGroupCount'[3], _this.get('ratingGroupCount'[3]) + 1);
-                } else if (ans.get('answer') == 5) {
-                    _this.set('ratingGroupCount'[4], _this.get('ratingGroupCount'[4]) + 1);
-                } else if (ans.get('answer') == 6) {
-                    _this.set('ratingGroupCount'[5], _this.get('ratingGroupCount'[5]) + 1);
-                } else if (ans.get('answer') == 7) {
-                    _this.set('ratingGroupCount'[6], _this.get('ratingGroupCount'[6]) + 1);
-                } else if (ans.get('answer') == 8) {
-                    _this.set('ratingGroupCount'[7], _this.get('ratingGroupCount'[7]) + 1);
-                } else if (ans.get('answer') == 9) {
-                    _this.set('ratingGroupCount'[8], _this.get('ratingGroupCount'[8]) + 1);
-                } else if (ans.get('answer') == 10) {
-                    _this.set('ratingGroupCount'[9], _this.get('ratingGroupCount'[9]) + 1);
-                }
-            });
-
-            self.set('averageRating', self.get('averageRating') / self.get('matchedAnswers').length);
         },
+
 
         actions: {
             openModal: function openModal() {
@@ -13963,7 +14005,7 @@ define("self-start-front-end/templates/components/display-data-report", ["export
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "ww3ADiDv", "block": "{\"symbols\":[\"ans\"],\"statements\":[[6,\"button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"Display data\"],[8],[0,\" \\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"dataModal\",\"dataModal\"]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"Answers to \\\"\"],[8],[1,[20,[\"question\",\"questionText\"]],false],[6,\"label\"],[7],[0,\"\\\":\"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n    \\n\"],[4,\"each\",[[20,[\"matchedAnswers\"]]],null,{\"statements\":[[0,\"      \"],[6,\"label\"],[7],[1,[19,1,[\"answer\"]],false],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 1 ratings: \"],[1,[20,[\"ratingGroupCount\",\"0\"]],false],[0,\" \"],[8],[0,\"  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 2 ratings: \"],[1,[20,[\"ratingGroupCount\",\"1\"]],false],[0,\"  \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 3 ratings: \"],[1,[20,[\"ratingGroupCount\",\"2\"]],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 4 ratings: \"],[1,[20,[\"ratingGroupCount\",\"3\"]],false],[0,\"  \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 5 ratings: \"],[1,[20,[\"ratingGroupCount\",\"4\"]],false],[0,\" \"],[8],[0,\"  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 6 ratings: \"],[1,[20,[\"ratingGroupCount\",\"5\"]],false],[0,\" \"],[8],[0,\"  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 7 ratings: \"],[1,[20,[\"ratingGroupCount\",\"6\"]],false],[0,\" \"],[8],[0,\"  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 8 ratings: \"],[1,[20,[\"ratingGroupCount\",\"7\"]],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 9 ratings: \"],[1,[20,[\"ratingGroupCount\",\"8\"]],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 10 ratings: \"],[1,[20,[\"ratingGroupCount\",\"9\"]],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"Average rating: \"],[1,[18,\"averageRating\"],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \\n  \\n\"],[0,\"  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok\"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Save Report\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel\"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"Exit\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/display-data-report.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "gti3wWZH", "block": "{\"symbols\":[\"ans\"],\"statements\":[[6,\"button\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"Display data\"],[8],[0,\" \\n\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"dataModal\",\"dataModal\"]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"Answers to \\\"\"],[8],[1,[20,[\"question\",\"questionText\"]],false],[6,\"label\"],[7],[0,\"\\\":\"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n    \\n\"],[4,\"each\",[[20,[\"matchedAnswers\"]]],null,{\"statements\":[[0,\"      \"],[6,\"label\"],[7],[1,[19,1,[\"answer\"]],false],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"label\"],[7],[0,\"# of 1 ratings: \"],[1,[20,[\"ratingGroupCount\",\"0\"]],false],[0,\" \"],[8],[0,\"  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 2 ratings: \"],[1,[20,[\"ratingGroupCount\",\"1\"]],false],[0,\"  \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 3 ratings: \"],[1,[20,[\"ratingGroupCount\",\"2\"]],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 4 ratings: \"],[1,[20,[\"ratingGroupCount\",\"3\"]],false],[0,\"  \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 5 ratings: \"],[1,[20,[\"ratingGroupCount\",\"4\"]],false],[0,\" \"],[8],[0,\"  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 6 ratings: \"],[1,[20,[\"ratingGroupCount\",\"5\"]],false],[0,\" \"],[8],[0,\"  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 7 ratings: \"],[1,[20,[\"ratingGroupCount\",\"6\"]],false],[0,\" \"],[8],[0,\"  \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 8 ratings: \"],[1,[20,[\"ratingGroupCount\",\"7\"]],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 9 ratings: \"],[1,[20,[\"ratingGroupCount\",\"8\"]],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"# of 10 ratings: \"],[1,[20,[\"ratingGroupCount\",\"9\"]],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"label\"],[7],[0,\"Average rating: \"],[1,[18,\"averageRating\"],false],[0,\" \"],[8],[0,\" \"],[6,\"br\"],[7],[8],[0,\"\\n  \\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"chart-container\"],[9,\"style\",\"min-width: 400px\"],[9,\"style\",\"min-height: 300px\"],[7],[0,\"\\n  \"],[1,[25,\"bar-chart\",null,[[\"data\",\"options\"],[[20,[\"graphData\"]],[20,[\"options\"]]]]],false],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[9,\"style\",\"padding:0\"],[7],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ok\"],[9,\"style\",\"padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;\"],[7],[0,\"Save Report\"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"cancel\"],[9,\"style\",\"padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;\"],[7],[0,\"Exit\"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/display-data-report.hbs" } });
 });
 define("self-start-front-end/templates/components/display-forms", ["exports"], function (exports) {
   "use strict";
