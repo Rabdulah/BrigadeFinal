@@ -20,6 +20,7 @@ router.route('/')
         }
         else{
             Appointments.Model.find({"patient": patient.id}, function (error, appointments) {
+                console.log(appointments);
                 if (error) response.send(error);
                 response.json({appointment: appointments});
             });

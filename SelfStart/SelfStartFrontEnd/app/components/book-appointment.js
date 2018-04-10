@@ -27,6 +27,7 @@ export default Component.extend({
 
   phyidget: null,
   client: null,
+  appointmentHistory: Ember.A(),
 
 
   physioPicked : false,
@@ -49,10 +50,17 @@ export default Component.extend({
 
 
     self.get('DS').queryRecord('patient', {filter: {'email' : eemail}}).then(function (obj) {
-
       self.set('client', obj);
-
+      console.log(self.get('client.id'));
+      self.get('DS').query('appointment', {filter: {'id' : self.get('client.id')}}).then(function (obj) {
+        obj.forEach(function (a) {
+          if(moment(a.get('date')) > moment()){
+            self.get('appointmentHistory').pushObject(a);
+          }
+        });
+      });
     });
+
   },
 
   didRender() {

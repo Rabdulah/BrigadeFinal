@@ -25,6 +25,7 @@ export default Component.extend({
   init() {
     this._super(...arguments);
     var self = this;
+    console.log(this.get('answers'));
     this.set('realAnswers', this.get('answers').toArray());
 
 

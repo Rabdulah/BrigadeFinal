@@ -122,7 +122,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/book-appointment.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/book-appointment.js should pass ESLint\n\n11:16 - \'Ember\' is not defined. (no-undef)\n12:18 - \'Ember\' is not defined. (no-undef)\n13:16 - \'Ember\' is not defined. (no-undef)\n19:14 - \'Ember\' is not defined. (no-undef)\n24:14 - \'Ember\' is not defined. (no-undef)\n48:5 - Unexpected console statement. (no-console)\n148:37 - \'occurrence\' is defined but never used. (no-unused-vars)\n158:64 - \'isPreview\' is defined but never used. (no-unused-vars)\n159:7 - Unexpected console statement. (no-console)\n173:40 - \'occurrence\' is defined but never used. (no-unused-vars)\n179:31 - \'Ember\' is not defined. (no-undef)\n199:52 - \'Ember\' is not defined. (no-undef)\n219:29 - \'Ember\' is not defined. (no-undef)\n233:42 - \'Ember\' is not defined. (no-undef)\n250:7 - Unexpected console statement. (no-console)\n259:30 - \'Ember\' is not defined. (no-undef)\n270:11 - \'physio\' is assigned a value but never used. (no-unused-vars)\n279:9 - Unexpected console statement. (no-console)\n295:19 - Unexpected console statement. (no-console)\n305:19 - Unexpected console statement. (no-console)\n316:19 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/book-appointment.js should pass ESLint\n\n11:16 - \'Ember\' is not defined. (no-undef)\n12:18 - \'Ember\' is not defined. (no-undef)\n13:16 - \'Ember\' is not defined. (no-undef)\n19:14 - \'Ember\' is not defined. (no-undef)\n24:14 - \'Ember\' is not defined. (no-undef)\n30:23 - \'Ember\' is not defined. (no-undef)\n49:5 - Unexpected console statement. (no-console)\n54:7 - Unexpected console statement. (no-console)\n156:37 - \'occurrence\' is defined but never used. (no-unused-vars)\n166:64 - \'isPreview\' is defined but never used. (no-unused-vars)\n167:7 - Unexpected console statement. (no-console)\n181:40 - \'occurrence\' is defined but never used. (no-unused-vars)\n187:31 - \'Ember\' is not defined. (no-undef)\n207:52 - \'Ember\' is not defined. (no-undef)\n227:29 - \'Ember\' is not defined. (no-undef)\n241:42 - \'Ember\' is not defined. (no-undef)\n258:7 - Unexpected console statement. (no-console)\n267:30 - \'Ember\' is not defined. (no-undef)\n278:11 - \'physio\' is assigned a value but never used. (no-unused-vars)\n287:9 - Unexpected console statement. (no-console)\n303:19 - Unexpected console statement. (no-console)\n313:19 - Unexpected console statement. (no-console)\n324:19 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/client-exercise-menu.js', function (assert) {
@@ -247,7 +247,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/display-answers.js', function (assert) {
     assert.expect(1);
-    assert.ok(true, 'components/display-answers.js should pass ESLint\n\n');
+    assert.ok(false, 'components/display-answers.js should pass ESLint\n\n28:5 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/display-assessment.js', function (assert) {
