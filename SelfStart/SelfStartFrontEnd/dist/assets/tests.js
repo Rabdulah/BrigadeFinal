@@ -392,17 +392,17 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/payment-button-package-2.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/payment-button-package-2.js should pass ESLint\n\n16:7 - Unexpected console statement. (no-console)\n24:5 - \'paypal\' is not defined. (no-undef)\n65:30 - \'obj\' is defined but never used. (no-unused-vars)\n68:17 - \'Ember\' is not defined. (no-undef)\n69:17 - \'Ember\' is not defined. (no-undef)\n70:17 - \'Ember\' is not defined. (no-undef)');
+    assert.ok(false, 'components/payment-button-package-2.js should pass ESLint\n\n16:7 - Unexpected console statement. (no-console)\n24:5 - \'paypal\' is not defined. (no-undef)\n75:30 - \'obj\' is defined but never used. (no-unused-vars)\n78:17 - \'Ember\' is not defined. (no-undef)\n79:17 - \'Ember\' is not defined. (no-undef)\n80:17 - \'Ember\' is not defined. (no-undef)\n83:17 - \'Ember\' is not defined. (no-undef)\n84:17 - \'Ember\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/payment-button-package-3.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/payment-button-package-3.js should pass ESLint\n\n16:7 - Unexpected console statement. (no-console)\n24:5 - \'paypal\' is not defined. (no-undef)\n65:30 - \'obj\' is defined but never used. (no-unused-vars)\n68:17 - \'Ember\' is not defined. (no-undef)\n69:17 - \'Ember\' is not defined. (no-undef)\n70:17 - \'Ember\' is not defined. (no-undef)');
+    assert.ok(false, 'components/payment-button-package-3.js should pass ESLint\n\n16:7 - Unexpected console statement. (no-console)\n24:5 - \'paypal\' is not defined. (no-undef)\n75:30 - \'obj\' is defined but never used. (no-unused-vars)\n78:17 - \'Ember\' is not defined. (no-undef)\n79:17 - \'Ember\' is not defined. (no-undef)\n80:17 - \'Ember\' is not defined. (no-undef)\n83:17 - \'Ember\' is not defined. (no-undef)\n84:17 - \'Ember\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/payment-button.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/payment-button.js should pass ESLint\n\n16:7 - Unexpected console statement. (no-console)\n24:5 - \'paypal\' is not defined. (no-undef)\n65:30 - \'obj\' is defined but never used. (no-unused-vars)\n68:17 - \'Ember\' is not defined. (no-undef)\n69:17 - \'Ember\' is not defined. (no-undef)\n70:17 - \'Ember\' is not defined. (no-undef)');
+    assert.ok(false, 'components/payment-button.js should pass ESLint\n\n16:7 - Unexpected console statement. (no-console)\n24:5 - \'paypal\' is not defined. (no-undef)\n75:30 - \'obj\' is defined but never used. (no-unused-vars)\n78:17 - \'Ember\' is not defined. (no-undef)\n79:17 - \'Ember\' is not defined. (no-undef)\n80:17 - \'Ember\' is not defined. (no-undef)\n83:17 - \'Ember\' is not defined. (no-undef)\n84:17 - \'Ember\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/personal-menu.js', function (assert) {

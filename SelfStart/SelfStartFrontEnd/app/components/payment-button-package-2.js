@@ -52,22 +52,37 @@ export default Component.extend({
           index = trans.lastIndexOf('{"total":"');
           var total = trans.substring(index + 10,index + 16);
 
-          var finalTransaction = []//Ember.createObject({"Package 3", date, total});
+          var finalTransaction = [];//Ember.createObject({"Package 3", date, total});
           finalTransaction["package"] = "Package 2";
           finalTransaction["date"] = date;
           finalTransaction["amount"] = total;
 
+          var pack = [];
+          pack["numberOfSessions"] = 0;
+          pack["appointments"] = null;
+
           self.get('DS').findRecord('patient', self.get('client').get('id')).then((cli) => {
             let length = cli.get('transactions').length;
+            let length2 = cli.get('packages').length;
+
             var temp = cli.get('transactions');
+            var temp2 = cli.get('packages');
+
+            temp2.pushObject(pack);
             temp.pushObject(finalTransaction);
             cli.set('transactions', temp);
+
             cli.save().then( obj => {
               self.get('DS').findRecord('patient', self.get('client').get('id')).then((cli) => { 
                 let item = cli.get('transactions')[length];
                 Ember.set(item, 'package', "Package 2");
                 Ember.set(item, 'date', date);
                 Ember.set(item, 'amount', total);
+
+                let item2 = cli.get('packages')[length2];
+                Ember.set(item2, 'numberOfSessions', 4);
+                Ember.set(item2, 'appointments', null);
+
                 cli.save();
               })
             })

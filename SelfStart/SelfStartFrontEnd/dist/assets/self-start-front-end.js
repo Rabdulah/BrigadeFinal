@@ -1694,6 +1694,19 @@ define('self-start-front-end/components/appointment-photos', ['exports'], functi
     // },
   });
 });
+define('self-start-front-end/components/area-chart', ['exports', 'ember-google-charts/components/area-chart'], function (exports, _areaChart) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _areaChart.default;
+    }
+  });
+});
 define('self-start-front-end/components/as-calendar', ['exports', 'ember-calendar/components/as-calendar'], function (exports, _asCalendar) {
   'use strict';
 
@@ -2044,6 +2057,19 @@ define('self-start-front-end/components/back-to-top', ['exports'], function (exp
           scrollTop: 0 // Scroll to top of body
         }, 500);
       });
+    }
+  });
+});
+define('self-start-front-end/components/bar-chart', ['exports', 'ember-google-charts/components/bar-chart'], function (exports, _barChart) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _barChart.default;
     }
   });
 });
@@ -2447,14 +2473,6 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
       }
     }
   });
-});
-define('self-start-front-end/components/bubble-chart', ['exports', 'ember-charts/components/bubble-chart'], function (exports, _bubbleChart) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = _bubbleChart.default;
 });
 define('self-start-front-end/components/client-exercise-menu', ['exports'], function (exports) {
   'use strict';
@@ -6044,6 +6062,19 @@ define('self-start-front-end/components/generate-reports', ['exports'], function
         }
     });
 });
+define('self-start-front-end/components/geo-chart', ['exports', 'ember-google-charts/components/geo-chart'], function (exports, _geoChart) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _geoChart.default;
+    }
+  });
+});
 define('self-start-front-end/components/get-answers', ['exports'], function (exports) {
   'use strict';
 
@@ -6258,13 +6289,18 @@ define('self-start-front-end/components/get-assessment-results', ['exports', 'mo
     }
   });
 });
-define('self-start-front-end/components/horizontal-bar-chart', ['exports', 'ember-charts/components/horizontal-bar-chart'], function (exports, _horizontalBarChart) {
+define('self-start-front-end/components/google-chart', ['exports', 'ember-google-charts/components/google-chart'], function (exports, _googleChart) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = _horizontalBarChart.default;
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _googleChart.default;
+    }
+  });
 });
 define("self-start-front-end/components/illiquid-model", ["exports", "liquid-fire/components/illiquid-model"], function (exports, _illiquidModel) {
   "use strict";
@@ -6289,6 +6325,19 @@ define('self-start-front-end/components/labeled-radio-button', ['exports', 'embe
     enumerable: true,
     get: function () {
       return _labeledRadioButton.default;
+    }
+  });
+});
+define('self-start-front-end/components/line-chart', ['exports', 'ember-google-charts/components/line-chart'], function (exports, _lineChart) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _lineChart.default;
     }
   });
 });
@@ -7505,17 +7554,32 @@ define('self-start-front-end/components/payment-button-package-2', ['exports'], 
             finalTransaction["date"] = date;
             finalTransaction["amount"] = total;
 
+            var pack = [];
+            pack["numberOfSessions"] = 0;
+            pack["appointments"] = null;
+
             self.get('DS').findRecord('patient', self.get('client').get('id')).then(function (cli) {
               var length = cli.get('transactions').length;
+              var length2 = cli.get('packages').length;
+
               var temp = cli.get('transactions');
+              var temp2 = cli.get('packages');
+
+              temp2.pushObject(pack);
               temp.pushObject(finalTransaction);
               cli.set('transactions', temp);
+
               cli.save().then(function (obj) {
                 self.get('DS').findRecord('patient', self.get('client').get('id')).then(function (cli) {
                   var item = cli.get('transactions')[length];
                   Ember.set(item, 'package', "Package 2");
                   Ember.set(item, 'date', date);
                   Ember.set(item, 'amount', total);
+
+                  var item2 = cli.get('packages')[length2];
+                  Ember.set(item2, 'numberOfSessions', 4);
+                  Ember.set(item2, 'appointments', null);
+
                   cli.save();
                 });
               });
@@ -7588,17 +7652,32 @@ define('self-start-front-end/components/payment-button-package-3', ['exports'], 
             finalTransaction["date"] = date;
             finalTransaction["amount"] = total;
 
+            var pack = [];
+            pack["numberOfSessions"] = 0;
+            pack["appointments"] = null;
+
             self.get('DS').findRecord('patient', self.get('client').get('id')).then(function (cli) {
               var length = cli.get('transactions').length;
+              var length2 = cli.get('packages').length;
+
               var temp = cli.get('transactions');
+              var temp2 = cli.get('packages');
+
+              temp2.pushObject(pack);
               temp.pushObject(finalTransaction);
               cli.set('transactions', temp);
+
               cli.save().then(function (obj) {
                 self.get('DS').findRecord('patient', self.get('client').get('id')).then(function (cli) {
                   var item = cli.get('transactions')[length];
                   Ember.set(item, 'package', "Package 3");
                   Ember.set(item, 'date', date);
                   Ember.set(item, 'amount', total);
+
+                  var item2 = cli.get('packages')[length2];
+                  Ember.set(item2, 'numberOfSessions', 7);
+                  Ember.set(item2, 'appointments', null);
+
                   cli.save();
                 });
               });
@@ -7671,17 +7750,32 @@ define('self-start-front-end/components/payment-button', ['exports'], function (
             finalTransaction["date"] = date;
             finalTransaction["amount"] = total;
 
+            var pack = [];
+            pack["numberOfSessions"] = 0;
+            pack["appointments"] = null;
+
             self.get('DS').findRecord('patient', self.get('client').get('id')).then(function (cli) {
               var length = cli.get('transactions').length;
+              var length2 = cli.get('packages').length;
+
               var temp = cli.get('transactions');
+              var temp2 = cli.get('packages');
+
+              temp2.pushObject(pack);
               temp.pushObject(finalTransaction);
               cli.set('transactions', temp);
+
               cli.save().then(function (obj) {
                 self.get('DS').findRecord('patient', self.get('client').get('id')).then(function (cli) {
                   var item = cli.get('transactions')[length];
                   Ember.set(item, 'package', "Package 1");
                   Ember.set(item, 'date', date);
                   Ember.set(item, 'amount', total);
+
+                  var item2 = cli.get('packages')[length2];
+                  Ember.set(item2, 'numberOfSessions', 1);
+                  Ember.set(item2, 'appointments', null);
+
                   cli.save();
                 });
               });
@@ -7961,13 +8055,18 @@ define("self-start-front-end/components/physio-welcome", ["exports"], function (
     }
   });
 });
-define('self-start-front-end/components/pie-chart', ['exports', 'ember-charts/components/pie-chart'], function (exports, _pieChart) {
+define('self-start-front-end/components/pie-chart', ['exports', 'ember-google-charts/components/pie-chart'], function (exports, _pieChart) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = _pieChart.default;
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _pieChart.default;
+    }
+  });
 });
 define('self-start-front-end/components/power-select-multiple', ['exports', 'ember-power-select/components/power-select-multiple'], function (exports, _powerSelectMultiple) {
   'use strict';
@@ -8625,13 +8724,18 @@ define('self-start-front-end/components/rl-dropdown', ['exports', 'ember-rl-drop
   });
   exports.default = _rlDropdown.default;
 });
-define('self-start-front-end/components/scatter-chart', ['exports', 'ember-charts/components/scatter-chart'], function (exports, _scatterChart) {
+define('self-start-front-end/components/scatter-chart', ['exports', 'ember-google-charts/components/scatter-chart'], function (exports, _scatterChart) {
   'use strict';
 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = _scatterChart.default;
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _scatterChart.default;
+    }
+  });
 });
 define('self-start-front-end/components/show-form-questions', ['exports'], function (exports) {
   'use strict';
@@ -8795,14 +8899,6 @@ define('self-start-front-end/components/sortable-item', ['exports', 'ember-sorta
   });
   exports.default = _sortableItem.default;
 });
-define('self-start-front-end/components/stacked-vertical-bar-chart', ['exports', 'ember-charts/components/stacked-vertical-bar-chart'], function (exports, _stackedVerticalBarChart) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = _stackedVerticalBarChart.default;
-});
 define('self-start-front-end/components/stylish-button', ['exports', 'ember-stylish-buttons/components/stylish-button', 'self-start-front-end/config/environment'], function (exports, _stylishButton, _environment) {
   'use strict';
 
@@ -8816,14 +8912,6 @@ define('self-start-front-end/components/stylish-button', ['exports', 'ember-styl
   exports.default = _stylishButton.default.extend({
     type: config.defaultTheme || 'winona'
   });
-});
-define('self-start-front-end/components/time-series-chart', ['exports', 'ember-charts/components/time-series-chart'], function (exports, _timeSeriesChart) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = _timeSeriesChart.default;
 });
 define('self-start-front-end/components/ui-accordion', ['exports', 'semantic-ui-ember/components/ui-accordion'], function (exports, _uiAccordion) {
   'use strict';
@@ -9462,14 +9550,6 @@ define('self-start-front-end/components/user-login', ['exports'], function (expo
     }
 
   });
-});
-define('self-start-front-end/components/vertical-bar-chart', ['exports', 'ember-charts/components/vertical-bar-chart'], function (exports, _verticalBarChart) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = _verticalBarChart.default;
 });
 define('self-start-front-end/components/view-appointment', ['exports'], function (exports) {
   'use strict';
@@ -11016,14 +11096,6 @@ define("self-start-front-end/instance-initializers/ember-data", ["exports", "emb
     initialize: _initializeStoreService.default
   };
 });
-define('self-start-front-end/mixins/axis-titles', ['exports', 'ember-charts/mixins/axis-titles'], function (exports, _axisTitles) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = _axisTitles.default;
-});
 define('self-start-front-end/mixins/base', ['exports', 'semantic-ui-ember/mixins/base'], function (exports, _base) {
   'use strict';
 
@@ -11036,22 +11108,6 @@ define('self-start-front-end/mixins/base', ['exports', 'semantic-ui-ember/mixins
       return _base.default;
     }
   });
-});
-define('self-start-front-end/mixins/label-width', ['exports', 'ember-charts/mixins/label-width'], function (exports, _labelWidth) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = _labelWidth.default;
-});
-define('self-start-front-end/mixins/legend', ['exports', 'ember-charts/mixins/legend'], function (exports, _legend) {
-  'use strict';
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = _legend.default;
 });
 define('self-start-front-end/mixins/promise-resolver', ['exports', 'ember-promise-tools/mixins/promise-resolver'], function (exports, _promiseResolver) {
   'use strict';
@@ -11325,6 +11381,7 @@ define('self-start-front-end/models/patient', ['exports', 'ember-data'], functio
     transactions: _emberData.default.attr(),
     rehablink: _emberData.default.hasMany('rehab-client-link', { async: true }),
     success: _emberData.default.attr(),
+    packages: _emberData.default.attr(),
     images: _emberData.default.hasMany('image')
   });
 });
@@ -13427,6 +13484,19 @@ define('self-start-front-end/services/doc', ['exports'], function (exports) {
     }
   });
 });
+define('self-start-front-end/services/google-charts', ['exports', 'ember-google-charts/services/google-charts'], function (exports, _googleCharts) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _googleCharts.default;
+    }
+  });
+});
 define('self-start-front-end/services/home', ['exports'], function (exports) {
   'use strict';
 
@@ -14096,14 +14166,6 @@ define("self-start-front-end/templates/components/book-appointment", ["exports"]
     value: true
   });
   exports.default = Ember.HTMLBars.template({ "id": "1z7OWGkL", "block": "{\"symbols\":[\"timeslot\",\"phsio\",\"phsio\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Book appointment\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui centered cards\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:250px\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[3,\"action\",[[19,0,[]],\"firstSelect\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"Show\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:250px\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Follow-ups\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[3,\"action\",[[19,0,[]],\"followupSelect\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n      Show\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[9,\"href\",\"/assets/css/form-style.css\"],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"followupSelected\"]]],null,{\"statements\":[[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"padding-right: 10em; padding-left: 10em\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n  \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n  \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n    \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectphysio\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateValue\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n      \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"getphysio\"]]],null,{\"statements\":[[0,\"        \"],[6,\"option\"],[10,\"value\",[19,3,[\"id\"]],null],[7],[0,\"\\n          \"],[1,[19,3,[\"givenName\"]],false],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[1,[25,\"as-calendar\",null,[[\"title\",\"occurrences\",\"defaultTimeZoneQuery\",\"dayStartingTime\",\"dayEndingTime\",\"timeSlotDuration\",\"onAddOccurrence\",\"onUpdateOccurrence\",\"onRemoveOccurrence\"],[\"View Schedule\",[20,[\"occurrences\"]],\"Toronto|New York\",\"8:00\",\"20:00\",\"00:30\",[25,\"action\",[[19,0,[]],\"calendarAddOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarUpdateOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarRemoveOccurrence\"],null]]]],false],[0,\"\\n\\n\"],[8],[0,\"\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"firstSelected\"]]],null,{\"statements\":[[6,\"div\"],[9,\"class\",\"ui very padded segment container\"],[9,\"style\",\"border: none; box-shadow: none; background-color: white;position: relative;z-index:  2;\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui four steps\"],[7],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"introValue\"],\" step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"sticky note icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Intake Form\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"photoValue\"],\"  step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"photo icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Upload Photos\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"appointmentValue\"],\"  step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"bookmark icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[10,\"class\",[26,[[18,\"confirmValue\"],\"  step\"]]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"check circle icon\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Confirmation\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"ui attached segment\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"intro\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToPhoto\"]],[7],[0,\"Next\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\"],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToPhoto\"]],[7],[0,\"Next\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"photo\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToIntro\"]],[7],[0,\"Back\"],[8],[0,\"\\n          \"],[6,\"button\"],[10,\"class\",[26,[\"ui \",[18,\"disabled\"],\" blue button\"]]],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToAppointment\"]],[7],[0,\"Next\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n     \"],[1,[25,\"client-upload-photos\",null,[[\"disabled\"],[[20,[\"disabled\"]]]]],false],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToIntro\"]],[7],[0,\"Back\"],[8],[0,\"\\n          \"],[6,\"button\"],[10,\"class\",[26,[\"ui \",[18,\"disabled\"],\" blue button\"]]],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToAppointment\"]],[7],[0,\"Next\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"appointment\"]]],null,{\"statements\":[[0,\"      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToPhoto\"]],[7],[0,\"Back\"],[8],[0,\"\\n          \"],[6,\"button\"],[10,\"class\",[26,[\"ui \",[18,\"appDisable\"],\" blue button\"]]],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToConfirm\"]],[7],[0,\"Next\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n        \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select a practitioner\"],[8],[0,\"\\n        \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n          \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectphysio\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateValue\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n            \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select a practitioner\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"getphysio\"]]],null,{\"statements\":[[0,\"              \"],[6,\"option\"],[10,\"value\",[19,2,[\"id\"]],null],[7],[0,\"\\n                \"],[1,[19,2,[\"givenName\"]],false],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n        \"],[1,[25,\"as-calendar\",null,[[\"title\",\"occurrences\",\"defaultTimeZoneQuery\",\"dayStartingTime\",\"dayEndingTime\",\"timeSlotDuration\",\"onAddOccurrence\",\"onUpdateOccurrence\",\"onRemoveOccurrence\"],[\"View Schedule\",[20,[\"occurrences\"]],\"Toronto|New York\",\"8:00\",\"20:00\",\"00:30\",[25,\"action\",[[19,0,[]],\"calendarAddOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarUpdateOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarRemoveOccurrence\"],null]]]],false],[0,\"\\n\\n      \"],[8],[0,\"\\n      \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToPhoto\"]],[7],[0,\"Back\"],[8],[0,\"\\n          \"],[6,\"button\"],[10,\"class\",[26,[\"ui \",[18,\"appDisable\"],\" blue button\"]]],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToConfirm\"]],[7],[0,\"Next\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"confirm\"]]],null,{\"statements\":[[0,\"    \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToAppointment\"]],[7],[0,\"Back\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"form\"],[9,\"id\",\"edit\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n\\n      \"],[6,\"legend\"],[7],[0,\"Intake Form\"],[8],[0,\"\\n\\n    \"],[2,\"looop\"],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"QuestionText\"],[8],[0,\"\\n        \"],[6,\"p\"],[7],[0,\"answers\"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n      \"],[6,\"legend\"],[7],[0,\"Booked Appointment\"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        booking history\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\\n      \"],[6,\"legend\"],[7],[0,\"Payment Packages\"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui three column doubling stackable grid container\"],[7],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui payment card\"],[9,\"style\",\"box-shadow: none;left: 50%;transform: translate(-50%);\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n              \"],[6,\"h3\"],[9,\"style\",\"font-weight: bold; text-transform: uppercase;\"],[7],[0,\"Assessment Package\"],[8],[0,\"\\n              \"],[6,\"br\"],[7],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"150\"],[8],[0,\"\\n                \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"padding: 0 0 25px 0;\"],[7],[0,\"\\n              \"],[6,\"table\"],[9,\"class\",\"ui striped table\"],[9,\"style\",\"border: none; text-align: center\"],[7],[0,\"\\n                \"],[6,\"thead\"],[7],[0,\"\\n                \"],[6,\"tr\"],[7],[0,\"\\n                  \"],[6,\"th\"],[9,\"style\",\"font-weight: 500\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"tbody\"],[7],[0,\"\\n                \"],[6,\"tr\"],[7],[0,\"\\n                  \"],[6,\"td\"],[7],[0,\"Personal therapy plan\"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"tr\"],[7],[0,\"\\n                  \"],[6,\"td\"],[7],[0,\"Education & advice\"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"tr\"],[7],[0,\"\\n                  \"],[6,\"td\"],[9,\"style\",\"height: 42px\"],[7],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"extra content footer\"],[9,\"style\",\"padding: 0 0 0 0;background-color: #2c3452;height: 55px;border-radius: 3px !important;\"],[7],[0,\"\\n              \"],[6,\"p\"],[9,\"style\",\"text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;\"],[7],[1,[18,\"payment-button\"],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui payment card\"],[9,\"style\",\"box-shadow: none;left: 50%;transform: translate(-50%);\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n              \"],[6,\"h3\"],[9,\"style\",\"font-weight: bold; text-transform: uppercase;\"],[7],[0,\"Assessment + 3 sessions\"],[8],[0,\"\\n              \"],[6,\"br\"],[7],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"350\"],[8],[0,\"\\n                \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"padding: 0 0 25px 0;\"],[7],[0,\"\\n              \"],[6,\"table\"],[9,\"class\",\"ui striped table\"],[9,\"style\",\"border: none; text-align: center\"],[7],[0,\"\\n                \"],[6,\"thead\"],[7],[0,\"\\n                \"],[6,\"tr\"],[7],[0,\"\\n                  \"],[6,\"th\"],[9,\"style\",\"font-weight: 500\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"tbody\"],[7],[0,\"\\n                \"],[6,\"tr\"],[7],[0,\"\\n                  \"],[6,\"td\"],[7],[0,\"3 extra conference / email sessions\"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"tr\"],[7],[0,\"\\n                  \"],[6,\"td\"],[7],[0,\"Personal therapy plan\"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"tr\"],[7],[0,\"\\n                  \"],[6,\"td\"],[7],[0,\"Education & advice\"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"extra content footer\"],[9,\"style\",\"padding: 0 0 0 0;background-color: #2c3452;height: 55px;border-radius: 3px !important;\"],[7],[0,\"\\n              \"],[6,\"p\"],[9,\"style\",\"text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;\"],[7],[1,[18,\"payment-button-package-2\"],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n        \"],[8],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui payment card\"],[9,\"style\",\"box-shadow: none;left: 50%;transform: translate(-50%);\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n              \"],[6,\"h3\"],[9,\"style\",\"font-weight: bold; text-transform: uppercase;color: #e97d68\"],[7],[0,\"Assessment + 6 sessions\"],[8],[0,\"\\n              \"],[6,\"br\"],[7],[8],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[9,\"style\",\"color: #e97d68\"],[7],[0,\"$\"],[8],[0,\"\\n                \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[9,\"style\",\"color: #e97d68\"],[7],[0,\"550\"],[8],[0,\"\\n                \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"padding: 0 0 25px 0;\"],[7],[0,\"\\n              \"],[6,\"table\"],[9,\"class\",\"ui striped table\"],[9,\"style\",\"border: none; text-align: center\"],[7],[0,\"\\n                \"],[6,\"thead\"],[7],[0,\"\\n                \"],[6,\"tr\"],[7],[0,\"\\n                  \"],[6,\"th\"],[9,\"style\",\"font-weight: 500\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"tbody\"],[7],[0,\"\\n                \"],[6,\"tr\"],[7],[0,\"\\n                  \"],[6,\"td\"],[7],[0,\"6 extra conference / email sessions\"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"tr\"],[7],[0,\"\\n                  \"],[6,\"td\"],[7],[0,\"Personal therapy plan\"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"tr\"],[7],[0,\"\\n                  \"],[6,\"td\"],[7],[0,\"Education & advice\"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"extra content footer\"],[9,\"style\",\"padding: 0 0 0 0;background-color: #e97d68;height: 55px;border-radius: 3px !important;\"],[7],[0,\"\\n              \"],[6,\"p\"],[9,\"style\",\"text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;\"],[7],[1,[18,\"payment-button-package-3\"],false],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToAppointment\"]],[7],[0,\"Back\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],\"bk\"]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"\\n    Booking an appointment for: \"],[6,\"p\"],[9,\"style\",\"color: #0d71bb; display: inline\"],[7],[0,\" \"],[1,[18,\"givenName\"],false],[0,\" \"],[1,[18,\"familyName\"],false],[0,\" \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"scrolling content\"],[7],[0,\"\\n\\n    \"],[6,\"form\"],[9,\"id\",\"edit\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[9,\"id\",\"grid\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n            \"],[6,\"select\"],[9,\"class\",\"date\"],[10,\"value\",[18,\"selectAppointmentType\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateTime\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[0,\"\\n              \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select an appointment type\"],[8],[0,\"\\n              \"],[6,\"option\"],[9,\"value\",\"i\"],[7],[0,\"\\n                Initial Assessment\\n              \"],[8],[0,\"\\n              \"],[6,\"option\"],[9,\"value\",\"t\"],[7],[0,\"\\n                Treatment\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"heal\",\"text\",[20,[\"Reason\"]],\"Reason of the appointment\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[1,[25,\"textarea\",null,[[\"class\",\"type\",\"value\",\"placeholder\"],[\"info\",\"text\",[20,[\"Other\"]],\"Other important information\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n          \"],[6,\"select\"],[9,\"class\",\"clock\"],[10,\"value\",[18,\"selectedTime\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"setselectedtime\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[0,\"\\n            \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select a time slot\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"timeSlots\"]]],null,{\"statements\":[[0,\"              \"],[6,\"option\"],[10,\"value\",[19,1,[\"time\"]],null],[7],[0,\"\\n                \"],[1,[19,1,[\"value\"]],false],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"max-width: 100%; height: 50px;\"],[7],[0,\"\\n          Submit\\n        \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\"],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/book-appointment.hbs" } });
-});
-define("self-start-front-end/templates/components/chart-component", ["exports"], function (exports) {
-  "use strict";
-
-  Object.defineProperty(exports, "__esModule", {
-    value: true
-  });
-  exports.default = Ember.HTMLBars.template({ "id": "0UMO905J", "block": "{\"symbols\":[],\"statements\":[[6,\"svg\"],[10,\"width\",[18,\"outerWidth\"],null],[10,\"height\",[18,\"outerHeight\"],null],[7],[0,\"\\n  \"],[6,\"g\"],[9,\"class\",\"chart-viewport\"],[10,\"transform\",[18,\"transformViewport\"],null],[7],[8],[0,\"\\n\"],[8]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/chart-component.hbs" } });
 });
 define("self-start-front-end/templates/components/client-exercise-menu", ["exports"], function (exports) {
   "use strict";
@@ -15413,6 +15475,32 @@ define('self-start-front-end/utils/is-promise', ['exports', 'ember-promise-tools
     }
   });
 });
+define('self-start-front-end/utils/render-classic-chart', ['exports', 'ember-google-charts/utils/render-classic-chart'], function (exports, _renderClassicChart) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _renderClassicChart.default;
+    }
+  });
+});
+define('self-start-front-end/utils/render-material-chart', ['exports', 'ember-google-charts/utils/render-material-chart'], function (exports, _renderMaterialChart) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  Object.defineProperty(exports, 'default', {
+    enumerable: true,
+    get: function () {
+      return _renderMaterialChart.default;
+    }
+  });
+});
 define('self-start-front-end/utils/smart-resolve', ['exports', 'ember-promise-tools/utils/smart-resolve'], function (exports, _smartResolve) {
   'use strict';
 
@@ -15643,6 +15731,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+663154e5"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+d51951cb"});
 }
 //# sourceMappingURL=self-start-front-end.map
