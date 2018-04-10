@@ -9,14 +9,11 @@
   </div>
 </div>
 
-<div class="ui container" style="padding-top: 2em">
-  <div class="ui top attached tabular stackable menu" style="padding-left: 15%;">
+<div class="ui container" style="padding-top: 4em">
+  <div class="ui top attached tabular stackable menu" style="padding-left: 25%;">
 
     <a class="{{assessState}} item" {{action "assessView"}}>
       Assessment
-    </a>
-    <a class="item">
-      Notes
     </a>
     <a class="{{reportState}} item"  {{action "reportView"}}>
       Reports
@@ -26,9 +23,6 @@
     </a>
     <a class="{{menusState}} item" {{action "menusView"}}>
       Menus
-    </a>
-    <a class="item">
-      Documents
     </a>
     <a class="{{accountingState}} item" {{action "accountingView"}}>
       Accounting
@@ -95,9 +89,7 @@
             {{#each listModel as |exercise|}}
 
               <tr>
-
                 {{#each modelAttributes as |column|}}
-
                   <td class={{column.class}}>
                     {{get exercise column.key}}
                   </td>
@@ -137,11 +129,8 @@
           </tr>
         {{/each}}
         </tbody>
-
       </table>
     {{/if}}
-
-
 
 
     {{#if reports}}
@@ -153,14 +142,6 @@
               Reports
             </p>
           </div>
-          <div class="right three wide column" style="padding-left: 30px;">
-            {{!-- <div class="ui form" >
-            <button class="ui small blue labeled icon button">
-              <i class="file alternate icon"></i>
-              Generate Reports
-            </button>
-          </div> --}}
-          </div>
         </div>
         <br><br><br><br>
 
@@ -168,10 +149,10 @@
           <table class="ui fixed table" style="border: none;border-color: white;">
             <tbody >
             <tr style="font-weight: bold;">
-              <th class>
+              <th class="left aligned five wide column">
                 Report Type
               </th>
-              <th class>
+              <th class="center aligned one wide column">
                 Actions
               </th>
             </tr>
@@ -181,46 +162,46 @@
 
         <div class="ui divider"></div>
 
-        <div style="display: inline">
-          <table class="ui fixed table" style="border: none;border-color: white;">
+
+          <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
             <tbody>
             <tr>
-              <th class>
+              <td class="left aligned five wide column">
                 Feedback Report
-              </th>
-              <th class>
-                <button class="circular ui icon button" {{action "openFeedback"}}>
-                  <i class="file alternate icon"></i>
-                </button>
-              </th>
+              </td>
+              <td class="center aligned one wide column">
+                <p style="cursor: pointer; " title="View Form"  {{action 'openFeedback' }}>
+                  <img src="/assets/images/eye-19.svg">
+                </p>
+              </td>
             </tr>
 
             <br><br>
             <tr>
-              <th class>
+              <td class="left aligned five wide column=">
                 Summary Report
-              </th>
-              <th class>
-                <button class="circular ui icon button" {{action "openSummary"}}>
-                  <i class="file alternate icon"></i>
-                </button>
-              </th>
+              </td>
+              <td class="center aligned two wide column">
+                <p style="cursor: pointer; " title="View Form"  {{action 'openSummary' }}>
+                  <img src="/assets/images/eye-19.svg">
+                </p>
+              </td>
             </tr>
 
             <br><br>
             <tr>
-              <th class>
+              <td class="left aligned five wide column">
                 Data Report
-              </th>
-              <th class>
-                <button class="circular ui icon button" {{action "openData"}}>
-                  <i class="file alternate icon"></i>
-                </button>
-              </th>
+              </td>
+              <td class="center aligned two wide column">
+                <p style="cursor: pointer; " title="View Form"  {{action 'openData' }}>
+                  <img src="/assets/images/eye-19.svg">
+                </p>
+              </td>
             </tr>
             </tbody>
           </table>
-        </div>
+
 
       </div>
     {{/if}}
@@ -316,94 +297,161 @@
 
 {{#ui-modal name="feedback" class="feedback"}}
   <i class="close icon"></i>
-  {{!-- <link integrity="" rel="stylesheet" href="/assets/css/form-style.css"> <!-- Resource style --> --}}
-  <label class="text"></label>
-  <br>
-  <div class="ui form">
-    <div class="field">
-      <label>Summarise examination findings: </label>
-      <textarea></textarea>
-      <br><br><br>
-      <label>Summarise treatment plan: </label>
-      <textarea></textarea>
-    </div>
+  <link integrity="" rel="stylesheet" href="{{rootURL}}../assets/css/form-style.css"> <!-- Resource style -->
+
+  <div class="header">
+    Feedback Report
   </div>
-  <br>
+  <div class="scrolling content">
+
+    <form id="edit" class="cd-form floating-labels">
+
+
+      <h4>Summarise examination findings</h4>
+      <div class="field" style="margin: 1em 0;">
+        {{textarea class="message" type="text"}}
+      </div>
+
+      <h4>Summarise treatment plan</h4>
+      <div class="field" style="margin: 1em 0;">
+        {{textarea class="message" type="text"}}
+      </div>
+    </form>
+  </div>
 
   <div class="actions" style="padding:0">
-
-    <div class="ok" style="padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Save Report</div>
-    <div class="cancel" style="padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">Exit</div>
+    <div class="ok" style="padding:1em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Save Report</div>
+    <div class="cancel" style="padding:1em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">Exit</div>
   </div>
+
 
 {{/ui-modal}}
 
 {{#ui-modal name="summary" class="summary"}}
   <i class="close icon"></i>
-  {{!-- <link integrity="" rel="stylesheet" href="/assets/css/form-style.css"> <!-- Resource style --> --}}
-  <label class="text"></label>
-  <br>
-  <div class="ui form">
-    <div class="field">
+  <link integrity="" rel="stylesheet" href="/assets/css/form-style.css"> <!-- Resource style -->
 
-      <label class="header">Patient information:</label>
-      <br>
-      <label>Name: {{model.givenName}} {{model.familyName}}</label>
-      <label>Date of birth: {{model.dateOfBirth}}</label>
-      <label>Gender: {{model.gender}}</label>
-      <label>Address: {{model.streetNumber}} {{model.streetName}} #{{model.apartment}}, {{model.postalCode}}  {{model.city}}, {{model.province}}, {{model.country}} </label>
-      <label>Email: {{model.email}}</label>
-      <label>Phone: {{model.phoneNumber}}</label>
-      <br>
+  <div class="header">
+    Summary Report
+  </div>
+  <div class="scrolling content">
 
-      <label class="header">Diagnosed case:</label>
-      <label>Injury: </label>
+    <form id="edit" class="cd-form floating-labels">
 
-      <br>
 
-      <label class="header">Treatments:</label>
+      <legend>Patient information</legend>
+
+      <div class="field" style="margin: 1em 0;">
+        <p style="display: inline; font-weight: bold">Name: </p> {{model.givenName}} {{model.familyName}}
+      </div>
+      <div class="field" style="margin: 1em 0;">
+        <p style="display: inline; font-weight: bold">Date of birth: </p> {{date-to-string date=model.dateOfBirth}}
+      </div>
+      <div class="field" style="margin: 1em 0;">
+        <p style="display: inline; font-weight: bold">Gender: </p>  {{model.gender}}
+      </div>
+      <div class="field" style="margin: 1em 0;">
+        <div class="field" style="margin: 1em 0;">
+          <p style="display: inline; font-weight: bold">Address: </p>  {{model.streetNumber}} {{model.streetName}} {{#if model.apartment}}, #{{model.apartment}} {{/if}}
+        </div>
+
+      </div>
+
+
+      <div class="field" style="margin: 1em 0;">
+        <p style="display: inline; font-weight: bold">Email: </p> {{model.email}}
+      </div>
+      <div class="field" style="margin: 1em 0;">
+        <p style="display: inline; font-weight: bold">Phone: </p> {{model.phoneNumber}}
+      </div>
+
+      <div class="ui hidden divider"></div>
+      <div class="ui hidden divider"></div>
+
+      <legend>Treatments</legend>
+      <div class="ui hidden divider"></div>
       {{#each patientModel as |link|}}
-        <label>{{link.RehabilitationPlan.planName}}</label>
+        <div class="field" style="margin: 1em 0;">
+          {{link.RehabilitationPlan.planName}}
+        </div>
       {{/each}}
 
-      <br>
 
-      <label class="header">Appointment history:</label>
+      <div class="ui hidden divider"></div>
+      <div class="ui hidden divider"></div>
+
+      <legend>Appointment History</legend>
+      <div class="ui hidden divider"></div>
       {{appointmentModel}}
       {{#each appointments as |app|}}
-        <label>{{app.reason}} {{app.date}} {{app.endDate}}</label>
+        <div class="field" style="margin: 1em 0;">
+          <p style="display: inline; font-weight: bold">Reason: </p> {{app.reason}}
+        </div>
+        <div class="field" style="margin: 1em 0;">
+          <p style="display: inline; font-weight: bold">Time: </p> {{app.date}}-{{app.endDate}}
+        </div>
       {{/each}}
-      <br>
 
-      <label class="header">Payment history:</label>
+      <div class="ui hidden divider"></div>
+      <div class="ui hidden divider"></div>
+
+      <legend>Payment History</legend>
+      <div class="ui hidden divider"></div>
       {{#each model.transactions as |transaction|}}
-        <label>{{transaction.package}}, Date: {{transaction.date}}, Price: ${{transaction.amount}}</label>
+        <div class="field" style="margin: 1em 0;">
+          <p style="display: inline; font-weight: bold">Date: </p> {{transaction.date}}
+        </div>
+        <div class="field" style="margin: 1em 0;">
+          <p style="display: inline; font-weight: bold">Price: </p> ${{transaction.amount}}
+        </div>
       {{/each}}
 
-      <br><br><br>
+      <div class="ui hidden divider"></div>
+      <div class="ui hidden divider"></div>
 
-      <label>Final outcomes: </label>
-      <textarea></textarea>
+      <label>Final Outcomes</label>
+      <div class="ui hidden divider"></div>
+
+      {{textarea type="text"}}
+
+    </form>
     </div>
-  </div>
+
+
+
   <br>
 
   <div class="actions" style="padding:0">
 
-    <div class="ok" style="padding:.6em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Save Report</div>
-    <div class="cancel" style="padding:.6em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">Exit</div>
+    <div class="ok" style="padding:1em; float:left; width: 50%; cursor: pointer; background: #35a785; color:white; text-align: center;">Save Report</div>
+    <div class="cancel" style="padding:1em; float:left; width: 50%;  cursor: pointer; background: #b6bece; color:white; text-align: center;">Exit</div>
   </div>
+
 
 {{/ui-modal}}
 
 {{#ui-modal name="data" class="data"}}
+
   <i class="close icon"></i>
-  <label>Questions:</label> <br>
-  {{questionModel}}
-  {{#each ratingQuestions as |q|}}
-    <label>{{q.questionText}}</label>
-    {{display-data-report question = q}}<br>
-  {{/each}}
+  <link integrity="" rel="stylesheet" href="{{rootURL}}../assets/css/form-style.css"> <!-- Resource style -->
+
+  <div class="header">
+    Data Report
+  </div>
+  <div class="scrolling content">
+
+    <form id="edit" class="cd-form floating-labels" {{action "submit" on="submit"}}>
+
+
+      <legend>Questions</legend>
+      {{questionModel}}
+      {{#each ratingQuestions as |q|}}
+      <div class="field" style="margin: 1em 0;">
+        <p style="display: inline; font-weight: bold">{{q.questionText}} </p> {{display-data-report question=q}}
+      </div>
+      {{/each}}
+    </form>
+  </div>
 
   <div class="actions" style="padding:0">
 

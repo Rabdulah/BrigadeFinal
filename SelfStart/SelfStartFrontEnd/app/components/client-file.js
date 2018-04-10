@@ -144,6 +144,8 @@ link:[],
 
   init() {
     this._super(...arguments);
+    this.get('store').findAll('province');
+    this.get('store').findAll('country');
     this.set('limit', 10);
     this.set('offset', 0);
     this.set('pageSize', 10);
@@ -202,13 +204,13 @@ link:[],
     Ember.$("#myWindow").unbind('touchmove');
   },
 
-  menusState: "active",
-  assessState: "",
+  menusState: "",
+  assessState: "active",
   reportState: "",
   photoState: "",
-  assess:false,
+  assess: true,
   photo:false,
-  menus: true,
+  menus: false,
   accountingState: "",
   accountingmenus: false,
 

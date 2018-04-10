@@ -7,13 +7,10 @@
   <i class="close icon"></i>
   <link integrity="" rel="stylesheet" href="{{rootURL}}../assets/css/form-style.css"> <!-- Resource style -->
 
-
   <div class="header">Form View</div>
   <div class="scrolling content" >
 
     <form id="edit" class="cd-form floating-labels">
-
-
       {{#each orders as |q index|}}
         {{display-answers answers = ans question=q.question assessment=assessment qNumber=index assessid=assessment.id}}
       {{/each}}
