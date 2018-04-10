@@ -88,6 +88,9 @@ export default Component.extend({
       this.set('limit', this.get('limit') + 10);
     }
   },
+  getCur: function (curas) {
+
+  },
 
   bindScrolling: function() {
     var self = this;

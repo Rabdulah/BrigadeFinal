@@ -112,7 +112,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/assessment-table.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/assessment-table.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)');
+    assert.ok(false, 'components/assessment-table.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n91:21 - \'curas\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/assign-rehabplan.js', function (assert) {
@@ -458,6 +458,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('components/simple-example.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'components/simple-example.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('components/terminate-assessment.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/terminate-assessment.js should pass ESLint\n\n15:7 - \'$\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/upload-file.js', function (assert) {
@@ -3554,6 +3559,35 @@ define('self-start-front-end/tests/integration/components/simple-example-test', 
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/terminate-assessment-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('terminate-assessment', 'Integration | Component | terminate assessment', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "zpqpd58f",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"terminate-assessment\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "HsC2ku/F",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"terminate-assessment\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/upload-file-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -4357,6 +4391,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('integration/components/simple-example-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/simple-example-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/terminate-assessment-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/terminate-assessment-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/upload-file-test.js', function (assert) {
