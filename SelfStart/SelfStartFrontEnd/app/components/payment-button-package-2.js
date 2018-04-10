@@ -1,6 +1,25 @@
 import Component from '@ember/component';
+import { inject } from '@ember/service';
+
 export default Component.extend({
+  client: null,
+  DS: inject('store'),
+  auth: inject('auth'),
+
+  init() {
+    this._super(...arguments);
+    let self = this;
+    let eemail = localStorage.getItem('sas-session-id');
+    eemail = this.get('auth').decrypt(eemail);
+    this.get('DS').queryRecord('patient', {filter: {'email' : eemail}}).then(function (obj) {
+      self.set('client', obj);
+      console.log(self.get('client'));
+    });
+
+  },
+
   didRender : function() {
+    let self = this;
     this._super(...arguments);
     paypal.Button.render({
       env: 'sandbox', // sandbox | production
@@ -33,10 +52,26 @@ export default Component.extend({
           index = trans.lastIndexOf('{"total":"');
           var total = trans.substring(index + 10,index + 16);
 
-          var finalTransaction = ["Package 2", date, total];
+          var finalTransaction = []//Ember.createObject({"Package 3", date, total});
+          finalTransaction["package"] = "Package 2";
+          finalTransaction["date"] = date;
+          finalTransaction["amount"] = total;
 
-          //Still need thisClient
-          thisClient.transactions.pushObject(finalTransaction);
+          self.get('DS').findRecord('patient', self.get('client').get('id')).then((cli) => {
+            let length = cli.get('transactions').length;
+            var temp = cli.get('transactions');
+            temp.pushObject(finalTransaction);
+            cli.set('transactions', temp);
+            cli.save().then( obj => {
+              self.get('DS').findRecord('patient', self.get('client').get('id')).then((cli) => { 
+                let item = cli.get('transactions')[length];
+                Ember.set(item, 'package', "Package 2");
+                Ember.set(item, 'date', date);
+                Ember.set(item, 'amount', total);
+                cli.save();
+              })
+            })
+          })
         });
       }
     }, '#paypal-button-container-package-2');
