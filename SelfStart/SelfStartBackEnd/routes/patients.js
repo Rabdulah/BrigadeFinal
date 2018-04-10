@@ -167,12 +167,13 @@ router.route('/:patient_id')
                 patient.appointments = request.body.patient.appointments;
                 patient.rehablink = request.body.patient.rehablink;
                 patient.introTest = request.body.patient.introTest;
+                patient.packages = request.body.patient.packages;
                 patient.images = request.body.patient.images;
                 patient.answer = request.body.patient.answer;
                 // patient.account = request.body.patient.account;
                 patient.transactions = request.body.patient.transactions;
                 patient.account = request.body.patient.account;
-
+                patient.skype = request.body.patient.skype;
                 // patient.payments = request.body.patient.payments;
                 // patient.appointments = request.body.patient.appointments;
                 // patient.plan = request.body.patient.plan;

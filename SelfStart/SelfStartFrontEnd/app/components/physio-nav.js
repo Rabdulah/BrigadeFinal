@@ -1,12 +1,27 @@
 import Component from '@ember/component';
 import $ from 'jquery';
+import { inject } from '@ember/service';
+import { computed } from '@ember/object';
 
 export default Component.extend({
   tagName:'',
+  DS: inject('store'),
+  auth: inject('auth'),
+  show: false,
 
   init() {
     this._super(...arguments);
-
+    if(localStorage.getItem('sas-session-id')) {
+      var email = this.get('auth').decrypt(localStorage.getItem('sas-session-id'));
+      console.log(email);
+      var myStore = this.get('store');
+      var self = this;
+      this.get('DS').queryRecord('physiotherapest', {filter: {"email": email}}).then(function (physio) {
+        if (physio) {
+          self.set('show', true);
+        }
+      });
+    }
   },
 
   didInsertElement() {

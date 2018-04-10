@@ -26,7 +26,6 @@ export default Component.extend({
     this._super(...arguments);
     var self = this;
     this.set('realAnswers', this.get('answers').toArray());
-    console.log(this.get('answers'));
 
 
     if(this.get('question').get('type') === "Short answer"){

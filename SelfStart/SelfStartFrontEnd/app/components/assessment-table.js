@@ -45,6 +45,12 @@ export default Component.extend({
     this.get('store').query('assessment-test', {filter: {'patient': client}}, this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then((records) => {
       self.set('testModel', records.toArray());
     });
+    this.get('store').query('rehab-client-link',  {filter: {'patient': client}}).then((obj)=>{
+          obj.forEach((rec) => {
+            self.get("testModel").push(rec.get('assessmentTest'));
+          })
+    });
+
   }),
 
   init() {
@@ -54,11 +60,17 @@ export default Component.extend({
     this.set('pageSize', 10);
     let self = this;
     let client = this.get('model').id;
-    // console.log(client);
 
     this.get('store').query('assessment-test', {filter: {'patient': client}}, this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then((records) => {
     //  console.log(this.get('testModel'));
       self.set('testModel', records.toArray());
+    });
+    this.get('store').query('rehab-client-link',  {filter: {'id': client}}).then((obj)=>{
+      obj.forEach((rec) => {
+        self.get('store').findRecord('assessment-test', rec.get('assessmentTest').get('id')).then((asdf)=>{
+          self.get("testModel").pushObject(asdf);
+        });
+      });
     });
   },
 

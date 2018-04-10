@@ -7,7 +7,7 @@
 <!--}-->
 <!--</style>-->
 
-
+{{#if show}}
 <div id="example" class="index">
 
 
@@ -32,7 +32,9 @@
             <a href="/admin/accounts" class="item">Accounts</a>
             <a href="/admin/forms" class="item">Forms</a>
             <a href="/admin/manage-selections" class="item">Configure</a>
-            <a id="login" href="../" class="item">Log out</a>
+            {{#link-to 'home'}}
+            <a class="item" {{action "logout"}}>Logout</a>
+            {{/link-to}}
           </div>
         </div>
       </div>
@@ -42,3 +44,4 @@
 
   </div>
 </div>
+{{/if}}

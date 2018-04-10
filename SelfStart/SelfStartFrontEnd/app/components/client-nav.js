@@ -1,12 +1,28 @@
 import Component from '@ember/component';
 import $ from 'jquery';
+import { inject } from '@ember/service';
+import { computed } from '@ember/object';
 
 export default Component.extend({
   tagName:'',
-
+  auth: inject('auth'),
+  show: false,
+  DS: inject('store'),
+  
   init() {
     this._super(...arguments);
-
+    // console.log(localStorage.getItem('sas-session-id'))
+    if(localStorage.getItem('sas-session-id')) {
+    var email = this.get('auth').decrypt(localStorage.getItem('sas-session-id'));
+    console.log(email);
+    var myStore = this.get('store');
+    var self = this;
+    this.get('DS').queryRecord('patient', {filter: {"email": email}}).then(function (patient) {
+      if (patient) {
+        self.set('show', true);
+      }
+    });
+  }
   },
 
   didInsertElement() {
@@ -61,6 +77,15 @@ export default Component.extend({
   },
 
   actions: {
+    logout: function () {
+      // localStorage.clear();
+      // localStorage.setItem('loggedIn', false);
+      this.get('auth').closeNoParams();
 
+      // this.get('routing').transitionTo('home');
+      // this.set('loggedOut', true);
+      // this.get("auth").set('isAuthenticated', false);
+      // console.log(this.loggedOut)
+    },
   },
 });

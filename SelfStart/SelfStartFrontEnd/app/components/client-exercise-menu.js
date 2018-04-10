@@ -14,7 +14,7 @@ export default Component.extend({
     let eemail = localStorage.getItem('sas-session-id');
     eemail = this.get('auth').decrypt(eemail);
     console.log(eemail);
-
+    this.set('rehabPlans', Ember.A());
     self.get('DS').queryRecord('patient', {filter: {'email' : eemail}}).then(function (cd) {
       self.set('clientData', cd);
       //query to rehab link

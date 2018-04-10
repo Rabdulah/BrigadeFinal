@@ -44,7 +44,7 @@ export default Component.extend({
         questions: questionList,
         answers: temp,
         completed: false,
-        formName: thisForm.get('name')
+        name: thisForm.get('name')
       });
       newTest.save().then(()=> {
         this.get('DS').query('question-order', {filter: {'form': thisForm.get('id')}}).then((rec) => {

@@ -25,42 +25,60 @@ router.route('/')
 
     .get( function (request, response) {
         let {limit, offset, sort, dir, queryPath, regex} = request.query;
-        if(!limit) {
-            Physiotherapest.Model.find(function (error, physiotherapest) {
-                if (error) response.send(error);
-                response.json({physiotherapest: physiotherapest});
-            });
-        }
-        else {
-            //  let users = schema.users.all().models;
-            //  let users = Users.Model;
+        var email = request.query.filter;
 
-            offset = Number(offset || 0);
-            limit = Number(limit || 10);
-            dir = dir || 'asc';
-            sort = sort || 'id';
-
-            let query = {};
-            if (regex !== '')
-                query[queryPath] = new RegExp(regex, "i");
-
-            var sortOrder = sort;
-            if (sortOrder) {
-                if (dir !== 'asc') {
-                    sortOrder = '-' + sort;
-                }
+        if (email){
+            if (email.email){
+                console.log(email.email);
+                console.log('find physio using email');
+                Physiotherapest.Model.findOne({'email': email.email}, function (error, physiotherapest) {
+                    if (error)
+                        response.send(error);
+                    response.json({physiotherapest: physiotherapest});
+                });
             }
 
-            let options = {
-                sort: sortOrder,
-                lean: true,
-                offset: offset,
-                limit: limit
-            };
-            Physiotherapest.Model.paginate(query, options, function (error, physiotherapest) {
-                if (error) response.send(error);
-                response.json({physiotherapest: physiotherapest.docs});
-            });
+        }
+        else {
+            if (!limit) {
+                Physiotherapest.Model.find(function (error, physiotherapest) {
+                    if (error) response.send(error);
+                    response.json({physiotherapest: physiotherapest});
+                });
+            }
+
+            else {
+                console.log('not');
+                //  let users = schema.users.all().models;
+                //  let users = Users.Model;
+
+                offset = Number(offset || 0);
+                limit = Number(limit || 10);
+                dir = dir || 'asc';
+                sort = sort || 'id';
+
+                let query = {};
+                if (regex !== '')
+                    query[queryPath] = new RegExp(regex, "i");
+
+                var sortOrder = sort;
+                if (sortOrder) {
+                    if (dir !== 'asc') {
+                        sortOrder = '-' + sort;
+                    }
+                }
+
+                let options = {
+                    sort: sortOrder,
+                    lean: true,
+                    offset: offset,
+                    limit: limit
+                };
+                Physiotherapest.Model.paginate(query, options, function (error, physiotherapest) {
+                    if (error) response.send(error);
+                    response.json({physiotherapest: physiotherapest.docs});
+                });
+            }
         }
     });
 
@@ -80,8 +98,10 @@ router.route('/:physiotherapest_id')
         Physiotherapest.Model.findById(request.params.physiotherapest_id, function (error, physiotherapest) {
             if (error) {
                 response.send({error: error});
-            }
-            else {
+            } else if(request.params.updatingValue){
+                Physiotherapest.sendEmail();
+                response.json({physiotherapest: physiotherapest});
+            } else {
                 physiotherapest.ID = request.body.physiotherapest.ID;
                 physiotherapest.familyName = request.body.physiotherapest.familyName;
                 physiotherapest.givenName = request.body.physiotherapest.givenName;

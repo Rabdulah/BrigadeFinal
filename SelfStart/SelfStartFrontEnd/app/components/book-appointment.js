@@ -187,6 +187,10 @@ export default Component.extend({
       this.set('selectedPhysioId', physio);
       //get record of selected physiotherapist
       this.get('DS').findRecord('physiotherapest', physio).then(function (phy){
+        phy.set('updatingValue', true);
+        phy.save().then(o=> {
+          console.log(o);
+        });
         //might not need this
         home.set('selectedphysio', phy);
         home.set('givenName', phy.get('givenName'));

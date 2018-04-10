@@ -7,6 +7,8 @@
 <!--}-->
 <!--</style>-->
 
+{{#if show}}
+
 
 <div id="example" class="index">
 
@@ -35,13 +37,19 @@
             <!--<a  href="/"class="item">Transations</a>-->
             <a href="/client/appointment" class="item">Book Appointment</a>
             <a  href="/client/settings"class="item">Settings</a>
-            <a id="login" href="../" class="item">Log out</a>
+            {{#link-to 'home'}}
+            <a class="item" {{action "logout"}}>Logout</a>
+            {{/link-to}}
           </div>
         </div>
       </div>
     </div>
 
+    
     {{yield}}
-
+    <div id="SkypeButton_Call_live:ramzi_abdullahi" style="position: fixed; right: 0; bottom: 0"></div>
   </div>
 </div>
+{{else}}
+<p>You do not have authorization to this route, please register.</p>
+{{/if}}

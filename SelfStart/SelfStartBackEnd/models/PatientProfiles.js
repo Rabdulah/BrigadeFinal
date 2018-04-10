@@ -23,7 +23,14 @@ var patientProfilesSchema = mongoose.Schema(
         city: String,
         apartment: Number,
         streetNumber: Number,
+        packages: [{
+            order: Number,
+            numberOfSessions: Number,
+            appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}]
+        }],
+        
         streetName: String,
+        skype: String,
         answer: [{type: mongoose.Schema.ObjectId, ref: 'Answers'}],
         postalCode: String,
         success: {
