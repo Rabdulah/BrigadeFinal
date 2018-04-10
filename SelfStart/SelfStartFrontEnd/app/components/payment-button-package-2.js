@@ -60,6 +60,7 @@ export default Component.extend({
           var pack = [];
           pack["numberOfSessions"] = 0;
           pack["appointments"] = null;
+          pack['order'] = 0;
 
           self.get('DS').findRecord('patient', self.get('client').get('id')).then((cli) => {
             let length = cli.get('transactions').length;
@@ -81,8 +82,9 @@ export default Component.extend({
 
                 let item2 = cli.get('packages')[length2];
                 Ember.set(item2, 'numberOfSessions', 4);
-                Ember.set(item2, 'appointments', null);
-
+                Ember.set(item2, 'appointments', []);
+                Ember.set(item2, 'order', length2);
+                localStorage.setItem('order', length2.toString());
                 cli.save();
               })
             })

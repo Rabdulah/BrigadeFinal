@@ -24,7 +24,7 @@ var patientProfilesSchema = mongoose.Schema(
         apartment: Number,
         streetNumber: Number,
         packages: [{
-            order: Number,
+            order: String,
             numberOfSessions: Number,
             appointments: [{type: mongoose.Schema.ObjectId, ref: 'Appointments'}]
         }],

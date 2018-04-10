@@ -1451,7 +1451,7 @@ define('self-start-front-end/components/admin-nav', ['exports'], function (expor
         console.log(email);
         var myStore = this.get('store');
         var self = this;
-        this.get('DS').queryRecord('adminstrator', { filter: { "email": email } }).then(function (admin) {
+        this.get('DS').queryRecord('administrator', { filter: { "email": email } }).then(function (admin) {
           if (admin) {
             self.set('show', true);
           }
@@ -2355,7 +2355,10 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
         //desktop
         // let client = '5a88738e1f0fdc2b94498e81';
         var physio = self.get('selectphysio');
+        var ord = localStorage.getItem('order');
+        console.log('ord', ord);
         var booking = this.get('DS').createRecord('appointment', {
+          order: ord,
           reason: self.get('Reason'),
           other: self.get('Other'),
           date: self.get('selectedbookedTime').time,
@@ -2363,10 +2366,27 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
           pName: self.get('physioName')
         });
         var src = self.get('client');
+        // let ord = localStorage.getItem('order');
+        console.log(src.get('packages'));
+
+        // src.get('packages').forEach(o=> {
+        //   console.log(o.appointments);
+        //   console.log(o.order);
+        //   console.log(ord);
+        //   // console.log()
+        //   if(o.order === ord) {
+        //     o.appointments.push(booking);
+        //   }
+        // });
+
+        // src.save();    
+
         console.log(src);
         booking.set('patient', src);
+        var a = [];
         src.get('appointments').pushObject(booking);
-        booking.save().then(function () {
+        booking.save().then(function (ba) {
+
           src.save().then(function () {
             self.set('appDisable', '');
             self.get('DS').findRecord('physiotherapest', self.get('selectedPhysioId')).then(function (a) {
@@ -2414,12 +2434,15 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
                     else {
                         //create 2 segmented block
                         var topappo = self.get('DS').createRecord('appointment', {
+
                           date: usedBlock.startsAt,
-                          endDate: bookedTime.time
+                          endDate: bookedTime.time,
+                          order: ord
                         });
                         var bottomappo = self.get('DS').createRecord('appointment', {
                           date: bookedTime.end,
-                          endDate: usedBlock.endsAt
+                          endDate: usedBlock.endsAt,
+                          order: ord
                         });
                         topappo.save().then(function () {
                           bottomappo.save().then(function () {
@@ -7508,6 +7531,7 @@ define('self-start-front-end/components/payment-button-package-2', ['exports'], 
             var pack = [];
             pack["numberOfSessions"] = 0;
             pack["appointments"] = null;
+            pack['order'] = 0;
 
             self.get('DS').findRecord('patient', self.get('client').get('id')).then(function (cli) {
               var length = cli.get('transactions').length;
@@ -7529,8 +7553,9 @@ define('self-start-front-end/components/payment-button-package-2', ['exports'], 
 
                   var item2 = cli.get('packages')[length2];
                   Ember.set(item2, 'numberOfSessions', 4);
-                  Ember.set(item2, 'appointments', null);
-
+                  Ember.set(item2, 'appointments', []);
+                  Ember.set(item2, 'order', length2);
+                  localStorage.setItem('order', length2.toString());
                   cli.save();
                 });
               });
@@ -7606,6 +7631,7 @@ define('self-start-front-end/components/payment-button-package-3', ['exports'], 
             var pack = [];
             pack["numberOfSessions"] = 0;
             pack["appointments"] = null;
+            pack['order'] = 0;
 
             self.get('DS').findRecord('patient', self.get('client').get('id')).then(function (cli) {
               var length = cli.get('transactions').length;
@@ -7627,8 +7653,9 @@ define('self-start-front-end/components/payment-button-package-3', ['exports'], 
 
                   var item2 = cli.get('packages')[length2];
                   Ember.set(item2, 'numberOfSessions', 7);
-                  Ember.set(item2, 'appointments', null);
-
+                  Ember.set(item2, 'appointments', []);
+                  Ember.set(item2, 'order', length2);
+                  localStorage.setItem('order', length2.toString());
                   cli.save();
                 });
               });
@@ -7704,6 +7731,7 @@ define('self-start-front-end/components/payment-button', ['exports'], function (
             var pack = [];
             pack["numberOfSessions"] = 0;
             pack["appointments"] = null;
+            pack['order'] = 0;
 
             self.get('DS').findRecord('patient', self.get('client').get('id')).then(function (cli) {
               var length = cli.get('transactions').length;
@@ -7725,8 +7753,9 @@ define('self-start-front-end/components/payment-button', ['exports'], function (
 
                   var item2 = cli.get('packages')[length2];
                   Ember.set(item2, 'numberOfSessions', 1);
-                  Ember.set(item2, 'appointments', null);
-
+                  Ember.set(item2, 'appointments', []);
+                  Ember.set(item2, 'order', length2);
+                  localStorage.setItem('order', length2.toString());
                   cli.save();
                 });
               });
@@ -7824,7 +7853,17 @@ define('self-start-front-end/components/physio-nav', ['exports'], function (expo
     },
 
 
-    actions: {}
+    actions: {
+      logout: function logout() {
+        // localStorage.clear();
+        // localStorage.setItem('loggedIn', false);
+        this.get('auth').closeNoParams();
+        // this.get('routing').transitionTo('home');
+        // this.set('loggedOut', true);
+        // this.get("auth").set('isAuthenticated', false);
+        // console.log(this.loggedOut)
+      }
+    }
   });
 });
 define('self-start-front-end/components/physio-table', ['exports'], function (exports) {
@@ -9422,10 +9461,48 @@ define('self-start-front-end/components/user-login', ['exports'], function (expo
       submit: function submit() {
         var auth = this.get("authentication");
         var self = this;
+        var myStore = self.get('store');
 
         auth.open(this.get('Email'), this.get('PWord')).then(function () {
           auth.set('isLoginRequested', false);
-          self.get('router').transitionTo('client');
+
+          var name = auth.decrypt(localStorage.getItem('sas-session-id'));
+          myStore.queryRecord('patient', { filter: { "email": name } }).then(function (patient) {
+            console.log('name');
+            if (patient) {
+              self.get('router').transitionTo('client');
+            } else {
+              myStore.queryRecord('physiotherapest', { filter: { "email": name } }).then(function (physio) {
+                if (physio) {
+                  self.get('router').transitionTo('practitioner');
+                } else {
+                  myStore.queryRecord('administrator', { filter: { "email": name } }).then(function (admin) {
+                    if (admin) {
+                      self.get('router').transitionTo('admin');
+                    }
+                  });
+                }
+              });
+            }
+          });
+          // myStore.queryRecord('physiotherapest', {filter: {"email": name}}).then(function (physio) {
+          //   if (physio) {
+          //     self.set("prac", true);
+          //   }
+          // });
+          // myStore.queryRecord('administrator', {filter: {"email": name}}).then(function (admin) {
+          //   if (admin) {
+          //     self.set("admin", true);
+          //   }
+          // });
+
+          // if(auth.client) {
+          //   self.get('router').transitionTo('client');
+          // } else if(auth.prac) {
+          //   self.get('router').transitionTo('practitioner');
+          // } else if(auth.admin) {
+          //   self.get('router').transitionTo('admin');
+          // }
           Ember.$('.ui.login.modal.tiny').modal('hide');
         }, function (error) {
           console.log(error);
@@ -11154,6 +11231,7 @@ define('self-start-front-end/models/appointment', ['exports', 'ember-data'], fun
     endDate: _emberData.default.attr(),
     reason: _emberData.default.attr(),
     other: _emberData.default.attr(),
+    order: _emberData.default.attr(),
     pName: _emberData.default.attr(),
     patient: _emberData.default.belongsTo('patient')
   });
@@ -12126,7 +12204,9 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
     isLoginRequested: false,
     userCList: null,
     accountType: null,
-
+    client: false,
+    admin: false,
+    prac: false,
     ajax: Ember.inject.service(),
 
     getName: Ember.computed(function () {
@@ -12140,15 +12220,56 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
 
     init: function init() {
       this._super.apply(this, arguments);
+
       if (localStorage.getItem('sas-session-id')) {
         this.set("isAuthenticated", true);
       }
     },
+    didRender: function didRender() {
+      // var myStore = this.get('store');
+      // var name = this.decrypt(localStorage.getItem("sas-session-id"))
+      // myStore.queryRecord('patient', {filter: {"email": name}}).then(function (patient) {
+      //     console.log('name')
+      //     if (patient) {
+      //       self.set("client", true);
+      //     }
+      //   });
+      //   myStore.queryRecord('physiotherapest', {filter: {"email": name}}).then(function (physio) {
+      //     if (physio) {
+      //       self.set("prac", true);
+      //     }
+      //   });
+      //   myStore.queryRecord('administrator', {filter: {"email": name}}).then(function (admin) {
+      //     if (admin) {
+      //       self.set("admin", true);
+      //     }
+      //   });
+    },
     setName: function setName(name) {
       console.log(name);
       this.set('email', name.toLowerCase());
+      var self = this;
       var identity = this.encrypt(this.get('email'));
       localStorage.setItem('sas-session-id', identity);
+
+      // var myStore = this.get('store');
+
+      // myStore.queryRecord('patient', {filter: {"email": name}}).then(function (patient) {
+      //     // console.log('name')
+      //     if (patient) {
+      //       self.set("client", true);
+      //     }
+      //   });
+      //   myStore.queryRecord('physiotherapest', {filter: {"email": name}}).then(function (physio) {
+      //     if (physio) {
+      //       self.set("prac", true);
+      //     }
+      //   });
+      //   myStore.queryRecord('administrator', {filter: {"email": name}}).then(function (admin) {
+      //     if (admin) {
+      //       self.set("admin", true);
+      //     }
+      //   });
       console.log("In set item", this.get('email'));
     },
     setAccountType: function setAccountType(value) {
@@ -12233,6 +12354,24 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
                       console.log("In else");
                       self.setName(message4.get('email'));
 
+                      //                 var myStore = self.get('store');
+                      //                 var name = message4.get('email');
+                      //                 myStore.queryRecord('patient', {filter: {"email": name}}).then(function (patient) {
+                      //                   console.log('name')
+                      //                 if (patient) {
+                      //     self.set("client", true);
+                      //   }
+                      // });
+                      // myStore.queryRecord('physiotherapest', {filter: {"email": name}}).then(function (physio) {
+                      //   if (physio) {
+                      //     self.set("prac", true);
+                      //   }
+                      // });
+                      // myStore.queryRecord('administrator', {filter: {"email": name}}).then(function (admin) {
+                      //   if (admin) {
+                      //     self.set("admin", true);
+                      //   }
+                      // });
                       // var userRole = self.decrypt(message4.get('token'));
                       var userRole = null;
                       self.set('isAuthenticated', true);
@@ -12330,6 +12469,9 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
       this.set('encryptedPassword', null);
       this.set('isAuthenticated', false);
       this.set('isLoginRequested', false);
+      this.set("client", false);
+      this.set("prac", false);
+      this.set("admin", false);
     },
     openRoot: function openRoot(password) {
       var self = this;
@@ -14597,7 +14739,7 @@ define("self-start-front-end/templates/components/physio-nav", ["exports"], func
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "Q0U7Yl3g", "block": "{\"symbols\":[\"&default\"],\"statements\":[[2,\"<style>\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .fixed,\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .pusher {\"],[0,\"\\n\"],[2,\"-ebkit-transform: translate3d(260px, 0, 0); transform: translate3d(260px, 0, 0);\"],[0,\"\\n\"],[2,\"}\"],[0,\"\\n\"],[2,\"</style>\"],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"show\"]]],null,{\"statements\":[[0,\"\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index\"],[7],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"following bar\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n\"],[4,\"link-to\",[\"practitioner\"],null,{\"statements\":[[0,\"                    \"],[6,\"img\"],[9,\"class\",\"ui image selfStart\"],[9,\"src\",\"/assets/images/home/Header.png\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"right menu inverted\"],[7],[0,\"\\n\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/clients\"],[9,\"class\",\"item\"],[7],[0,\"Clients\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/exercises\"],[9,\"class\",\"item\"],[7],[0,\"Exercise\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/rehabplans\"],[9,\"class\",\"item\"],[7],[0,\"Menu Builder\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/appointment\"],[9,\"class\",\"item\"],[7],[0,\"Appointments\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"href\",\"../\"],[9,\"class\",\"item\"],[7],[0,\"Log out\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[11,1],[0,\"\\n    \"],[6,\"div\"],[9,\"id\",\"SkypeButton_Call\"],[9,\"style\",\"position: fixed; right: 0; bottom: 0\"],[7],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/physio-nav.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "/Epvr6nr", "block": "{\"symbols\":[\"&default\"],\"statements\":[[2,\"<style>\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .fixed,\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .pusher {\"],[0,\"\\n\"],[2,\"-ebkit-transform: translate3d(260px, 0, 0); transform: translate3d(260px, 0, 0);\"],[0,\"\\n\"],[2,\"}\"],[0,\"\\n\"],[2,\"</style>\"],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"show\"]]],null,{\"statements\":[[0,\"\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index\"],[7],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"following bar\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n\"],[4,\"link-to\",[\"practitioner\"],null,{\"statements\":[[0,\"                    \"],[6,\"img\"],[9,\"class\",\"ui image selfStart\"],[9,\"src\",\"/assets/images/home/Header.png\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"right menu inverted\"],[7],[0,\"\\n\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/clients\"],[9,\"class\",\"item\"],[7],[0,\"Clients\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/exercises\"],[9,\"class\",\"item\"],[7],[0,\"Exercise\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/rehabplans\"],[9,\"class\",\"item\"],[7],[0,\"Menu Builder\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/practitioner/appointment\"],[9,\"class\",\"item\"],[7],[0,\"Appointments\"],[8],[0,\"\\n\"],[4,\"link-to\",[\"home\"],null,{\"statements\":[[0,\"            \"],[6,\"a\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"logout\"]],[7],[0,\"Logout\"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[11,1],[0,\"\\n    \"],[6,\"div\"],[9,\"id\",\"SkypeButton_Call\"],[9,\"style\",\"position: fixed; right: 0; bottom: 0\"],[7],[8],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/physio-nav.hbs" } });
 });
 define("self-start-front-end/templates/components/physio-table", ["exports"], function (exports) {
   "use strict";
@@ -14813,7 +14955,7 @@ define("self-start-front-end/templates/components/user-login", ["exports"], func
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "Q6MJ0C6W", "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"Log in\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"login\",\"login tiny\"]],{\"statements\":[[0,\"\\n\"],[4,\"if\",[[20,[\"loggingIn\"]]],null,{\"statements\":[[0,\"\\n    \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"class\",\"ui fluid centered header\"],[9,\"style\",\"border-radius: 0.28571429rem;\"],[7],[0,\"Login\"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"padding-bottom: 0\"],[7],[0,\"\\n      \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"email\",\"email\",[20,[\"Email\"]],\"Email\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"lock\",\"password\",[20,[\"PWord\"]],\"Password\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"ui-checkbox\",null,[[\"label\",\"checked\",\"onChange\"],[\"Remember me\",[20,[\"checked\"]],[25,\"action\",[[19,0,[]],[25,\"mut\",[[20,[\"checked\"]]],null]],null]]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"value\",\"submit\"],[9,\"style\",\"max-width: 100%; height: 50px;\"],[7],[0,\"Login\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n\\n          \"],[6,\"p\"],[9,\"style\",\"cursor: pointer; text-align: center;  text-decoration: underline; padding-top: 65px\"],[3,\"action\",[[19,0,[]],\"forgotPassword\"]],[7],[0,\"forgot your password?\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"    \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"class\",\"ui fluid centered header\"],[9,\"style\",\"border-radius: 0.28571429rem;\"],[7],[0,\"Sign in\"],[8],[0,\"\\n\\n    \"],[2,\"style=\\\"height: 260px; padding-left:5%; padding-right: 5%; padding-top: 3%\\\"\"],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"padding-bottom: 0\"],[7],[0,\"\\n      \"],[6,\"p\"],[9,\"style\",\"text-align: center;\"],[7],[0,\"Lost your password? Please enter your email address. You will receive a link to create a new password.\"],[8],[0,\"\\n      \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"email\",\"email\",[20,[\"Email\"]],\"Email\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"max-width: 100%; height: 50px;\"],[9,\"value\",\"Submit\"],[7],[0,\"Reset Password\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n\\n          \"],[6,\"p\"],[9,\"style\",\"cursor: pointer; text-align: center;  text-decoration: underline; padding-top: 65px\"],[3,\"action\",[[19,0,[]],\"login\"]],[7],[0,\"Back to log-in\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"changePassword\",\"changePassword\"]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"\\n    Please change your password and login again\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"inline field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Password\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"value\",\"type\",\"placeholder\"],[[20,[\"firstPassword\"]],\"password\",\"enter password\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"inline field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Reenter Password\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"value\",\"type\",\"placeholder\"],[[20,[\"secondPassword\"]],\"password\",\"re-enter password\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui black deny button\"],[7],[0,\"\\n      Cancel\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui positive right labeled icon button\"],[7],[0,\"\\n      Save\\n      \"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui center aligned container\"],[7],[0,\"\\n      \"],[6,\"p\"],[9,\"style\",\"color: #ca1010\"],[7],[0,\" \"],[1,[18,\"errorMessage\"],false],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/user-login.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "pQ8Cs5e/", "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\\n\"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n\"],[6,\"a\"],[9,\"id\",\"login\"],[9,\"class\",\"item\"],[3,\"action\",[[19,0,[]],\"openModal\"]],[7],[0,\"Log in\"],[8],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"login\",\"login tiny\"]],{\"statements\":[[0,\"\\n\"],[4,\"if\",[[20,[\"loggingIn\"]]],null,{\"statements\":[[0,\"\\n    \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"class\",\"ui fluid centered header\"],[9,\"style\",\"border-radius: 0.28571429rem;\"],[7],[0,\"Login\"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"padding-bottom: 0\"],[7],[0,\"\\n      \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"email\",\"email\",[20,[\"Email\"]],\"Email\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"lock\",\"password\",[20,[\"PWord\"]],\"Password\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"value\",\"submit\"],[9,\"style\",\"max-width: 100%; height: 50px;\"],[7],[0,\"Login\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n\"],[0,\"          \"],[6,\"p\"],[9,\"style\",\"color: red; text-align: center;  text-decoration: underline; padding-top: 65px\"],[7],[1,[18,\"errorMessage\"],false],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},{\"statements\":[[0,\"    \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n    \"],[6,\"h2\"],[9,\"class\",\"ui fluid centered header\"],[9,\"style\",\"border-radius: 0.28571429rem;\"],[7],[0,\"Sign in\"],[8],[0,\"\\n\\n    \"],[2,\"style=\\\"height: 260px; padding-left:5%; padding-right: 5%; padding-top: 3%\\\"\"],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"padding-bottom: 0\"],[7],[0,\"\\n      \"],[6,\"p\"],[9,\"style\",\"text-align: center;\"],[7],[0,\"Lost your password? Please enter your email address. You will receive a link to create a new password.\"],[8],[0,\"\\n      \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"email\",\"email\",[20,[\"Email\"]],\"Email\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"max-width: 100%; height: 50px;\"],[9,\"value\",\"Submit\"],[7],[0,\"Reset Password\"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n\\n          \"],[6,\"p\"],[9,\"style\",\"cursor: pointer; text-align: center;  text-decoration: underline; padding-top: 65px\"],[3,\"action\",[[19,0,[]],\"login\"]],[7],[0,\"Back to log-in\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\"]],\"parameters\":[]}],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[\"changePassword\",\"changePassword\"]],{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"\\n    Please change your password and login again\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui form\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"inline field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Password\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"value\",\"type\",\"placeholder\"],[[20,[\"firstPassword\"]],\"password\",\"enter password\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"inline field\"],[7],[0,\"\\n        \"],[6,\"label\"],[7],[0,\"Reenter Password\"],[8],[0,\"\\n        \"],[1,[25,\"input\",null,[[\"value\",\"type\",\"placeholder\"],[[20,[\"secondPassword\"]],\"password\",\"re-enter password\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"actions\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui black deny button\"],[7],[0,\"\\n      Cancel\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui positive right labeled icon button\"],[7],[0,\"\\n      Save\\n      \"],[6,\"i\"],[9,\"class\",\"checkmark icon\"],[7],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui center aligned container\"],[7],[0,\"\\n      \"],[6,\"p\"],[9,\"style\",\"color: #ca1010\"],[7],[0,\" \"],[1,[18,\"errorMessage\"],false],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/user-login.hbs" } });
 });
 define("self-start-front-end/templates/components/view-appointment", ["exports"], function (exports) {
   "use strict";

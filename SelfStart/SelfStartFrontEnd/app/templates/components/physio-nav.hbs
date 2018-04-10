@@ -35,7 +35,9 @@
             <a  href="/practitioner/exercises"class="item">Exercise</a>
             <a  href="/practitioner/rehabplans"class="item">Menu Builder</a>
             <a href="/practitioner/appointment" class="item">Appointments</a>
-            <a id="login" href="../" class="item">Log out</a>
+            {{#link-to 'home'}}
+            <a class="item" {{action "logout"}}>Logout</a>
+            {{/link-to}}
           </div>
         </div>
       </div>

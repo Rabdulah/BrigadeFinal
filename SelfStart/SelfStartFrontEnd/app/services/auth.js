@@ -9,7 +9,9 @@ export default Ember.Service.extend({
   isLoginRequested: false,
   userCList: null,
   accountType: null,
-
+  client: false,
+  admin: false,
+  prac: false,
   ajax: Ember.inject.service(),
 
   getName: Ember.computed(function () {
@@ -23,16 +25,58 @@ export default Ember.Service.extend({
 
   init(){
     this._super(...arguments);
+    
     if(localStorage.getItem('sas-session-id')){
       this.set("isAuthenticated", true);
     }
   },
 
+  didRender(){
+    // var myStore = this.get('store');
+    // var name = this.decrypt(localStorage.getItem("sas-session-id"))
+    // myStore.queryRecord('patient', {filter: {"email": name}}).then(function (patient) {
+    //     console.log('name')
+    //     if (patient) {
+    //       self.set("client", true);
+    //     }
+    //   });
+    //   myStore.queryRecord('physiotherapest', {filter: {"email": name}}).then(function (physio) {
+    //     if (physio) {
+    //       self.set("prac", true);
+    //     }
+    //   });
+    //   myStore.queryRecord('administrator', {filter: {"email": name}}).then(function (admin) {
+    //     if (admin) {
+    //       self.set("admin", true);
+    //     }
+    //   });
+  },
+
   setName(name) {
     console.log(name);
     this.set('email', name.toLowerCase());
+    let self = this;
     var identity = this.encrypt(this.get('email'));
     localStorage.setItem('sas-session-id', identity);
+
+    // var myStore = this.get('store');
+    
+    // myStore.queryRecord('patient', {filter: {"email": name}}).then(function (patient) {
+    //     // console.log('name')
+    //     if (patient) {
+    //       self.set("client", true);
+    //     }
+    //   });
+    //   myStore.queryRecord('physiotherapest', {filter: {"email": name}}).then(function (physio) {
+    //     if (physio) {
+    //       self.set("prac", true);
+    //     }
+    //   });
+    //   myStore.queryRecord('administrator', {filter: {"email": name}}).then(function (admin) {
+    //     if (admin) {
+    //       self.set("admin", true);
+    //     }
+    //   });
     console.log("In set item", this.get('email'));
   },
 
@@ -122,6 +166,24 @@ export default Ember.Service.extend({
                       console.log("In else");
                       self.setName(message4.get('email'));
 
+      //                 var myStore = self.get('store');
+      //                 var name = message4.get('email');
+      //                 myStore.queryRecord('patient', {filter: {"email": name}}).then(function (patient) {
+      //                   console.log('name')
+      //                 if (patient) {
+      //     self.set("client", true);
+      //   }
+      // });
+      // myStore.queryRecord('physiotherapest', {filter: {"email": name}}).then(function (physio) {
+      //   if (physio) {
+      //     self.set("prac", true);
+      //   }
+      // });
+      // myStore.queryRecord('administrator', {filter: {"email": name}}).then(function (admin) {
+      //   if (admin) {
+      //     self.set("admin", true);
+      //   }
+      // });
                       // var userRole = self.decrypt(message4.get('token'));
                       var userRole = null;
                       self.set('isAuthenticated', true);
@@ -230,6 +292,9 @@ export default Ember.Service.extend({
     this.set('encryptedPassword', null);
     this.set('isAuthenticated', false);
     this.set('isLoginRequested', false);
+    this.set("client", false);
+    this.set("prac", false);
+    this.set("admin", false);
   },
 
   openRoot(password)

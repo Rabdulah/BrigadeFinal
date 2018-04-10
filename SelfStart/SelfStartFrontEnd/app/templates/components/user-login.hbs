@@ -22,16 +22,12 @@
         </div>
 
         <div class="field" style="margin: 1em 0;">
-          {{ui-checkbox label="Remember me" checked=checked onChange=(action (mut checked))}}
-        </div>
-
-        <div class="field" style="margin: 1em 0;">
           <button class="fluid ui blue button" value='submit' style="max-width: 100%; height: 50px;">Login</button>
         </div>
 
         <div class="field" style="margin: 1em 0;">
-
-          <p style="cursor: pointer; text-align: center;  text-decoration: underline; padding-top: 65px"{{action 'forgotPassword'}}>forgot your password?</p>
+          {{!-- {{errorMessage}} --}}
+          <p style="color: red; text-align: center;  text-decoration: underline; padding-top: 65px">{{errorMessage}}</p>
         </div>
 
       </form>

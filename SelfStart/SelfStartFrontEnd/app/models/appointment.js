@@ -5,6 +5,7 @@ export default DS.Model.extend({
   endDate: DS.attr(),
   reason: DS.attr(),
   other: DS.attr(),
+  order: DS.attr(),
   pName: DS.attr(),
   patient: DS.belongsTo('patient')
 });
