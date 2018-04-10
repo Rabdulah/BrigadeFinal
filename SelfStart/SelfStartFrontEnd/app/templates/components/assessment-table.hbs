@@ -36,10 +36,9 @@
   <div  id="myWindow" style="height:500px; overflow-y: scroll; overflow-x: hidden;">
     <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
       <tbody >
+      <!--testModel = AssessmentTest-->
       {{#each testModel as |test|}}
-
         <tr>
-
           {{#each modelAttributes as |column|}}
 
             <td class={{column.class}}>
@@ -47,8 +46,10 @@
             </td>
           {{/each}}
 
-          <td class="center aligned one wide column" style="padding-right: 0">
-            <p>{{display-assessment model=test.form assessment=test}}</p>
+
+          <td class="right aligned one wide column" style="padding-right: 0">
+            <p>{{display-assessment model=test.form assessment=test ID= test.id}}</p>
+
           </td>
 
         </tr>
