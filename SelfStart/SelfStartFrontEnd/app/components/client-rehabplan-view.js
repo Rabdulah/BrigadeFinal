@@ -3,6 +3,7 @@ import { inject } from '@ember/service';
 import { computed } from '@ember/object';
 import $ from 'jquery';
 import Ember from 'ember';
+import { inject as service } from '@ember/service';
 import fileObject from "../utils/file-object";
 import moment from 'moment';
 
@@ -10,6 +11,7 @@ export default Component.extend({
   auth: inject('auth'),
   DS: inject('store'),
   routing: inject('-routing'),
+  router: service(),
 
   rehabPlan: null,
   planName: Ember.computed.oneWay('model.planName'),
@@ -131,6 +133,9 @@ export default Component.extend({
       console.log('done');
       this.set('inExercise', false);
 
+    },
+    Sendtests(){
+      this.get('router').transitionTo('client.exercise-menu');
     },
   }
 });
