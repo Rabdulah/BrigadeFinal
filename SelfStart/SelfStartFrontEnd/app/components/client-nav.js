@@ -8,7 +8,7 @@ export default Component.extend({
   auth: inject('auth'),
   show: false,
   DS: inject('store'),
-
+  
   init() {
     this._super(...arguments);
     // console.log(localStorage.getItem('sas-session-id'))
@@ -77,6 +77,15 @@ export default Component.extend({
   },
 
   actions: {
+    logout: function () {
+      // localStorage.clear();
+      // localStorage.setItem('loggedIn', false);
+      this.get('auth').closeNoParams();
 
+      // this.get('routing').transitionTo('home');
+      // this.set('loggedOut', true);
+      // this.get("auth").set('isAuthenticated', false);
+      // console.log(this.loggedOut)
+    },
   },
 });

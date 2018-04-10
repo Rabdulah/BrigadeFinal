@@ -13,6 +13,7 @@ export default Component.extend({
   ajax: Ember.inject.service(),
   temp: false,
   loggingIn: true,
+  
 
   authentication() {
 

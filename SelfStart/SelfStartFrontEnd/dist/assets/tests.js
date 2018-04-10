@@ -377,7 +377,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/nav-bar.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/nav-bar.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n34:7 - Unexpected console statement. (no-console)\n137:11 - Unexpected console statement. (no-console)\n139:13 - Unexpected console statement. (no-console)\n148:13 - Unexpected console statement. (no-console)\n158:13 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/nav-bar.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n35:7 - Unexpected console statement. (no-console)\n138:11 - Unexpected console statement. (no-console)\n140:13 - Unexpected console statement. (no-console)\n149:13 - Unexpected console statement. (no-console)\n159:13 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/parse-question.js', function (assert) {

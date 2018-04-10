@@ -37,7 +37,9 @@
             <!--<a  href="/"class="item">Transations</a>-->
             <a href="/client/appointment" class="item">Book Appointment</a>
             <a  href="/client/settings"class="item">Settings</a>
-            <a id="login" href="../" class="item">Log out</a>
+            {{#link-to 'home'}}
+            <a class="item" {{action "logout"}}>Logout</a>
+            {{/link-to}}
           </div>
         </div>
       </div>
