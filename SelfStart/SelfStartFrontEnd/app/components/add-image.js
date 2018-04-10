@@ -89,6 +89,8 @@ export default Component.extend({
 
   actionStep: [],
 
+  array: [],
+
   actions: {
     selectFile: function (data) {
       if (!Ember.isEmpty(data.target.files)) {
@@ -156,6 +158,9 @@ export default Component.extend({
             this.set('flagAdd', false);
           else
             this.set('flagAdd', true);
+
+          this.get('array').pushObject(newFile);
+
           this.set('disabled', '')
         });
       }

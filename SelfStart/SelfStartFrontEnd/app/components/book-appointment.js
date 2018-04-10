@@ -93,6 +93,7 @@ export default Component.extend({
 
   disabled: '',
   appDisable: '',
+  array: [],
 
   actions: {
     goToPhoto() {
