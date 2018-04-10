@@ -10,6 +10,16 @@
 
 <br><br><br>
 <div class="ui centered cards" >
+
+  <div class="card" style="width:250px">
+    <div class="content" style="text-align: center">
+      <div class="header">Appointments</div>
+    </div>
+    <div class="ui bottom attached button" {{action "upcomingSelect"}}>
+      <i class="add icon"></i>Show
+    </div>
+  </div>
+
   <div class="card" style="width:250px">
     <div class="content" style="text-align: center">
       <div class="header">Book Appointment</div>
@@ -17,627 +27,358 @@
     <div class="ui bottom attached button" {{action "firstSelect"}}>
       <i class="add icon"></i>Show
     </div>
-
   </div>
-  <div class="ui segment" style="background: transparent;border: none;box-shadow: none;">
 
-    {{#if menus}}
-
-      <div class="ui very padded container segment" id="top">
-        <div class="ui grid" style="margin-top: -30px;">
-          <div class="left twelve wide column" style="margin-top: -5px;">
-            <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">
-              Menu Builder
-            </p>
-          </div>
-          <div class="right three wide column" style="padding-left: 30px;">
-            {{!--{{add-rehabplan flagAdd=flagAdd}}--}}
-            <div class="ui form" >
-              {{#ui-dropdown class="selection" onChange=(action (mut plan))}}
-                <div class="default text">Select a menu</div>
-                <i class="dropdown icon"></i>
-                <div class="menu">
-                  {{#each rehabModel as |plan|}}
-                    <div data-value="{{plan.id}}" class="item">
-                      {{plan.planName}}
-                    </div>
-                  {{/each}}
-                </div>
-              {{/ui-dropdown}}
-
-            </div>
-          </div>
-        </div>
-        <br><br><br><br>
-        <div style="display: inline">
-          <table class="ui fixed table" style="border: none;border-color: white;">
-            <tbody >
-            <tr style="font-weight: bold;">
-              {{#each modelAttributes as |column|}}
-                <th class={{column.class}} {{action 'sortColumn' column.key column.dir}}>{{column.name}}
-                  {{#if (eq column.dir 'asc')}}
-                    <i class="sort ascending icon"></i>
-                  {{/if}}
-                  {{#if (eq column.dir 'desc')}}
-                    <i class="sort descending icon"></i>
-                  {{/if}}
-                  {{#if (eq column.dir '')}}
-                    <i class="sort icon"></i>
-                  {{/if}}
-                </th>
-              {{/each}}
-
-            </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="ui divider"></div>
-
-        <div  id="myWindow" style="height:500px; overflow-y: scroll; overflow-x: hidden;">
-          <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
-            <tbody >
-            {{#each listModel as |exercise|}}
-
-              <tr>
-
-                {{#each modelAttributes as |column|}}
-
-                  <td class={{column.class}}>
-                    {{get exercise column.key}}
-                  </td>
-                {{/each}}
-              </tr>
-            {{/each}}
-
-            {{#if isPlanSelected}}
-              <div class="ui {{disabled}} button" {{action "openModal"}}>
-                Assign
-              </div>
-            {{/if}}
-
-
-            </tbody>
-          </table>
-        </div>
-      </div>
-    {{/if}}
-
-    {{#if photo}}
-      <table class="ui single line table">
-        <thead>
-        <tr>
-          <th>Image Name</th>
-          <th>Image</th>
-        </tr>
-        </thead>
-
-        <tbody>
-        {{#each imageList as |Image|}}
-          <tr>
-            <td>{{Image.name}}</td>
-            <td>
-              <img class = "ui extra large image" src="{{Image.imageData}}">
-            </td>
-          </tr>
-        {{/each}}
-        </tbody>
-
-      </table>
-    {{/if}}
-
-
-
-
-    {{#if reports}}
-
-      <div class="ui very padded container segment" id="top">
-        <div class="ui grid" style="margin-top: -30px;">
-          <div class="left twelve wide column" style="margin-top: -5px;">
-            <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">
-              Reports
-            </p>
-          </div>
-          <div class="right three wide column" style="padding-left: 30px;">
-            {{!-- <div class="ui form" >
-            <button class="ui small blue labeled icon button">
-              <i class="file alternate icon"></i>
-              Generate Reports
-            </button>
-          </div> --}}
-          </div>
-        </div>
-        <br><br><br><br>
-
-        <div style="display: inline">
-          <table class="ui fixed table" style="border: none;border-color: white;">
-            <tbody >
-            <tr style="font-weight: bold;">
-              <th class>
-                Report Type
-              </th>
-              <th class>
-                Actions
-              </th>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="ui divider"></div>
-
-        <div style="display: inline">
-          <table class="ui fixed table" style="border: none;border-color: white;">
-            <tbody>
-            <tr>
-              <th class>
-                Feedback Report
-              </th>
-              <th class>
-                <button class="circular ui icon button" {{action "openFeedback"}}>
-                  <i class="file alternate icon"></i>
-                </button>
-              </th>
-            </tr>
-
-            <br><br>
-            <tr>
-              <th class>
-                Summary Report
-              </th>
-              <th class>
-                <button class="circular ui icon button" {{action "openSummary"}}>
-                  <i class="file alternate icon"></i>
-                </button>
-              </th>
-            </tr>
-
-            <br><br>
-            <tr>
-              <th class>
-                Data Report
-              </th>
-              <th class>
-                <button class="circular ui icon button" {{action "openData"}}>
-                  <i class="file alternate icon"></i>
-                </button>
-              </th>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-
-      </div>
-    {{/if}}
-    {{#if accountingmenus}}
-      <div class="ui very padded container segment" id="top">
-        <div class="ui grid" style="margin-top: -30px;">
-          <div class="left five wide column" style="margin-top: -5px;">
-            <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">Trasnactions</p>
-          </div>
-          <div class="right three wide column" style="padding-left: 30px; margin-top: -5px;">
-            <p>remaining: </p>
-          </div>
-          <td class="right aligned one wide column ">
-            <p style="cursor: pointer; " title="Edit">
-              <img src="/assets/images/pencil.svg">
-            </p>
-          </td>
-
-        </div>
-        <br><br><br><br>
-
-
-        <div style="display: inline">
-          <table class="ui fixed table" style="border: none;border-color: white;">
-            <tbody >
-            <tr style="font-weight: bold;">
-              <th> test </th>
-              <th> test2 </th>
-            </tr>
-            </tbody>
-          </table>
-        </div>
-
-        <div class="ui divider"></div>
-
-        <div  id="myWindow" style="height:500px; overflow-y: scroll; overflow-x: hidden;">
-          <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
-            <tbody >
-            {{#each listModel as |exercise|}}
-
-
-              <tr>
-
-                {{#each modelAttributes as |column|}}
-
-                  <td class={{column.class}}>
-                    {{get exercise column.key}}
-                  </td>
-                {{/each}}
-              </tr>
-            {{/each}}
-
-            {{#if isPlanSelected}}
-              <div class="ui {{disabled}} button" {{action "openModal"}}>
-                Assign
-              </div>
-            {{/if}}
-
-
-            </tbody>
-          </table>
-        </div>
-
-      </div>
-    {{/if}}
-
-    {{#if assess}}
-      {{assessment-table model=model}}
-    {{/if}}
-
-  </div>
-</div>
-
-{{#if isApp}}
-<div class="ui very padded container segment" id="top">
-  <div class="ui grid">
-    <div class="left thirteen wide column" style="margin-top: -5px;">
-      <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">
-        Upcoming Appointment
-      </p>
+  <div class="card" style="width:250px">
+    <div class="content"  style="text-align: center">
+      <div class="header">Follow-ups</div>
+    </div>
+    <div class="ui bottom attached button" {{action "followupSelect"}}>
+      <i class="add icon"></i>
+      Show
     </div>
   </div>
-  <br><br><br><br>
-
-  <div style="display: inline">
-    <table class="ui fixed table" style="border: none;border-color: white;">
-      <tbody >
-      <tr style="font-weight: bold;">
-        <th>Date</th>
-        <th>Practitioner</th>
-        <th>Reason</th>
-        <th>Appointment type</th>
-      </tr>
-      </tbody>
-    </table>
-  </div>
-
-  <div class="ui divider"></div>
-
-  <div  id="clientWindow" style="height:300px; overflow-y: scroll; overflow-x: hidden;">
-
-    <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
-      <tbody >
-      {{#each appointmentHistory as |aHistory|}}
-        <tr>
-          <td>{{aHistory.date}}</td>
-          <td>{{aHistory.pName}}</td>
-          <td>{{aHistory.reason}}</td>
-          <td>{{types-appointment aHistory.date aHistory.endDate}}</td>
-        </tr>
-      {{/each}}
-      </tbody>
-    </table>
-  </div>
 </div>
-{{/if}}
-<br><br><br><br>
-
-<!--<div class="ui centered cards" >-->
-  <!--<div class="card" style="width:250px">-->
-    <!--<div class="content" style="text-align: center">-->
-      <!--<div class="header">First Appointment</div>-->
-    <!--</div>-->
-    {{!--<div class="ui bottom attached button" {{action "firstSelect"}}>--}}
-      <!--<i class="add icon"></i>Show-->
-    <!--</div>-->
-  <!--</div>-->
-
-  <!--<div class="card" style="width:250px">-->
-    <!--<div class="content"  style="text-align: center">-->
-      <!--<div class="header">Follow-ups</div>-->
-    <!--</div>-->
-    <!--<div class="ui bottom attached button" {{action "followupSelect"}}>--}}
-      <!--<i class="add icon"></i>-->
-      <!--Show-->
-    <!--</div>-->
-  <!--</div>-->
-<!--</div>-->
 
 
 
 <link integrity="" rel="stylesheet" href="/assets/css/form-style.css"> <!-- Resource style -->
 
-{{#if isfollow}}
-<form class="cd-form floating-labels" {{action "save" on="submit"}} style="padding-right: 10em; padding-left: 10em">
-  <label class="cd-label">Select Physiotherapist</label>
-  <p class="cd-select icon">
-    <select class="people" value ={{selectphysio}} onchange={{action "updateValue" value="target.value"}} >
-      <option value=""  selected disabled hidden>Select Physiotherapist</option>
-      {{#each getphysio as |phsio|}}
-        <option value={{phsio.id}}>
-          {{phsio.givenName}}
-        </option>
-      {{/each}}
-    </select>
-  </p>
-  <br><br>
-  {{as-calendar
-    title="View Schedule"
-    occurrences=occurrences
-    defaultTimeZoneQuery="Toronto|New York"
-    dayStartingTime="8:00"
-    dayEndingTime="20:00"
-    timeSlotDuration="00:30"
-    onAddOccurrence=(action "calendarAddOccurrence")
-    onUpdateOccurrence=(action "calendarUpdateOccurrence")
-    onRemoveOccurrence=(action "calendarRemoveOccurrence")}}
+{{#if upcomingSelected}}
+  <div class="ui very padded container segment" id="top">
+    <div class="ui grid">
+      <div class="left thirteen wide column" style="margin-top: -5px;">
+        <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">
+          Upcoming Appointment
+        </p>
+      </div>
+    </div>
+    <br><br><br><br>
 
-</form>
-<br><br>
+    <div style="display: inline">
+      <table class="ui fixed table" style="border: none;border-color: white;">
+        <tbody >
+        <tr style="font-weight: bold;">
+          <th>Date</th>
+          <th>Practitioner</th>
+          <th>Reason</th>
+          <th>Appointment type</th>
+        </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <div class="ui divider"></div>
+
+    <div  id="clientWindow" style="height:300px; overflow-y: scroll; overflow-x: hidden;">
+
+      <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
+        <tbody >
+        {{#each appointmentHistory as |aHistory|}}
+          <tr>
+            <td>{{aHistory.date}}</td>
+            <td>{{aHistory.pName}}</td>
+            <td>{{aHistory.reason}}</td>
+            <td>{{types-appointment aHistory.date aHistory.endDate}}</td>
+          </tr>
+        {{/each}}
+        </tbody>
+      </table>
+    </div>
+  </div>
 {{/if}}
 
-{{#if isBook}}
-<div class = "ui very padded segment container" style="border: none; box-shadow: none; background-color: white;position: relative;z-index:  2;">
-  <div class="ui four steps">
-    <div class="{{introValue}} step">
-      <i class="sticky note icon"></i>
-      <div class="content">
-        <div class="title">Intake Form</div>
-      </div>
-    </div>
-    <div class="{{photoValue}}  step">
-      <i class="photo icon"></i>
-      <div class="content">
-        <div class="title">Upload Photos</div>
-      </div>
-    </div>
-    <div class="{{confirmValue}}  step">
-      <i class="credit card icon"></i>
-      <div class="content">
-        <div class="title">Payment</div>
-      </div>
-    </div>
-    <div class="{{appointmentValue}}  step">
-      <i class="bookmark icon"></i>
-      <div class="content">
-        <div class="title">Book Appointment</div>
-      </div>
-    </div>
-  </div>
 
-  <div class="ui attached segment">
-    {{#if intro}}
-      <link integrity="" rel="stylesheet" href="{{rootURL}}../assets/css/form-style.css"> <!-- Resource style -->
+{{#if followupSelected}}
+  <br><br><br>
+  <form class="cd-form floating-labels" {{action "save" on="submit"}} style="padding-right: 10em; padding-left: 10em">
+    <label class="cd-label">Select Physiotherapist</label>
+    <p class="cd-select icon">
+      <select class="people" value ={{selectphysio}} onchange={{action "updateValue" value="target.value"}} >
+        <option value=""  selected disabled hidden>Select Physiotherapist</option>
+        {{#each getphysio as |phsio|}}
+          <option value={{phsio.id}}>
+            {{phsio.givenName}}
+          </option>
+        {{/each}}
+      </select>
+    </p>
+    <br><br>
+    {{as-calendar
+      title="View Schedule"
+      occurrences=occurrences
+      defaultTimeZoneQuery="Toronto|New York"
+      dayStartingTime="8:00"
+      dayEndingTime="20:00"
+      timeSlotDuration="00:30"
+      onAddOccurrence=(action "calendarAddOccurrence")
+      onUpdateOccurrence=(action "calendarUpdateOccurrence")
+      onRemoveOccurrence=(action "calendarRemoveOccurrence")}}
 
-    <form id="edit" class="cd-form floating-labels"  {{action "goToPhoto" on="submit"}}>
+  </form>
+  <br><br>
+{{/if}}
 
-      <div class="field" style="margin: 1em 0">
-        <div class="ui centered grid"  style="margin-left: 0px">
-          <button class="ui blue button" style="height: 50px;" value="submit">Next</button>
+{{#if firstSelected}}
+  <div class = "ui very padded segment container" style="border: none; box-shadow: none; background-color: white;position: relative;z-index:  2;">
+    <div class="ui four steps">
+      <div class="{{introValue}} step">
+        <i class="sticky note icon"></i>
+        <div class="content">
+          <div class="title">Intake Form</div>
         </div>
       </div>
-
-
-      {{get-intake-test}}
-
-
-      <div class="field" style="margin: 1em 0">
-        <div class="ui centered grid"  style="margin-left: 0px">
-          <button class="ui blue button" style="height: 50px;" value="submit">Next</button>
+      <div class="{{photoValue}}  step">
+        <i class="photo icon"></i>
+        <div class="content">
+          <div class="title">Upload Photos</div>
         </div>
       </div>
-    </form>
-    {{/if}}
-
-    {{#if photo}}
-      <div class="field" style="margin: 1em 0">
-        <div class="ui centered grid"  style="margin-left: 0px">
-          <button class="ui blue button" style="height: 50px;" {{action "backToIntro"}}>Back</button>
-          <button class="ui {{disabled}} blue button" style="height: 50px;" {{action "goToConfirm"}}>Next</button>
+      <div class="{{confirmValue}}  step">
+        <i class="credit card icon"></i>
+        <div class="content">
+          <div class="title">Payment</div>
         </div>
       </div>
-
-     {{client-upload-photos disabled=disabled}}
-
-      <div class="field" style="margin: 1em 0">
-        <div class="ui centered grid"  style="margin-left: 0px">
-          <button class="ui blue button" style="height: 50px;" {{action "backToIntro"}}>Back</button>
-          <button class="ui {{disabled}} blue button" style="height: 50px;" {{action "goToConfirm"}}>Next</button>
+      <div class="{{appointmentValue}}  step">
+        <i class="bookmark icon"></i>
+        <div class="content">
+          <div class="title">Book Appointment</div>
         </div>
       </div>
-    {{/if}}
+    </div>
 
-    {{#if appointment}}
-      <div class="field" style="margin: 1em 0">
+    <div class="ui attached segment">
+      {{#if intro}}
+        <link integrity="" rel="stylesheet" href="{{rootURL}}../assets/css/form-style.css"> <!-- Resource style -->
+
+        <form id="edit" class="cd-form floating-labels"  {{action "goToPhoto" on="submit"}}>
+
+          <div class="field" style="margin: 1em 0">
+            <div class="ui centered grid"  style="margin-left: 0px">
+              <button class="ui blue button" style="height: 50px;" value="submit">Next</button>
+            </div>
+          </div>
+
+
+          {{get-intake-test}}
+
+
+          <div class="field" style="margin: 1em 0">
+            <div class="ui centered grid"  style="margin-left: 0px">
+              <button class="ui blue button" style="height: 50px;" value="submit">Next</button>
+            </div>
+          </div>
+        </form>
+      {{/if}}
+
+      {{#if photo}}
+        <div class="field" style="margin: 1em 0">
+          <div class="ui centered grid"  style="margin-left: 0px">
+            <button class="ui blue button" style="height: 50px;" {{action "backToIntro"}}>Back</button>
+            <button class="ui {{disabled}} blue button" style="height: 50px;" {{action "goToConfirm"}}>Next</button>
+          </div>
+        </div>
+
+        {{client-upload-photos disabled=disabled}}
+
+        <div class="field" style="margin: 1em 0">
+          <div class="ui centered grid"  style="margin-left: 0px">
+            <button class="ui blue button" style="height: 50px;" {{action "backToIntro"}}>Back</button>
+            <button class="ui {{disabled}} blue button" style="height: 50px;" {{action "goToConfirm"}}>Next</button>
+          </div>
+        </div>
+      {{/if}}
+
+      {{#if appointment}}
+        <div class="field" style="margin: 1em 0">
+          <br><br>
+
+          <div class="ui centered grid"  style="margin-left: 0px">
+            <button class="ui blue button" style="height: 50px;" {{action "backToConfirm"}}>Back</button>
+          </div>
+        </div>
+
+        <form class="cd-form floating-labels" {{action "save" on="submit"}}>
+          <label class="cd-label">Select a practitioner</label>
+          <p class="cd-select icon">
+            <select class="people" value ={{selectphysio}} onchange={{action "updateValue" value="target.value"}} >
+              <option value=""  selected disabled hidden>Select a practitioner</option>
+              {{#each getphysio as |phsio|}}
+                <option value={{phsio.id}}>
+                  {{phsio.givenName}}
+                </option>
+              {{/each}}
+            </select>
+          </p>
+          <br><br>
+          {{as-calendar
+            title="View Schedule"
+            occurrences=occurrences
+            defaultTimeZoneQuery="Toronto|New York"
+            dayStartingTime="8:00"
+            dayEndingTime="20:00"
+            timeSlotDuration="00:30"
+            onAddOccurrence=(action "calendarAddOccurrence")
+            onUpdateOccurrence=(action "calendarUpdateOccurrence")
+            onRemoveOccurrence=(action "calendarRemoveOccurrence")}}
+
+        </form>
         <br><br>
 
-        <div class="ui centered grid"  style="margin-left: 0px">
-          <button class="ui blue button" style="height: 50px;" {{action "backToConfirm"}}>Back</button>
+        <div class="field" style="margin: 1em 0">
+          <div class="ui centered grid" style="margin-left: 0px">
+            <button class="ui blue button" style="height: 50px;" {{action "backToConfirm"}}>Back</button>
+          </div>
         </div>
-      </div>
 
-      <form class="cd-form floating-labels" {{action "save" on="submit"}}>
-        <label class="cd-label">Select a practitioner</label>
-        <p class="cd-select icon">
-          <select class="people" value ={{selectphysio}} onchange={{action "updateValue" value="target.value"}} >
-            <option value=""  selected disabled hidden>Select a practitioner</option>
-            {{#each getphysio as |phsio|}}
-              <option value={{phsio.id}}>
-                {{phsio.givenName}}
-              </option>
-            {{/each}}
-          </select>
-        </p>
-        <br><br>
-        {{as-calendar
-          title="View Schedule"
-          occurrences=occurrences
-          defaultTimeZoneQuery="Toronto|New York"
-          dayStartingTime="8:00"
-          dayEndingTime="20:00"
-          timeSlotDuration="00:30"
-          onAddOccurrence=(action "calendarAddOccurrence")
-          onUpdateOccurrence=(action "calendarUpdateOccurrence")
-          onRemoveOccurrence=(action "calendarRemoveOccurrence")}}
+      {{/if}}
+      {{#if confirm}}
+        <div class="field" style="margin: 1em 0">
+          <div class="ui centered grid"  style="margin-left: 0px">
+            <button class="ui blue button" style="height: 50px;" {{action "backToPhoto"}}>Back</button>
+            <button class="ui blue button" style="height: 50px;" {{action "backToAppointment"}}>Next</button>
 
-      </form>
-      <br><br>
-
-      <div class="field" style="margin: 1em 0">
-        <div class="ui centered grid" style="margin-left: 0px">
-          <button class="ui blue button" style="height: 50px;" {{action "backToConfirm"}}>Back</button>
+          </div>
         </div>
-      </div>
 
-    {{/if}}
-    {{#if confirm}}
-    <div class="field" style="margin: 1em 0">
-      <div class="ui centered grid"  style="margin-left: 0px">
-        <button class="ui blue button" style="height: 50px;" {{action "backToPhoto"}}>Back</button>
-        <button class="ui blue button" style="height: 50px;" {{action "backToAppointment"}}>Next</button>
+        <div class="ui hidden divider"></div>
+        <div class="ui three column doubling stackable grid container">
 
-      </div>
+          <div class="row">
+            <div class="column">
+              <div class="ui payment card" style="box-shadow: none;left: 50%;transform: translate(-50%);">
+                <div class="content" style="text-align: center">
+                  <h3 style="font-weight: bold; text-transform: uppercase;">Assessment Package</h3>
+                  <br>
+                  <div class="cd-price">
+                    <span class="cd-currency">$</span>
+                    <span class="cd-value">150</span>
+                    <br><br>
+                  </div>
+                </div>
+                <div class="content" style="padding: 0 0 25px 0;">
+                  <table class="ui striped table" style="border: none; text-align: center" >
+                    <thead>
+                    <tr>
+                      <th style="font-weight: 500">Video conference / email</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                      <td>Personal therapy plan</td>
+                    </tr>
+                    <tr>
+                      <td>Education & advice</td>
+                    </tr>
+                    <tr>
+                      <td style="height: 42px"></td>
+                    </tr>
+                    </tbody>
+                  </table>
+
+                </div>
+                <div class="extra content footer" style="padding: 0 0 0 0;background-color: #2c3452;height: 55px;border-radius: 3px !important;">
+                  <p style="text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;">{{payment-button}}</p>
+                </div>
+              </div>
+
+            </div>
+
+            <div class="column">
+
+              <div class="ui payment card" style="box-shadow: none;left: 50%;transform: translate(-50%);">
+                <div class="content" style="text-align: center">
+                  <h3 style="font-weight: bold; text-transform: uppercase;">Assessment + 3 sessions</h3>
+                  <br>
+                  <div class="cd-price">
+                    <span class="cd-currency">$</span>
+                    <span class="cd-value">350</span>
+                    <br><br>
+                  </div>
+                </div>
+                <div class="content" style="padding: 0 0 25px 0;">
+                  <table class="ui striped table" style="border: none; text-align: center" >
+                    <thead>
+                    <tr>
+                      <th style="font-weight: 500">Video conference / email</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                      <td>3 extra conference / email sessions</td>
+                    </tr>
+                    <tr>
+                      <td>Personal therapy plan</td>
+                    </tr>
+                    <tr>
+                      <td>Education & advice</td>
+                    </tr>
+                    </tbody>
+                  </table>
+
+                </div>
+                <div class="extra content footer" style="padding: 0 0 0 0;background-color: #2c3452;height: 55px;border-radius: 3px !important;">
+                  <p style="text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;">{{payment-button-package-2}}</p>
+                </div>
+              </div>
+
+            </div>
+
+
+            <div class="column">
+
+              <div class="ui payment card" style="box-shadow: none;left: 50%;transform: translate(-50%);">
+                <div class="content" style="text-align: center">
+                  <h3 style="font-weight: bold; text-transform: uppercase;color: #e97d68">Assessment + 6 sessions</h3>
+                  <br>
+                  <div class="cd-price" >
+                    <span class="cd-currency" style="color: #e97d68">$</span>
+                    <span class="cd-value" style="color: #e97d68">550</span>
+                    <br><br>
+                  </div>
+                </div>
+                <div class="content" style="padding: 0 0 25px 0;">
+                  <table class="ui striped table" style="border: none; text-align: center" >
+                    <thead>
+                    <tr>
+                      <th style="font-weight: 500">Video conference / email</th>
+                    </tr>
+                    </thead>
+                    <tbody>
+                    <tr>
+                      <td>6 extra conference / email sessions</td>
+                    </tr>
+                    <tr>
+                      <td>Personal therapy plan</td>
+                    </tr>
+                    <tr>
+                      <td>Education & advice</td>
+                    </tr>
+                    </tbody>
+                  </table>
+                </div>
+
+                <div class="extra content footer" style="padding: 0 0 0 0;background-color: #e97d68;height: 55px;border-radius: 3px !important;">
+                  <p style="text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;">{{payment-button-package-3}}</p>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+
+        <div class="field" style="margin: 1em 0">
+          <div class="ui centered grid"  style="margin-left: 0px">
+            <button class="ui blue button" style="height: 50px;" {{action "backToPhoto"}}>Back</button>
+            <button class="ui {{paid}} blue button" style="height: 50px;" {{action "goToAppointment"}}>Next</button>
+          </div>
+        </div>
+      {{/if}}
+
+
     </div>
-
-      <div class="ui hidden divider"></div>
-      <div class="ui three column doubling stackable grid container">
-
-        <div class="row">
-          <div class="column">
-            <div class="ui payment card" style="box-shadow: none;left: 50%;transform: translate(-50%);">
-              <div class="content" style="text-align: center">
-                <h3 style="font-weight: bold; text-transform: uppercase;">Assessment Package</h3>
-                <br>
-                <div class="cd-price">
-                  <span class="cd-currency">$</span>
-                  <span class="cd-value">150</span>
-                  <br><br>
-                </div>
-              </div>
-              <div class="content" style="padding: 0 0 25px 0;">
-                <table class="ui striped table" style="border: none; text-align: center" >
-                  <thead>
-                  <tr>
-                    <th style="font-weight: 500">Video conference / email</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr>
-                    <td>Personal therapy plan</td>
-                  </tr>
-                  <tr>
-                    <td>Education & advice</td>
-                  </tr>
-                  <tr>
-                    <td style="height: 42px"></td>
-                  </tr>
-                  </tbody>
-                </table>
-
-              </div>
-              <div class="extra content footer" style="padding: 0 0 0 0;background-color: #2c3452;height: 55px;border-radius: 3px !important;">
-                <p style="text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;">{{payment-button}}</p>
-              </div>
-            </div>
-
-          </div>
-
-          <div class="column">
-
-            <div class="ui payment card" style="box-shadow: none;left: 50%;transform: translate(-50%);">
-              <div class="content" style="text-align: center">
-                <h3 style="font-weight: bold; text-transform: uppercase;">Assessment + 3 sessions</h3>
-                <br>
-                <div class="cd-price">
-                  <span class="cd-currency">$</span>
-                  <span class="cd-value">350</span>
-                  <br><br>
-                </div>
-              </div>
-              <div class="content" style="padding: 0 0 25px 0;">
-                <table class="ui striped table" style="border: none; text-align: center" >
-                  <thead>
-                  <tr>
-                    <th style="font-weight: 500">Video conference / email</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr>
-                    <td>3 extra conference / email sessions</td>
-                  </tr>
-                  <tr>
-                    <td>Personal therapy plan</td>
-                  </tr>
-                  <tr>
-                    <td>Education & advice</td>
-                  </tr>
-                  </tbody>
-                </table>
-
-              </div>
-              <div class="extra content footer" style="padding: 0 0 0 0;background-color: #2c3452;height: 55px;border-radius: 3px !important;">
-                <p style="text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;">{{payment-button-package-2}}</p>
-              </div>
-            </div>
-
-          </div>
-
-
-          <div class="column">
-
-            <div class="ui payment card" style="box-shadow: none;left: 50%;transform: translate(-50%);">
-              <div class="content" style="text-align: center">
-                <h3 style="font-weight: bold; text-transform: uppercase;color: #e97d68">Assessment + 6 sessions</h3>
-                <br>
-                <div class="cd-price" >
-                  <span class="cd-currency" style="color: #e97d68">$</span>
-                  <span class="cd-value" style="color: #e97d68">550</span>
-                  <br><br>
-                </div>
-              </div>
-              <div class="content" style="padding: 0 0 25px 0;">
-                <table class="ui striped table" style="border: none; text-align: center" >
-                  <thead>
-                  <tr>
-                    <th style="font-weight: 500">Video conference / email</th>
-                  </tr>
-                  </thead>
-                  <tbody>
-                  <tr>
-                    <td>6 extra conference / email sessions</td>
-                  </tr>
-                  <tr>
-                    <td>Personal therapy plan</td>
-                  </tr>
-                  <tr>
-                    <td>Education & advice</td>
-                  </tr>
-                  </tbody>
-                </table>
-              </div>
-
-              <div class="extra content footer" style="padding: 0 0 0 0;background-color: #e97d68;height: 55px;border-radius: 3px !important;">
-                <p style="text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;">{{payment-button-package-3}}</p>
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-
-
-      <div class="field" style="margin: 1em 0">
-        <div class="ui centered grid"  style="margin-left: 0px">
-          <button class="ui blue button" style="height: 50px;" {{action "backToPhoto"}}>Back</button>
-          <button class="ui {{paid}} blue button" style="height: 50px;" {{action "goToAppointment"}}>Next</button>
-        </div>
-      </div>
-    {{/if}}
-
-
   </div>
-</div>
 {{/if}}
 
 
@@ -697,12 +438,11 @@
         <br>
       </div>
 
-        {{!--<br>-->
-        <!--<div>-->
-          <!--<button class="ui fluid negative button" {{action "cancel_appointment"}}>Cancel</button>-->
-          <!--<button class="ui fluid positive button" {{action "book_appointment"}}>Submit</button>-->
-        <!--</div>--}}
-
+      {{!--<br>-->
+      <!--<div>-->
+        <!--<button class="ui fluid negative button" {{action "cancel_appointment"}}>Cancel</button>-->
+        <!--<button class="ui fluid positive button" {{action "book_appointment"}}>Submit</button>-->
+      <!--</div>--}}
     </form>
   </div>
 {{/ui-modal}}

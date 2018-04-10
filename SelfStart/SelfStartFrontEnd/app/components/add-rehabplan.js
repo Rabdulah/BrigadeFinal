@@ -5,8 +5,10 @@ import $ from 'jquery';
 
 export default Component.extend({
   DS: inject('store'),
-
+  physio: null,
+  author: "",
   tagName: '',
+
   flagAdd: null,
 
   init(){
@@ -21,6 +23,17 @@ export default Component.extend({
     this.set('assessmentTests', '');
     this.set('authorName', '');
 
+    let self = this;
+    let eemail = localStorage.getItem('sas-session-id');
+    eemail = this.get('auth').decrypt(eemail);
+
+    self.get('DS').queryRecord('physiotherapest', {filter: {'email' : eemail}}).then(function (obj) {
+      self.set('physio', obj);
+      self.set('author', obj.get('givenName') + " " + obj.get('familyName'));
+    })
+
+
+    console.log(self.get('physio'));
   },
 
   didRender() {
@@ -64,15 +77,17 @@ export default Component.extend({
       let self = this;
       //connect to rehabilitationplans
 
-      this.get('DS').findRecord('physiotherapest', "5aae0822aec70d36c8cc12be").then(function (phys) {
+      this.get('DS').findRecord('physiotherapest', self.get('physio')).then(function (phys) {
         let rehabplan = self.get('DS').createRecord('rehabilitationplan', {
           planName: self.get('Name'),
-          physioID: phys,
+          physioID: self.get('physio').get('id'),
           description: self.get('description'),
           goal: self.get('goal'),
+
           //exercises: self.get('exercises'),
           // assessmentTests: self.get('assessmentTests'),
         });
+
         //when save is successfull close form
         rehabplan.save().then(function() {
           $('.ui.newPlan.modal').modal('hide');

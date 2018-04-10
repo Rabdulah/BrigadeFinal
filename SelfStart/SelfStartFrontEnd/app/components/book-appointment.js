@@ -98,6 +98,7 @@ export default Component.extend({
 
   firstSelected: false,
   followupSelected: false,
+  upcomingSelected: false,
 
   introValue: "active",
   appointmentValue: "disabled",
@@ -159,13 +160,20 @@ export default Component.extend({
     firstSelect: function(){
       this.set('firstSelected', true);
       this.set('followupSelected', false);
+      this.set('upcomingSelected', false);
 
     },
     followupSelect: function(){
       this.set('firstSelected', false);
+      this.set('upcomingSelected', false);
       this.set('followupSelected', true);
-
     },
+    upcomingSelect: function(){
+      this.set('firstSelected', false);
+      this.set('followupSelected', false);
+      this.set('upcomingSelected', true);
+    },
+
     appView(){
       this.set('appState', "active");
       this.set('bookState', "");

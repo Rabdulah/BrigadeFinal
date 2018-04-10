@@ -50,10 +50,12 @@
           <label>{{mc-display question.optionString 1}}</label>
         </li>
 
+    {{#if (number-of-mc question.optionNumber 2)}}
         <li>
           <input type="radio" name="{{question.id}}" onchange={{action 'mcop3Save'}}>
           <label>{{mc-display question.optionString 2}}</label>
         </li>
+    {{/if}}
 
       {{#if (number-of-mc question.optionNumber 3)}}
         <li>

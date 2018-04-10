@@ -13,6 +13,6 @@ var rehabilitationPlansSchema = mongoose.Schema({
 
 });
 
-rehabilitationPlansSchema.plugin(mongoosePaginate);
+    rehabilitationPlansSchema.plugin(mongoosePaginate);
 var RehabilitationPlansSchema = mongoose.model('rehabilitationPlan', rehabilitationPlansSchema);
 exports.Model = RehabilitationPlansSchema;
