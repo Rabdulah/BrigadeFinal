@@ -16,6 +16,16 @@ export default Component.extend({
   routing: inject('-routing'),
   isEditing: false,
 
+  appState: "active",
+  bookState:"",
+  followState:"",
+  isApp:true,
+  isBook:false,
+  isfollow:false,
+
+
+
+
   modalName: Ember.computed(function(){
     return 'Book Appointment';
   }),
@@ -150,6 +160,32 @@ export default Component.extend({
       this.set('firstSelected', false);
       this.set('followupSelected', true);
 
+    },
+    appView(){
+      this.set('appState', "active");
+      this.set('bookState', "");
+      this.set('followState', "");
+      this.set('isApp', true);
+      this.set('isBook', false);
+      this.set('isfollow', false);
+
+    },
+    bookView(){
+      this.set('appState', "");
+      this.set('bookState', "active");
+      this.set('followState', "");
+      this.set('isApp', false);
+      this.set('isBook', true);
+      this.set('isfollow', false);
+
+    },
+    followView(){
+      this.set('appState', "");
+      this.set('bookState', "");
+      this.set('followState', "active");
+      this.set('isApp', false);
+      this.set('isBook', false);
+      this.set('isfollow', true);
     },
 
 

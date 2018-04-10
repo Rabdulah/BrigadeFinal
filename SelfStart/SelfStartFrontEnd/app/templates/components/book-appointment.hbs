@@ -10,9 +10,283 @@
 
 
 
-<br><br><br>
+<br><br>
 
-<div class="ui container segment" id="top" style="margin-left: 0% !important;">
+<div class="ui container" style="padding-top: 2em">
+  <div class="ui top attached tabular stackable menu" style="padding-left: 15%;">
+
+    <a class="{{appState}} item" {{action "appView"}}>
+      Upcoming Appointment
+    </a>
+    <a class="{{bookState}} item"  {{action "bookView"}}>
+      Book Appointment
+    </a>
+    <a class="{{followState}} item"  {{action "followView"}}>
+      Follow-ups
+    </a>
+  </div>
+  <div class="ui segment" style="background: transparent;border: none;box-shadow: none;">
+
+    {{#if menus}}
+
+      <div class="ui very padded container segment" id="top">
+        <div class="ui grid" style="margin-top: -30px;">
+          <div class="left twelve wide column" style="margin-top: -5px;">
+            <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">
+              Menu Builder
+            </p>
+          </div>
+          <div class="right three wide column" style="padding-left: 30px;">
+            {{!--{{add-rehabplan flagAdd=flagAdd}}--}}
+            <div class="ui form" >
+              {{#ui-dropdown class="selection" onChange=(action (mut plan))}}
+                <div class="default text">Select a menu</div>
+                <i class="dropdown icon"></i>
+                <div class="menu">
+                  {{#each rehabModel as |plan|}}
+                    <div data-value="{{plan.id}}" class="item">
+                      {{plan.planName}}
+                    </div>
+                  {{/each}}
+                </div>
+              {{/ui-dropdown}}
+
+            </div>
+          </div>
+        </div>
+        <br><br><br><br>
+        <div style="display: inline">
+          <table class="ui fixed table" style="border: none;border-color: white;">
+            <tbody >
+            <tr style="font-weight: bold;">
+              {{#each modelAttributes as |column|}}
+                <th class={{column.class}} {{action 'sortColumn' column.key column.dir}}>{{column.name}}
+                  {{#if (eq column.dir 'asc')}}
+                    <i class="sort ascending icon"></i>
+                  {{/if}}
+                  {{#if (eq column.dir 'desc')}}
+                    <i class="sort descending icon"></i>
+                  {{/if}}
+                  {{#if (eq column.dir '')}}
+                    <i class="sort icon"></i>
+                  {{/if}}
+                </th>
+              {{/each}}
+
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ui divider"></div>
+
+        <div  id="myWindow" style="height:500px; overflow-y: scroll; overflow-x: hidden;">
+          <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
+            <tbody >
+            {{#each listModel as |exercise|}}
+
+              <tr>
+
+                {{#each modelAttributes as |column|}}
+
+                  <td class={{column.class}}>
+                    {{get exercise column.key}}
+                  </td>
+                {{/each}}
+              </tr>
+            {{/each}}
+
+            {{#if isPlanSelected}}
+              <div class="ui {{disabled}} button" {{action "openModal"}}>
+                Assign
+              </div>
+            {{/if}}
+
+
+            </tbody>
+          </table>
+        </div>
+      </div>
+    {{/if}}
+
+    {{#if photo}}
+      <table class="ui single line table">
+        <thead>
+        <tr>
+          <th>Image Name</th>
+          <th>Image</th>
+        </tr>
+        </thead>
+
+        <tbody>
+        {{#each imageList as |Image|}}
+          <tr>
+            <td>{{Image.name}}</td>
+            <td>
+              <img class = "ui extra large image" src="{{Image.imageData}}">
+            </td>
+          </tr>
+        {{/each}}
+        </tbody>
+
+      </table>
+    {{/if}}
+
+
+
+
+    {{#if reports}}
+
+      <div class="ui very padded container segment" id="top">
+        <div class="ui grid" style="margin-top: -30px;">
+          <div class="left twelve wide column" style="margin-top: -5px;">
+            <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">
+              Reports
+            </p>
+          </div>
+          <div class="right three wide column" style="padding-left: 30px;">
+            {{!-- <div class="ui form" >
+            <button class="ui small blue labeled icon button">
+              <i class="file alternate icon"></i>
+              Generate Reports
+            </button>
+          </div> --}}
+          </div>
+        </div>
+        <br><br><br><br>
+
+        <div style="display: inline">
+          <table class="ui fixed table" style="border: none;border-color: white;">
+            <tbody >
+            <tr style="font-weight: bold;">
+              <th class>
+                Report Type
+              </th>
+              <th class>
+                Actions
+              </th>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ui divider"></div>
+
+        <div style="display: inline">
+          <table class="ui fixed table" style="border: none;border-color: white;">
+            <tbody>
+            <tr>
+              <th class>
+                Feedback Report
+              </th>
+              <th class>
+                <button class="circular ui icon button" {{action "openFeedback"}}>
+                  <i class="file alternate icon"></i>
+                </button>
+              </th>
+            </tr>
+
+            <br><br>
+            <tr>
+              <th class>
+                Summary Report
+              </th>
+              <th class>
+                <button class="circular ui icon button" {{action "openSummary"}}>
+                  <i class="file alternate icon"></i>
+                </button>
+              </th>
+            </tr>
+
+            <br><br>
+            <tr>
+              <th class>
+                Data Report
+              </th>
+              <th class>
+                <button class="circular ui icon button" {{action "openData"}}>
+                  <i class="file alternate icon"></i>
+                </button>
+              </th>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    {{/if}}
+    {{#if accountingmenus}}
+      <div class="ui very padded container segment" id="top">
+        <div class="ui grid" style="margin-top: -30px;">
+          <div class="left five wide column" style="margin-top: -5px;">
+            <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">Trasnactions</p>
+          </div>
+          <div class="right three wide column" style="padding-left: 30px; margin-top: -5px;">
+            <p>remaining: </p>
+          </div>
+          <td class="right aligned one wide column ">
+            <p style="cursor: pointer; " title="Edit">
+              <img src="/assets/images/pencil.svg">
+            </p>
+          </td>
+
+        </div>
+        <br><br><br><br>
+
+
+        <div style="display: inline">
+          <table class="ui fixed table" style="border: none;border-color: white;">
+            <tbody >
+            <tr style="font-weight: bold;">
+              <th> test </th>
+              <th> test2 </th>
+            </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <div class="ui divider"></div>
+
+        <div  id="myWindow" style="height:500px; overflow-y: scroll; overflow-x: hidden;">
+          <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
+            <tbody >
+            {{#each listModel as |exercise|}}
+
+
+              <tr>
+
+                {{#each modelAttributes as |column|}}
+
+                  <td class={{column.class}}>
+                    {{get exercise column.key}}
+                  </td>
+                {{/each}}
+              </tr>
+            {{/each}}
+
+            {{#if isPlanSelected}}
+              <div class="ui {{disabled}} button" {{action "openModal"}}>
+                Assign
+              </div>
+            {{/if}}
+
+
+            </tbody>
+          </table>
+        </div>
+
+      </div>
+    {{/if}}
+
+    {{#if assess}}
+      {{assessment-table model=model}}
+    {{/if}}
+
+  </div>
+</div>
+
+{{#if isApp}}
+<div class="ui very padded container segment" id="top">
   <div class="ui grid">
     <div class="left thirteen wide column" style="margin-top: -5px;">
       <p style="padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;">
@@ -37,7 +311,7 @@
 
   <div class="ui divider"></div>
 
-  <div  id="clientWindow" style="height:500px; overflow-y: scroll; overflow-x: hidden;">
+  <div  id="clientWindow" style="height:300px; overflow-y: scroll; overflow-x: hidden;">
 
     <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
       <tbody >
@@ -53,34 +327,35 @@
     </table>
   </div>
 </div>
+{{/if}}
 <br><br><br><br>
 
-<div class="ui centered cards" >
-  <div class="card" style="width:250px">
-    <div class="content" style="text-align: center">
-      <div class="header">First Appointment</div>
-    </div>
-    <div class="ui bottom attached button" {{action "firstSelect"}}>
-      <i class="add icon"></i>Show
-    </div>
-  </div>
+<!--<div class="ui centered cards" >-->
+  <!--<div class="card" style="width:250px">-->
+    <!--<div class="content" style="text-align: center">-->
+      <!--<div class="header">First Appointment</div>-->
+    <!--</div>-->
+    {{!--<div class="ui bottom attached button" {{action "firstSelect"}}>--}}
+      <!--<i class="add icon"></i>Show-->
+    <!--</div>-->
+  <!--</div>-->
 
-  <div class="card" style="width:250px">
-    <div class="content"  style="text-align: center">
-      <div class="header">Follow-ups</div>
-    </div>
-    <div class="ui bottom attached button" {{action "followupSelect"}}>
-      <i class="add icon"></i>
-      Show
-    </div>
-  </div>
-</div>
+  <!--<div class="card" style="width:250px">-->
+    <!--<div class="content"  style="text-align: center">-->
+      <!--<div class="header">Follow-ups</div>-->
+    <!--</div>-->
+    <!--<div class="ui bottom attached button" {{action "followupSelect"}}>--}}
+      <!--<i class="add icon"></i>-->
+      <!--Show-->
+    <!--</div>-->
+  <!--</div>-->
+<!--</div>-->
 
 
 
 <link integrity="" rel="stylesheet" href="/assets/css/form-style.css"> <!-- Resource style -->
 
-{{#if followupSelected}}
+{{#if isfollow}}
 <form class="cd-form floating-labels" {{action "save" on="submit"}} style="padding-right: 10em; padding-left: 10em">
   <label class="cd-label">Select Physiotherapist</label>
   <p class="cd-select icon">
@@ -109,7 +384,7 @@
 <br><br>
 {{/if}}
 
-{{#if firstSelected}}
+{{#if isBook}}
 <div class = "ui very padded segment container" style="border: none; box-shadow: none; background-color: white;position: relative;z-index:  2;">
   <div class="ui four steps">
     <div class="{{introValue}} step">
