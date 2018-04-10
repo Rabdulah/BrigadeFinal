@@ -47,14 +47,26 @@ router.route('/')
             });
         }
         else{
-            console.log('qwertyuio');
-            RehabClientLink.Model.find({"RehabilitationPlan": assign.RehabilitationPlan, "Patient": assign.Patient}, function (error, rehabClientLinks) {
-                if (error) {
-                    response.send(error);
-                } else {
-                    response.json({rehabClientLink: rehabClientLinks});
-                }
-            });
+            if (assign.RehabilitationPlan && assign.Patient){
+                console.log('qwertyuio');
+                RehabClientLink.Model.find({"RehabilitationPlan": assign.RehabilitationPlan, "Patient": assign.Patient}, function (error, rehabClientLinks) {
+                    if (error) {
+                        response.send(error);
+                    } else {
+                        response.json({rehabClientLink: rehabClientLinks});
+                    }
+                });
+            }
+            else {
+                console.log('terminate');
+                RehabClientLink.Model.find({"assessmentTest": assign.assessmentTest, "Patient": assign.Patient}, function (error, rehabClientLinks) {
+                    if (error) {
+                        response.send(error);
+                    } else {
+                        response.json({rehabClientLink: rehabClientLinks});
+                    }
+                });
+            }
         }
     });
 
