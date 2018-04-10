@@ -36,7 +36,7 @@
             <a  href="/practitioner/rehabplans"class="item">Menu Builder</a>
             <a href="/practitioner/appointment" class="item">Appointments</a>
             {{#link-to 'home'}}
-            <a class="item" {{action "logout"}}>Logout</a>
+            <a class="item" {{action "logout"}} style="margin-top: 28px">Logout</a>
             {{/link-to}}
           </div>
         </div>
@@ -44,7 +44,7 @@
     </div>
 
     {{yield}}
-    <div id="SkypeButton_Call" style="position: fixed; right: 0; bottom: 0"></div>
+
 
   </div>
 </div>

@@ -1,7 +1,7 @@
   {{#if question.sa}}
     <div class="field" style="margin: 1em 0;">
       <label class="cd-label">{{question.questionText}}</label>
-      {{input class="message" type="text" value = SAanswer focus-out="saSave" required = true}}
+      {{input class="message" type="text" value = SAanswer focus-out="saSave"}}
     </div>
   {{/if}}
 
@@ -12,7 +12,6 @@
       {{ui-rating
         class="ui massive star rating"
         maxRating=10
-        required=true
         onRate=(action "ratingSave" rateValue=value)}}
     </div>
   {{/if}}
@@ -20,7 +19,7 @@
   {{#if question.tf}}
   <div class="field" style="margin: 1em 0;">
     <label class="cd-label">{{question.questionText}}</label>
-      <ul class="cd-form-list" required=true>
+      <ul class="cd-form-list">
         <li>
           <input type="radio"  value="True"  name="{{question.id}}" current=tf onChange={{action "TFtrue"}}>
           <label>Yes</label>
@@ -40,7 +39,7 @@
       <label class="cd-label">{{question.questionText}}</label>
 
 
-      <ul class="cd-form-list" required=true>
+      <ul class="cd-form-list">
         <li>
           <input type="radio" name="{{question.id}}" onchange={{action 'mcop1Save'}}>
           <label>{{mc-display question.optionString 0}}</label>

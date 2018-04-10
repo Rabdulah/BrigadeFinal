@@ -78,16 +78,16 @@
         <div class="title">Upload Photos</div>
       </div>
     </div>
+    <div class="{{confirmValue}}  step">
+      <i class="credit card icon"></i>
+      <div class="content">
+        <div class="title">Payment</div>
+      </div>
+    </div>
     <div class="{{appointmentValue}}  step">
       <i class="bookmark icon"></i>
       <div class="content">
         <div class="title">Book Appointment</div>
-      </div>
-    </div>
-    <div class="{{confirmValue}}  step">
-      <i class="check circle icon"></i>
-      <div class="content">
-        <div class="title">Payment</div>
       </div>
     </div>
   </div>
@@ -120,7 +120,7 @@
       <div class="field" style="margin: 1em 0">
         <div class="ui centered grid"  style="margin-left: 0px">
           <button class="ui blue button" style="height: 50px;" {{action "backToIntro"}}>Back</button>
-          <button class="ui {{disabled}} blue button" style="height: 50px;" {{action "goToAppointment"}}>Next</button>
+          <button class="ui {{disabled}} blue button" style="height: 50px;" {{action "goToConfirm"}}>Next</button>
         </div>
       </div>
 
@@ -129,7 +129,7 @@
       <div class="field" style="margin: 1em 0">
         <div class="ui centered grid"  style="margin-left: 0px">
           <button class="ui blue button" style="height: 50px;" {{action "backToIntro"}}>Back</button>
-          <button class="ui {{disabled}} blue button" style="height: 50px;" {{action "goToAppointment"}}>Next</button>
+          <button class="ui {{disabled}} blue button" style="height: 50px;" {{action "goToConfirm"}}>Next</button>
         </div>
       </div>
     {{/if}}
@@ -139,8 +139,7 @@
         <br><br>
 
         <div class="ui centered grid"  style="margin-left: 0px">
-          <button class="ui blue button" style="height: 50px;" {{action "backToPhoto"}}>Back</button>
-          <button class="ui {{appDisable}} blue button" style="height: 50px;" {{action "goToConfirm"}}>Next</button>
+          <button class="ui blue button" style="height: 50px;" {{action "backToConfirm"}}>Back</button>
         </div>
       </div>
 
@@ -173,8 +172,7 @@
 
       <div class="field" style="margin: 1em 0">
         <div class="ui centered grid" style="margin-left: 0px">
-          <button class="ui blue button" style="height: 50px;" {{action "backToPhoto"}}>Back</button>
-          <button class="ui {{appDisable}} blue button" style="height: 50px;" {{action "goToConfirm"}}>Next</button>
+          <button class="ui blue button" style="height: 50px;" {{action "backToConfirm"}}>Back</button>
         </div>
       </div>
 
@@ -182,7 +180,9 @@
     {{#if confirm}}
     <div class="field" style="margin: 1em 0">
       <div class="ui centered grid"  style="margin-left: 0px">
-        <button class="ui blue button" style="height: 50px;" {{action "backToAppointment"}}>Back</button>
+        <button class="ui blue button" style="height: 50px;" {{action "backToPhoto"}}>Back</button>
+        <button class="ui blue button" style="height: 50px;" {{action "backToAppointment"}}>Next</button>
+
       </div>
     </div>
 
@@ -314,7 +314,8 @@
 
       <div class="field" style="margin: 1em 0">
         <div class="ui centered grid"  style="margin-left: 0px">
-          <button class="ui blue button" style="height: 50px;" {{action "backToAppointment"}}>Back</button>
+          <button class="ui blue button" style="height: 50px;" {{action "backToPhoto"}}>Back</button>
+          <button class="ui {{paid}} blue button" style="height: 50px;" {{action "goToAppointment"}}>Next</button>
         </div>
       </div>
     {{/if}}

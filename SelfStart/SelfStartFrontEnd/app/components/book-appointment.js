@@ -11,7 +11,7 @@ export default Component.extend({
   occurrences: Ember.A(),
   availableSpot: Ember.A(),
   removedSpot: Ember.A(),
-
+  paid: '',
   DS: inject('store'),
   routing: inject('-routing'),
   isEditing: false,
@@ -109,29 +109,30 @@ export default Component.extend({
       this.set('photo', false);
       this.set('intro', true);
     },
-    goToAppointment() {
+    goToConfirm() {
+      this.set('confirmValue', "active");
       this.set('photoValue', "completed");
-      this.set('appointmentValue', "active");
-      this.set('appointment', true);
       this.set('photo', false);
+      this.set('confirm', true);
     },
     backToPhoto() {
       this.set('photoValue', "active");
-      this.set('appointmentValue', "");
-      this.set('photo', true);
-      this.set('appointment', false);
-    },
-    goToConfirm() {
-      this.set('confirmValue', "active");
-      this.set('appointmentValue', "completed");
-      this.set('appointment', false);
-      this.set('confirm', true);
-    },
-    backToAppointment() {
-      this.set('appointmentValue', "active");
       this.set('confirmValue', "");
+      this.set('photo', true);
+      this.set('confirm', false);
+    },
+    goToAppointment() {
+      this.set('confirmValue', "completed");
+      this.set('appointmentValue', "active");
       this.set('confirm', false);
       this.set('appointment', true);
+    },
+
+    backToConfirm() {
+      this.set('confirmValue', "active");
+      this.set('appointmentValue', "");
+      this.set('appointment', false);
+      this.set('confirm', true);
     },
     goToPaypal() {
 
@@ -300,14 +301,14 @@ export default Component.extend({
       //   }
       // });
 
-      // src.save();    
+      // src.save();
 
         console.log(src);
         booking.set('patient', src);
         let a = [];
         src.get('appointments').pushObject(booking);
         booking.save().then(function (ba){
-          
+
           src.save().then(()=>{
             self.set('appDisable', '');
             self.get('DS').findRecord('physiotherapest',self.get('selectedPhysioId')).then(function (a) {
