@@ -11,9 +11,9 @@ export default Component.extend({
   flagAdd: false,
   flagDelete:false,
   disabled: null,
+  bookingPhotos: [],
 
-
-  activeModel: Ember.observer('flagDelete','flagAdd','photoList', function () {
+  activeModel: Ember.observer('flagDelete','flagAdd', function () {
     let self = this;
     let eemail = localStorage.getItem('sas-session-id');
     eemail = this.get('auth').decrypt(eemail);
@@ -23,34 +23,37 @@ export default Component.extend({
     self.get('store').queryRecord('patient', {filter: {'email' : eemail}}).then(function (temp) {
       self.set('patientsData', temp);
       console.log(temp.get("id"));
-      self.get('store').query('image', {filter: {'patient': temp.get("id")}}).then((records) => {
-        self.get('photoList').clear();
 
-        records.forEach(im => {
-          if(im.get("patient").get("id") === temp.get("id"))
-            self.get("photoList").pushObject(im);
-        });
-      })
-    });
+      });
+
+      // self.get('store').query('image', {filter: {'patient': temp.get("id")}}).then((records) => {
+      //   self.get('photoList').clear();
+      //
+      //   records.forEach(im => {
+      //     if(im.get("patient").get("id") === temp.get("id"))
+      //       self.get("photoList").pushObject(im);
+      //   });
+      // })
+    //});
 
   }),
 
-  init(){
-    this._super(...arguments);
-    let self = this;
-    let eemail = localStorage.getItem('sas-session-id');
-    eemail = this.get('auth').decrypt(eemail);
-    console.log(eemail);
-
-    self.get('store').queryRecord('patient', {filter: {'email' : eemail}}).then(function (temp) {
-      self.set('patientsData', temp);
-      console.log(temp.get("id"));
-      self.get('store').query('image', {filter: {'patient': temp.get("id")}}).then((records) => {
-        records.forEach(im => {
-          if(im.get("patient").get("id") === temp.get("id"))
-            self.get("photoList").pushObject(im);
-        });
-      })
-    });
-  },
+  // init(){
+  //   this._super(...arguments);
+  //   let self = this;
+  //   let eemail = localStorage.getItem('sas-session-id');
+  //   eemail = this.get('auth').decrypt(eemail);
+  //   console.log(eemail);
+  //
+  //   self.get('store').queryRecord('patient', {filter: {'email' : eemail}}).then(function (temp) {
+  //     self.set('patientsData', temp);
+  //     console.log(temp.get("id"));
+  //     self.get('store').query('image', {filter: {'patient': temp.get("id")}}).then((records) => {
+  //       records.forEach(im => {
+  //         if(im.get("patient").get("id") === temp.get("id"))
+  //           self.get("photoList").pushObject(im);
+  //       });
+  //     })
+  //   });
+  // },
 });

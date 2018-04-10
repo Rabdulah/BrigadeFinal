@@ -118,7 +118,7 @@
         </div>
       </div>
 
-        {{client-upload-photos disabled=disabled}}
+     {{client-upload-photos disabled=disabled}}
 
       <div class="field" style="margin: 1em 0">
         <div class="ui centered grid"  style="margin-left: 0px">
@@ -194,17 +194,145 @@
       <div class="ui hidden divider"></div>
       <div class="ui hidden divider"></div>
 
-      <legend>Photos Uploaded</legend>
+      <legend>Booked Appointment</legend>
 
       <div class="ui hidden divider"></div>
-    <div class="ui two column grid">
-      <div class="column " style="margin: 1em 0;">
-        {{input class="user" type="text" value = givenName placeholder="First name" required = true}}
+
+      <div class="field" style="margin: 1em 0;">
+        booking history
       </div>
-    </div>
+
+      <div class="ui hidden divider"></div>
+      <div class="ui hidden divider"></div>
+
+      <legend>Payment Packages</legend>
+
+      <div class="ui hidden divider"></div>
+      <div class="ui three column doubling stackable grid container">
+
+      <div class="row">
+        <div class="column">
+          <div class="ui payment card" style="box-shadow: none;left: 50%;transform: translate(-50%);">
+            <div class="content" style="text-align: center">
+              <h3 style="font-weight: bold; text-transform: uppercase;">Assessment Package</h3>
+              <br>
+              <div class="cd-price">
+                <span class="cd-currency">$</span>
+                <span class="cd-value">150</span>
+                <br><br>
+              </div>
+            </div>
+            <div class="content" style="padding: 0 0 25px 0;">
+              <table class="ui striped table" style="border: none; text-align: center" >
+                <thead>
+                <tr>
+                  <th style="font-weight: 500">Video conference / email</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>Personal therapy plan</td>
+                </tr>
+                <tr>
+                  <td>Education & advice</td>
+                </tr>
+                <tr>
+                  <td style="height: 42px"></td>
+                </tr>
+                </tbody>
+              </table>
+
+            </div>
+            <div class="extra content footer" style="padding: 0 0 0 0;background-color: #2c3452;height: 55px;border-radius: 3px !important;">
+              <p style="text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;">{{payment-button}}</p>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="column">
+
+          <div class="ui payment card" style="box-shadow: none;left: 50%;transform: translate(-50%);">
+            <div class="content" style="text-align: center">
+              <h3 style="font-weight: bold; text-transform: uppercase;">Assessment + 3 sessions</h3>
+              <br>
+              <div class="cd-price">
+                <span class="cd-currency">$</span>
+                <span class="cd-value">350</span>
+                <br><br>
+              </div>
+            </div>
+            <div class="content" style="padding: 0 0 25px 0;">
+              <table class="ui striped table" style="border: none; text-align: center" >
+                <thead>
+                <tr>
+                  <th style="font-weight: 500">Video conference / email</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>3 extra conference / email sessions</td>
+                </tr>
+                <tr>
+                  <td>Personal therapy plan</td>
+                </tr>
+                <tr>
+                  <td>Education & advice</td>
+                </tr>
+                </tbody>
+              </table>
+
+            </div>
+            <div class="extra content footer" style="padding: 0 0 0 0;background-color: #2c3452;height: 55px;border-radius: 3px !important;">
+              <p style="text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;">{{payment-button-package-2}}</p>
+            </div>
+          </div>
+
+        </div>
+
+
+        <div class="column">
+
+          <div class="ui payment card" style="box-shadow: none;left: 50%;transform: translate(-50%);">
+            <div class="content" style="text-align: center">
+              <h3 style="font-weight: bold; text-transform: uppercase;color: #e97d68">Assessment + 6 sessions</h3>
+              <br>
+              <div class="cd-price" >
+                <span class="cd-currency" style="color: #e97d68">$</span>
+                <span class="cd-value" style="color: #e97d68">550</span>
+                <br><br>
+              </div>
+            </div>
+            <div class="content" style="padding: 0 0 25px 0;">
+              <table class="ui striped table" style="border: none; text-align: center" >
+                <thead>
+                <tr>
+                  <th style="font-weight: 500">Video conference / email</th>
+                </tr>
+                </thead>
+                <tbody>
+                <tr>
+                  <td>6 extra conference / email sessions</td>
+                </tr>
+                <tr>
+                  <td>Personal therapy plan</td>
+                </tr>
+                <tr>
+                  <td>Education & advice</td>
+                </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="extra content footer" style="padding: 0 0 0 0;background-color: #e97d68;height: 55px;border-radius: 3px !important;">
+              <p style="text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;">{{payment-button-package-3}}</p>
+            </div>
+          </div>
+        </div>
+      </div>
+      </div>
     </form>
 
-      <p>Confirmation Page Goes Here!!</p>
 
       <div class="field" style="margin: 1em 0">
         <div class="ui centered grid"  style="margin-left: 0px">
