@@ -276,7 +276,10 @@ export default Component.extend({
       //desktop
       // let client = '5a88738e1f0fdc2b94498e81';
       let physio = self.get('selectphysio');
+      let ord = localStorage.getItem('order');
+      console.log('ord', ord);
       let booking = this.get('DS').createRecord('appointment', {
+        order: ord,
         reason: self.get('Reason'),
         other: self.get('Other'),
         date: self.get('selectedbookedTime').time,
@@ -284,10 +287,27 @@ export default Component.extend({
         pName: self.get('physioName'),
       });
       let src =self.get('client');
+      // let ord = localStorage.getItem('order');
+      console.log(src.get('packages'));
+
+      // src.get('packages').forEach(o=> {
+      //   console.log(o.appointments);
+      //   console.log(o.order);
+      //   console.log(ord);
+      //   // console.log()
+      //   if(o.order === ord) {
+      //     o.appointments.push(booking);
+      //   }
+      // });
+
+      // src.save();    
+
         console.log(src);
         booking.set('patient', src);
+        let a = [];
         src.get('appointments').pushObject(booking);
-        booking.save().then(function (){
+        booking.save().then(function (ba){
+          
           src.save().then(()=>{
             self.set('appDisable', '');
             self.get('DS').findRecord('physiotherapest',self.get('selectedPhysioId')).then(function (a) {
@@ -335,12 +355,15 @@ export default Component.extend({
                 else {
                   //create 2 segmented block
                   let topappo = self.get('DS').createRecord('appointment', {
+
                     date: usedBlock.startsAt,
-                    endDate: bookedTime.time
+                    endDate: bookedTime.time,
+                    order: ord
                   });
                   let bottomappo = self.get('DS').createRecord('appointment', {
                     date: bookedTime.end,
-                    endDate: usedBlock.endsAt
+                    endDate: usedBlock.endsAt,
+                    order: ord
                   });
                   topappo.save().then(()=>{
                     bottomappo.save().then(()=>{

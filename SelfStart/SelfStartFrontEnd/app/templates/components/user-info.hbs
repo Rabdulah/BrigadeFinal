@@ -10,11 +10,15 @@
 {{#ui-modal name="register" class="register"}}
 
 
-  <i class="close icon"></i>
+  <i {{action "close"}}class="close icon"></i>
   <link integrity="" rel="stylesheet" href="{{rootURL}}../assets/css/form-style.css"> <!-- Resource style -->
 
   <div class="header">
-    Register
+    <div class = "inline fields">
+    <div class = "field">Register</div>
+    <div style=" font-size: 18px; color: red; text-align: center; text-decoration: underline;" class = "field">{{errorMessage}} </div>
+    </div>
+    {{!-- <p style="color: red; text-align: center;  text-decoration: underline; padding-top: 65px">{{errorMessage}}</p> --}}
   </div>
   <div class="scrolling content">
 

@@ -16,7 +16,7 @@ export default Component.extend({
       console.log(email);
       var myStore = this.get('store');
       var self = this;
-      this.get('DS').queryRecord('adminstrator', {filter: {"email": email}}).then(function (admin) {
+      this.get('DS').queryRecord('administrator', {filter: {"email": email}}).then(function (admin) {
         if (admin) {
           self.set('show', true);
         }

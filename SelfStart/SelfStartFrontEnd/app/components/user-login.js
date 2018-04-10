@@ -40,10 +40,48 @@ export default Component.extend({
     submit(){
       var auth = this.get("authentication");
       var self = this;
+      var myStore = self.get('store');
 
       auth.open(this.get('Email'), this.get('PWord')).then(function() {
         auth.set('isLoginRequested', false);
-        self.get('router').transitionTo('client');
+        
+        var name = auth.decrypt(localStorage.getItem('sas-session-id'));
+        myStore.queryRecord('patient', {filter: {"email": name}}).then(function (patient) {
+            console.log('name')
+            if (patient) {
+              self.get('router').transitionTo('client');
+            } else {
+              myStore.queryRecord('physiotherapest', {filter: {"email": name}}).then(function (physio) {
+                if (physio) {
+                  self.get('router').transitionTo('practitioner');
+                } else {
+                  myStore.queryRecord('administrator', {filter: {"email": name}}).then(function (admin) {
+                    if (admin) {
+                      self.get('router').transitionTo('admin');
+                    }
+                  });
+                }
+              });
+            }
+        });
+      // myStore.queryRecord('physiotherapest', {filter: {"email": name}}).then(function (physio) {
+      //   if (physio) {
+      //     self.set("prac", true);
+      //   }
+      // });
+      // myStore.queryRecord('administrator', {filter: {"email": name}}).then(function (admin) {
+      //   if (admin) {
+      //     self.set("admin", true);
+      //   }
+      // });
+
+        // if(auth.client) {
+        //   self.get('router').transitionTo('client');
+        // } else if(auth.prac) {
+        //   self.get('router').transitionTo('practitioner');
+        // } else if(auth.admin) {
+        //   self.get('router').transitionTo('admin');
+        // }
         $('.ui.login.modal.tiny').modal('hide');
       }, function(error) {
         console.log(error);
