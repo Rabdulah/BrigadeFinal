@@ -17,7 +17,8 @@ export default Component.extend({
     Skype.ui({
       "name": "chat",
       "element": "SkypeButton_Call",
-      "participants": ["ramzi_abdullahi"],
+      //Must have live:
+      "participants": ["live:ramzi_abdullahi"],
       "imageSize": 24,
       "imageColor": "black"
     });

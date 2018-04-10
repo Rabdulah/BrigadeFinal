@@ -387,17 +387,17 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/payment-button-package-2.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/payment-button-package-2.js should pass ESLint\n\n5:5 - \'paypal\' is not defined. (no-undef)\n39:11 - \'thisClient\' is not defined. (no-undef)');
+    assert.ok(false, 'components/payment-button-package-2.js should pass ESLint\n\n16:7 - Unexpected console statement. (no-console)\n24:5 - \'paypal\' is not defined. (no-undef)\n65:30 - \'obj\' is defined but never used. (no-unused-vars)\n68:17 - \'Ember\' is not defined. (no-undef)\n69:17 - \'Ember\' is not defined. (no-undef)\n70:17 - \'Ember\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/payment-button-package-3.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/payment-button-package-3.js should pass ESLint\n\n5:5 - \'paypal\' is not defined. (no-undef)\n39:11 - \'thisClient\' is not defined. (no-undef)');
+    assert.ok(false, 'components/payment-button-package-3.js should pass ESLint\n\n16:7 - Unexpected console statement. (no-console)\n24:5 - \'paypal\' is not defined. (no-undef)\n65:30 - \'obj\' is defined but never used. (no-unused-vars)\n68:17 - \'Ember\' is not defined. (no-undef)\n69:17 - \'Ember\' is not defined. (no-undef)\n70:17 - \'Ember\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/payment-button.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/payment-button.js should pass ESLint\n\n6:5 - \'paypal\' is not defined. (no-undef)\n40:11 - \'thisClient\' is not defined. (no-undef)');
+    assert.ok(false, 'components/payment-button.js should pass ESLint\n\n16:7 - Unexpected console statement. (no-console)\n24:5 - \'paypal\' is not defined. (no-undef)\n65:30 - \'obj\' is defined but never used. (no-unused-vars)\n68:17 - \'Ember\' is not defined. (no-undef)\n69:17 - \'Ember\' is not defined. (no-undef)\n70:17 - \'Ember\' is not defined. (no-undef)');
   });
 
   QUnit.test('components/personal-menu.js', function (assert) {
