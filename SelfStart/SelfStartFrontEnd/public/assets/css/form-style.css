@@ -541,6 +541,19 @@ button, input, optgroup, select, textarea {
 .cd-form [required].list {
   background: url('/assets/images/form/ic_format_list_numbered_24px.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
 }
+.cd-form .info {
+  background: url('/assets/images/form/ic_info_outline_24px.svg') no-repeat 12px 12px;
+}
+.cd-form [required].info {
+  background: url('/assets/images/form/ic_info_outline_24px.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+}
+
+.cd-form .heal {
+  background: url('/assets/images/form/ic_healing_24px.svg') no-repeat 12px 12px;
+}
+.cd-form [required].heal {
+  background: url('/assets/images/form/ic_healing_24px.svg') no-repeat 12px 12px, url('/assets/images/form/cd-required.svg') no-repeat top right;
+}
 
 
 /* --------------------------------

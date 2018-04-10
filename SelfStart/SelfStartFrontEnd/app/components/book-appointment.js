@@ -91,6 +91,10 @@ export default Component.extend({
   photo: false,
   confirm: false,
 
+  disabled: '',
+  appDisable: '',
+  array: [],
+
   actions: {
     goToPhoto() {
       this.set('introValue', "completed");
@@ -264,7 +268,7 @@ export default Component.extend({
       $('.ui.bk.modal').modal('hide');
     },
 
-    book_appointment() {
+    submit() {
       let self = this;
       //temp client until we get token
       //laptop
@@ -285,6 +289,7 @@ export default Component.extend({
         src.get('appointments').pushObject(booking);
         booking.save().then(function (){
           src.save().then(()=>{
+            self.set('appDisable', '');
             self.get('DS').findRecord('physiotherapest',self.get('selectedPhysioId')).then(function (a) {
               a.get('appointments').pushObject(booking);
               a.save().then(()=>{
@@ -355,13 +360,7 @@ export default Component.extend({
                       });
                     })
                   });
-
-
-
-
                 }
-
-
               });
             });
           });

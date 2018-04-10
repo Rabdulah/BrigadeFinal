@@ -44,15 +44,37 @@ export default Component.extend({
         questions: questionList,
         answers: temp,
         completed: false,
-        formName: thisForm.get('name')
+        name: thisForm.get('name')
       });
       newTest.save().then(()=> {
+        this.get('DS').query('question-order', {filter: {'form': thisForm.get('id')}}).then((rec) => {
+
+          rec.forEach((r) => {
+
+
+
+            //console.log(r.get('order'));
+            //console.log(q.get('questionText'));
+            r.get('question').then((q)=>{
+              let answer = this.get('DS').createRecord('answer', {
+                question: q.get('questionText'),
+                answer: "",
+                test: newTest
+              });
+
+              answer.save();
+            })
+
+
+          });
+
+        });
+
         this.set("assessID", newTest.get('id'));
         console.log(newTest.get('questions')[0]);
         return true;
       });
     },
-      
     openModal: function () {
       Ember.$('.ui.' + this.get('modalName') + '.modal').modal({
         closeable: false,
@@ -62,7 +84,6 @@ export default Component.extend({
         onApprove: () => {
           var rehab = this.get('DS').peekRecord('rehabilitationplan', this.get('rehabPlan'));
           var test = this.get('DS').peekRecord('assessment-test', this.get('assessID'));
-
           let link = this.get('DS').createRecord('rehab-client-link', {
             terminated: this.get('rehabPlan.terminated'),
             RehabilitationPlan: rehab,
@@ -73,7 +94,7 @@ export default Component.extend({
           });
 
             link.save().then(()=> {
-            
+
           });
           return true;
         }

@@ -5,6 +5,7 @@ import $ from 'jquery';
 import moment from 'moment';
 
 export default Component.extend({
+  auth: inject('auth'),
   occurrences: Ember.A(),
   DS: inject('store'),
   routing: inject('-routing'),
@@ -24,6 +25,64 @@ export default Component.extend({
   getphysio: computed(function(){
     return this.get('DS').findAll('physiotherapest');
   }),
+  init(){
+    this._super(...arguments);
+    let eemail = localStorage.getItem('sas-session-id');
+    eemail = this.get('auth').decrypt(eemail);
+    console.log(eemail);
+
+    this.set('occurrences', Ember.A());
+    this.set('removedSpot', Ember.A());
+
+    let home= this;
+    //save physioid
+    //get record of selected physiotherapist
+    this.get('DS').queryRecord('physiotherapest',{filter: {'email': eemail}}).then(function (phy){
+      //might not need this
+      console.log(phy);
+      home.set('selectedphysio', phy);
+      home.set('selectedPhysioId', phy.get('id'));
+      //get each appointment by  physiotherapist appointment
+      phy.get('appointments').forEach( function(obj){
+        let curid = obj.get('id');
+        home.get('DS').findRecord('appointment',curid).then(function (app) {
+          let scheduledDate = moment(app.get('date'));
+          let endDate = moment(app.get('endDate'));
+          //filter out any appointments that is previous to current date
+          if (scheduledDate > moment()) {
+            if (app.get('reason')!= null) {
+
+              let newBooked = Ember.Object.create({
+                title: "Booked",
+                isFilled: true,
+                isDraggable: false,
+                isResizable: false,
+                isRemovable: false,
+                startsAt: scheduledDate.toISOString(),
+                endsAt: endDate.toISOString()
+              });
+              home.get('occurrences').pushObject(newBooked);
+              home.get('bookedAppointment').pushObject(newBooked);
+            }
+            else {
+              let temp = Ember.Object.create({
+                title: "Available Spot",
+                isFilled: false,
+                isDraggable: true,
+                isResizable: true,
+                isRemovable: true,
+                startsAt: scheduledDate.toISOString(),
+                endsAt: endDate.toISOString(),
+                tempid : app.get('id')
+              });
+              home.get('occurrences').pushObject(temp);
+              home.get('availableSpot').pushObject(temp);
+            }
+          }
+        });
+      });
+    });
+  },
 
 
   actions: {
@@ -65,58 +124,6 @@ export default Component.extend({
       this.set('isEditing', true);
     },
 
-    updateValue(physio){
-      this.set('occurrences', Ember.A());
-      this.set('removedSpot', Ember.A());
-
-      let home= this;
-      //save physioid
-      this.set('selectedPhysioId', physio);
-      //get record of selected physiotherapist
-      this.get('DS').findRecord('physiotherapest', physio).then(function (phy){
-        //might not need this
-        home.set('selectedphysio', phy);
-        //get each appointment by  physiotherapist appointment
-        phy.get('appointments').forEach( function(obj){
-          let curid = obj.get('id');
-          home.get('DS').findRecord('appointment',curid).then(function (app) {
-            let scheduledDate = moment(app.get('date'));
-            let endDate = moment(app.get('endDate'));
-            //filter out any appointments that is previous to current date
-            if (scheduledDate > moment()) {
-              if (app.get('reason')!= null) {
-
-                let newBooked = Ember.Object.create({
-                  title: "Booked",
-                  isFilled: true,
-                  isDraggable: false,
-                  isResizable: false,
-                  isRemovable: false,
-                  startsAt: scheduledDate.toISOString(),
-                  endsAt: endDate.toISOString()
-                });
-                home.get('occurrences').pushObject(newBooked);
-                home.get('bookedAppointment').pushObject(newBooked);
-              }
-              else {
-                let temp = Ember.Object.create({
-                  title: "Available Spot",
-                  isFilled: false,
-                  isDraggable: true,
-                  isResizable: true,
-                  isRemovable: true,
-                  startsAt: scheduledDate.toISOString(),
-                  endsAt: endDate.toISOString(),
-                  tempid : app.get('id')
-                });
-                home.get('occurrences').pushObject(temp);
-                home.get('availableSpot').pushObject(temp);
-              }
-            }
-          });
-        });
-      });
-    },
 
     // getclient(pid){
     //   console.log("getlient invoked");

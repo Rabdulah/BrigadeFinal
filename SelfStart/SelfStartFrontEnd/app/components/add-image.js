@@ -8,6 +8,8 @@ export default Component.extend({
   patientsData:null,
   DS: inject('store'),
   auth: inject('auth'),
+  flagAdd: null,
+  disabled: null,
 
   init(){
     this._super(...arguments);
@@ -23,7 +25,7 @@ export default Component.extend({
 
 
   // ImageName: null,
-  
+
   model: 'image',
   flag: null,
   accept: 'audio/*,video/*,image/*',
@@ -87,6 +89,8 @@ export default Component.extend({
 
   actionStep: [],
 
+  array: [],
+
   actions: {
     selectFile: function (data) {
       if (!Ember.isEmpty(data.target.files)) {
@@ -149,8 +153,19 @@ export default Component.extend({
           patient: self.get("patientsData")
         });
 
-        newFile.save();
-      });
+        newFile.save().then(()=>{
+          if (this.get('flagAdd')=== true)
+            this.set('flagAdd', false);
+          else
+            this.set('flagAdd', true);
+
+          this.get('array').pushObject(newFile);
+
+          this.set('disabled', '')
+        });
+      }
+
+      );
       this.queue.clear();
 
       // window.location.reload();
@@ -158,5 +173,5 @@ export default Component.extend({
     },
 
   }
-  
+
 });

@@ -12,7 +12,7 @@ var questionsSchema = mongoose.Schema({
     tf: Boolean,
     ra: Boolean,
     //answer: [{type: mongoose.Schema.ObjectId, ref: 'Answers'}],
-    //form: [{type: mongoose.Schema.ObjectId, ref: 'Forms'}],
+
     questionOrder: [{type: mongoose.Schema.ObjectId, ref: 'QuestionOrder'}]
 });
 

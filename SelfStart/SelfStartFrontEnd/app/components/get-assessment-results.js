@@ -1,9 +1,13 @@
 import Component from '@ember/component';
+import { inject } from '@ember/service';
+import { computed } from '@ember/object';
+import { inject as service } from '@ember/service';
+import moment from 'moment';
 
 export default Component.extend({
-
+  router: service(),
   DS: Ember.inject.service('store'),
-  ID: "5acbb1e984bdf02a643bd758",
+  auth: inject('auth'),
   open:false,
   notOpen:true,
   linker: null,
@@ -11,26 +15,47 @@ export default Component.extend({
   orders:[],
   ans:[],
   assessmentModel: Ember.computed(function(){
-    var id = "5acbb1e984bdf02a643bd758";
-    console.log(id);
-    return this.get('DS').find('assessment-test', id);
+
+    console.log(this.get('assessmentTest.id'));
+    return this.get('DS').find('assessment-test', this.get('assessmentTest.id'));
   }),
+  assessmentTest: null,
 
   init() {
     this._super(...arguments);
-    var self = this;
+    let self = this;
+    let eemail = localStorage.getItem('sas-session-id');
+    eemail = this.get('auth').decrypt(eemail);
+    console.log(eemail);
+
+    self.get('DS').queryRecord('patient', {filter: {'email' : eemail}}).then(function (temp){
+      self.get('DS').query('rehab-client-link', {filter: {
+        'RehabilitationPlan' : self.get('planID'),
+        'Patient' :temp.get('id'),
+      }}).then(function (obj) {
+
+        obj.forEach(function (AT) {
+          self.set('assessmentTest', AT.get('assessmentTest'));
+        });
+        self.get('DS').findRecord('assessmentTest', self.get('assessmentTest').get('id')).then((at)=>{
+          self.set('assessmentTest', at);
+          console.log(self.get('assessmentTest').get('form.id'));
+
+          self.get('DS').query('question-order', {filter: {'form':self.get('assessmentTest').get('form.id') }}).then((records) => {
+            console.log(records);
+            self.set('orders', records.toArray());
+          });
+          self.get('DS').query('answer', {filter: {'test':self.get('assessmentTest').get('id')}}).then((records) => {
+            console.log(records);
+            self.set('ans', records.toArray());
+          });
+        });
+      });
 
 
-    this.get('DS').query('question-order', {filter: {'form': "5acbb1bb84bdf02a643bd751"}}).then((records) => {
-      self.set('orders', records.toArray());
     });
-    this.get('DS').query('answer', {filter: {'test':"5acbb1e984bdf02a643bd758"}}).then((records) => {
-      self.set('ans', records.toArray());
-      console.log("********");
-      console.log(this.get("ans"));
-      console.log("********");
-    });
-    console.log(this.get('assessid'));
+
+
     //this.set('form', '5ac1ae2773e03d3f78384c92');
   },
 
@@ -38,6 +63,7 @@ export default Component.extend({
     Open(){
       this.set("open", true);
       this.set("notOpen",false);
-    }
+    },
+
   }
 });

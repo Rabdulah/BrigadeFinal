@@ -16,7 +16,9 @@ export default Component.extend({
   init(){
     this._super(...arguments);
     //console.get(this.get("assessment"));
-    console.log(this.get("answers"));
+    this.get('DS').findRecord('question',this.get("qID")).then((temp)=>{
+      this.set('question', temp);
+    });
   },
 
   actions: {
@@ -24,10 +26,12 @@ export default Component.extend({
       this.set('rateValue', rv);
 
       this.get("answers").forEach((rec) =>{
-        if(rec.get("question") === this.get("question").get("questionText")){
-            rec.set("answer",this.get("rateValue"));
-            rec.set("test",this.get("assessment"));
+        if(rec.get('question') === this.get("question").get("questionText")){
+          console.log("inside rating");
+            rec.set('answer', this.get("rateValue"));
+            rec.set('test', this.get("assessment"));
             rec.save();
+
         }
       });
     },
@@ -38,6 +42,7 @@ export default Component.extend({
             rec.set("answer","YES");
             rec.set("test",this.get("assessment"));
             rec.save();
+
         }
       });
     },
@@ -49,7 +54,8 @@ export default Component.extend({
             rec.set("test",this.get("assessment"));
             rec.save();
         }
-      });    },
+      });
+      },
 
     saSave() {
 
@@ -65,7 +71,7 @@ export default Component.extend({
     mcop1Save() {
       this.get("answers").forEach((rec) =>{
         if(rec.get("question") === this.get("question").get("questionText")){
-            rec.set("answer","0");
+            rec.set("answer","1");
             rec.set("test",this.get("assessment"));
             rec.save();
         }
@@ -75,7 +81,7 @@ export default Component.extend({
     mcop2Save() {
       this.get("answers").forEach((rec) =>{
         if(rec.get("question") === this.get("question").get("questionText")){
-            rec.set("answer","1");
+            rec.set("answer","2");
             rec.set("test",this.get("assessment"));
             rec.save();
         }
@@ -85,7 +91,7 @@ export default Component.extend({
     mcop3Save() {
       this.get("answers").forEach((rec) =>{
         if(rec.get("question") === this.get("question").get("questionText")){
-            rec.set("answer","2");
+            rec.set("answer","3");
             rec.set("test",this.get("assessment"));
             rec.save();
         }
@@ -95,7 +101,7 @@ export default Component.extend({
     mcop4Save() {
       this.get("answers").forEach((rec) =>{
         if(rec.get("question") === this.get("question").get("questionText")){
-            rec.set("answer","3");
+            rec.set("answer","4");
             rec.set("test",this.get("assessment"));
             rec.save();
         }
@@ -105,7 +111,7 @@ export default Component.extend({
     mcop5Save() {
       this.get("answers").forEach((rec) =>{
         if(rec.get("question") === this.get("question").get("questionText")){
-            rec.set("answer","4");
+            rec.set("answer","5");
             rec.set("test",this.get("assessment"));
             rec.save();
         }
@@ -115,7 +121,7 @@ export default Component.extend({
     mcop6Save() {
       this.get("answers").forEach((rec) =>{
         if(rec.get("question") === this.get("question").get("questionText")){
-            rec.set("answer","5");
+            rec.set("answer","6");
             rec.set("test",this.get("assessment"));
             rec.save();
         }

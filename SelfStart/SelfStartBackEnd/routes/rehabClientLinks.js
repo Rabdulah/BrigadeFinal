@@ -36,6 +36,7 @@ router.route('/')
             });
         }
         else if (assign.id){
+            console.log('sdf');
             RehabClientLink.Model.find({"Patient": assign.id}, function (error, rehabClientLinks) {
                 console.log("right place");
                 if (error) {
@@ -46,6 +47,7 @@ router.route('/')
             });
         }
         else{
+            console.log('qwertyuio');
             RehabClientLink.Model.find({"RehabilitationPlan": assign.RehabilitationPlan, "Patient": assign.Patient}, function (error, rehabClientLinks) {
                 if (error) {
                     response.send(error);
@@ -80,6 +82,7 @@ router.route('/:rehabClientLink_id')
                 rehabClientLink.Patient = request.body.rehabClientLink.Patient;
                 rehabClientLink.terminated = request.body.rehabClientLink.terminated;
                 rehabClientLink.assigned = request.body.rehabClientLink.assigned;
+                rehabClientLink.assessmentTest = request.body.rehabClientLink.assessmentTest;
 
                 rehabClientLink.save(function (error) {
                     if (error) {

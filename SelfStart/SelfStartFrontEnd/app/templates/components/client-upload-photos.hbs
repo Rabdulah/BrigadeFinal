@@ -1,23 +1,16 @@
-<div class="masthead segment bg2">
-  <div class="ui container">
-    <div class="introduction">
-      <h1 class="ui inverted header">
-        <span class="library" style="font-size: 1.25em">Upload photo</span>
-      </h1>
-    </div>
-  </div>
-</div>
 <br>
-
 <div id="content">
-  {{add-image}}'
+  {{add-image flagAdd=flagAdd disabled=disabled}}
 
+  <br><br><br>
+
+  <div class="ui container">
   <table class="ui single line table">
     <thead>
     <tr>
-      <th>Image Name</th>
-      <th>Image</th>
-      <th>Delete</th>
+      <th class="seven wide">Image Name</th>
+      <th class="seven wide">Image</th>
+      <th class="two wide">Actions</th>
     </tr>
     </thead>
 
@@ -29,17 +22,13 @@
           <img class = "ui small image" src="{{Image.imageData}}">
         </td>
         <td>
-          <div class="four wide column right aligned">
-            {{delete-image ID=Image.id}}
-          </div>
+          {{delete-image ID=Image.id flagDelete=flagDelete}}
         </td>
       </tr>
     {{/each}}
     </tbody>
-
   </table>
-
+    <br><br><br>
+  </div>
 </div>
-
-{{outlet}}
 
