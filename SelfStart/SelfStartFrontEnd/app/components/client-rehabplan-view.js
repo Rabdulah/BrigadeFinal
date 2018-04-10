@@ -20,6 +20,7 @@ export default Component.extend({
   isEnd: false,
   isNFirst: false,
   isLoading: false,
+  inExercise:true,
 
 
   init(){
@@ -128,6 +129,7 @@ export default Component.extend({
 
     finishRehabPlan(){
       console.log('done');
+      this.set('inExercise', false);
 
     },
   }
