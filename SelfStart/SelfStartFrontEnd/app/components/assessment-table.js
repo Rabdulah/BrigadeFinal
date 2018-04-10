@@ -17,8 +17,7 @@ export default Component.extend({
   scrolledLines: 0,
 
   modelAttributes:
-    [{'key': 'name', 'name':'Assessment Test', 'dir' : 'asc', 'class' :'left aligned seven wide column'},
-      {'key': 'authorName', 'name':'Author Name', 'dir' : '','class' :'left aligned seven wide column'}],
+    [{'key': 'name', 'name':'Assessment Test', 'dir' : 'asc', 'class' :'left aligned fourteen wide column'}],
 
   activeModel: Ember.observer('offset', 'limit', 'sort', 'dir','flagDelete','flagAdd', function () {
     var self = this;

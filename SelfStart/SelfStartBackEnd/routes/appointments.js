@@ -53,7 +53,7 @@ router.route('/:appointment_id')
                 appointment.patient = request.body.appointment.patient;
                 appointment.endDate = request.body.appointment.endDate;
                 appointment.pName = request.body.appointment.pName;
-
+                appointment.order = request.body.appointment.order;
                 appointment.save(function (error) {
                     if (error) {
                         response.send({error: error});

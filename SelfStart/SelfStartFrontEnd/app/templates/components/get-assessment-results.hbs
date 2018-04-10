@@ -2,4 +2,3 @@
   {{#each orders as |assess index|}}
     {{get-answers answers = ans form=form question=assess.question qID = assess.question.id assessment=assessmentModel qNumber = index assessid = assessmentModel.id}}
   {{/each}}
-

@@ -13,6 +13,8 @@ export default Component.extend({
   mcop5: 0,
   mcop6: 0,
   a: [],
+  assessment: null,
+
   init(){
     this._super(...arguments);
     //console.get(this.get("assessment"));
@@ -24,7 +26,7 @@ export default Component.extend({
   actions: {
     ratingSave(rv) {
       this.set('rateValue', rv);
-
+      console.log(this.get("assessment"));
       this.get("answers").forEach((rec) =>{
         if(rec.get('question') === this.get("question").get("questionText")){
           console.log("inside rating");

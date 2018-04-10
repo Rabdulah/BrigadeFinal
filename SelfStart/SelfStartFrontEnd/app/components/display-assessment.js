@@ -28,7 +28,7 @@ export default Component.extend({
   // mcop6: "",
 
   modalName: computed(function () {
-    return 'viewAnswers' + this.get('model').id;
+    return 'viewAnswers' + this.get('ID');
   }),
 
   orders:[],
