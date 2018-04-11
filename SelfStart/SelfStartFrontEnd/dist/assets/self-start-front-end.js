@@ -1466,11 +1466,15 @@ define('self-start-front-end/components/admin-nav', ['exports'], function (expor
         console.log(email);
         var myStore = this.get('store');
         var self = this;
-        this.get('DS').queryRecord('administrator', { filter: { "email": email } }).then(function (admin) {
-          if (admin) {
-            self.set('show', true);
-          }
-        });
+
+        if (email === "root@root.ca") {
+          self.set('show', true);
+        }
+        // this.get('DS').queryRecord('administrator', {filter: {"email": email}}).then(function (admin) {
+        //   if (admin) {
+        //     self.set('show', true);
+        //   }
+        // });
       }
     },
     didInsertElement: function didInsertElement() {
@@ -9765,113 +9769,122 @@ define('self-start-front-end/components/user-login', ['exports'], function (expo
         var self = this;
         var myStore = self.get('store');
 
-        auth.open(this.get('Email'), this.get('PWord')).then(function () {
-          auth.set('isLoginRequested', false);
+        if (this.get('Email') === "root@root.ca") {
+          auth.openRoot(this.get('PWord')).then(function (name) {
+            console.log(name);
+            console.log("anything");
+            auth.set('isLoginRequested', false);
+            auth.setName(name);
 
-          var name = auth.decrypt(localStorage.getItem('sas-session-id'));
-          myStore.queryRecord('patient', { filter: { "email": name } }).then(function (patient) {
-            console.log('name');
-            if (patient) {
-              self.get('router').transitionTo('client');
-            } else {
-              myStore.queryRecord('physiotherapest', { filter: { "email": name } }).then(function (physio) {
-                if (physio) {
-                  self.get('router').transitionTo('practitioner');
-                } else {
-                  myStore.queryRecord('administrator', { filter: { "email": name } }).then(function (admin) {
-                    if (admin) {
-                      self.get('router').transitionTo('admin');
-                    }
-                  });
-                }
-              });
-            }
+            Ember.$('.ui.login.modal.tiny').modal('hide');
+            self.get('router').transitionTo('admin');
+          }, function () {
+            //console.log("Root" + error);
           });
-          // myStore.queryRecord('physiotherapest', {filter: {"email": name}}).then(function (physio) {
-          //   if (physio) {
-          //     self.set("prac", true);
-          //   }
-          // });
-          // myStore.queryRecord('administrator', {filter: {"email": name}}).then(function (admin) {
-          //   if (admin) {
-          //     self.set("admin", true);
-          //   }
-          // });
+        } else {
 
-          // if(auth.client) {
-          //   self.get('router').transitionTo('client');
-          // } else if(auth.prac) {
-          //   self.get('router').transitionTo('practitioner');
-          // } else if(auth.admin) {
-          //   self.get('router').transitionTo('admin');
-          // }
-          Ember.$('.ui.login.modal.tiny').modal('hide');
-        }, function (error) {
-          console.log(error);
-          // if(error) {
-          if (error === "passwordReset") {
-            Ember.$('.ui.changePassword.modal').modal({
-              // closable: false,
-              // detachable: false,
-              onDeny: function onDeny() {
-                self.set('error', null);
-                return true;
-              },
-              onApprove: function onApprove() {
-                if (!self.get('firstPassword') || self.get('firstPassword').trim().length === 0) {
-                  self.set('error', 'Your must enter a password value');
-                  return false;
-                } else {
-                  if (self.get('firstPassword') !== self.get('secondPassword')) {
-                    self.set('error', 'Your password and confirmation password do not match');
+          auth.open(this.get('Email'), this.get('PWord')).then(function () {
+            auth.set('isLoginRequested', false);
+
+            var name = auth.decrypt(localStorage.getItem('sas-session-id'));
+            myStore.queryRecord('patient', { filter: { "email": name } }).then(function (patient) {
+              console.log('name');
+              if (patient) {
+                self.get('router').transitionTo('client');
+              } else {
+                myStore.queryRecord('physiotherapest', { filter: { "email": name } }).then(function (physio) {
+                  if (physio) {
+                    self.get('router').transitionTo('practitioner');
+                  }
+                });
+              }
+            });
+            // myStore.queryRecord('physiotherapest', {filter: {"email": name}}).then(function (physio) {
+            //   if (physio) {
+            //     self.set("prac", true);
+            //   }
+            // });
+            // myStore.queryRecord('administrator', {filter: {"email": name}}).then(function (admin) {
+            //   if (admin) {
+            //     self.set("admin", true);
+            //   }
+            // });
+
+            // if(auth.client) {
+            //   self.get('router').transitionTo('client');
+            // } else if(auth.prac) {
+            //   self.get('router').transitionTo('practitioner');
+            // } else if(auth.admin) {
+            //   self.get('router').transitionTo('admin');
+            // }
+            Ember.$('.ui.login.modal.tiny').modal('hide');
+          }, function (error) {
+            console.log(error);
+            // if(error) {
+            if (error === "passwordReset") {
+              Ember.$('.ui.changePassword.modal').modal({
+                // closable: false,
+                // detachable: false,
+                onDeny: function onDeny() {
+                  self.set('error', null);
+                  return true;
+                },
+                onApprove: function onApprove() {
+                  if (!self.get('firstPassword') || self.get('firstPassword').trim().length === 0) {
+                    self.set('error', 'Your must enter a password value');
                     return false;
                   } else {
-                    self.set('error', null);
-                    // var ourAuth = self.get('authent')
-                    var myStore = self.get('store');
-                    var userName = self.get('name');
-                    var hashedPassword = auth.hash(self.get('firstPassword'));
-                    console.log("BEfore");
-                    console.log(self.get('Email'));
-                    myStore.queryRecord('password', { filter: { "email": self.get('Email') } }).then(function (userShadow) {
-                      console.log("hashedPassword", hashedPassword);
-                      auth.set('encryptedPassword', hashedPassword);
-                      userShadow.set('encryptedPassword', hashedPassword);
-                      userShadow.set('passwordMustChanged', true);
-                      console.log(userShadow);
-                      userShadow.set('passwordReset', false);
-                      userShadow.save().then(function () {
-                        // auth.close();
-                        auth.set('isLoginRequested', true);
-                        console.log("Success update");
-                        // self.get('routing').transitionTo('login');
-                        //  return true;
+                    if (self.get('firstPassword') !== self.get('secondPassword')) {
+                      self.set('error', 'Your password and confirmation password do not match');
+                      return false;
+                    } else {
+                      self.set('error', null);
+                      // var ourAuth = self.get('authent')
+                      var myStore = self.get('store');
+                      var userName = self.get('name');
+                      var hashedPassword = auth.hash(self.get('firstPassword'));
+                      console.log("BEfore");
+                      console.log(self.get('Email'));
+                      myStore.queryRecord('password', { filter: { "email": self.get('Email') } }).then(function (userShadow) {
+                        console.log("hashedPassword", hashedPassword);
+                        auth.set('encryptedPassword', hashedPassword);
+                        userShadow.set('encryptedPassword', hashedPassword);
+                        userShadow.set('passwordMustChanged', true);
+                        console.log(userShadow);
+                        userShadow.set('passwordReset', false);
+                        userShadow.save().then(function () {
+                          // auth.close();
+                          auth.set('isLoginRequested', true);
+                          console.log("Success update");
+                          // self.get('routing').transitionTo('login');
+                          //  return true;
+                        });
                       });
-                    });
+                    }
                   }
                 }
-              }
-            }).modal('show');
-          } else {
-            if (error === "wrongUserName") {
-              self.set('error', 'Please enter a correct user name');
+              }).modal('show');
             } else {
-              if (error === "wrongPassword") {
-                console.log("Wrong Pass");
-                self.set('error', 'Please enter a correct password');
+              if (error === "wrongUserName") {
+                self.set('error', 'Please enter a correct user name');
               } else {
-                if (error === "loginFailed") {
-                  self.set('error', 'Login Failed ...');
+                if (error === "wrongPassword") {
+                  console.log("Wrong Pass");
+                  self.set('error', 'Please enter a correct password');
+                } else {
+                  if (error === "loginFailed") {
+                    self.set('error', 'Login Failed ...');
+                  }
+                  // else {
+                  //   this.get('router').transitionTo('client');
+                  // }
                 }
-                // else {
-                //   this.get('router').transitionTo('client');
-                // }
               }
             }
-          }
-          // }
-          // return;
-        });
+            // }
+            // return;
+          });
+        }
         // this.get('router').transitionTo('client');
       },
 
@@ -11821,6 +11834,20 @@ define('self-start-front-end/models/rehabilitationplan', ['exports', 'ember-data
     assessmentTests: _emberData.default.hasMany('assessment-test')
   });
 });
+define('self-start-front-end/models/root', ['exports', 'ember-data'], function (exports, _emberData) {
+  'use strict';
+
+  Object.defineProperty(exports, "__esModule", {
+    value: true
+  });
+  exports.default = _emberData.default.Model.extend({
+    password: _emberData.default.attr(),
+    nonce: _emberData.default.attr(),
+    response: _emberData.default.attr(),
+    wrongPassword: _emberData.default.attr('boolean'),
+    sessionIsActive: _emberData.default.attr('boolean')
+  });
+});
 define('self-start-front-end/resolver', ['exports', 'ember-resolver'], function (exports, _emberResolver) {
   'use strict';
 
@@ -12744,6 +12771,7 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
       this.set("admin", false);
     },
     openRoot: function openRoot(password) {
+      console.log(password);
       var self = this;
       return new Ember.RSVP.Promise(function (resolve, reject) {
         if (password) {
@@ -12768,7 +12796,7 @@ define('self-start-front-end/services/auth', ['exports', 'npm:crypto-browserify'
               } else {
                 // self.setName("Root");
                 self.set('isAuthenticated', true);
-                resolve("Root");
+                resolve("root@root.ca");
               }
             });
           });
@@ -14590,7 +14618,7 @@ define("self-start-front-end/templates/components/client-nav", ["exports"], func
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "SVzU9M64", "block": "{\"symbols\":[\"&default\"],\"statements\":[[2,\"<style>\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .fixed,\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .pusher {\"],[0,\"\\n\"],[2,\"-ebkit-transform: translate3d(260px, 0, 0); transform: translate3d(260px, 0, 0);\"],[0,\"\\n\"],[2,\"}\"],[0,\"\\n\"],[2,\"</style>\"],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"show\"]]],null,{\"statements\":[[0,\"\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index\"],[7],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"following bar\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n\"],[4,\"link-to\",[\"client\"],null,{\"statements\":[[0,\"                    \"],[6,\"img\"],[9,\"class\",\"ui image selfStart\"],[9,\"src\",\"/assets/images/home/Header.png\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"right menu inverted\"],[7],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/client/exercise-menu\"],[9,\"class\",\"item\"],[7],[0,\"Exercise Menu\"],[8],[0,\"\\n            \"],[2,\"<a  href=\\\"/\\\"class=\\\"item\\\">Initial Intake</a>\"],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/client/upload-photos\"],[9,\"class\",\"item\"],[7],[0,\"Upload Photos\"],[8],[0,\"\\n            \"],[2,\"<a  href=\\\"/\\\"class=\\\"item\\\">Transations</a>\"],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/client/appointment\"],[9,\"class\",\"item\"],[7],[0,\"Appointment\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/client/settings\"],[9,\"class\",\"item\"],[7],[0,\"Settings\"],[8],[0,\"\\n\"],[4,\"link-to\",[\"home\"],null,{\"statements\":[[0,\"            \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"style\",\"margin-top: 28px\"],[3,\"action\",[[19,0,[]],\"logout\"]],[7],[0,\"Logout\"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n    \"],[11,1],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[[6,\"p\"],[7],[0,\"You do not have authorization to this route, please register.\"],[8],[0,\"\\n\"]],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-nav.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "8N8otgkZ", "block": "{\"symbols\":[\"&default\"],\"statements\":[[2,\"<style>\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .fixed,\"],[0,\"\\n\"],[2,\".ui.visible.left.sidebar ~ .pusher {\"],[0,\"\\n\"],[2,\"-ebkit-transform: translate3d(260px, 0, 0); transform: translate3d(260px, 0, 0);\"],[0,\"\\n\"],[2,\"}\"],[0,\"\\n\"],[2,\"</style>\"],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"show\"]]],null,{\"statements\":[[0,\"\\n\\n\"],[6,\"div\"],[9,\"id\",\"example\"],[9,\"class\",\"index\"],[7],[0,\"\\n\\n\\n  \"],[6,\"div\"],[9,\"class\",\"full height\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"following bar\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui large secondary network menu inverted\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"item\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui logo shape\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"sides\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"active ui side\"],[7],[0,\"\\n\"],[4,\"link-to\",[\"client\"],null,{\"statements\":[[0,\"                    \"],[6,\"img\"],[9,\"class\",\"ui image selfStart\"],[9,\"src\",\"/assets/images/home/Header.png\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"right menu inverted\"],[7],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/client/exercise-menu\"],[9,\"class\",\"item\"],[7],[0,\"Exercise Menu\"],[8],[0,\"\\n            \"],[2,\"<a  href=\\\"/\\\"class=\\\"item\\\">Initial Intake</a>\"],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/client/upload-photos\"],[9,\"class\",\"item\"],[7],[0,\"Upload Photos\"],[8],[0,\"\\n            \"],[2,\"<a  href=\\\"/\\\"class=\\\"item\\\">Transations</a>\"],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/client/appointment\"],[9,\"class\",\"item\"],[7],[0,\"Appointment\"],[8],[0,\"\\n            \"],[6,\"a\"],[9,\"href\",\"/client/settings\"],[9,\"class\",\"item\"],[7],[0,\"Settings\"],[8],[0,\"\\n\"],[4,\"link-to\",[\"home\"],null,{\"statements\":[[0,\"            \"],[6,\"a\"],[9,\"class\",\"item\"],[9,\"style\",\"margin-top: 28px\"],[3,\"action\",[[19,0,[]],\"logout\"]],[7],[0,\"Logout\"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n\\n    \"],[11,1],[0,\"\\n\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"parameters\":[]},{\"statements\":[],\"parameters\":[]}]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-nav.hbs" } });
 });
 define("self-start-front-end/templates/components/client-rehabplan-view", ["exports"], function (exports) {
   "use strict";
@@ -16148,6 +16176,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+4afe42f7"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+4b897d89"});
 }
 //# sourceMappingURL=self-start-front-end.map

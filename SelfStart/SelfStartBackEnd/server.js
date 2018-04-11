@@ -93,10 +93,11 @@ var questionOrder = require('./routes/questionOrder');
 var answers = require('./routes/answers');
 var administrators = require('./routes/administrators');
 var physiotherapests = require('./routes/physiotherapests');
-
+var roots = require('./routes/roots');
 // REGISTER OUR ROUTES -------------------------------
 
 app.use(logger);
+app.use('/roots', roots);
 app.use('/answers', answers);
 app.use('/images', photos);
 app.use('/genders', genders);

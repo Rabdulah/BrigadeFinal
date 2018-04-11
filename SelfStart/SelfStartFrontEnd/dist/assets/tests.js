@@ -477,7 +477,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/user-login.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/user-login.js should pass ESLint\n\n4:10 - \'computed\' is defined but never used. (no-unused-vars)\n50:13 - Unexpected console statement. (no-console)\n87:9 - Unexpected console statement. (no-console)\n109:25 - \'userName\' is assigned a value but never used. (no-unused-vars)\n111:21 - Unexpected console statement. (no-console)\n112:21 - Unexpected console statement. (no-console)\n114:23 - Unexpected console statement. (no-console)\n118:23 - Unexpected console statement. (no-console)\n123:25 - Unexpected console statement. (no-console)\n138:17 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/user-login.js should pass ESLint\n\n4:10 - \'computed\' is defined but never used. (no-unused-vars)\n47:11 - Unexpected console statement. (no-console)\n48:11 - Unexpected console statement. (no-console)\n64:13 - Unexpected console statement. (no-console)\n95:9 - Unexpected console statement. (no-console)\n117:25 - \'userName\' is assigned a value but never used. (no-unused-vars)\n119:21 - Unexpected console statement. (no-console)\n120:21 - Unexpected console statement. (no-console)\n122:23 - Unexpected console statement. (no-console)\n126:23 - Unexpected console statement. (no-console)\n131:25 - Unexpected console statement. (no-console)\n146:17 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/view-appointment.js', function (assert) {
@@ -688,6 +688,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('models/rehabilitationplan.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'models/rehabilitationplan.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('models/root.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'models/root.js should pass ESLint\n\n');
   });
 
   QUnit.test('resolver.js', function (assert) {
@@ -947,7 +952,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('services/auth.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'services/auth.js should pass ESLint\n\n56:5 - Unexpected console statement. (no-console)\n58:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n80:5 - Unexpected console statement. (no-console)\n166:23 - Unexpected console statement. (no-console)\n280:5 - Unexpected console statement. (no-console)\n282:5 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'services/auth.js should pass ESLint\n\n56:5 - Unexpected console statement. (no-console)\n58:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n80:5 - Unexpected console statement. (no-console)\n166:23 - Unexpected console statement. (no-console)\n280:5 - Unexpected console statement. (no-console)\n282:5 - Unexpected console statement. (no-console)\n302:5 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('services/doc.js', function (assert) {
@@ -4633,6 +4638,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'unit/models/rehabilitationplan-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('unit/models/root-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/models/root-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('unit/routes/admin-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/routes/admin-test.js should pass ESLint\n\n');
@@ -5342,6 +5352,20 @@ define('self-start-front-end/tests/unit/models/rehabilitationplan-test', ['ember
   'use strict';
 
   (0, _emberQunit.moduleForModel)('rehabilitationplan', 'Unit | Model | rehabilitationplan', {
+    // Specify the other units that are required for this test.
+    needs: []
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var model = this.subject();
+    // let store = this.store();
+    assert.ok(!!model);
+  });
+});
+define('self-start-front-end/tests/unit/models/root-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForModel)('root', 'Unit | Model | root', {
     // Specify the other units that are required for this test.
     needs: []
   });

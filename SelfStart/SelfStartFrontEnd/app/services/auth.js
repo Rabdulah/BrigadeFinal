@@ -299,6 +299,7 @@ export default Ember.Service.extend({
 
   openRoot(password)
   {
+    console.log(password)
     var self = this;
     return new Ember.RSVP.Promise(function (resolve, reject) {
       if (password) {
@@ -323,7 +324,7 @@ export default Ember.Service.extend({
             } else {
               // self.setName("Root");
               self.set('isAuthenticated', true);
-              resolve("Root");
+              resolve("root@root.ca");
             }
 
           });
