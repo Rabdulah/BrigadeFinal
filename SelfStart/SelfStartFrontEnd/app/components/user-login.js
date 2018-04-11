@@ -62,6 +62,7 @@ export default Component.extend({
         var name = auth.decrypt(localStorage.getItem('sas-session-id'));
         myStore.queryRecord('patient', {filter: {"email": name}}).then(function (patient) {
             console.log('name')
+            console.log(patient);
             if (patient) {
               self.get('router').transitionTo('client');
             } else {

@@ -4,6 +4,7 @@ export default DS.Model.extend({
   // patient
   ID: DS.attr(),
   familyName: DS.attr(),
+  skype: DS.attr(),
   givenName: DS.attr(),
   email: DS.attr(),
   encryptedPassword: DS.belongsTo('password'),

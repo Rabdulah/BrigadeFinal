@@ -9612,6 +9612,22 @@ define('self-start-front-end/components/user-info', ['exports'], function (expor
         var _this2 = this;
 
         var self = this;
+        console.log(self.get('email'));
+        var afamilyName = self.get('familyName');
+        var agivenName = self.get('givenName');
+        var aemail = self.get('email');
+        // encryptedPassword: passwords,
+        var astreetName = self.get('streetName');
+        var astreetNumber = self.get('streetNumber');
+        var aapartment = self.get('apartment');
+        var acountry = self.get('country');
+        var aprovince = self.get('province');
+        var acity = self.get('city');
+        var adateOfBirth = new Date(this.get('selectedDate'));
+        var agender = self.get('selectedGender');
+        var aphoneNumber = self.get('phoneNumber');
+        var apostalCode = self.get('postalCode');
+        var askype = self.get('skype');
 
         if (this.get("encryptedPassword") === this.get("confirmPassword")) {
 
@@ -9623,27 +9639,28 @@ define('self-start-front-end/components/user-info', ['exports'], function (expor
           });
 
           console.log("password b4 sent", passwords.get("encryptedPassword"));
-
+          console.log(passwords);
           passwords.save().then(function (passwords) {
+            console.log(self.get('email'));
             console.log("Password returned to front end after save", passwords);
-            var patient = _this2.get('DS').createRecord('patient', {
-              familyName: self.get('familyName'),
-              givenName: self.get('givenName'),
-              email: self.get('email'),
+            var patient = self.get('DS').createRecord('patient', {
+              familyName: afamilyName,
+              givenName: agivenName,
+              email: aemail,
               encryptedPassword: passwords,
-              streetName: self.get('streetName'),
-              streetNumber: self.get('streetNumber'),
-              apartment: self.get('apartment'),
-              country: self.get('country'),
-              province: self.get('province'),
-              city: self.get('city'),
-              dateOfBirth: new Date(_this2.get('selectedDate')),
-              gender: self.get('selectedGender'),
-              phoneNumber: self.get('phoneNumber'),
-              postalCode: self.get('postalCode'),
-              skype: self.get('skype')
+              streetName: astreetName,
+              streetNumber: astreetNumber,
+              apartment: aapartment,
+              country: acountry,
+              province: aprovince,
+              city: acity,
+              dateOfBirth: adateOfBirth,
+              gender: agender,
+              phoneNumber: aphoneNumber,
+              postalCode: apostalCode,
+              skype: askype
             });
-
+            console.log(patient, "this is the patirent");
             patient.save().then(function (res) {
               console.log('this is the response', res);
               console.log(res.get("success"));
@@ -9789,6 +9806,7 @@ define('self-start-front-end/components/user-login', ['exports'], function (expo
             var name = auth.decrypt(localStorage.getItem('sas-session-id'));
             myStore.queryRecord('patient', { filter: { "email": name } }).then(function (patient) {
               console.log('name');
+              console.log(patient);
               if (patient) {
                 self.get('router').transitionTo('client');
               } else {
@@ -11712,6 +11730,7 @@ define('self-start-front-end/models/patient', ['exports', 'ember-data'], functio
     // patient
     ID: _emberData.default.attr(),
     familyName: _emberData.default.attr(),
+    skype: _emberData.default.attr(),
     givenName: _emberData.default.attr(),
     email: _emberData.default.attr(),
     encryptedPassword: _emberData.default.belongsTo('password'),

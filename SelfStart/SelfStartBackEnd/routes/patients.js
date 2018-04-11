@@ -36,9 +36,9 @@ function decrypt(cipherText) {
 
 router.route('/')
     .post(parseUrlencoded, parseJSON, function (request, response) {
-        // console.log(request.body.patient);
+        console.log(request.body.patient);
         var patient = new Patients.Model(request.body.patient);
-
+        console.log("hiiiiiii", patient);
         Patients.getUserByEmail(patient.email, (err, client) =>{
             if(err) {
                 patient.success = false;

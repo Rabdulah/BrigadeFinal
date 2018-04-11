@@ -97,7 +97,7 @@ var roots = require('./routes/roots');
 // REGISTER OUR ROUTES -------------------------------
 
 app.use(logger);
-app.use('/roots', roots);
+
 app.use('/answers', answers);
 app.use('/images', photos);
 app.use('/genders', genders);
@@ -122,7 +122,7 @@ app.use('/administrators', administrators);
 app.use('/physiotherapests', physiotherapests);
 app.use('/exerciseLists', exerciseList);
 app.use('/questionOrders', questionOrder);
-
+app.use('/roots', roots);
 //Crypto-----------------------------------------------------------
 // const crypto = require('crypto');
 
