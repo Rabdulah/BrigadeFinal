@@ -81,7 +81,7 @@ export default Component.extend({
                 Ember.set(item, 'amount', total);
 
                 let item2 = cli.get('packages')[length2];
-                Ember.set(item2, 'numberOfSessions', 4);
+                Ember.set(item2, 'numberOfSessions', 3);
                 Ember.set(item2, 'appointments', []);
                 Ember.set(item2, 'order', length2);
                 localStorage.setItem('order', length2.toString());

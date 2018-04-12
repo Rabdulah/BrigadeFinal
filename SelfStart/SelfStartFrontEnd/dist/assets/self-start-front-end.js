@@ -2254,7 +2254,7 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
     function checkVal(inputField) {
       inputField.val() == '' ? inputField.prev('.cd-label').removeClass('float') : inputField.prev('.cd-label').addClass('float');
     }
-  }), _defineProperty(_EmberComponent$exte, 'firstSelected', false), _defineProperty(_EmberComponent$exte, 'followupSelected', false), _defineProperty(_EmberComponent$exte, 'upcomingSelected', false), _defineProperty(_EmberComponent$exte, 'videoValue', "active"), _defineProperty(_EmberComponent$exte, 'introValue', "disabled"), _defineProperty(_EmberComponent$exte, 'appointmentValue', "disabled"), _defineProperty(_EmberComponent$exte, 'photoValue', "disabled"), _defineProperty(_EmberComponent$exte, 'confirmValue', "disabled"), _defineProperty(_EmberComponent$exte, 'video', true), _defineProperty(_EmberComponent$exte, 'intro', false), _defineProperty(_EmberComponent$exte, 'appointment', false), _defineProperty(_EmberComponent$exte, 'photo', false), _defineProperty(_EmberComponent$exte, 'confirm', false), _defineProperty(_EmberComponent$exte, 'disabled', ''), _defineProperty(_EmberComponent$exte, 'appDisable', ''), _defineProperty(_EmberComponent$exte, 'array', []), _defineProperty(_EmberComponent$exte, 'showDetails', null), _defineProperty(_EmberComponent$exte, 'showBook', null), _defineProperty(_EmberComponent$exte, 'showBooked', null), _defineProperty(_EmberComponent$exte, 'orderAppts', []), _defineProperty(_EmberComponent$exte, 'actions', {
+  }), _defineProperty(_EmberComponent$exte, 'firstSelected', false), _defineProperty(_EmberComponent$exte, 'followupSelected', false), _defineProperty(_EmberComponent$exte, 'upcomingSelected', false), _defineProperty(_EmberComponent$exte, 'videoValue', "active"), _defineProperty(_EmberComponent$exte, 'introValue', "disabled"), _defineProperty(_EmberComponent$exte, 'appointmentValue', "disabled"), _defineProperty(_EmberComponent$exte, 'photoValue', "disabled"), _defineProperty(_EmberComponent$exte, 'confirmValue', "disabled"), _defineProperty(_EmberComponent$exte, 'video', false), _defineProperty(_EmberComponent$exte, 'intro', true), _defineProperty(_EmberComponent$exte, 'appointment', false), _defineProperty(_EmberComponent$exte, 'photo', false), _defineProperty(_EmberComponent$exte, 'confirm', false), _defineProperty(_EmberComponent$exte, 'disabled', ''), _defineProperty(_EmberComponent$exte, 'appDisable', ''), _defineProperty(_EmberComponent$exte, 'array', []), _defineProperty(_EmberComponent$exte, 'showDetails', null), _defineProperty(_EmberComponent$exte, 'showBook', null), _defineProperty(_EmberComponent$exte, 'showBooked', null), _defineProperty(_EmberComponent$exte, 'orderAppts', []), _defineProperty(_EmberComponent$exte, 'actions', {
     goToIntro: function goToIntro() {
       this.set('introValue', "active");
       this.set('videoValue', "");
@@ -7890,7 +7890,7 @@ define('self-start-front-end/components/payment-button-package-2', ['exports'], 
                   Ember.set(item, 'amount', total);
 
                   var item2 = cli.get('packages')[length2];
-                  Ember.set(item2, 'numberOfSessions', 4);
+                  Ember.set(item2, 'numberOfSessions', 3);
                   Ember.set(item2, 'appointments', []);
                   Ember.set(item2, 'order', length2);
                   localStorage.setItem('order', length2.toString());

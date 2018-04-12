@@ -117,8 +117,8 @@ export default Component.extend({
   photoValue: "disabled",
   confirmValue: "disabled",
 
-  video: true,
-  intro: false,
+  video: false,
+  intro: true,
   appointment: false,
   photo: false,
   confirm: false,
