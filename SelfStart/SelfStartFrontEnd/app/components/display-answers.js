@@ -25,29 +25,28 @@ export default Component.extend({
   init() {
     this._super(...arguments);
     var self = this;
-    console.log(this.get('answers'));
     this.set('realAnswers', this.get('answers').toArray());
 
 
     if(this.get('question').get('type') === "Short answer"){
       self.get('answers').forEach((ans) => {
-        if (ans.question === this.get("question").get("questionText")){
-          this.set("SAanswer", ans.answer);
+        if (ans.get('question') === this.get("question").get("questionText")){
+          this.set("SAanswer", ans.get('answer'));
         }
       })
     }
 
     if (this.get('question').get('type') === "Rating"){
       this.get("answers").forEach((rec) =>{
-        if(rec.question === this.get("question").get("questionText")){
-          this.set("Rating", rec.answer);
+        if(rec.get('question') === this.get("question").get("questionText")){
+          this.set("Rating", rec.get('answer'));
         }
       });
     }
     if(this.get('question').get('type') === "True/False"){
       this.get("answers").forEach((rec) =>{
-        if(rec.question === this.get("question").get("questionText")){
-          if(rec.answer == "NO")
+        if(rec.get('question') === this.get("question").get("questionText")){
+          if(rec.get('answer') == "NO")
             this.set('checkFalse', true);
           else
             this.set('checkTrue', true);
@@ -55,6 +54,7 @@ export default Component.extend({
       });
     }
     if(this.get('question').get('type') === "Multiple choice"){
+      console.log('mc');
       let breakdown = this.get('question').get("optionString").split('+++');
       let length = breakdown.length;
       this.set("mcop1", breakdown[0]);
@@ -74,18 +74,19 @@ export default Component.extend({
       }
 
       this.get("answers").forEach((rec) =>{
-        if(rec.question === this.get("question").get("questionText")){
-          if(rec.answer == "1")
+        console.log(rec);
+        if(rec.get('question') === this.get("question").get("questionText")){
+          if(rec.get('answer') == "1")
             this.set("checkmcop1", true);
-          if(rec.answer == "2")
+          if(rec.get('answer') == "2")
             this.set("checkmcop2", true);
-          if(rec.answer == "3")
+          if(rec.get('answer') == "3")
             this.set("checkmcop3", true);
-          if(rec.answer == "4")
+          if(rec.get('answer') == "4")
             this.set("checkmcop4", true);
-          if(rec.answer == "5")
+          if(rec.get('answer') == "5")
             this.set("checkmcop5", true);
-          if(rec.answer == "6")
+          if(rec.get('answer') == "6")
             this.set("checkmcop6", true);
         }
       });

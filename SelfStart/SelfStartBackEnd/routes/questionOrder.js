@@ -13,6 +13,7 @@ router.route('/')
         
         .get(function (request, response) {
             var order =  request.query.filter;
+            console.log(request.query);
             if(!order){
                 QuestionOrder.Model.find(function (error, questionOrders) {
                     if (error) response.send(error);
@@ -20,6 +21,7 @@ router.route('/')
                 });
             }
             else{
+                console.log('should go in here')
                 QuestionOrder.Model.find({"form": order.form}, function (error, questionOrders) {
                     if (error) response.send(error);
                     response.json({questionOrder: questionOrders});

@@ -50,6 +50,7 @@ Router.map(function() {
     this.route('display-reports');
     this.route('edit-menu', { path: '/rehabplans/:rehabilitationplan_id'});
     this.route('exercises');
+    this.route('ask-a-therapist');
   });
 
   this.route('client', function() {
@@ -63,6 +64,7 @@ Router.map(function() {
     this.route('exercises');
     this.route('view-rehabplan', { path: 'rehabplans/:rehabilitationplan_id'});
   });
+
 });
 
 export default Router;

@@ -112,7 +112,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/assessment-table.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/assessment-table.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n91:21 - \'curas\' is defined but never used. (no-unused-vars)');
+    assert.ok(false, 'components/assessment-table.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n106:21 - \'curas\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/assign-rehabplan.js', function (assert) {
@@ -127,7 +127,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/book-appointment.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/book-appointment.js should pass ESLint\n\n11:16 - \'Ember\' is not defined. (no-undef)\n12:18 - \'Ember\' is not defined. (no-undef)\n13:16 - \'Ember\' is not defined. (no-undef)\n29:14 - \'Ember\' is not defined. (no-undef)\n34:14 - \'Ember\' is not defined. (no-undef)\n40:23 - \'Ember\' is not defined. (no-undef)\n59:5 - Unexpected console statement. (no-console)\n64:7 - Unexpected console statement. (no-console)\n205:37 - \'occurrence\' is defined but never used. (no-unused-vars)\n215:64 - \'isPreview\' is defined but never used. (no-unused-vars)\n216:7 - Unexpected console statement. (no-console)\n230:40 - \'occurrence\' is defined but never used. (no-unused-vars)\n236:31 - \'Ember\' is not defined. (no-undef)\n245:11 - Unexpected console statement. (no-console)\n260:52 - \'Ember\' is not defined. (no-undef)\n280:29 - \'Ember\' is not defined. (no-undef)\n294:42 - \'Ember\' is not defined. (no-undef)\n311:7 - Unexpected console statement. (no-console)\n320:30 - \'Ember\' is not defined. (no-undef)\n331:11 - \'physio\' is assigned a value but never used. (no-unused-vars)\n333:7 - Unexpected console statement. (no-console)\n344:7 - Unexpected console statement. (no-console)\n358:9 - Unexpected console statement. (no-console)\n360:13 - \'a\' is assigned a value but never used. (no-unused-vars)\n362:39 - \'ba\' is defined but never used. (no-unused-vars)\n377:19 - Unexpected console statement. (no-console)\n387:19 - Unexpected console statement. (no-console)\n398:19 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/book-appointment.js should pass ESLint\n\n11:16 - \'Ember\' is not defined. (no-undef)\n12:18 - \'Ember\' is not defined. (no-undef)\n13:16 - \'Ember\' is not defined. (no-undef)\n29:14 - \'Ember\' is not defined. (no-undef)\n34:14 - \'Ember\' is not defined. (no-undef)\n40:23 - \'Ember\' is not defined. (no-undef)\n59:5 - Unexpected console statement. (no-console)\n64:7 - Unexpected console statement. (no-console)\n222:37 - \'occurrence\' is defined but never used. (no-unused-vars)\n232:64 - \'isPreview\' is defined but never used. (no-unused-vars)\n233:7 - Unexpected console statement. (no-console)\n247:40 - \'occurrence\' is defined but never used. (no-unused-vars)\n253:31 - \'Ember\' is not defined. (no-undef)\n262:11 - Unexpected console statement. (no-console)\n277:52 - \'Ember\' is not defined. (no-undef)\n297:29 - \'Ember\' is not defined. (no-undef)\n311:42 - \'Ember\' is not defined. (no-undef)\n328:7 - Unexpected console statement. (no-console)\n337:30 - \'Ember\' is not defined. (no-undef)\n348:11 - \'physio\' is assigned a value but never used. (no-unused-vars)\n350:7 - Unexpected console statement. (no-console)\n361:7 - Unexpected console statement. (no-console)\n375:9 - Unexpected console statement. (no-console)\n377:13 - \'a\' is assigned a value but never used. (no-unused-vars)\n379:39 - \'ba\' is defined but never used. (no-unused-vars)\n394:19 - Unexpected console statement. (no-console)\n404:19 - Unexpected console statement. (no-console)\n415:19 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/client-exercise-menu.js', function (assert) {
@@ -143,6 +143,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('components/client-nav.js', function (assert) {
     assert.expect(1);
     assert.ok(false, 'components/client-nav.js should pass ESLint\n\n4:10 - \'computed\' is defined but never used. (no-unused-vars)\n17:5 - Unexpected console statement. (no-console)\n18:9 - \'myStore\' is assigned a value but never used. (no-unused-vars)\n32:431 - \'SkypeButton\' is not defined. (no-undef)\n32:472 - \'SkypeButton\' is not defined. (no-undef)');
+  });
+
+  QUnit.test('components/client-questions.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'components/client-questions.js should pass ESLint\n\n');
   });
 
   QUnit.test('components/client-rehabplan-view.js', function (assert) {
@@ -252,12 +257,12 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/display-answers.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/display-answers.js should pass ESLint\n\n28:5 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/display-answers.js should pass ESLint\n\n57:7 - Unexpected console statement. (no-console)\n77:9 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/display-assessment.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/display-assessment.js should pass ESLint\n\n4:8 - \'Ember\' is defined but never used. (no-unused-vars)\n56:5 - Unexpected console statement. (no-console)\n57:5 - Unexpected console statement. (no-console)\n60:3 - Duplicate key \'init\'. (no-dupe-keys)');
+    assert.ok(false, 'components/display-assessment.js should pass ESLint\n\n4:8 - \'Ember\' is defined but never used. (no-unused-vars)\n46:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n66:7 - Unexpected console statement. (no-console)\n72:9 - Unexpected console statement. (no-console)\n75:11 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/display-data-report.js', function (assert) {
@@ -883,6 +888,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
   QUnit.test('routes/practitioner/appointment.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'routes/practitioner/appointment.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('routes/practitioner/ask-a-therapist.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'routes/practitioner/ask-a-therapist.js should pass ESLint\n\n');
   });
 
   QUnit.test('routes/practitioner/assessment-display.js', function (assert) {
@@ -1794,6 +1804,35 @@ define('self-start-front-end/tests/integration/components/client-nav-test', ['em
     this.render(Ember.HTMLBars.template({
       "id": "U3b0iEyO",
       "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"client-nav\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
+define('self-start-front-end/tests/integration/components/client-questions-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('client-questions', 'Integration | Component | client questions', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "fWJ2+RpY",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"client-questions\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "fKbgg317",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"client-questions\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
       "meta": {}
     }));
 
@@ -4127,6 +4166,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
     assert.ok(true, 'integration/components/client-nav-test.js should pass ESLint\n\n');
   });
 
+  QUnit.test('integration/components/client-questions-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/client-questions-test.js should pass ESLint\n\n');
+  });
+
   QUnit.test('integration/components/client-rehabplan-view-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/client-rehabplan-view-test.js should pass ESLint\n\n');
@@ -4855,6 +4899,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('unit/routes/practitioner/appointment-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'unit/routes/practitioner/appointment-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('unit/routes/practitioner/ask-a-therapist-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'unit/routes/practitioner/ask-a-therapist-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('unit/routes/practitioner/assessment-display-test.js', function (assert) {
@@ -5861,6 +5910,19 @@ define('self-start-front-end/tests/unit/routes/practitioner/appointment-test', [
   'use strict';
 
   (0, _emberQunit.moduleFor)('route:practitioner/appointment', 'Unit | Route | practitioner/appointment', {
+    // Specify the other units that are required for this test.
+    // needs: ['controller:foo']
+  });
+
+  (0, _emberQunit.test)('it exists', function (assert) {
+    var route = this.subject();
+    assert.ok(route);
+  });
+});
+define('self-start-front-end/tests/unit/routes/practitioner/ask-a-therapist-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleFor)('route:practitioner/ask-a-therapist', 'Unit | Route | practitioner/ask a therapist', {
     // Specify the other units that are required for this test.
     // needs: ['controller:foo']
   });

@@ -21,7 +21,6 @@ router.route('/')
             });
         }
         else if (exercise){
-            console
             if (exercise.exercise) {
                 console.log('getting exercise image using query');
                 Images.Model.find({"exercise": exercise.exercise}, function (error, images) {
