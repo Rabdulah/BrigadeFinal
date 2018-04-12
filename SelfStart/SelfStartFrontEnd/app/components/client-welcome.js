@@ -8,7 +8,7 @@ export default Component.extend({
   photoValue: "disabled",
   confirmValue: "disabled",
   DS: inject('store'),
-
+  clientName: "",
   intro: true,
   appointment: false,
   photo: false,
@@ -28,6 +28,7 @@ export default Component.extend({
     this.get('DS').queryRecord('patient', {filter: {"email": email}}).then(function (patient) {
       if (patient) {
         self.set('show', true);
+        self.set("clientName", patient.get('givenName'));
       }
     });
 

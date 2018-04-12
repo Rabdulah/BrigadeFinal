@@ -4,8 +4,6 @@ import { computed } from '@ember/object';
 import $ from 'jquery';
 import moment from 'moment';
 
-
-
 export default Component.extend({
   auth: inject('auth'),
   occurrences: Ember.A(),
@@ -15,17 +13,14 @@ export default Component.extend({
   DS: inject('store'),
   routing: inject('-routing'),
   isEditing: false,
-
+  paid: "disabled",
   appState: "active",
   bookState:"",
   followState:"",
   isApp:true,
   isBook:false,
   isfollow:false,
-
-
-
-
+  
   modalName: Ember.computed(function(){
     return 'Book Appointment';
   }),
@@ -34,7 +29,7 @@ export default Component.extend({
   timeSlots: Ember.A(),
   selectedappointmentBlock: null,
   selectedbookedTime:null,
-
+  flagAdd: false,
   phyidget: null,
   client: null,
   appointmentHistory: Ember.A(),
@@ -45,11 +40,9 @@ export default Component.extend({
     return this.get('givenName') + " " + this.get('familyName');
   }),
 
-
   getphysio: computed(function(){
     return this.get('DS').findAll('physiotherapest');
   }),
-
 
   init() {
     this._super(...arguments);
@@ -57,8 +50,14 @@ export default Component.extend({
     let eemail = localStorage.getItem('sas-session-id');
     eemail = this.get('auth').decrypt(eemail);
     console.log(eemail);
-
-
+    console.log("HIIIIIIIIIIIIIIIIIII JEFFFFFFFFFFF");
+    console.log(this.get('paid'));
+    if(localStorage.getItem('order')){
+      this.set("paid", "");
+      // localStorage.removeItem('order');
+    } else {
+      this.set("paid", "disabled");
+    }
     self.get('DS').queryRecord('patient', {filter: {'email' : eemail}}).then(function (obj) {
       self.set('client', obj);
       console.log(self.get('client.id'));
@@ -70,12 +69,10 @@ export default Component.extend({
         });
       });
     });
-
   },
 
   didRender() {
     this._super(...arguments);
-
     if ($('.floating-labels').length > 0) floatLabels();
 
     function floatLabels() {
@@ -141,10 +138,14 @@ export default Component.extend({
       this.set('confirm', false);
     },
     goToAppointment() {
+      if(!localStorage.getItem('order')){
+      alert('Please pay before going to the next step')
+      } else {
       this.set('confirmValue', "completed");
       this.set('appointmentValue', "active");
       this.set('confirm', false);
       this.set('appointment', true);
+      }
     },
 
     backToConfirm() {
@@ -323,13 +324,25 @@ export default Component.extend({
 
     submit() {
       let self = this;
+      let src =self.get('client');
+      let ord = localStorage.getItem('order');
+
+       src.get('packages').forEach(o=> {
+        console.log(o.appointments);
+        console.log(o.order);
+        console.log(ord);
+        // console.log()
+        if(o.order === ord) {
+          o.numberOfSessions = o.numberOfSessions - 1;
+        }
+      });
       //temp client until we get token
       //laptop
       // let client = '5ab9649cc7f3c62814754951';
       //desktop
       // let client = '5a88738e1f0fdc2b94498e81';
       let physio = self.get('selectphysio');
-      let ord = localStorage.getItem('order');
+      
       console.log('ord', ord);
       let booking = this.get('DS').createRecord('appointment', {
         order: ord,
@@ -339,19 +352,11 @@ export default Component.extend({
         endDate: self.get('selectedbookedTime').end,
         pName: self.get('physioName'),
       });
-      let src =self.get('client');
+     
       // let ord = localStorage.getItem('order');
       console.log(src.get('packages'));
-
-      // src.get('packages').forEach(o=> {
-      //   console.log(o.appointments);
-      //   console.log(o.order);
-      //   console.log(ord);
-      //   // console.log()
-      //   if(o.order === ord) {
-      //     o.appointments.push(booking);
-      //   }
-      // });
+      
+     
 
       // src.save();
 
@@ -441,6 +446,18 @@ export default Component.extend({
             });
           });
         });
+        localStorage.removeItem("order");
+        // this.set('firstSelected', false);
+        // this.set('upcomingSelected', false);
+        // this.set('followupSelected', false);
+        // this.set("introValue", "active");
+        // this.set("appointmentValue", "disabled");
+        // this.set("photoValue", "disabled");
+        // this.set("confirmValue", "disabled");
+        
+        window.location.reload();
+
+        // alert("Your Appopintment has been booked!");
    },
   }
 });

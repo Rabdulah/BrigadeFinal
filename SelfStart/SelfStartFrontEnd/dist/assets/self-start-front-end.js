@@ -2151,7 +2151,25 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.Component.extend({
+
+  var _EmberComponent$exte;
+
+  function _defineProperty(obj, key, value) {
+    if (key in obj) {
+      Object.defineProperty(obj, key, {
+        value: value,
+        enumerable: true,
+        configurable: true,
+        writable: true
+      });
+    } else {
+      obj[key] = value;
+    }
+
+    return obj;
+  }
+
+  exports.default = Ember.Component.extend((_EmberComponent$exte = {
     auth: Ember.inject.service('auth'),
     occurrences: Ember.A(),
     availableSpot: Ember.A(),
@@ -2159,412 +2177,389 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
     paid: '',
     DS: Ember.inject.service('store'),
     routing: Ember.inject.service('-routing'),
-    isEditing: false,
+    isEditing: false
+  }, _defineProperty(_EmberComponent$exte, 'paid', "disabled"), _defineProperty(_EmberComponent$exte, 'appState', "active"), _defineProperty(_EmberComponent$exte, 'bookState', ""), _defineProperty(_EmberComponent$exte, 'followState', ""), _defineProperty(_EmberComponent$exte, 'isApp', true), _defineProperty(_EmberComponent$exte, 'isBook', false), _defineProperty(_EmberComponent$exte, 'isfollow', false), _defineProperty(_EmberComponent$exte, 'modalName', Ember.computed(function () {
+    return 'Book Appointment';
+  })), _defineProperty(_EmberComponent$exte, 'givenName', null), _defineProperty(_EmberComponent$exte, 'familyName', null), _defineProperty(_EmberComponent$exte, 'timeSlots', Ember.A()), _defineProperty(_EmberComponent$exte, 'selectedappointmentBlock', null), _defineProperty(_EmberComponent$exte, 'selectedbookedTime', null), _defineProperty(_EmberComponent$exte, 'flagAdd', false), _defineProperty(_EmberComponent$exte, 'phyidget', null), _defineProperty(_EmberComponent$exte, 'client', null), _defineProperty(_EmberComponent$exte, 'appointmentHistory', Ember.A()), _defineProperty(_EmberComponent$exte, 'physioPicked', false), _defineProperty(_EmberComponent$exte, 'physioName', Ember.computed(function () {
+    return this.get('givenName') + " " + this.get('familyName');
+  })), _defineProperty(_EmberComponent$exte, 'getphysio', Ember.computed(function () {
+    return this.get('DS').findAll('physiotherapest');
+  })), _defineProperty(_EmberComponent$exte, 'init', function init() {
+    this._super.apply(this, arguments);
+    var self = this;
+    var eemail = localStorage.getItem('sas-session-id');
+    eemail = this.get('auth').decrypt(eemail);
+    console.log(eemail);
+    console.log("HIIIIIIIIIIIIIIIIIII JEFFFFFFFFFFF");
+    console.log(this.get('paid'));
+    if (localStorage.getItem('order')) {
+      this.set("paid", "");
+      // localStorage.removeItem('order');
+    } else {
+      this.set("paid", "disabled");
+    }
+    self.get('DS').queryRecord('patient', { filter: { 'email': eemail } }).then(function (obj) {
+      self.set('client', obj);
+      console.log(self.get('client.id'));
+      self.get('DS').query('appointment', { filter: { 'id': self.get('client.id') } }).then(function (obj) {
+        obj.forEach(function (a) {
+          if ((0, _moment.default)(a.get('date')) > (0, _moment.default)()) {
+            self.get('appointmentHistory').pushObject(a);
+          }
+        });
+      });
+    });
+  }), _defineProperty(_EmberComponent$exte, 'didRender', function didRender() {
+    this._super.apply(this, arguments);
+    if (Ember.$('.floating-labels').length > 0) floatLabels();
 
-    appState: "active",
-    bookState: "",
-    followState: "",
-    isApp: true,
-    isBook: false,
-    isfollow: false,
+    function floatLabels() {
+      var inputFields = Ember.$('.floating-labels .cd-label').next();
+      inputFields.each(function () {
+        var singleInput = Ember.$(this);
+        //check if  is filling one of the form fields
+        checkVal(singleInput);
+        singleInput.on('change keyup', function () {
+          checkVal(singleInput);
+        });
+      });
+    }
 
-    modalName: Ember.computed(function () {
-      return 'Book Appointment';
-    }),
-    givenName: null,
-    familyName: null,
-    timeSlots: Ember.A(),
-    selectedappointmentBlock: null,
-    selectedbookedTime: null,
+    function checkVal(inputField) {
+      inputField.val() == '' ? inputField.prev('.cd-label').removeClass('float') : inputField.prev('.cd-label').addClass('float');
+    }
+  }), _defineProperty(_EmberComponent$exte, 'firstSelected', false), _defineProperty(_EmberComponent$exte, 'followupSelected', false), _defineProperty(_EmberComponent$exte, 'upcomingSelected', false), _defineProperty(_EmberComponent$exte, 'introValue', "active"), _defineProperty(_EmberComponent$exte, 'appointmentValue', "disabled"), _defineProperty(_EmberComponent$exte, 'photoValue', "disabled"), _defineProperty(_EmberComponent$exte, 'confirmValue', "disabled"), _defineProperty(_EmberComponent$exte, 'intro', true), _defineProperty(_EmberComponent$exte, 'appointment', false), _defineProperty(_EmberComponent$exte, 'photo', false), _defineProperty(_EmberComponent$exte, 'confirm', false), _defineProperty(_EmberComponent$exte, 'disabled', ''), _defineProperty(_EmberComponent$exte, 'appDisable', ''), _defineProperty(_EmberComponent$exte, 'array', []), _defineProperty(_EmberComponent$exte, 'actions', {
+    goToPhoto: function goToPhoto() {
+      this.set('introValue', "completed");
+      this.set('photoValue', "active");
+      this.set('photo', true);
+      this.set('intro', false);
+    },
+    backToIntro: function backToIntro() {
+      this.set('introValue', "active");
+      this.set('photoValue', "");
+      this.set('photo', false);
+      this.set('intro', true);
+    },
+    goToConfirm: function goToConfirm() {
+      this.set('confirmValue', "active");
+      this.set('photoValue', "completed");
+      this.set('photo', false);
+      this.set('confirm', true);
+    },
+    backToPhoto: function backToPhoto() {
+      this.set('photoValue', "active");
+      this.set('confirmValue', "");
+      this.set('photo', true);
+      this.set('confirm', false);
+    },
+    goToAppointment: function goToAppointment() {
+      if (!localStorage.getItem('order')) {
+        alert('Please pay before going to the next step');
+      } else {
+        this.set('confirmValue', "completed");
+        this.set('appointmentValue', "active");
+        this.set('confirm', false);
+        this.set('appointment', true);
+      }
+    },
+    backToConfirm: function backToConfirm() {
+      this.set('confirmValue', "active");
+      this.set('appointmentValue', "");
+      this.set('appointment', false);
+      this.set('confirm', true);
+    },
+    goToPaypal: function goToPaypal() {},
 
-    phyidget: null,
-    client: null,
-    appointmentHistory: Ember.A(),
 
-    physioPicked: false,
-    physioName: Ember.computed(function () {
-      return this.get('givenName') + " " + this.get('familyName');
-    }),
+    firstSelect: function firstSelect() {
+      this.set('firstSelected', true);
+      this.set('followupSelected', false);
+      this.set('upcomingSelected', false);
+    },
+    followupSelect: function followupSelect() {
+      this.set('firstSelected', false);
+      this.set('upcomingSelected', false);
+      this.set('followupSelected', true);
+    },
+    upcomingSelect: function upcomingSelect() {
+      this.set('firstSelected', false);
+      this.set('followupSelected', false);
+      this.set('upcomingSelected', true);
+    },
 
-    getphysio: Ember.computed(function () {
-      return this.get('DS').findAll('physiotherapest');
-    }),
+    appView: function appView() {
+      this.set('appState', "active");
+      this.set('bookState', "");
+      this.set('followState', "");
+      this.set('isApp', true);
+      this.set('isBook', false);
+      this.set('isfollow', false);
+    },
+    bookView: function bookView() {
+      this.set('appState', "");
+      this.set('bookState', "active");
+      this.set('followState', "");
+      this.set('isApp', false);
+      this.set('isBook', true);
+      this.set('isfollow', false);
+    },
+    followView: function followView() {
+      this.set('appState', "");
+      this.set('bookState', "");
+      this.set('followState', "active");
+      this.set('isApp', false);
+      this.set('isBook', false);
+      this.set('isfollow', true);
+    },
 
-    init: function init() {
-      this._super.apply(this, arguments);
-      var self = this;
-      var eemail = localStorage.getItem('sas-session-id');
-      eemail = this.get('auth').decrypt(eemail);
-      console.log(eemail);
 
-      self.get('DS').queryRecord('patient', { filter: { 'email': eemail } }).then(function (obj) {
-        self.set('client', obj);
-        console.log(self.get('client.id'));
-        self.get('DS').query('appointment', { filter: { 'id': self.get('client.id') } }).then(function (obj) {
-          obj.forEach(function (a) {
-            if ((0, _moment.default)(a.get('date')) > (0, _moment.default)()) {
-              self.get('appointmentHistory').pushObject(a);
+    calendarAddOccurrence: function calendarAddOccurrence(occurrence) {
+      // this.get('occurrences').pushObject(Ember.Object.create({
+      //   title: occurrence.get('title'),
+      //   startsAt: occurrence.get('startsAt'),
+      //   endsAt: occurrence.get('endsAt')
+      // }));
+      //
+      // console.log(JSON.stringify(this.get('occurrences')));
+    },
+
+    calendarUpdateOccurrence: function calendarUpdateOccurrence(occurrence, properties, isPreview) {
+      console.log(JSON.stringify(occurrence));
+      this.set('selectedappointmentBlock', occurrence);
+
+      Ember.$('.ui.bk.modal').modal({
+        closeable: false,
+        onDeny: function onDeny() {
+          return true;
+        },
+        onApprove: function onApprove() {
+          return true;
+        }
+      }).modal('show');
+    },
+
+    calendarRemoveOccurrence: function calendarRemoveOccurrence(occurrence) {
+      // this.get('occurrences').removeObject(occurrence);
+      // console.log(JSON.stringify(occurrence));
+    },
+
+    updateValue: function updateValue(physio) {
+      this.set('occurrences', Ember.A());
+
+      var home = this;
+      //save physioid
+      this.set('selectedPhysioId', physio);
+      //get record of selected physiotherapist
+      this.get('DS').findRecord('physiotherapest', physio).then(function (phy) {
+        phy.set('updatingValue', true);
+        phy.save().then(function (o) {
+          console.log(o);
+        });
+        //might not need this
+        home.set('selectedphysio', phy);
+        home.set('givenName', phy.get('givenName'));
+        home.set('familyName', phy.get('familyName'));
+        //get each appointment by  physiotherapist appointment
+        phy.get('appointments').forEach(function (obj) {
+          var curid = obj.get('id');
+          home.get('DS').findRecord('appointment', curid).then(function (app) {
+            var scheduledDate = (0, _moment.default)(app.get('date'));
+            var endDate = (0, _moment.default)(app.get('endDate'));
+            //filter out any appointments that is previous to current date
+            if (scheduledDate > (0, _moment.default)()) {
+              if (app.get('reason') == null) {
+                home.get('occurrences').pushObject(Ember.Object.create({
+                  title: "Book Appointments",
+                  isDraggable: true,
+                  startsAt: scheduledDate.toISOString(),
+                  endsAt: endDate.toISOString(),
+                  tempid: app.get('id')
+                }));
+              }
             }
           });
         });
       });
     },
-    didRender: function didRender() {
-      this._super.apply(this, arguments);
+    updateTime: function updateTime(type) {
+      // this.get('occurrences').pushObject(Ember.Object.create({
+      //   title: occurrence.get('title'),
+      //   startsAt: occurrence.get('startsAt'),
+      //   endsAt: occurrence.get('endsAt')
+      // }));
+      this.set('timeSlots', Ember.A());
 
-      if (Ember.$('.floating-labels').length > 0) floatLabels();
+      var selected = this.get('selectedappointmentBlock');
+      var start_time = selected.startsAt;
+      var end_time = selected.endsAt;
 
-      function floatLabels() {
-        var inputFields = Ember.$('.floating-labels .cd-label').next();
-        inputFields.each(function () {
-          var singleInput = Ember.$(this);
-          //check if  is filling one of the form fields
-          checkVal(singleInput);
-          singleInput.on('change keyup', function () {
-            checkVal(singleInput);
-          });
-        });
-      }
+      var amount = void 0;
+      if (type === 't') amount = 60;else amount = 90;
 
-      function checkVal(inputField) {
-        inputField.val() == '' ? inputField.prev('.cd-label').removeClass('float') : inputField.prev('.cd-label').addClass('float');
+      while ((0, _moment.default)(start_time).add(amount, 'minute') <= (0, _moment.default)(end_time)) {
+        this.get('timeSlots').pushObject(Ember.Object.create({
+          time: (0, _moment.default)(start_time),
+          end: (0, _moment.default)(start_time).add(amount, 'minute'),
+          value: (0, _moment.default)(start_time).format('hh:mm A')
+        }));
+
+        start_time = (0, _moment.default)(start_time).add(30, 'minute');
       }
     },
-
-
-    firstSelected: false,
-    followupSelected: false,
-    upcomingSelected: false,
-
-    introValue: "active",
-    appointmentValue: "disabled",
-    photoValue: "disabled",
-    confirmValue: "disabled",
-
-    intro: true,
-    appointment: false,
-    photo: false,
-    confirm: false,
-
-    disabled: '',
-    appDisable: '',
-    array: [],
-
-    actions: {
-      goToPhoto: function goToPhoto() {
-        this.set('introValue', "completed");
-        this.set('photoValue', "active");
-        this.set('photo', true);
-        this.set('intro', false);
-      },
-      backToIntro: function backToIntro() {
-        this.set('introValue', "active");
-        this.set('photoValue', "");
-        this.set('photo', false);
-        this.set('intro', true);
-      },
-      goToConfirm: function goToConfirm() {
-        this.set('confirmValue', "active");
-        this.set('photoValue', "completed");
-        this.set('photo', false);
-        this.set('confirm', true);
-      },
-      backToPhoto: function backToPhoto() {
-        this.set('photoValue', "active");
-        this.set('confirmValue', "");
-        this.set('photo', true);
-        this.set('confirm', false);
-      },
-      goToAppointment: function goToAppointment() {
-        this.set('confirmValue', "completed");
-        this.set('appointmentValue', "active");
-        this.set('confirm', false);
-        this.set('appointment', true);
-      },
-      backToConfirm: function backToConfirm() {
-        this.set('confirmValue', "active");
-        this.set('appointmentValue', "");
-        this.set('appointment', false);
-        this.set('confirm', true);
-      },
-      goToPaypal: function goToPaypal() {},
-
-
-      firstSelect: function firstSelect() {
-        this.set('firstSelected', true);
-        this.set('followupSelected', false);
-        this.set('upcomingSelected', false);
-      },
-      followupSelect: function followupSelect() {
-        this.set('firstSelected', false);
-        this.set('upcomingSelected', false);
-        this.set('followupSelected', true);
-      },
-      upcomingSelect: function upcomingSelect() {
-        this.set('firstSelected', false);
-        this.set('followupSelected', false);
-        this.set('upcomingSelected', true);
-      },
-
-      appView: function appView() {
-        this.set('appState', "active");
-        this.set('bookState', "");
-        this.set('followState', "");
-        this.set('isApp', true);
-        this.set('isBook', false);
-        this.set('isfollow', false);
-      },
-      bookView: function bookView() {
-        this.set('appState', "");
-        this.set('bookState', "active");
-        this.set('followState', "");
-        this.set('isApp', false);
-        this.set('isBook', true);
-        this.set('isfollow', false);
-      },
-      followView: function followView() {
-        this.set('appState', "");
-        this.set('bookState', "");
-        this.set('followState', "active");
-        this.set('isApp', false);
-        this.set('isBook', false);
-        this.set('isfollow', true);
-      },
-
-
-      calendarAddOccurrence: function calendarAddOccurrence(occurrence) {
-        // this.get('occurrences').pushObject(Ember.Object.create({
-        //   title: occurrence.get('title'),
-        //   startsAt: occurrence.get('startsAt'),
-        //   endsAt: occurrence.get('endsAt')
-        // }));
-        //
-        // console.log(JSON.stringify(this.get('occurrences')));
-      },
-
-      calendarUpdateOccurrence: function calendarUpdateOccurrence(occurrence, properties, isPreview) {
-        console.log(JSON.stringify(occurrence));
-        this.set('selectedappointmentBlock', occurrence);
-
-        Ember.$('.ui.bk.modal').modal({
-          closeable: false,
-          onDeny: function onDeny() {
-            return true;
-          },
-          onApprove: function onApprove() {
-            return true;
-          }
-        }).modal('show');
-      },
-
-      calendarRemoveOccurrence: function calendarRemoveOccurrence(occurrence) {
-        // this.get('occurrences').removeObject(occurrence);
-        // console.log(JSON.stringify(occurrence));
-      },
-
-      updateValue: function updateValue(physio) {
-        this.set('occurrences', Ember.A());
-
-        var home = this;
-        //save physioid
-        this.set('selectedPhysioId', physio);
-        //get record of selected physiotherapist
-        this.get('DS').findRecord('physiotherapest', physio).then(function (phy) {
-          phy.set('updatingValue', true);
-          phy.save().then(function (o) {
-            console.log(o);
-          });
-          //might not need this
-          home.set('selectedphysio', phy);
-          home.set('givenName', phy.get('givenName'));
-          home.set('familyName', phy.get('familyName'));
-          //get each appointment by  physiotherapist appointment
-          phy.get('appointments').forEach(function (obj) {
-            var curid = obj.get('id');
-            home.get('DS').findRecord('appointment', curid).then(function (app) {
-              var scheduledDate = (0, _moment.default)(app.get('date'));
-              var endDate = (0, _moment.default)(app.get('endDate'));
-              //filter out any appointments that is previous to current date
-              if (scheduledDate > (0, _moment.default)()) {
-                if (app.get('reason') == null) {
-                  home.get('occurrences').pushObject(Ember.Object.create({
-                    title: "Book Appointments",
-                    isDraggable: true,
-                    startsAt: scheduledDate.toISOString(),
-                    endsAt: endDate.toISOString(),
-                    tempid: app.get('id')
-                  }));
-                }
-              }
-            });
-          });
-        });
-      },
-      updateTime: function updateTime(type) {
-        // this.get('occurrences').pushObject(Ember.Object.create({
-        //   title: occurrence.get('title'),
-        //   startsAt: occurrence.get('startsAt'),
-        //   endsAt: occurrence.get('endsAt')
-        // }));
-        this.set('timeSlots', Ember.A());
-
-        var selected = this.get('selectedappointmentBlock');
-        var start_time = selected.startsAt;
-        var end_time = selected.endsAt;
-
-        var amount = void 0;
-        if (type === 't') amount = 60;else amount = 90;
-
-        while ((0, _moment.default)(start_time).add(amount, 'minute') <= (0, _moment.default)(end_time)) {
-          this.get('timeSlots').pushObject(Ember.Object.create({
-            time: (0, _moment.default)(start_time),
-            end: (0, _moment.default)(start_time).add(amount, 'minute'),
-            value: (0, _moment.default)(start_time).format('hh:mm A')
-          }));
-
-          start_time = (0, _moment.default)(start_time).add(30, 'minute');
+    setselectedtime: function setselectedtime(t) {
+      var self = this;
+      this.get('timeSlots').forEach(function (obj) {
+        if ((0, _moment.default)(t).isSame(obj.time)) {
+          self.set('selectedbookedTime', obj);
         }
-      },
-      setselectedtime: function setselectedtime(t) {
-        var self = this;
-        this.get('timeSlots').forEach(function (obj) {
-          if ((0, _moment.default)(t).isSame(obj.time)) {
-            self.set('selectedbookedTime', obj);
-          }
-        });
-        console.log(JSON.stringify(this.get('selectedbookedTime')));
-      },
-      cancel_appointment: function cancel_appointment() {
-        this.set('Reason', '');
-        this.set('selectAppointmentType', '');
-        this.set('Other', '');
-        this.set('selectedTime', '');
-        this.set('timeSlots', Ember.A());
-        Ember.$('.ui.bk.modal').modal('hide');
-      },
-      submit: function submit() {
-        var self = this;
-        //temp client until we get token
-        //laptop
-        // let client = '5ab9649cc7f3c62814754951';
-        //desktop
-        // let client = '5a88738e1f0fdc2b94498e81';
-        var physio = self.get('selectphysio');
-        var ord = localStorage.getItem('order');
-        console.log('ord', ord);
-        var booking = this.get('DS').createRecord('appointment', {
-          order: ord,
-          reason: self.get('Reason'),
-          other: self.get('Other'),
-          date: self.get('selectedbookedTime').time,
-          endDate: self.get('selectedbookedTime').end,
-          pName: self.get('physioName')
-        });
-        var src = self.get('client');
-        // let ord = localStorage.getItem('order');
-        console.log(src.get('packages'));
+      });
+      console.log(JSON.stringify(this.get('selectedbookedTime')));
+    },
+    cancel_appointment: function cancel_appointment() {
+      this.set('Reason', '');
+      this.set('selectAppointmentType', '');
+      this.set('Other', '');
+      this.set('selectedTime', '');
+      this.set('timeSlots', Ember.A());
+      Ember.$('.ui.bk.modal').modal('hide');
+    },
+    submit: function submit() {
+      var self = this;
+      var src = self.get('client');
+      var ord = localStorage.getItem('order');
 
-        // src.get('packages').forEach(o=> {
-        //   console.log(o.appointments);
-        //   console.log(o.order);
-        //   console.log(ord);
-        //   // console.log()
-        //   if(o.order === ord) {
-        //     o.appointments.push(booking);
-        //   }
-        // });
+      src.get('packages').forEach(function (o) {
+        console.log(o.appointments);
+        console.log(o.order);
+        console.log(ord);
+        // console.log()
+        if (o.order === ord) {
+          o.numberOfSessions = o.numberOfSessions - 1;
+        }
+      });
+      //temp client until we get token
+      //laptop
+      // let client = '5ab9649cc7f3c62814754951';
+      //desktop
+      // let client = '5a88738e1f0fdc2b94498e81';
+      var physio = self.get('selectphysio');
 
-        // src.save();
+      console.log('ord', ord);
+      var booking = this.get('DS').createRecord('appointment', {
+        order: ord,
+        reason: self.get('Reason'),
+        other: self.get('Other'),
+        date: self.get('selectedbookedTime').time,
+        endDate: self.get('selectedbookedTime').end,
+        pName: self.get('physioName')
+      });
 
-        console.log(src);
-        booking.set('patient', src);
-        var a = [];
-        src.get('appointments').pushObject(booking);
-        booking.save().then(function (ba) {
+      // let ord = localStorage.getItem('order');
+      console.log(src.get('packages'));
 
-          src.save().then(function () {
-            self.set('appDisable', '');
-            self.get('DS').findRecord('physiotherapest', self.get('selectedPhysioId')).then(function (a) {
-              a.get('appointments').pushObject(booking);
-              a.save().then(function () {
-                //{"title":"Book Appointment","startsAt":"2018-03-16T13:00:00.000Z","endsAt":"2018-03-16T17:30:00.000Z","tempid":"5aa9d71c004e3909bc597bba"}
-                var usedBlock = self.get('selectedappointmentBlock');
-                //time":"2018-03-16T13:00:00.000Z","end":"2018-03-16T14:30:00.000Z","value":"09:00
-                var bookedTime = self.get('selectedbookedTime');
-                //remove the block you used
+      // src.save();
 
-                //case 1 if the slots are exact
-                if ((0, _moment.default)(usedBlock.startsAt).isSame(bookedTime.time) && (0, _moment.default)(usedBlock.endsAt).isSame(bookedTime.end)) {
-                  console.log("case 1");
+      console.log(src);
+      booking.set('patient', src);
+      var a = [];
+      src.get('appointments').pushObject(booking);
+      booking.save().then(function (ba) {
+
+        src.save().then(function () {
+          self.set('appDisable', '');
+          self.get('DS').findRecord('physiotherapest', self.get('selectedPhysioId')).then(function (a) {
+            a.get('appointments').pushObject(booking);
+            a.save().then(function () {
+              //{"title":"Book Appointment","startsAt":"2018-03-16T13:00:00.000Z","endsAt":"2018-03-16T17:30:00.000Z","tempid":"5aa9d71c004e3909bc597bba"}
+              var usedBlock = self.get('selectedappointmentBlock');
+              //time":"2018-03-16T13:00:00.000Z","end":"2018-03-16T14:30:00.000Z","value":"09:00
+              var bookedTime = self.get('selectedbookedTime');
+              //remove the block you used
+
+              //case 1 if the slots are exact
+              if ((0, _moment.default)(usedBlock.startsAt).isSame(bookedTime.time) && (0, _moment.default)(usedBlock.endsAt).isSame(bookedTime.end)) {
+                console.log("case 1");
+                self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
+                  old.destroyRecord().then(function () {
+                    Ember.$('.ui.bk.modal').modal('hide');
+                    // window.location.reload();
+                  });
+                });
+              }
+              //case 2 booked at the start block
+              else if ((0, _moment.default)(usedBlock.startsAt).isSame(bookedTime.time)) {
+                  console.log("case 2");
                   self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
-                    old.destroyRecord().then(function () {
+                    old.set('date', bookedTime.end);
+                    old.save().then(function () {
                       Ember.$('.ui.bk.modal').modal('hide');
                       // window.location.reload();
                     });
                   });
                 }
-                //case 2 booked at the start block
-                else if ((0, _moment.default)(usedBlock.startsAt).isSame(bookedTime.time)) {
-                    console.log("case 2");
+                //case 3 booked at the end block
+                else if ((0, _moment.default)(usedBlock.endsAt).isSame(bookedTime.end)) {
+                    console.log("case 3");
                     self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
-                      old.set('date', bookedTime.end);
+                      old.set('endDate', bookedTime.time);
                       old.save().then(function () {
                         Ember.$('.ui.bk.modal').modal('hide');
                         // window.location.reload();
                       });
                     });
                   }
-                  //case 3 booked at the end block
-                  else if ((0, _moment.default)(usedBlock.endsAt).isSame(bookedTime.end)) {
-                      console.log("case 3");
-                      self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (old) {
-                        old.set('endDate', bookedTime.time);
-                        old.save().then(function () {
-                          Ember.$('.ui.bk.modal').modal('hide');
-                          // window.location.reload();
-                        });
-                      });
-                    }
-                    //case 4 booked in between
-                    else {
-                        //create 2 segmented block
-                        var topappo = self.get('DS').createRecord('appointment', {
+                  //case 4 booked in between
+                  else {
+                      //create 2 segmented block
+                      var topappo = self.get('DS').createRecord('appointment', {
 
-                          date: usedBlock.startsAt,
-                          endDate: bookedTime.time,
-                          order: ord
-                        });
-                        var bottomappo = self.get('DS').createRecord('appointment', {
-                          date: bookedTime.end,
-                          endDate: usedBlock.endsAt,
-                          order: ord
-                        });
-                        topappo.save().then(function () {
-                          bottomappo.save().then(function () {
-                            a.get('appointments').pushObject(topappo);
-                            a.get('appointments').pushObject(bottomappo);
-                            a.save().then(function () {
-                              //remove old block
-                              self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (rec) {
-                                a.get('appointments').removeObject(rec);
-                                a.save().then(function () {
-                                  rec.destroyRecord().then(function () {
-                                    Ember.$('.ui.bk.modal').modal('hide');
-                                    // window.location.reload();
-                                  });
+                        date: usedBlock.startsAt,
+                        endDate: bookedTime.time,
+                        order: ord
+                      });
+                      var bottomappo = self.get('DS').createRecord('appointment', {
+                        date: bookedTime.end,
+                        endDate: usedBlock.endsAt,
+                        order: ord
+                      });
+                      topappo.save().then(function () {
+                        bottomappo.save().then(function () {
+                          a.get('appointments').pushObject(topappo);
+                          a.get('appointments').pushObject(bottomappo);
+                          a.save().then(function () {
+                            //remove old block
+                            self.get('DS').findRecord('appointment', usedBlock.tempid).then(function (rec) {
+                              a.get('appointments').removeObject(rec);
+                              a.save().then(function () {
+                                rec.destroyRecord().then(function () {
+                                  Ember.$('.ui.bk.modal').modal('hide');
+                                  // window.location.reload();
                                 });
                               });
                             });
                           });
                         });
-                      }
-              });
+                      });
+                    }
             });
           });
         });
-      }
+      });
+      localStorage.removeItem("order");
+      // this.set('firstSelected', false);
+      // this.set('upcomingSelected', false);
+      // this.set('followupSelected', false);
+      // this.set("introValue", "active");
+      // this.set("appointmentValue", "disabled");
+      // this.set("photoValue", "disabled");
+      // this.set("confirmValue", "disabled");
+
+      window.location.reload();
+
+      // alert("Your Appopintment has been booked!");
     }
-  });
+  }), _EmberComponent$exte));
 });
 define('self-start-front-end/components/client-exercise-menu', ['exports'], function (exports) {
   'use strict';
@@ -3535,7 +3530,7 @@ define('self-start-front-end/components/client-welcome', ['exports'], function (
     photoValue: "disabled",
     confirmValue: "disabled",
     DS: Ember.inject.service('store'),
-
+    clientName: "",
     intro: true,
     appointment: false,
     photo: false,
@@ -3555,6 +3550,7 @@ define('self-start-front-end/components/client-welcome', ['exports'], function (
       this.get('DS').queryRecord('patient', { filter: { "email": email } }).then(function (patient) {
         if (patient) {
           self.set('show', true);
+          self.set("clientName", patient.get('givenName'));
         }
       });
 
@@ -14741,7 +14737,7 @@ define("self-start-front-end/templates/components/book-appointment", ["exports"]
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "i24waXD1", "block": "{\"symbols\":[\"timeslot\",\"phsio\",\"phsio\",\"aHistory\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Book appointment\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui centered cards\"],[7],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:250px\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Appointments\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[3,\"action\",[[19,0,[]],\"upcomingSelect\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"Show\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:250px\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[3,\"action\",[[19,0,[]],\"firstSelect\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"Show\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:250px\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Follow-ups\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[3,\"action\",[[19,0,[]],\"followupSelect\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n      Show\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[9,\"href\",\"/assets/css/form-style.css\"],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"upcomingSelected\"]]],null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"left thirteen wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n        \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n          Upcoming Appointment\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n      \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n        \"],[6,\"tbody\"],[7],[0,\"\\n        \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n          \"],[6,\"th\"],[7],[0,\"Date\"],[8],[0,\"\\n          \"],[6,\"th\"],[7],[0,\"Practitioner\"],[8],[0,\"\\n          \"],[6,\"th\"],[7],[0,\"Reason\"],[8],[0,\"\\n          \"],[6,\"th\"],[7],[0,\"Appointment type\"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"id\",\"clientWindow\"],[9,\"style\",\"height:300px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n\\n      \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n        \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"appointmentHistory\"]]],null,{\"statements\":[[0,\"          \"],[6,\"tr\"],[7],[0,\"\\n            \"],[6,\"td\"],[7],[1,[19,4,[\"date\"]],false],[8],[0,\"\\n            \"],[6,\"td\"],[7],[1,[19,4,[\"pName\"]],false],[8],[0,\"\\n            \"],[6,\"td\"],[7],[1,[19,4,[\"reason\"]],false],[8],[0,\"\\n            \"],[6,\"td\"],[7],[1,[25,\"types-appointment\",[[19,4,[\"date\"]],[19,4,[\"endDate\"]]],null],false],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[4]},null],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"followupSelected\"]]],null,{\"statements\":[[0,\"  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[1,[18,\"payment-button-package-additional\"],false],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"padding-right: 10em; padding-left: 10em\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n    \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n    \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n      \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectphysio\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateValue\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n        \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"getphysio\"]]],null,{\"statements\":[[0,\"          \"],[6,\"option\"],[10,\"value\",[19,3,[\"id\"]],null],[7],[0,\"\\n            \"],[1,[19,3,[\"givenName\"]],false],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[1,[25,\"as-calendar\",null,[[\"title\",\"occurrences\",\"defaultTimeZoneQuery\",\"dayStartingTime\",\"dayEndingTime\",\"timeSlotDuration\",\"onAddOccurrence\",\"onUpdateOccurrence\",\"onRemoveOccurrence\"],[\"View Schedule\",[20,[\"occurrences\"]],\"Toronto|New York\",\"8:00\",\"20:00\",\"00:30\",[25,\"action\",[[19,0,[]],\"calendarAddOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarUpdateOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarRemoveOccurrence\"],null]]]],false],[0,\"\\n\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"firstSelected\"]]],null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui very padded segment container\"],[9,\"style\",\"border: none; box-shadow: none; background-color: white;position: relative;z-index:  2;\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui four steps\"],[7],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",[26,[[18,\"introValue\"],\" step\"]]],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"class\",\"sticky note icon\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Intake Form\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",[26,[[18,\"photoValue\"],\"  step\"]]],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"class\",\"photo icon\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Upload Photos\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",[26,[[18,\"confirmValue\"],\"  step\"]]],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"class\",\"credit card icon\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Payment\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",[26,[[18,\"appointmentValue\"],\"  step\"]]],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"class\",\"bookmark icon\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui attached segment\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"intro\"]]],null,{\"statements\":[[0,\"        \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n        \"],[6,\"form\"],[9,\"id\",\"edit\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"goToPhoto\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n              \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[9,\"value\",\"submit\"],[7],[0,\"Next\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n\\n          \"],[1,[18,\"get-intake-test\"],false],[0,\"\\n\\n\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n              \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[9,\"value\",\"submit\"],[7],[0,\"Next\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"photo\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToIntro\"]],[7],[0,\"Back\"],[8],[0,\"\\n            \"],[6,\"button\"],[10,\"class\",[26,[\"ui \",[18,\"disabled\"],\" blue button\"]]],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToConfirm\"]],[7],[0,\"Next\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[1,[25,\"client-upload-photos\",null,[[\"disabled\"],[[20,[\"disabled\"]]]]],false],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToIntro\"]],[7],[0,\"Back\"],[8],[0,\"\\n            \"],[6,\"button\"],[10,\"class\",[26,[\"ui \",[18,\"disabled\"],\" blue button\"]]],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToConfirm\"]],[7],[0,\"Next\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"appointment\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n          \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToConfirm\"]],[7],[0,\"Back\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n          \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select a practitioner\"],[8],[0,\"\\n          \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n            \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectphysio\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateValue\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n              \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select a practitioner\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"getphysio\"]]],null,{\"statements\":[[0,\"                \"],[6,\"option\"],[10,\"value\",[19,2,[\"id\"]],null],[7],[0,\"\\n                  \"],[1,[19,2,[\"givenName\"]],false],[0,\"\\n                \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n          \"],[1,[25,\"as-calendar\",null,[[\"title\",\"occurrences\",\"defaultTimeZoneQuery\",\"dayStartingTime\",\"dayEndingTime\",\"timeSlotDuration\",\"onAddOccurrence\",\"onUpdateOccurrence\",\"onRemoveOccurrence\"],[\"View Schedule\",[20,[\"occurrences\"]],\"Toronto|New York\",\"8:00\",\"20:00\",\"00:30\",[25,\"action\",[[19,0,[]],\"calendarAddOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarUpdateOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarRemoveOccurrence\"],null]]]],false],[0,\"\\n\\n        \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToConfirm\"]],[7],[0,\"Back\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"confirm\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToPhoto\"]],[7],[0,\"Back\"],[8],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToAppointment\"]],[7],[0,\"Next\"],[8],[0,\"\\n\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui three column doubling stackable grid container\"],[7],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui payment card\"],[9,\"style\",\"box-shadow: none;left: 50%;transform: translate(-50%);\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n                  \"],[6,\"h3\"],[9,\"style\",\"font-weight: bold; text-transform: uppercase;\"],[7],[0,\"Assessment Package\"],[8],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"150\"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"padding: 0 0 25px 0;\"],[7],[0,\"\\n                  \"],[6,\"table\"],[9,\"class\",\"ui striped table\"],[9,\"style\",\"border: none; text-align: center\"],[7],[0,\"\\n                    \"],[6,\"thead\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"th\"],[9,\"style\",\"font-weight: 500\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tbody\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Personal therapy plan\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Education & advice\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[9,\"style\",\"height: 42px\"],[7],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\"\\n\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"extra content footer\"],[9,\"style\",\"padding: 0 0 0 0;background-color: #2c3452;height: 55px;border-radius: 3px !important;\"],[7],[0,\"\\n                  \"],[6,\"p\"],[9,\"style\",\"text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;\"],[7],[1,[18,\"payment-button\"],false],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n\\n              \"],[6,\"div\"],[9,\"class\",\"ui payment card\"],[9,\"style\",\"box-shadow: none;left: 50%;transform: translate(-50%);\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n                  \"],[6,\"h3\"],[9,\"style\",\"font-weight: bold; text-transform: uppercase;\"],[7],[0,\"Assessment + 3 sessions\"],[8],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"350\"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"padding: 0 0 25px 0;\"],[7],[0,\"\\n                  \"],[6,\"table\"],[9,\"class\",\"ui striped table\"],[9,\"style\",\"border: none; text-align: center\"],[7],[0,\"\\n                    \"],[6,\"thead\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"th\"],[9,\"style\",\"font-weight: 500\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tbody\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"3 extra conference / email sessions\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Personal therapy plan\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Education & advice\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\"\\n\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"extra content footer\"],[9,\"style\",\"padding: 0 0 0 0;background-color: #2c3452;height: 55px;border-radius: 3px !important;\"],[7],[0,\"\\n                  \"],[6,\"p\"],[9,\"style\",\"text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;\"],[7],[1,[18,\"payment-button-package-2\"],false],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\\n            \"],[8],[0,\"\\n\\n\\n            \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n\\n              \"],[6,\"div\"],[9,\"class\",\"ui payment card\"],[9,\"style\",\"box-shadow: none;left: 50%;transform: translate(-50%);\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n                  \"],[6,\"h3\"],[9,\"style\",\"font-weight: bold; text-transform: uppercase;color: #e97d68\"],[7],[0,\"Assessment + 6 sessions\"],[8],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[9,\"style\",\"color: #e97d68\"],[7],[0,\"$\"],[8],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[9,\"style\",\"color: #e97d68\"],[7],[0,\"550\"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"padding: 0 0 25px 0;\"],[7],[0,\"\\n                  \"],[6,\"table\"],[9,\"class\",\"ui striped table\"],[9,\"style\",\"border: none; text-align: center\"],[7],[0,\"\\n                    \"],[6,\"thead\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"th\"],[9,\"style\",\"font-weight: 500\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tbody\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"6 extra conference / email sessions\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Personal therapy plan\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Education & advice\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n\\n                \"],[6,\"div\"],[9,\"class\",\"extra content footer\"],[9,\"style\",\"padding: 0 0 0 0;background-color: #e97d68;height: 55px;border-radius: 3px !important;\"],[7],[0,\"\\n                  \"],[6,\"p\"],[9,\"style\",\"text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;\"],[7],[1,[18,\"payment-button-package-3\"],false],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToPhoto\"]],[7],[0,\"Back\"],[8],[0,\"\\n            \"],[6,\"button\"],[10,\"class\",[26,[\"ui \",[18,\"paid\"],\" blue button\"]]],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToAppointment\"]],[7],[0,\"Next\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],\"bk\"]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"\\n    Booking an appointment for: \"],[6,\"p\"],[9,\"style\",\"color: #0d71bb; display: inline\"],[7],[0,\" \"],[1,[18,\"givenName\"],false],[0,\" \"],[1,[18,\"familyName\"],false],[0,\" \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"scrolling content\"],[7],[0,\"\\n\\n    \"],[6,\"form\"],[9,\"id\",\"edit\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[9,\"id\",\"grid\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n            \"],[6,\"select\"],[9,\"class\",\"date\"],[10,\"value\",[18,\"selectAppointmentType\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateTime\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[0,\"\\n              \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select an appointment type\"],[8],[0,\"\\n              \"],[6,\"option\"],[9,\"value\",\"i\"],[7],[0,\"\\n                Initial Assessment\\n              \"],[8],[0,\"\\n              \"],[6,\"option\"],[9,\"value\",\"t\"],[7],[0,\"\\n                Treatment\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"heal\",\"text\",[20,[\"Reason\"]],\"Reason of the appointment\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[1,[25,\"textarea\",null,[[\"class\",\"type\",\"value\",\"placeholder\"],[\"info\",\"text\",[20,[\"Other\"]],\"Other important information\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n          \"],[6,\"select\"],[9,\"class\",\"clock\"],[10,\"value\",[18,\"selectedTime\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"setselectedtime\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[0,\"\\n            \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select a time slot\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"timeSlots\"]]],null,{\"statements\":[[0,\"              \"],[6,\"option\"],[10,\"value\",[19,1,[\"time\"]],null],[7],[0,\"\\n                \"],[1,[19,1,[\"value\"]],false],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"max-width: 100%; height: 50px;\"],[7],[0,\"\\n          Submit\\n        \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\"],[0,\"    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/book-appointment.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "+f7+VEQO", "block": "{\"symbols\":[\"timeslot\",\"phsio\",\"phsio\",\"aHistory\"],\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg2\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[9,\"style\",\"font-size: 1.25em\"],[7],[0,\"Book appointment\"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"],[6,\"div\"],[9,\"class\",\"ui centered cards\"],[7],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:250px\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Appointments\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[3,\"action\",[[19,0,[]],\"upcomingSelect\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"Show\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:250px\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[3,\"action\",[[19,0,[]],\"firstSelect\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"Show\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"card\"],[9,\"style\",\"width:250px\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"Follow-ups\"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui bottom attached button\"],[3,\"action\",[[19,0,[]],\"followupSelect\"]],[7],[0,\"\\n      \"],[6,\"i\"],[9,\"class\",\"add icon\"],[7],[8],[0,\"\\n      Show\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"],[8],[0,\"\\n\\n\\n\\n\"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[9,\"href\",\"/assets/css/form-style.css\"],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"upcomingSelected\"]]],null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui very padded container segment\"],[9,\"id\",\"top\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui grid\"],[7],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"left thirteen wide column\"],[9,\"style\",\"margin-top: -5px;\"],[7],[0,\"\\n        \"],[6,\"p\"],[9,\"style\",\"padding-top: 13px;color:  white;font-size: 1.5em;font-weight: bolder;\"],[7],[0,\"\\n          Upcoming Appointment\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"style\",\"display: inline\"],[7],[0,\"\\n      \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"style\",\"border: none;border-color: white;\"],[7],[0,\"\\n        \"],[6,\"tbody\"],[7],[0,\"\\n        \"],[6,\"tr\"],[9,\"style\",\"font-weight: bold;\"],[7],[0,\"\\n          \"],[6,\"th\"],[7],[0,\"Date\"],[8],[0,\"\\n          \"],[6,\"th\"],[7],[0,\"Practitioner\"],[8],[0,\"\\n          \"],[6,\"th\"],[7],[0,\"Reason\"],[8],[0,\"\\n          \"],[6,\"th\"],[7],[0,\"Appointment type\"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui divider\"],[7],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"id\",\"clientWindow\"],[9,\"style\",\"height:300px; overflow-y: scroll; overflow-x: hidden;\"],[7],[0,\"\\n\\n      \"],[6,\"table\"],[9,\"class\",\"ui fixed table\"],[9,\"id\",\"tb\"],[9,\"style\",\"margin: 0 0;border: none;\"],[7],[0,\"\\n        \"],[6,\"tbody\"],[7],[0,\"\\n\"],[4,\"each\",[[20,[\"appointmentHistory\"]]],null,{\"statements\":[[0,\"          \"],[6,\"tr\"],[7],[0,\"\\n            \"],[6,\"td\"],[7],[1,[19,4,[\"date\"]],false],[8],[0,\"\\n            \"],[6,\"td\"],[7],[1,[19,4,[\"pName\"]],false],[8],[0,\"\\n            \"],[6,\"td\"],[7],[1,[19,4,[\"reason\"]],false],[8],[0,\"\\n            \"],[6,\"td\"],[7],[1,[25,\"types-appointment\",[[19,4,[\"date\"]],[19,4,[\"endDate\"]]],null],false],[8],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[4]},null],[0,\"        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n\"],[4,\"if\",[[20,[\"followupSelected\"]]],null,{\"statements\":[[0,\"  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[1,[18,\"payment-button-package-additional\"],false],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n  \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[9,\"style\",\"padding-right: 10em; padding-left: 10em\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n    \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n    \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n      \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectphysio\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateValue\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n        \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select Physiotherapist\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"getphysio\"]]],null,{\"statements\":[[0,\"          \"],[6,\"option\"],[10,\"value\",[19,3,[\"id\"]],null],[7],[0,\"\\n            \"],[1,[19,3,[\"givenName\"]],false],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[3]},null],[0,\"      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n    \"],[1,[25,\"as-calendar\",null,[[\"title\",\"occurrences\",\"defaultTimeZoneQuery\",\"dayStartingTime\",\"dayEndingTime\",\"timeSlotDuration\",\"onAddOccurrence\",\"onUpdateOccurrence\",\"onRemoveOccurrence\"],[\"View Schedule\",[20,[\"occurrences\"]],\"Toronto|New York\",\"8:00\",\"20:00\",\"00:30\",[25,\"action\",[[19,0,[]],\"calendarAddOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarUpdateOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarRemoveOccurrence\"],null]]]],false],[0,\"\\n\\n  \"],[8],[0,\"\\n  \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"firstSelected\"]]],null,{\"statements\":[[0,\"  \"],[6,\"div\"],[9,\"class\",\"ui very padded segment container\"],[9,\"style\",\"border: none; box-shadow: none; background-color: white;position: relative;z-index:  2;\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"ui four steps\"],[7],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",[26,[[18,\"introValue\"],\" step\"]]],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"class\",\"sticky note icon\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Intake Form\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",[26,[[18,\"photoValue\"],\"  step\"]]],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"class\",\"photo icon\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Upload Photos\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",[26,[[18,\"confirmValue\"],\"  step\"]]],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"class\",\"credit card icon\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Payment\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[10,\"class\",[26,[[18,\"appointmentValue\"],\"  step\"]]],[7],[0,\"\\n        \"],[6,\"i\"],[9,\"class\",\"bookmark icon\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"content\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"title\"],[7],[0,\"Book Appointment\"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n\\n    \"],[6,\"div\"],[9,\"class\",\"ui attached segment\"],[7],[0,\"\\n\"],[4,\"if\",[[20,[\"intro\"]]],null,{\"statements\":[[0,\"        \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n        \"],[6,\"form\"],[9,\"id\",\"edit\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"goToPhoto\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n              \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[9,\"value\",\"submit\"],[7],[0,\"Next\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n\\n\\n          \"],[1,[18,\"get-intake-test\"],false],[0,\"\\n\\n\\n          \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n              \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[9,\"value\",\"submit\"],[7],[0,\"Next\"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"photo\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToIntro\"]],[7],[0,\"Back\"],[8],[0,\"\\n            \"],[6,\"button\"],[10,\"class\",[26,[\"ui \",[18,\"disabled\"],\" blue button\"]]],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToConfirm\"]],[7],[0,\"Next\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[1,[25,\"client-upload-photos\",null,[[\"disabled\"],[[20,[\"disabled\"]]]]],false],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToIntro\"]],[7],[0,\"Back\"],[8],[0,\"\\n            \"],[6,\"button\"],[10,\"class\",[26,[\"ui \",[18,\"disabled\"],\" blue button\"]]],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToConfirm\"]],[7],[0,\"Next\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\"],[4,\"if\",[[20,[\"appointment\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n          \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToConfirm\"]],[7],[0,\"Back\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"form\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"save\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n          \"],[6,\"label\"],[9,\"class\",\"cd-label\"],[7],[0,\"Select a practitioner\"],[8],[0,\"\\n          \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n            \"],[6,\"select\"],[9,\"class\",\"people\"],[10,\"value\",[18,\"selectphysio\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateValue\"],[[\"value\"],[\"target.value\"]]],null],[7],[0,\"\\n              \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select a practitioner\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"getphysio\"]]],null,{\"statements\":[[0,\"                \"],[6,\"option\"],[10,\"value\",[19,2,[\"id\"]],null],[7],[0,\"\\n                  \"],[1,[19,2,[\"givenName\"]],false],[0,\"\\n                \"],[8],[0,\"\\n\"]],\"parameters\":[2]},null],[0,\"            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n          \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n          \"],[1,[25,\"as-calendar\",null,[[\"title\",\"occurrences\",\"defaultTimeZoneQuery\",\"dayStartingTime\",\"dayEndingTime\",\"timeSlotDuration\",\"onAddOccurrence\",\"onUpdateOccurrence\",\"onRemoveOccurrence\"],[\"View Schedule\",[20,[\"occurrences\"]],\"Toronto|New York\",\"8:00\",\"20:00\",\"00:30\",[25,\"action\",[[19,0,[]],\"calendarAddOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarUpdateOccurrence\"],null],[25,\"action\",[[19,0,[]],\"calendarRemoveOccurrence\"],null]]]],false],[0,\"\\n\\n        \"],[8],[0,\"\\n        \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToConfirm\"]],[7],[0,\"Back\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n\"]],\"parameters\":[]},null],[4,\"if\",[[20,[\"confirm\"]]],null,{\"statements\":[[0,\"        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToPhoto\"]],[7],[0,\"Back\"],[8],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToAppointment\"]],[7],[0,\"Next\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n        \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"ui three column doubling stackable grid container\"],[7],[0,\"\\n\\n          \"],[6,\"div\"],[9,\"class\",\"row\"],[7],[0,\"\\n            \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n              \"],[6,\"div\"],[9,\"class\",\"ui payment card\"],[9,\"style\",\"box-shadow: none;left: 50%;transform: translate(-50%);\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n                  \"],[6,\"h3\"],[9,\"style\",\"font-weight: bold; text-transform: uppercase;\"],[7],[0,\"Assessment Package\"],[8],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"150\"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"padding: 0 0 25px 0;\"],[7],[0,\"\\n                  \"],[6,\"table\"],[9,\"class\",\"ui striped table\"],[9,\"style\",\"border: none; text-align: center\"],[7],[0,\"\\n                    \"],[6,\"thead\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"th\"],[9,\"style\",\"font-weight: 500\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tbody\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Personal therapy plan\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Education & advice\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[9,\"style\",\"height: 42px\"],[7],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\"\\n\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"extra content footer\"],[9,\"style\",\"padding: 0 0 0 0;background-color: #2c3452;height: 55px;border-radius: 3px !important;\"],[7],[0,\"\\n                  \"],[6,\"p\"],[9,\"style\",\"text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;\"],[7],[1,[18,\"payment-button\"],false],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\\n            \"],[8],[0,\"\\n\\n            \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n\\n              \"],[6,\"div\"],[9,\"class\",\"ui payment card\"],[9,\"style\",\"box-shadow: none;left: 50%;transform: translate(-50%);\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n                  \"],[6,\"h3\"],[9,\"style\",\"font-weight: bold; text-transform: uppercase;\"],[7],[0,\"Assessment + 3 sessions\"],[8],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[7],[0,\"$\"],[8],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[7],[0,\"350\"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"padding: 0 0 25px 0;\"],[7],[0,\"\\n                  \"],[6,\"table\"],[9,\"class\",\"ui striped table\"],[9,\"style\",\"border: none; text-align: center\"],[7],[0,\"\\n                    \"],[6,\"thead\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"th\"],[9,\"style\",\"font-weight: 500\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tbody\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"3 extra conference / email sessions\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Personal therapy plan\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Education & advice\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\"\\n\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"extra content footer\"],[9,\"style\",\"padding: 0 0 0 0;background-color: #2c3452;height: 55px;border-radius: 3px !important;\"],[7],[0,\"\\n                  \"],[6,\"p\"],[9,\"style\",\"text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;\"],[7],[1,[18,\"payment-button-package-2\"],false],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n\\n            \"],[8],[0,\"\\n\\n\\n            \"],[6,\"div\"],[9,\"class\",\"column\"],[7],[0,\"\\n\\n              \"],[6,\"div\"],[9,\"class\",\"ui payment card\"],[9,\"style\",\"box-shadow: none;left: 50%;transform: translate(-50%);\"],[7],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"text-align: center\"],[7],[0,\"\\n                  \"],[6,\"h3\"],[9,\"style\",\"font-weight: bold; text-transform: uppercase;color: #e97d68\"],[7],[0,\"Assessment + 6 sessions\"],[8],[0,\"\\n                  \"],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[6,\"div\"],[9,\"class\",\"cd-price\"],[7],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-currency\"],[9,\"style\",\"color: #e97d68\"],[7],[0,\"$\"],[8],[0,\"\\n                    \"],[6,\"span\"],[9,\"class\",\"cd-value\"],[9,\"style\",\"color: #e97d68\"],[7],[0,\"550\"],[8],[0,\"\\n                    \"],[6,\"br\"],[7],[8],[6,\"br\"],[7],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n                \"],[6,\"div\"],[9,\"class\",\"content\"],[9,\"style\",\"padding: 0 0 25px 0;\"],[7],[0,\"\\n                  \"],[6,\"table\"],[9,\"class\",\"ui striped table\"],[9,\"style\",\"border: none; text-align: center\"],[7],[0,\"\\n                    \"],[6,\"thead\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"th\"],[9,\"style\",\"font-weight: 500\"],[7],[0,\"Video conference / email\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tbody\"],[7],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"6 extra conference / email sessions\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Personal therapy plan\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[6,\"tr\"],[7],[0,\"\\n                      \"],[6,\"td\"],[7],[0,\"Education & advice\"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                    \"],[8],[0,\"\\n                  \"],[8],[0,\"\\n                \"],[8],[0,\"\\n\\n                \"],[6,\"div\"],[9,\"class\",\"extra content footer\"],[9,\"style\",\"padding: 0 0 0 0;background-color: #e97d68;height: 55px;border-radius: 3px !important;\"],[7],[0,\"\\n                  \"],[6,\"p\"],[9,\"style\",\"text-align: center;color: white;letter-spacing: 2px;padding-top: 17.5px;\"],[7],[1,[18,\"payment-button-package-3\"],false],[8],[0,\"\\n                \"],[8],[0,\"\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\\n\\n        \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0\"],[7],[0,\"\\n          \"],[6,\"div\"],[9,\"class\",\"ui centered grid\"],[9,\"style\",\"margin-left: 0px\"],[7],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"backToPhoto\"]],[7],[0,\"Back\"],[8],[0,\"\\n            \"],[6,\"button\"],[9,\"class\",\"ui blue button\"],[9,\"style\",\"height: 50px;\"],[3,\"action\",[[19,0,[]],\"goToAppointment\"]],[7],[0,\"Next\"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null],[0,\"\\n\\n\"],[4,\"ui-modal\",null,[[\"name\",\"class\"],[[20,[\"modalName\"]],\"bk\"]],{\"statements\":[[0,\"  \"],[6,\"i\"],[9,\"class\",\"close icon\"],[7],[8],[0,\"\\n  \"],[6,\"link\"],[9,\"integrity\",\"\"],[9,\"rel\",\"stylesheet\"],[10,\"href\",[26,[[18,\"rootURL\"],\"../assets/css/form-style.css\"]]],[7],[8],[0,\" \"],[2,\" Resource style \"],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"class\",\"header\"],[7],[0,\"\\n    Booking an appointment for: \"],[6,\"p\"],[9,\"style\",\"color: #0d71bb; display: inline\"],[7],[0,\" \"],[1,[18,\"givenName\"],false],[0,\" \"],[1,[18,\"familyName\"],false],[0,\" \"],[8],[0,\"\\n  \"],[8],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"scrolling content\"],[7],[0,\"\\n\\n    \"],[6,\"form\"],[9,\"id\",\"edit\"],[9,\"class\",\"cd-form floating-labels\"],[3,\"action\",[[19,0,[]],\"submit\"],[[\"on\"],[\"submit\"]]],[7],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"ui two column grid\"],[9,\"id\",\"grid\"],[7],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n            \"],[6,\"select\"],[9,\"class\",\"date\"],[10,\"value\",[18,\"selectAppointmentType\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"updateTime\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[0,\"\\n              \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select an appointment type\"],[8],[0,\"\\n              \"],[6,\"option\"],[9,\"value\",\"i\"],[7],[0,\"\\n                Initial Assessment\\n              \"],[8],[0,\"\\n              \"],[6,\"option\"],[9,\"value\",\"t\"],[7],[0,\"\\n                Treatment\\n              \"],[8],[0,\"\\n            \"],[8],[0,\"\\n          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n        \"],[6,\"div\"],[9,\"class\",\"column\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n          \"],[1,[25,\"input\",null,[[\"class\",\"type\",\"value\",\"placeholder\",\"required\"],[\"heal\",\"text\",[20,[\"Reason\"]],\"Reason of the appointment\",true]]],false],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[1,[25,\"textarea\",null,[[\"class\",\"type\",\"value\",\"placeholder\"],[\"info\",\"text\",[20,[\"Other\"]],\"Other important information\"]]],false],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field \"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n        \"],[6,\"p\"],[9,\"class\",\"cd-select icon\"],[7],[0,\"\\n          \"],[6,\"select\"],[9,\"class\",\"clock\"],[10,\"value\",[18,\"selectedTime\"],null],[10,\"onchange\",[25,\"action\",[[19,0,[]],\"setselectedtime\"],[[\"value\"],[\"target.value\"]]],null],[9,\"required\",\"\"],[7],[0,\"\\n            \"],[6,\"option\"],[9,\"value\",\"\"],[9,\"selected\",\"\"],[9,\"disabled\",\"\"],[9,\"hidden\",\"\"],[7],[0,\"Select a time slot\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"timeSlots\"]]],null,{\"statements\":[[0,\"              \"],[6,\"option\"],[10,\"value\",[19,1,[\"time\"]],null],[7],[0,\"\\n                \"],[1,[19,1,[\"value\"]],false],[0,\"\\n              \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"          \"],[8],[0,\"\\n        \"],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n\\n      \"],[6,\"div\"],[9,\"class\",\"field\"],[9,\"style\",\"margin: 1em 0;\"],[7],[0,\"\\n\"],[0,\"        \"],[6,\"button\"],[9,\"class\",\"fluid ui blue button\"],[9,\"style\",\"max-width: 100%; height: 50px;\"],[7],[0,\"\\n          Submit\\n        \"],[8],[0,\"\\n\"],[0,\"        \"],[6,\"br\"],[7],[8],[0,\"\\n      \"],[8],[0,\"\\n\\n      \"],[2,\"<br>\"],[0,\"\\n      \"],[2,\"<div>\"],[0,\"\\n        \"],[2,\"<button class=\\\"ui fluid negative button\\\" {{action \\\"cancel_appointment\\\"}}>Cancel</button>\"],[0,\"\\n        \"],[2,\"<button class=\\\"ui fluid positive button\\\" {{action \\\"book_appointment\\\"}}>Submit</button>\"],[0,\"\\n      \"],[2,\"</div>\"],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/book-appointment.hbs" } });
 });
 define("self-start-front-end/templates/components/client-exercise-menu", ["exports"], function (exports) {
   "use strict";
@@ -14805,7 +14801,7 @@ define("self-start-front-end/templates/components/client-welcome", ["exports"], 
   Object.defineProperty(exports, "__esModule", {
     value: true
   });
-  exports.default = Ember.HTMLBars.template({ "id": "vXD83MAJ", "block": "{\"symbols\":[\"admin\"],\"statements\":[[4,\"if\",[[20,[\"show\"]]],null,{\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg3\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[7],[0,\"Client Page\"],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"          \"],[6,\"span\"],[9,\"class\",\"tagline\"],[7],[0,\"\\n            \"],[1,[19,1,[\"message\"]],false],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui center aligned grid\"],[7],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"id\",\"SkypeButton_Chat\"],[9,\"style\",\"position: fixed; right: 0; bottom: 0\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-welcome.hbs" } });
+  exports.default = Ember.HTMLBars.template({ "id": "Sv+BdOiL", "block": "{\"symbols\":[\"admin\"],\"statements\":[[4,\"if\",[[20,[\"show\"]]],null,{\"statements\":[[6,\"div\"],[9,\"class\",\"masthead segment bg3\"],[7],[0,\"\\n  \"],[6,\"div\"],[9,\"class\",\"ui container\"],[7],[0,\"\\n    \"],[6,\"div\"],[9,\"class\",\"introduction\"],[7],[0,\"\\n      \"],[6,\"h1\"],[9,\"class\",\"ui inverted header\"],[7],[0,\"\\n        \"],[6,\"span\"],[9,\"class\",\"library\"],[7],[0,\"Welcome \"],[1,[18,\"clientName\"],false],[8],[0,\"\\n\"],[4,\"each\",[[20,[\"model\"]]],null,{\"statements\":[[0,\"          \"],[6,\"span\"],[9,\"class\",\"tagline\"],[7],[0,\"\\n            \"],[1,[19,1,[\"message\"]],false],[0,\"\\n          \"],[8],[0,\"\\n\"]],\"parameters\":[1]},null],[0,\"\\n      \"],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui hidden divider\"],[7],[8],[0,\"\\n      \"],[6,\"div\"],[9,\"class\",\"ui center aligned grid\"],[7],[0,\"\\n      \"],[8],[0,\"\\n    \"],[8],[0,\"\\n  \"],[8],[0,\"\\n\\n  \"],[6,\"div\"],[9,\"id\",\"SkypeButton_Chat\"],[9,\"style\",\"position: fixed; right: 0; bottom: 0\"],[7],[8],[0,\"\\n\"],[8],[0,\"\\n\"]],\"parameters\":[]},null]],\"hasEval\":false}", "meta": { "moduleName": "self-start-front-end/templates/components/client-welcome.hbs" } });
 });
 define("self-start-front-end/templates/components/config-selection", ["exports"], function (exports) {
   "use strict";
@@ -16331,6 +16327,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+4b897d89"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+4ea6a64b"});
 }
 //# sourceMappingURL=self-start-front-end.map
