@@ -5,7 +5,8 @@ export default Component.extend({
   client: null,
   DS: inject('store'),
   auth: inject('auth'),
-
+  Order:null,
+  NOS: null,
   init() {
     this._super(...arguments);
     let self = this;
@@ -58,9 +59,9 @@ export default Component.extend({
           finalTransaction["amount"] = total;
 
           var pack = [];
-          pack["numberOfSessions"] = 0;
+          pack["numberOfSessions"] = self.NOS;
           pack["appointments"] = null;
-          pack['order'] = 0;
+          pack['order'] = self.Order;
 
           self.get('DS').findRecord('patient', self.get('client').get('id')).then((cli) => {
             let length = cli.get('transactions').length;
@@ -69,23 +70,40 @@ export default Component.extend({
             var temp = cli.get('transactions');
             var temp2 = cli.get('packages');
 
-            temp2.pushObject(pack);
             temp.pushObject(finalTransaction);
             cli.set('transactions', temp);
-
+            console.log("b4 save", cli.get('packages'))
             cli.save().then( obj => {
-              self.get('DS').findRecord('patient', self.get('client').get('id')).then((cli) => { 
+              self.get('DS').findRecord('patient', self.get('client').get('id')).then((clientValue) => { 
                 let item = cli.get('transactions')[length];
                 Ember.set(item, 'package', "Package Additional Session");
                 Ember.set(item, 'date', date);
                 Ember.set(item, 'amount', total);
 
-                let item2 = cli.get('packages')[length2];
-                Ember.set(item2, 'numberOfSessions', 1);
-                Ember.set(item2, 'appointments', []);
-                Ember.set(item2, 'order', length2);
-                localStorage.setItem('order', length2.toString());
-                cli.save();
+                // let item2 = clientValue.get('packages')[length2];
+                // console.log("this is item2", item2);
+                // console.log("length2", length2)
+                // console.log("after save", cli.get('packages'))
+                // console.log(item2);
+                // console.log(self.Order);
+                // console.log(self.NOS);
+                // console.log(self.NOS+1)
+                // let i = self.NOS+1;
+                // Ember.set(item2, 'order', self.Order);
+                // Ember.set(item2, 'numberOfSessions', self.NOS+1);
+                
+                let item2 = clientValue.get('packages');
+                let i = item2[self.Order];
+                // console.log("item2", item2.numberOfSessions + 1);  
+                Ember.set(i, 'numberOfSessions', clientValue.get('packages')[self.Order].numberOfSessions + 1);
+                console.log(item2);
+                clientValue.get('packages')[self.Order].numberOfSessions = clientValue.get('packages')[self.Order].numberOfSessions +1;
+                // clientValue.set('packages', item2);
+                // item2.save();
+                console.log("clientV", clientValue);
+                clientValue.save();
+                localStorage.setItem('increaseByOne', self.Order);
+                window.location.reload();
               })
             })
           })

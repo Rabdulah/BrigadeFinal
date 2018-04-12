@@ -20,7 +20,7 @@ export default Component.extend({
   isApp:true,
   isBook:false,
   isfollow:false,
-  
+  purchasedPackages: [],
   modalName: Ember.computed(function(){
     return 'Book Appointment';
   }),
@@ -58,8 +58,22 @@ export default Component.extend({
     } else {
       this.set("paid", "disabled");
     }
+
+
     self.get('DS').queryRecord('patient', {filter: {'email' : eemail}}).then(function (obj) {
       self.set('client', obj);
+      if(localStorage.getItem('increaseByOne')) {
+        let inc = localStorage.getItem('increaseByOne');
+        obj.get('packages').forEach(o =>{
+        if(o.order === inc){
+          let item2 = obj.get('packages')[inc];
+          Ember.set(item2, 'numberOfSessions', obj.get('packages')[inc].numberOfSessions + 1);
+        }
+        })
+      }
+      obj.save();
+      localStorage.removeItem('increaseByOne');
+      self.set('purchasedPackages', obj.get('packages'));
       console.log(self.get('client.id'));
       self.get('DS').query('appointment', {filter: {'id' : self.get('client.id')}}).then(function (obj) {
         obj.forEach(function (a) {
@@ -110,8 +124,54 @@ export default Component.extend({
   disabled: '',
   appDisable: '',
   array: [],
-
+  showDetails: null,
+  showBook: null,
+  showBooked: null,
+  orderAppts: [],
   actions: {
+    toggleDetails(ord) {
+      console.log("HIi");
+      if(this.get('showDetails')) {
+        this.set('showDetails', null);
+      } else {
+        this.set('showBook', null);
+        this.set('showBooked', null);
+        this.set('showDetails', ord);
+      }
+    },
+
+    toggleBook(ord) {
+      console.log("HIi");
+      if(this.get('showBook')) {
+        this.set('showBook', null);
+      } else {
+        this.set('showBook', ord);
+        this.set('showBooked', null);
+        this.set('showDetails', null);
+      }
+    },
+
+    toggleBooked(ord) {
+      let self = this;
+      console.log("HIi");
+      this.get('orderAppts').clear();
+      if(this.get('showBooked')) {
+        this.set('showBooked', null);
+      } else {
+        self.get('DS').query('appointment', {filter: {'id' : self.get('client.id')}}).then(function (obj) {
+          obj.forEach(function (a) {
+            if(a.get('order') === ord) {
+              self.get('orderAppts').pushObject(a);
+            }
+          });
+        });
+
+        this.set('showBooked', ord);
+        this.set('showBook', null);
+        this.set('showDetails', null);
+      }
+    },
+
     goToPhoto() {
       this.set('introValue', "completed");
       this.set('photoValue', "active");
@@ -325,17 +385,27 @@ export default Component.extend({
     submit() {
       let self = this;
       let src =self.get('client');
-      let ord = localStorage.getItem('order');
+      
+      let ord = 0;
+      if(this.get("showBook")){
+        ord = this.get("showBook");
+      } else{
+      ord = localStorage.getItem('order');
+      }
 
-       src.get('packages').forEach(o=> {
-        console.log(o.appointments);
-        console.log(o.order);
-        console.log(ord);
-        // console.log()
-        if(o.order === ord) {
-          o.numberOfSessions = o.numberOfSessions - 1;
-        }
-      });
+      let item2 = src.get('packages')[ord];
+      Ember.set(item2, 'numberOfSessions', src.get('packages')[ord].numberOfSessions - 1);
+
+      //  src.get('packages').forEach(o=> {
+      //   console.log(o.appointments);
+      //   console.log(o.order);
+      //   console.log(ord);
+      //   // console.log()
+      //   if(o.order === ord) {
+      //     console.log("in here")
+      //     src.set("o.numberOfSessions", o.numberOfSessions - 1);
+      //   }
+      // });
       //temp client until we get token
       //laptop
       // let client = '5ab9649cc7f3c62814754951';
@@ -455,7 +525,7 @@ export default Component.extend({
         // this.set("photoValue", "disabled");
         // this.set("confirmValue", "disabled");
         
-        window.location.reload();
+        // window.location.reload();
 
         // alert("Your Appopintment has been booked!");
    },
