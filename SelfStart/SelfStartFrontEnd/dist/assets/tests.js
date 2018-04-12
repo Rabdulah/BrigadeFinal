@@ -405,6 +405,11 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
     assert.ok(false, 'components/payment-button-package-3.js should pass ESLint\n\n16:7 - Unexpected console statement. (no-console)\n24:5 - \'paypal\' is not defined. (no-undef)\n76:30 - \'obj\' is defined but never used. (no-unused-vars)\n79:17 - \'Ember\' is not defined. (no-undef)\n80:17 - \'Ember\' is not defined. (no-undef)\n81:17 - \'Ember\' is not defined. (no-undef)\n84:17 - \'Ember\' is not defined. (no-undef)\n85:17 - \'Ember\' is not defined. (no-undef)\n86:17 - \'Ember\' is not defined. (no-undef)');
   });
 
+  QUnit.test('components/payment-button-package-additional.js', function (assert) {
+    assert.expect(1);
+    assert.ok(false, 'components/payment-button-package-additional.js should pass ESLint\n\n16:7 - Unexpected console statement. (no-console)\n24:5 - \'paypal\' is not defined. (no-undef)\n76:30 - \'obj\' is defined but never used. (no-unused-vars)\n79:17 - \'Ember\' is not defined. (no-undef)\n80:17 - \'Ember\' is not defined. (no-undef)\n81:17 - \'Ember\' is not defined. (no-undef)\n84:17 - \'Ember\' is not defined. (no-undef)\n85:17 - \'Ember\' is not defined. (no-undef)\n86:17 - \'Ember\' is not defined. (no-undef)');
+  });
+
   QUnit.test('components/payment-button.js', function (assert) {
     assert.expect(1);
     assert.ok(false, 'components/payment-button.js should pass ESLint\n\n16:7 - Unexpected console statement. (no-console)\n24:5 - \'paypal\' is not defined. (no-undef)\n76:30 - \'obj\' is defined but never used. (no-unused-vars)\n79:17 - \'Ember\' is not defined. (no-undef)\n80:17 - \'Ember\' is not defined. (no-undef)\n81:17 - \'Ember\' is not defined. (no-undef)\n84:17 - \'Ember\' is not defined. (no-undef)\n85:17 - \'Ember\' is not defined. (no-undef)\n86:17 - \'Ember\' is not defined. (no-undef)');
@@ -3240,6 +3245,35 @@ define('self-start-front-end/tests/integration/components/payment-button-package
     assert.equal(this.$().text().trim(), 'template block text');
   });
 });
+define('self-start-front-end/tests/integration/components/payment-button-package-additional-test', ['ember-qunit'], function (_emberQunit) {
+  'use strict';
+
+  (0, _emberQunit.moduleForComponent)('payment-button-package-additional', 'Integration | Component | payment button package additional', {
+    integration: true
+  });
+
+  (0, _emberQunit.test)('it renders', function (assert) {
+    // Set any properties with this.set('myProperty', 'value');
+    // Handle any actions with this.on('myAction', function(val) { ... });
+
+    this.render(Ember.HTMLBars.template({
+      "id": "bTYIidho",
+      "block": "{\"symbols\":[],\"statements\":[[1,[18,\"payment-button-package-additional\"],false]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), '');
+
+    // Template block usage:
+    this.render(Ember.HTMLBars.template({
+      "id": "gzbEH2eY",
+      "block": "{\"symbols\":[],\"statements\":[[0,\"\\n\"],[4,\"payment-button-package-additional\",null,null,{\"statements\":[[0,\"      template block text\\n\"]],\"parameters\":[]},null],[0,\"  \"]],\"hasEval\":false}",
+      "meta": {}
+    }));
+
+    assert.equal(this.$().text().trim(), 'template block text');
+  });
+});
 define('self-start-front-end/tests/integration/components/payment-button-test', ['ember-qunit'], function (_emberQunit) {
   'use strict';
 
@@ -4336,6 +4370,11 @@ define('self-start-front-end/tests/tests.lint-test', [], function () {
   QUnit.test('integration/components/payment-button-package-3-test.js', function (assert) {
     assert.expect(1);
     assert.ok(true, 'integration/components/payment-button-package-3-test.js should pass ESLint\n\n');
+  });
+
+  QUnit.test('integration/components/payment-button-package-additional-test.js', function (assert) {
+    assert.expect(1);
+    assert.ok(true, 'integration/components/payment-button-package-additional-test.js should pass ESLint\n\n');
   });
 
   QUnit.test('integration/components/payment-button-test.js', function (assert) {
