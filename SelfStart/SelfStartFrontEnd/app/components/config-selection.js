@@ -149,13 +149,46 @@ export default Component.extend({
       this.set('quoteSelected', true);
     },
     submit(){
-      this.get('store').findAll('administrator').then((rec) =>{
-        rec.forEach((r)=>{
-          console.log(r);
-          r.set('message', this.get('message') );
-          r.save()
-        })
+      let self = this;
+      var administrator = this.get("store").createRecord('administrator', {
+        email: "root",
+        message: null
       });
+      console.log(administrator);
+      administrator.save().then((admin) => {
+        if(!admin.get("success")) {
+          admin.destroyRecord().then(a => {
+            console.log("Deleted");
+            self.get('store').query('administrator', {filter: {"email": "root"}}).then(function (rec) {
+              rec.forEach((r)=>{
+                console.log(r);
+                r.set('message', self.get('message') );
+                r.save()
+                
+              })
+            });
+          });
+        } else {
+          self.get('store').query('administrator', {filter: {"email": "root"}}).then(function (rec) {
+            rec.forEach((r)=>{
+              console.log(r);
+              r.set('message', self.get('message') );
+              r.save()
+              
+            })
+          });
+        }
+      });
+     
+     
+
+      // this.get('store').findAll('administrator').then((rec) =>{
+      //   rec.forEach((r)=>{
+      //     console.log(r);
+      //     r.set('message', this.get('message') );
+      //     r.save()
+      //   })
+      // });
     },
     sortColumn(columnName, direction) {
 

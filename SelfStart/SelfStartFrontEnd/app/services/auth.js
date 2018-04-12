@@ -340,11 +340,11 @@ export default Ember.Service.extend({
   closeRoot()
   {
     var myStore = this.get('store');
-    myStore.queryRecord('root', {}).then(function (Login) {
-      if (Login) {
-        Login.destroyRecord();
-      }
-    });
+    // myStore.queryRecord('root', {}).then(function (Login) {
+    //   if (Login) {
+    //     Login.destroyRecord();
+    //   }
+    // });
     window.localStorage.removeItem('sas-session-id');
     this.set('getName', null);
     this.set('email', null);

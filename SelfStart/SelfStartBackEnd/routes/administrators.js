@@ -8,21 +8,17 @@ const jwt = require('jsonwebtoken');
 
 router.route('/')
     .post( function (request, response) {
-        var administrator = new Administrators.Model(request.body.administrator);
-
-        Administrators.getUserByEmail(administrator.email, (err, administrator) =>{
-            if(err) {
-                administrator.success = false;
-
-            }
-            else if(administrator) {
+        var ad = new Administrators.Model(request.body.administrator);
+        console.log(ad.email);
+        Administrators.getUserByEmail(ad.email, (err, administrator) =>{
+            if(administrator) {
                 console.log("ERROR");
-                administrator.success = false;
+                ad.success = false;
             } 
             
-            administrator.save().then((administrator) => {
-                if (error) response.send(error);
-                response.json({administrator: administrator});
+            ad.save().then((adm) => {
+                console.log(adm);
+                response.json({administrator: adm});
             });
         });
 
@@ -41,7 +37,15 @@ router.route('/')
     })
 
     .get( function (request, response) {
+        let ad = request.query.filter;
         let {limit, offset, sort, dir, queryPath, regex} = request.query;
+        if(ad) {
+            Administrators.Model.find(function (error, admins) {
+                if (error) response.send(error);
+                response.json({administrator: admins});
+            });
+        }
+        else {
         if(!limit) {
             Administrators.Model.find(function (error, administrators) {
                 if (error) response.send(error);
@@ -79,21 +83,22 @@ router.route('/')
                 response.json({administrator: administrators.docs});
             });
         }
+    }
     });
 
-router.route('/:email')
+// router.route('/:email')
 
-    .get( function (request, response) {
+//     .get( function (request, response) {
 
-        Administrators.getUserByEmail(request.params.email, function (error, administrator) {
-            if (error) {
-                response.send({error: error});
-            }
-            else {
-                response.json({success: true, administrator: administrator});
-            }
-        });
-    });
+//         Administrators.getUserByEmail(request.params.email, function (error, administrator) {
+//             if (error) {
+//                 response.send({error: error});
+//             }
+//             else {
+//                 response.json({success: true, administrator: administrator});
+//             }
+//         });
+//     });
 
 router.route('/:administrator_id')
     .get( function (request, response) {
@@ -114,17 +119,16 @@ router.route('/:administrator_id')
             else {
 
                 // update each attribute
-                administrator.ID = request.body.administrator.ID;
-                administrator.familyName = request.body.administrator.familyName;
-                administrator.givenName = request.body.administrator.givenName;
+                // administrator.ID = request.body.administrator.ID;
+                // administrator.familyName = request.body.administrator.familyName;
+                // administrator.givenName = request.body.administrator.givenName;
                 administrator.email = request.body.administrator.email;
-                administrator.dateHired = request.body.administrator.dateHired;
-                administrator.dateFired = request.body.administrator.dateFired;
-                administrator.phoneNumber = request.body.administrator.phoneNumber;
-                administrator.form = request.body.administrator.form;
-                administrator.account = request.body.administrator.account;
+                // administrator.dateHired = request.body.administrator.dateHired;
+                // administrator.dateFired = request.body.administrator.dateFired;
+                // administrator.phoneNumber = request.body.administrator.phoneNumber;
+                // administrator.form = request.body.administrator.form;
+                // administrator.account = request.body.administrator.account;
                 administrator.message = request.body.administrator.message;
-
 
                 administrator.save(function (error) {
                     if (error) {

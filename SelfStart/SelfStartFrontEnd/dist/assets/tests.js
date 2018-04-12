@@ -172,7 +172,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/config-selection.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/config-selection.js should pass ESLint\n\n83:5 - Unexpected console statement. (no-console)\n101:7 - Unexpected console statement. (no-console)\n154:11 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/config-selection.js should pass ESLint\n\n83:5 - Unexpected console statement. (no-console)\n101:7 - Unexpected console statement. (no-console)\n157:7 - Unexpected console statement. (no-console)\n160:38 - \'a\' is defined but never used. (no-unused-vars)\n161:13 - Unexpected console statement. (no-console)\n164:17 - Unexpected console statement. (no-console)\n174:15 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/confirm-booking.js', function (assert) {
@@ -952,7 +952,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('services/auth.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'services/auth.js should pass ESLint\n\n56:5 - Unexpected console statement. (no-console)\n58:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n80:5 - Unexpected console statement. (no-console)\n166:23 - Unexpected console statement. (no-console)\n280:5 - Unexpected console statement. (no-console)\n282:5 - Unexpected console statement. (no-console)\n302:5 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'services/auth.js should pass ESLint\n\n56:5 - Unexpected console statement. (no-console)\n58:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n80:5 - Unexpected console statement. (no-console)\n166:23 - Unexpected console statement. (no-console)\n280:5 - Unexpected console statement. (no-console)\n282:5 - Unexpected console statement. (no-console)\n302:5 - Unexpected console statement. (no-console)\n342:9 - \'myStore\' is assigned a value but never used. (no-unused-vars)');
   });
 
   QUnit.test('services/doc.js', function (assert) {
