@@ -240,11 +240,11 @@
 
 {{#if quoteSelected}}
   <link integrity="" rel="stylesheet" href="/assets/css/form-style.css"> <!-- Resource style -->
-
-  <h1>{{model.admin.message}}</h1>
-
+  
   <form class="cd-form floating-labels" {{action "submit" on="submit"}}  style="padding-right: 10em; padding-left: 10em">
-
+    {{#each model.admin as |admin|}}
+      <h2>Current Client Message: {{admin.message}}</h2>
+    {{/each}}
     <div class="field" style="margin: 1em 0;">
       {{input class="message" type="text" value = message placeholder="Quote" required = true}}
     </div>
