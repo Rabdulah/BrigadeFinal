@@ -196,7 +196,7 @@
               <tr style="font-weight: bold;">
                 <th>Date</th>
                 <th>Price</th>
-                <th>type</th>
+                <th>Type</th>
               </tr>
               </tbody>
             </table>
@@ -208,11 +208,11 @@
 
             <table class="ui fixed table" id="tb" style="margin: 0 0;border: none;">
               <tbody >
-              {{#each appointmentHistory as |aHistory|}}
+              {{#each pateintsData.transactions as |transaction|}}
                 <tr>
-                  <td>{{aHistory.date}}</td>
-                  <td>{{aHistory.pName}}</td>
-                  <td>{{aHistory.reason}}</td>
+                  <td>{{transaction.date}}</td>
+                  <td>{{transaction.amount}}</td>
+                  <td>{{transaction.package}}</td>
                 </tr>
               {{/each}}
               </tbody>
