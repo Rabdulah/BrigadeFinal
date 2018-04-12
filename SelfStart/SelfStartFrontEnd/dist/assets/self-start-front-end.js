@@ -2273,12 +2273,16 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
     },
     toggleBook: function toggleBook(ord) {
       console.log("HIi");
-      if (this.get('showBook')) {
-        this.set('showBook', null);
+      if (this.get('client').get('packages')[ord].numberOfSessions) {
+        if (this.get('showBook')) {
+          this.set('showBook', null);
+        } else {
+          this.set('showBook', ord);
+          this.set('showBooked', null);
+          this.set('showDetails', null);
+        }
       } else {
-        this.set('showBook', ord);
-        this.set('showBooked', null);
-        this.set('showDetails', null);
+        alert('You must have sessions in order to book appointments');
       }
     },
     toggleBooked: function toggleBooked(ord) {
@@ -2643,9 +2647,9 @@ define('self-start-front-end/components/book-appointment', ['exports', 'moment']
       // this.set("photoValue", "disabled");
       // this.set("confirmValue", "disabled");
 
-      // window.location.reload();
+      window.location.reload();
 
-      // alert("Your Appopintment has been booked!");
+      alert("Your Appopintment has been booked!");
     }
   }), _EmberComponent$exte));
 });

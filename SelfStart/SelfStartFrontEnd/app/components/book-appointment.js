@@ -150,6 +150,7 @@ export default Component.extend({
 
     toggleBook(ord) {
       console.log("HIi");
+      if(this.get('client').get('packages')[ord].numberOfSessions) {
       if(this.get('showBook')) {
         this.set('showBook', null);
       } else {
@@ -157,6 +158,9 @@ export default Component.extend({
         this.set('showBooked', null);
         this.set('showDetails', null);
       }
+    } else {
+      alert('You must have sessions in order to book appointments');
+    }
     },
 
     toggleBooked(ord) {
@@ -541,9 +545,9 @@ export default Component.extend({
         // this.set("photoValue", "disabled");
         // this.set("confirmValue", "disabled");
         
-        // window.location.reload();
+        window.location.reload();
 
-        // alert("Your Appopintment has been booked!");
+        alert("Your Appopintment has been booked!");
    },
   }
 });
