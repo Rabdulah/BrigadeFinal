@@ -112,7 +112,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/assessment-table.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/assessment-table.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n105:21 - \'curas\' is defined but never used. (no-unused-vars)');
+    assert.ok(false, 'components/assessment-table.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n106:21 - \'curas\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/assign-rehabplan.js', function (assert) {

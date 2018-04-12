@@ -1898,6 +1898,7 @@ define('self-start-front-end/components/assessment-table', ['exports'], function
       this.set('pageSize', 10);
       var self = this;
       var client = this.get('model').id;
+      this.set('rehabclinetLink', Ember.A());
 
       this.get('store').query('rehab-client-link', { filter: { 'id': client } }).then(function (obj) {
 

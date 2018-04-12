@@ -62,6 +62,7 @@ export default Component.extend({
     this.set('pageSize', 10);
     let self = this;
     let client = this.get('model').id;
+    this.set('rehabclinetLink', Ember.A());
 
     this.get('store').query('rehab-client-link', {filter: {'id': client}}).then((obj)=>{
 
