@@ -16331,6 +16331,6 @@ catch(err) {
 });
 
 if (!runningTests) {
-  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+4b897d89"});
+  require("self-start-front-end/app")["default"].create({"name":"self-start-front-end","version":"0.0.0+4ea6a64b"});
 }
 //# sourceMappingURL=self-start-front-end.map
