@@ -16,6 +16,8 @@ export default Component.extend({
   queryPath: 'name',
   scrolledLines: 0,
 
+  rehabclinetLink: Ember.A(),
+
   modelAttributes:
     [{'key': 'name', 'name':'Assessment Test', 'dir' : 'asc', 'class' :'left aligned fourteen wide column'}],
 
@@ -60,18 +62,31 @@ export default Component.extend({
     this.set('pageSize', 10);
     let self = this;
     let client = this.get('model').id;
+    this.set('rehabclinetLink', Ember.A());
+
+    this.get('store').query('rehab-client-link', {filter: {'id': client}}).then((obj)=>{
+
+      obj.forEach((rec) => {
+        self.get("rehabclinetLink").pushObject(rec);
+        self.get('store').findRecord('assessment-test', rec.get('assessmentTest').get('id')).then((asdf)=>{
+          rec.set('assessmentTest', asdf);
+        });
+      });
+
+
+    });
 
     this.get('store').query('assessment-test', {filter: {'patient': client}}, this.getProperties(['offset', 'limit', 'sort', 'dir', 'queryPath', 'regex'])).then((records) => {
     //  console.log(this.get('testModel'));
       self.set('testModel', records.toArray());
     });
-    this.get('store').query('rehab-client-link',  {filter: {'id': client}}).then((obj)=>{
-      obj.forEach((rec) => {
-        self.get('store').findRecord('assessment-test', rec.get('assessmentTest').get('id')).then((asdf)=>{
-          self.get("testModel").pushObject(asdf);
-        });
-      });
-    });
+    // this.get('store').query('rehab-client-link',  {filter: {'id': client}}).then((obj)=>{
+    //   obj.forEach((rec) => {
+    //     self.get('store').findRecord('assessment-test', rec.get('assessmentTest').get('id')).then((asdf)=>{
+    //       self.get("testModel").pushObject(asdf);
+    //     });
+    //   });
+    // });
   },
 
   didInsertElement: function() {

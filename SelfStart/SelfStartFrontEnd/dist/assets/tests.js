@@ -112,7 +112,7 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/assessment-table.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/assessment-table.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n91:21 - \'curas\' is defined but never used. (no-unused-vars)');
+    assert.ok(false, 'components/assessment-table.js should pass ESLint\n\n3:10 - \'computed\' is defined but never used. (no-unused-vars)\n106:21 - \'curas\' is defined but never used. (no-unused-vars)');
   });
 
   QUnit.test('components/assign-rehabplan.js', function (assert) {
@@ -257,12 +257,12 @@ define('self-start-front-end/tests/app.lint-test', [], function () {
 
   QUnit.test('components/display-answers.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/display-answers.js should pass ESLint\n\n28:5 - Unexpected console statement. (no-console)');
+    assert.ok(false, 'components/display-answers.js should pass ESLint\n\n57:7 - Unexpected console statement. (no-console)\n77:9 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/display-assessment.js', function (assert) {
     assert.expect(1);
-    assert.ok(false, 'components/display-assessment.js should pass ESLint\n\n4:8 - \'Ember\' is defined but never used. (no-unused-vars)\n56:5 - Unexpected console statement. (no-console)\n57:5 - Unexpected console statement. (no-console)\n60:3 - Duplicate key \'init\'. (no-dupe-keys)');
+    assert.ok(false, 'components/display-assessment.js should pass ESLint\n\n4:8 - \'Ember\' is defined but never used. (no-unused-vars)\n46:9 - \'self\' is assigned a value but never used. (no-unused-vars)\n66:7 - Unexpected console statement. (no-console)\n72:9 - Unexpected console statement. (no-console)\n75:11 - Unexpected console statement. (no-console)');
   });
 
   QUnit.test('components/display-data-report.js', function (assert) {
