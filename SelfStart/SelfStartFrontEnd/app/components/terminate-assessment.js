@@ -7,7 +7,7 @@ export default Component.extend({
   flagDelete: null,
 
   modalName: computed(function () {
-    return 'Delete-patient' + this.get('ID');
+    return 'Delete-patient' + this.get('ID.id');
   }),
 
   actions: {
@@ -21,11 +21,8 @@ export default Component.extend({
         },
 
         onApprove: () => {
-          let a =(this.get('ID'));
-          let b= (this.get('patientID'));
-          this.get('DS').queryRecord('rehab-client-link',{filter:
-            {'assessmentTest': a,
-              'Patient' : b}}).then((obj)=>{
+          let a =(this.get('ID.id'));
+          this.get('DS').findRecord('rehab-client-link',a).then((obj)=>{
             obj.set('terminated', true);
             obj.save().then(()=>{
               return true;
