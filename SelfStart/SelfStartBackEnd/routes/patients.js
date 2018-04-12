@@ -147,7 +147,7 @@ router.route('/:patient_id')
                 response.send({error: error});
             }
             else {
-
+                console.log(patient.packages);
                 // update each attribute
                 patient.ID = request.body.patient.ID;
                 patient.familyName = request.body.patient.familyName;
