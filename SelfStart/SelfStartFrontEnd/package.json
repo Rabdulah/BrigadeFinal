@@ -55,6 +55,7 @@
     "ember-truth-helpers": "^2.0.0",
     "ember-welcome-page": "^3.2.0",
     "eslint-plugin-ember": "^5.1.0",
+    "ivy-videojs": "^0.6.6",
     "liquid-fire": "^0.29.2",
     "loader.js": "^4.2.3",
     "semantic-ui-ember": "^2.1.0",
@@ -65,6 +66,7 @@
   },
   "dependencies": {
     "is-integer": "^1.0.7",
-    "ui-slider": "^2.0.0-5"
+    "ui-slider": "^2.0.0-5",
+    "video.js": "^6.7.3"
   }
 }

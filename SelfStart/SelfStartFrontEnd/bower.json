@@ -8,6 +8,7 @@
     "fontawesome": "~4.7.0",
     "slick-carousel": "^1.8.1",
     "d3": "~3.5.3",
-    "lodash": "~3.10.0"
+    "lodash": "~3.10.0",
+    "video.js": "~5.12"
   }
 }

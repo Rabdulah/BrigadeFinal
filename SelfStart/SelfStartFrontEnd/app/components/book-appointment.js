@@ -100,12 +100,14 @@ export default Component.extend({
   followupSelected: false,
   upcomingSelected: false,
 
-  introValue: "active",
+  videoValue: "active",
+  introValue: "disabled",
   appointmentValue: "disabled",
   photoValue: "disabled",
   confirmValue: "disabled",
 
-  intro: true,
+  video: true,
+  intro: false,
   appointment: false,
   photo: false,
   confirm: false,
@@ -115,6 +117,13 @@ export default Component.extend({
   array: [],
 
   actions: {
+    goToIntro() {
+      this.set('introValue', "active");
+      this.set('videoValue', "");
+      this.set('intro', true);
+      this.set('video', false);
+    },
+
     goToPhoto() {
       this.set('introValue', "completed");
       this.set('photoValue', "active");
@@ -134,6 +143,14 @@ export default Component.extend({
       this.set('photo', false);
       this.set('confirm', true);
     },
+    
+    backToVideo() {
+      this.set('introValue', "");
+      this.set('videoValue', "active");
+      this.set('intro', false);
+      this.set('video', true);
+    },
+
     backToPhoto() {
       this.set('photoValue', "active");
       this.set('confirmValue', "");
