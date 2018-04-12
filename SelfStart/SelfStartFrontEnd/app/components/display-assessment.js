@@ -38,25 +38,6 @@ export default Component.extend({
 
    }),
 
-  init(){
-    this._super(...arguments);
-    this.get('DS').findAll('form');
-    this.get('DS').findAll('question-order');
-    this.get('DS').findAll('question');
-    var self = this;
-
-
-    this.get('DS').query('question-order', {filter: {'form': this.get('model').id}}).then((records) => {
-      self.set('orders', records.toArray());
-    });
-
-    this.get('DS').query('answer', {filter: {'test': this.get('assessid')}}).then((rec) => {
-      self.set('ans', rec.toArray());
-    });
-    console.log(this.get("assessid"));
-    console.log(this.get("ans"));
-  },
-
   init() {
     this._super(...arguments);
     // this.get('DS').findAll('form');
@@ -64,14 +45,14 @@ export default Component.extend({
     // this.get('DS').findAll('question');
     var self = this;
 
-    this.get('DS').query('answer', {filter: {'test': this.get('assessment').get("id")}}).then((records) => {
-      this.get('DS').query('question-order', {filter: {'form': this.get('model').id}}).then((records) => {
-        self.set('orders', records.toArray());
-      });
-      records.forEach((rec) => {
-          this.get("ans").push(rec.data);
-      });
-    });
+    // this.get('DS').query('answer', {filter: {'test': this.get('assessment').get("id")}}).then((records) => {
+    //   this.get('DS').query('question-order', {filter: {'form': this.get('model').id}}).then((records) => {
+    //     self.set('orders', records.toArray());
+    //   });
+    //   records.forEach((rec) => {
+    //       this.get("ans").push(rec.data);
+    //   });
+    // });
 
   //  console.log(this.get('assessment').get("id"));
 
@@ -81,7 +62,20 @@ export default Component.extend({
 
   actions: {
     openModal: function () {
+      let self = this;
+      console.log(this.get('model.id'));
 
+      self.set('ans', []);
+      self.set('orders', []);
+      this.get('DS').query('answer', {filter: {'test': self.get('assessment.id')}}).then((rec) => {
+        self.set('ans', rec.toArray());
+        console.log('form ID: '+ self.get('model.id'));
+        self.get('DS').query('question-order', {filter: {'form': self.get('model.id')}}).then((records) => {
+          self.set('orders', records.toArray());
+          console.log(self.get('orders'));
+        });
+
+      });
       $('.ui.' + this.get('modalName') + '.modal').modal({
         // transition: 'horizontal flip',
 
