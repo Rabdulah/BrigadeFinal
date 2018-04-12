@@ -108,7 +108,7 @@
       <table class="ui fixed table" style="border: none;border-color: white;">
         <tbody >
         <tr style="font-weight: bold;">
-          
+
           <th>Order Number</th>
           <th>Sessions Left</th>
           <th>Booked Appointments</th>
@@ -145,14 +145,14 @@
                     <br><br>
                   {{/if}}
                 {{/liquid-spacer}}
-                
+
               {{!-- </th> --}}
             {{!-- <tr></tr> --}}
             {{!-- </tr> --}}
 
              {{!-- <tr> --}}
               {{!-- <th colspan="8"> --}}
-                
+
                 {{#liquid-spacer growDuration=200}}
                   {{#if (eq showBook  p.order)}}
                    <form class="cd-form floating-labels" {{action "save" on="submit"}}>
@@ -308,7 +308,9 @@
             </div>
           </div>
 
-          {{ivy-videojs src="https://owl.uwo.ca/access/lessonbuilder/item/97105834/group/4fba372a-5b2d-4717-bb15-3e659416e637/Client%20Materials/Movement%20assessment%20video.mp4"}}
+          <div style="width: 100%!important; height: auto!important;display:inline-block;">
+            {{ivy-videojs src="https://owl.uwo.ca/access/lessonbuilder/item/97105834/group/4fba372a-5b2d-4717-bb15-3e659416e637/Client%20Materials/Movement%20assessment%20video.mp4"}}
+          </div>
 
         </form>
       {{/if}}

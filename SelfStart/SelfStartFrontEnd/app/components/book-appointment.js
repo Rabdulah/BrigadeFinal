@@ -50,7 +50,6 @@ export default Component.extend({
     let eemail = localStorage.getItem('sas-session-id');
     eemail = this.get('auth').decrypt(eemail);
     console.log(eemail);
-    console.log("HIIIIIIIIIIIIIIIIIII JEFFFFFFFFFFF");
     console.log(this.get('paid'));
     if(localStorage.getItem('order')){
       this.set("paid", "");
@@ -117,8 +116,8 @@ export default Component.extend({
   photoValue: "disabled",
   confirmValue: "disabled",
 
-  video: false,
-  intro: true,
+  video: true,
+  intro: false,
   appointment: false,
   photo: false,
   confirm: false,
@@ -132,13 +131,12 @@ export default Component.extend({
   orderAppts: [],
   actions: {
     goToIntro() {
+      this.set('videoValue', "completed");
       this.set('introValue', "active");
-      this.set('videoValue', "");
       this.set('intro', true);
       this.set('video', false);
     },
     toggleDetails(ord) {
-      console.log("HIi");
       if(this.get('showDetails')) {
         this.set('showDetails', null);
       } else {
@@ -149,7 +147,7 @@ export default Component.extend({
     },
 
     toggleBook(ord) {
-      console.log("HIi");
+
       if(this.get('client').get('packages')[ord].numberOfSessions) {
       if(this.get('showBook')) {
         this.set('showBook', null);
@@ -165,7 +163,6 @@ export default Component.extend({
 
     toggleBooked(ord) {
       let self = this;
-      console.log("HIi");
       this.get('orderAppts').clear();
       if(this.get('showBooked')) {
         this.set('showBooked', null);
@@ -193,7 +190,7 @@ export default Component.extend({
 
     backToIntro() {
       this.set('introValue', "active");
-      this.set('photoValue', "");
+      this.set('photoValue', "disabled");
       this.set('photo', false);
       this.set('intro', true);
     },
@@ -203,9 +200,9 @@ export default Component.extend({
       this.set('photo', false);
       this.set('confirm', true);
     },
-    
+
     backToVideo() {
-      this.set('introValue', "");
+      this.set('introValue', "disabled");
       this.set('videoValue', "active");
       this.set('intro', false);
       this.set('video', true);
@@ -213,7 +210,7 @@ export default Component.extend({
 
     backToPhoto() {
       this.set('photoValue', "active");
-      this.set('confirmValue', "");
+      this.set('confirmValue', "disabled");
       this.set('photo', true);
       this.set('confirm', false);
     },
@@ -405,7 +402,7 @@ export default Component.extend({
     submit() {
       let self = this;
       let src =self.get('client');
-      
+
       let ord = 0;
       if(this.get("showBook")){
         ord = this.get("showBook");
@@ -432,7 +429,7 @@ export default Component.extend({
       //desktop
       // let client = '5a88738e1f0fdc2b94498e81';
       let physio = self.get('selectphysio');
-      
+
       console.log('ord', ord);
       let booking = this.get('DS').createRecord('appointment', {
         order: ord,
@@ -442,11 +439,11 @@ export default Component.extend({
         endDate: self.get('selectedbookedTime').end,
         pName: self.get('physioName'),
       });
-     
+
       // let ord = localStorage.getItem('order');
       console.log(src.get('packages'));
-      
-     
+
+
 
       // src.save();
 
@@ -544,7 +541,7 @@ export default Component.extend({
         // this.set("appointmentValue", "disabled");
         // this.set("photoValue", "disabled");
         // this.set("confirmValue", "disabled");
-        
+
         window.location.reload();
 
         alert("Your Appopintment has been booked!");
