@@ -71,7 +71,8 @@ router.route('/')
                             // other than SAS application.
                             var stored = encrypt(hash("root"));
                             var storedPassword = stored;
-
+                            console.log("storedPassword", storedPassword)
+                            console.log("recPassword", recievedPassword)
                             if (recievedPassword === storedPassword) {
                                 message4.sessionIsActive = true;
                                 message4.save(function (error) {
@@ -112,6 +113,21 @@ router.route('/')
                 });
             }
         }
+    })
+
+    .get(parseUrlencoded, parseJSON, function (request, response) {
+        // var LOGIN = request.query.filter;
+        // if (!LOGIN) {
+            Roots.Model.findOne(function (error, Login) {
+                // if (error) response.json({login: failedLogin()});
+                response.json({login: Login});
+            });
+        // } else {
+            // Roots.Model.findAll({}, function (error, Login) {
+                // if (error) response.json({login: failedLogin()});
+                // response.json({login: Login});
+            // });
+        // }
     });
 
 

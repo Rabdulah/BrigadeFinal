@@ -107,6 +107,22 @@ export default Component.extend({
     },
     submit() {
       let self = this;
+      console.log(self.get('email'));
+      let afamilyName= self.get('familyName');
+      let agivenName= self.get('givenName');
+      let aemail= self.get('email');
+      // encryptedPassword: passwords,
+      let astreetName= self.get('streetName');
+      let astreetNumber= self.get('streetNumber');
+      let aapartment= self.get('apartment');
+      let acountry= self.get('country');
+      let aprovince= self.get('province');
+      let acity= self.get('city');
+      let adateOfBirth= new Date(this.get('selectedDate'));
+      let agender= self.get('selectedGender');
+      let aphoneNumber= self.get('phoneNumber');
+      let apostalCode= self.get('postalCode');
+      let askype= self.get('skype');
 
       if(this.get("encryptedPassword") === this.get("confirmPassword")) {
         
@@ -118,27 +134,28 @@ export default Component.extend({
       });
 
       console.log("password b4 sent", passwords.get("encryptedPassword"));
-
+      console.log(passwords);
       passwords.save().then((passwords) => {
+        console.log(self.get('email'));
         console.log("Password returned to front end after save", passwords);
-        let patient = this.get('DS').createRecord('patient', {
-          familyName: self.get('familyName'),
-          givenName: self.get('givenName'),
-          email: self.get('email'),
+        let patient = self.get('DS').createRecord('patient', {
+          familyName: afamilyName,
+          givenName: agivenName,
+          email: aemail,
           encryptedPassword: passwords,
-          streetName: self.get('streetName'),
-          streetNumber: self.get('streetNumber'),
-          apartment: self.get('apartment'),
-          country: self.get('country'),
-          province: self.get('province'),
-          city: self.get('city'),
-          dateOfBirth: new Date(this.get('selectedDate')),
-          gender: self.get('selectedGender'),
-          phoneNumber: self.get('phoneNumber'),
-          postalCode: self.get('postalCode'),
-          skype: self.get('skype')
+          streetName: astreetName,
+          streetNumber: astreetNumber,
+          apartment: aapartment,
+          country: acountry,
+          province: aprovince,
+          city: acity,
+          dateOfBirth: adateOfBirth,
+          gender: agender,
+          phoneNumber: aphoneNumber,
+          postalCode: apostalCode,
+          skype: askype
         });
-
+        console.log(patient, "this is the patirent");
         patient.save().then((res) => {
           console.log('this is the response', res);
           console.log(res.get("success"));

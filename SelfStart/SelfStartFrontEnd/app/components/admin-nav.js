@@ -16,11 +16,15 @@ export default Component.extend({
       console.log(email);
       var myStore = this.get('store');
       var self = this;
-      this.get('DS').queryRecord('administrator', {filter: {"email": email}}).then(function (admin) {
-        if (admin) {
-          self.set('show', true);
-        }
-      });
+      
+      if(email === "root@root.ca") {
+        self.set('show', true);
+      }
+      // this.get('DS').queryRecord('administrator', {filter: {"email": email}}).then(function (admin) {
+      //   if (admin) {
+      //     self.set('show', true);
+      //   }
+      // });
     }
   },
 

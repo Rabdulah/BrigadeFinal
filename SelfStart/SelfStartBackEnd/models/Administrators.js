@@ -3,38 +3,38 @@ var mongoosePaginate = require('mongoose-paginate');
 var bcrypt=require('bcrypt');
 
 var administratorsSchema = mongoose.Schema({
-    ID: String,
-    familyName: String,
-    givenName: String,
+    // ID: String,
+    // familyName: String,
+    // givenName: String,
     email: String,
-    encryptedPassword: {type: mongoose.Schema.ObjectId, ref: 'Passwords'},
-    phoneNumber: String,
-    dateHired: Date,
-    dateFired: Date,
+    // encryptedPassword: {type: mongoose.Schema.ObjectId, ref: 'Passwords'},
+    // phoneNumber: String,
+    // dateHired: Date,
+    // dateFired: Date,
     message: String,
     success: {
         type: Boolean,
         default: true
     },
-    form: [{type: mongoose.Schema.ObjectId, ref: 'Forms'}],
-    account: {
-        //New----------------------------------------
-        nonce: String,
-        response: String,
-        token: String,
-        requestType: String,
-        wrongUserName: Boolean,
-        wrongPassword: Boolean,
-        passwordMustChanged: Boolean,
-        passwordReset: Boolean,
-        loginFailed: Boolean,
-        sessionIsActive: Boolean,
-        //-------------------------------------------
-        accType:{
-            type: String,
-            deafult: "2"
-        }
-    },
+    // form: [{type: mongoose.Schema.ObjectId, ref: 'Forms'}],
+    // account: {
+    //     //New----------------------------------------
+    //     nonce: String,
+    //     response: String,
+    //     token: String,
+    //     requestType: String,
+    //     wrongUserName: Boolean,
+    //     wrongPassword: Boolean,
+    //     passwordMustChanged: Boolean,
+    //     passwordReset: Boolean,
+    //     loginFailed: Boolean,
+    //     sessionIsActive: Boolean,
+    //     //-------------------------------------------
+    //     accType:{
+    //         type: String,
+    //         deafult: "2"
+    //     }
+    // },
     
 
 });

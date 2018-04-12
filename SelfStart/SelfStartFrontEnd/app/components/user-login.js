@@ -42,25 +42,34 @@ export default Component.extend({
       var self = this;
       var myStore = self.get('store');
 
+      if(this.get('Email') === "root@root.ca") {
+        auth.openRoot(this.get('PWord')).then(function (name) {
+          console.log(name);
+          console.log("anything");
+          auth.set('isLoginRequested', false);
+          auth.setName(name);
+
+          $('.ui.login.modal.tiny').modal('hide');
+          self.get('router').transitionTo('admin');
+        }, function () {
+          //console.log("Root" + error);
+        });
+      } else {
+
       auth.open(this.get('Email'), this.get('PWord')).then(function() {
         auth.set('isLoginRequested', false);
         
         var name = auth.decrypt(localStorage.getItem('sas-session-id'));
         myStore.queryRecord('patient', {filter: {"email": name}}).then(function (patient) {
             console.log('name')
+            console.log(patient);
             if (patient) {
               self.get('router').transitionTo('client');
             } else {
               myStore.queryRecord('physiotherapest', {filter: {"email": name}}).then(function (physio) {
                 if (physio) {
                   self.get('router').transitionTo('practitioner');
-                } else {
-                  myStore.queryRecord('administrator', {filter: {"email": name}}).then(function (admin) {
-                    if (admin) {
-                      self.get('router').transitionTo('admin');
-                    }
-                  });
-                }
+                } 
               });
             }
         });
@@ -150,6 +159,7 @@ export default Component.extend({
         // }
         // return;
       });
+    }
        // this.get('router').transitionTo('client');
     },
 

@@ -299,6 +299,7 @@ export default Ember.Service.extend({
 
   openRoot(password)
   {
+    console.log(password)
     var self = this;
     return new Ember.RSVP.Promise(function (resolve, reject) {
       if (password) {
@@ -323,7 +324,7 @@ export default Ember.Service.extend({
             } else {
               // self.setName("Root");
               self.set('isAuthenticated', true);
-              resolve("Root");
+              resolve("root@root.ca");
             }
 
           });
@@ -339,11 +340,11 @@ export default Ember.Service.extend({
   closeRoot()
   {
     var myStore = this.get('store');
-    myStore.queryRecord('root', {}).then(function (Login) {
-      if (Login) {
-        Login.destroyRecord();
-      }
-    });
+    // myStore.queryRecord('root', {}).then(function (Login) {
+    //   if (Login) {
+    //     Login.destroyRecord();
+    //   }
+    // });
     window.localStorage.removeItem('sas-session-id');
     this.set('getName', null);
     this.set('email', null);

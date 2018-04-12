@@ -93,10 +93,11 @@ var questionOrder = require('./routes/questionOrder');
 var answers = require('./routes/answers');
 var administrators = require('./routes/administrators');
 var physiotherapests = require('./routes/physiotherapests');
-
+var roots = require('./routes/roots');
 // REGISTER OUR ROUTES -------------------------------
 
 app.use(logger);
+
 app.use('/answers', answers);
 app.use('/images', photos);
 app.use('/genders', genders);
@@ -121,7 +122,7 @@ app.use('/administrators', administrators);
 app.use('/physiotherapests', physiotherapests);
 app.use('/exerciseLists', exerciseList);
 app.use('/questionOrders', questionOrder);
-
+app.use('/roots', roots);
 //Crypto-----------------------------------------------------------
 // const crypto = require('crypto');
 
