@@ -28,13 +28,13 @@
        <legend>Account Information</legend>
           <div class="ui hidden divider"></div>
           <div class="field" style="margin: 1em 0;">
-            {{input class="email" type="email" value =email placeholder="email" }}
+            {{input class="email" type="email" value =email placeholder="email" required=true}}
           </div>
           <div class="field" style="margin: 1em 0;">
-            {{input class="lock" type ="password" value=encryptedPassword placeholder="Password" }}
+            {{input class="lock" type ="password" value=encryptedPassword placeholder="Password" required=true}}
           </div>
           <div class="field" style="margin: 1em 0;">
-            {{input class="lock" type ="password" value=confirmPassword placeholder="Confirm Password" }}
+            {{input class="lock" type ="password" value=confirmPassword placeholder="Confirm Password" required=true}}
           </div>
 
           <div class="ui hidden divider"></div>
@@ -44,25 +44,25 @@
           <div class="ui hidden divider"></div>
           <div class="ui two column grid">
               <div class="column " style="margin: 1em 0;">
-                {{input class="user" type="text" value=givenName placeholder="First Name" }}
+                {{input class="user" type="text" value=givenName placeholder="First Name" required=true}}
               </div>
               <div class="column " style="margin: 1em 0;">
-                {{input class="user" type="text" value=familyName placeholder="Last Name" }}
+                {{input class="user" type="text" value=familyName placeholder="Last Name" required=true}}
               </div>
           </div>
 
           <div class="ui two column grid">
             <div class="column " style="margin: 1em 0;">
-              <input class="date" type="date" value={{selectedDate}}  onchange={{action 'assignDate' value="target.value"}} >
+              <input class="date" type="date" value={{selectedDate}}  onchange={{action 'assignDate' value="target.value"}} required=true>
             </div>
             <div class="column " style="margin: 1em 0;">
               <p class="cd-select icon">
-                <select class="people" onchange={{action 'selectGender' value="target.value"}}>
+                <select class="people" onchange={{action 'selectGender' value="target.value"}} required=true>
                   <option selected="selected">
                     Select Gender
                   </option>
                   {{#each genderModel as |oneGender|}}
-                    <option value={{oneGender.name}} selected={{eq gender oneGender.name}}>
+                    <option value={{oneGender.name}} selected={{eq gender oneGender.name}} >
                       {{oneGender.name}}
                     </option>
                   {{/each}}
@@ -72,11 +72,11 @@
           </div>
 
           <div class="field" style="margin: 1em 0;">
-            {{input class="phone" type="text" value=phoneNumber placeholder="Phone Number" }}
+            {{input class="phone" type="text" value=phoneNumber placeholder="Phone Number" required=true}}
           </div>
 
            <div class="field" style="margin: 1em 0;">
-            {{input class = "chat" type="text" value=skype placeholder="Skype Username" }}
+            {{input class = "chat" type="text" value=skype placeholder="Skype Username" required=true}}
           </div>
 
           <div class="ui hidden divider"></div>
@@ -87,10 +87,10 @@
 
           <div class="ui two column grid">
             <div class="column " style="margin: 1em 0;">
-              {{input class="home" type="text" value=streetNumber placeholder="Street Number" }}
+              {{input class="home" type="text" value=streetNumber placeholder="Street Number" required=true}}
             </div>
             <div class="column " style="margin: 1em 0;">
-              {{input class="home" type="text" value=streetName placeholder="Street Name" }}
+              {{input class="home" type="text" value=streetName placeholder="Street Name" required=true}}
             </div>
           </div>
 
@@ -99,13 +99,13 @@
               {{input class="home" type="text" placeholder="Unit Number" value = apartment}}
             </div>
             <div class="column " style="margin: 1em 0;">
-              {{input class="flag" type="text" value=postalCode placeholder="Postal/Zip Code" }}
+              {{input class="flag" type="text" value=postalCode placeholder="Postal/Zip Code" required=true}}
             </div>
           </div>
 
           <div class="ui three column grid" id="grid">
             <div class="column " style="margin: 1em 0;">
-              {{#ui-dropdown class="selection" onChange=(action (mut country)) id="countrySelect" }}
+              {{#ui-dropdown class="address selection" onChange=(action (mut country)) id="countrySelect"}}
                 <div class="default text">Select a country</div>
                 <i class="dropdown icon" id="selectIcon"></i>
                 <div class="menu">
@@ -118,7 +118,7 @@
               {{/ui-dropdown}}
             </div>
             <div class="column " style="margin: 1em 0;">
-              {{#ui-dropdown class="selection " onChange=(action (mut province)) id="provinceSelect"}}
+              {{#ui-dropdown class="address selection " onChange=(action (mut province)) id="provinceSelect"}}
                 <div class="default text">Select a province</div>
                 <i class="dropdown icon" id="selectIcon"></i>
                 <div class="menu">
